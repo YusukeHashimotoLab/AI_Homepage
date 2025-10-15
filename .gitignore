@@ -77,3 +77,6 @@ htmlcov/
 *.temp
 tmp/
 temp/
+
+data/
+claudedocs/
