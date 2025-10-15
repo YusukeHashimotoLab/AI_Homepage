@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="マテリアルズ・インフォマティクスの基礎を学ぶ入門コンテンツ。初心者向けに基本概念から丁寧に解説します。">
+    <title>入門 - MI Knowledge Hub</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/reset.css">
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <link rel="stylesheet" href="../assets/css/layout.css">
+    <link rel="stylesheet" href="../assets/css/responsive.css">
+
+    <link rel="icon" type="image/png" href="../assets/images/favicon.png">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">コンテンツへスキップ</a>
+
+    <header class="header" role="banner">
+        <nav class="nav-desktop" aria-label="メインナビゲーション">
+            <div class="nav-container">
+                <a href="../index.html" class="logo">MI Knowledge Hub</a>
+                <ul class="nav-list">
+                    <li><a href="../index.html" class="nav-link">ホーム</a></li>
+                    <li><a href="basics.html" class="nav-link active" aria-current="page">入門</a></li>
+                    <li><a href="methods.html" class="nav-link">手法</a></li>
+                    <li><a href="papers.html" class="nav-link">論文</a></li>
+                    <li><a href="datasets.html" class="nav-link">データセット</a></li>
+                    <li><a href="tools.html" class="nav-link">ツール</a></li>
+                    <li><a href="tutorials.html" class="nav-link">チュートリアル</a></li>
+                </ul>
+                <div class="language-switch">
+                    <a href="basics.html" class="lang-link active" aria-current="true">日本語</a>
+                    <span class="lang-divider">/</span>
+                    <a href="../en/basics.html" class="lang-link">English</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main id="main-content" class="main-content" role="main">
+        <div class="page-header">
+            <div class="container">
+                <h1 class="page-title">入門</h1>
+                <p class="page-description">マテリアルズ・インフォマティクスの基礎を学びます</p>
+            </div>
+        </div>
+
+        <div class="content-layout">
+            <aside class="sidebar" role="complementary" aria-label="サイドバーナビゲーション">
+                <nav class="sidebar-nav">
+                    <h2 class="sidebar-title">学習コンテンツ</h2>
+                    <ul class="sidebar-menu">
+                        <li><a href="#what-is-mi" class="sidebar-link">MIとは</a></li>
+                        <li><a href="#why-important" class="sidebar-link">なぜ重要か</a></li>
+                        <li><a href="#key-concepts" class="sidebar-link">基本概念</a></li>
+                        <li><a href="#getting-started" class="sidebar-link">始め方</a></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <div class="content-main">
+                <article id="content-articles-list" class="article-list" role="list">
+                    <!-- Articles loaded dynamically by JavaScript from data/basics.json -->
+                    <p class="loading">コンテンツを読み込み中...</p>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer" role="contentinfo">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-title">MI Knowledge Hub</h3>
+                    <p class="footer-description">マテリアルズ・インフォマティクスの包括的な学習プラットフォーム</p>
+                </div>
+
+                <div class="footer-section">
+                    <h4 class="footer-heading">学習コンテンツ</h4>
+                    <ul class="footer-links">
+                        <li><a href="basics.html">入門</a></li>
+                        <li><a href="methods.html">手法</a></li>
+                        <li><a href="tutorials.html">チュートリアル</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4 class="footer-heading">リソース</h4>
+                    <ul class="footer-links">
+                        <li><a href="papers.html">論文</a></li>
+                        <li><a href="datasets.html">データセット</a></li>
+                        <li><a href="tools.html">ツール</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4 class="footer-heading">お問い合わせ</h4>
+                    <p class="footer-contact">
+                        Dr. Yusuke Hashimoto<br>
+                        Tohoku University<br>
+                        <a href="mailto:yusuke.hashimoto.b8@tohoku.ac.jp">yusuke.hashimoto.b8@tohoku.ac.jp</a>
+                    </p>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="copyright">&copy; 2025 Yusuke Hashimoto, Tohoku University. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <nav class="nav-mobile" aria-label="モバイルナビゲーション">
+        <a href="../index.html" class="nav-mobile-item">
+            <span class="nav-mobile-icon" aria-hidden="true">🏠</span>
+            <span class="nav-mobile-label">ホーム</span>
+        </a>
+        <a href="basics.html" class="nav-mobile-item active" aria-current="page">
+            <span class="nav-mobile-icon" aria-hidden="true">📚</span>
+            <span class="nav-mobile-label">学習</span>
+        </a>
+        <a href="papers.html" class="nav-mobile-item">
+            <span class="nav-mobile-icon" aria-hidden="true">📄</span>
+            <span class="nav-mobile-label">論文</span>
+        </a>
+        <a href="datasets.html" class="nav-mobile-item">
+            <span class="nav-mobile-icon" aria-hidden="true">🔍</span>
+            <span class="nav-mobile-label">リソース</span>
+        </a>
+    </nav>
+
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/navigation.js"></script>
+    <script src="../assets/js/data-loader.js"></script>
+</body>
+</html>

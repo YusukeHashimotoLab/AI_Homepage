@@ -1,0 +1,51 @@
+# =============================================================================
+# MI Knowledge Hub - Requirements (Subagent-based Architecture)
+# =============================================================================
+#
+# This project uses Claude Code subagents for content generation.
+# No API keys or external LLM clients required for basic operation.
+#
+# These packages are only for:
+# - Data validation utilities
+# - Jupyter tutorials
+# - Development tools
+# =============================================================================
+
+# Data Validation & Processing (Optional - for tools/ scripts only)
+pandas>=2.0.0
+pyyaml>=6.0.0
+
+# Jupyter Support (For tutorial notebooks)
+jupyter>=1.0.0
+nbconvert>=7.0.0
+ipykernel>=6.25.0
+
+# Testing & Quality Assurance
+pytest>=7.4.0
+pytest-cov>=4.1.0
+
+# Code Quality Tools (Development only)
+black>=23.0.0
+flake8>=6.0.0
+
+# Markdown Processing (Optional)
+markdown>=3.5.0
+
+# =============================================================================
+# Removed Dependencies (No longer needed with subagent architecture)
+# =============================================================================
+#
+# anthropic - Not needed (Claude Code subagents run in session)
+# openai - Not needed
+# scholarly - Not needed (scholar-agent uses WebSearch)
+# playwright - Not needed
+# requests - Not needed
+# beautifulsoup4 - Not needed
+# numpy - Removed (pandas includes it)
+# python-dotenv - Not needed
+# pytest-asyncio - Not needed
+# mypy - Optional (can add back if needed)
+# loguru - Not needed
+# aiohttp - Not needed
+# asyncio-throttle - Not needed
+# python-dateutil - Not needed (pandas includes it)
