@@ -188,17 +188,78 @@ python -m http.server 8000
 
 ## Content Creation Process
 
-### Using Subagents in Claude Code
+### 🚨 CRITICAL: Always Use Subagents for Their Designated Tasks
 
-**Explicit Invocation:**
-```
-"Use content-agent to create an article on ベイズ最適化"
-"Ask scholar-agent to collect papers from the last 7 days"
-"Have academic-reviewer review content/methods/bayesian_optimization.md"
+**This project is designed around the subagent architecture.** When working on this project, you MUST use the appropriate subagent for each task rather than performing the work directly.
+
+#### Task Tool Usage Pattern
+
+Use the **Task tool** to invoke subagents:
+
+```python
+# Correct approach
+Task(
+    subagent_type="content-agent",
+    description="Enhance MI introduction article",
+    prompt="Enhance content/basics/mi_introduction.md by adding inline citations and recent references based on the academic review report in reviews/mi_introduction_phase3_review.md"
+)
 ```
 
-**Automatic Delegation:**
-Claude Code will automatically delegate to appropriate subagents based on context.
+#### When to Use Which Subagent
+
+| Task Type | Use This Subagent | DO NOT |
+|-----------|-------------------|--------|
+| **Creating/editing article content** | content-agent | ❌ Direct Edit/Write to content/ files |
+| **Reviewing article quality** | academic-reviewer | ❌ Manual quality assessment |
+| **Collecting research papers** | scholar-agent | ❌ Manual WebSearch + data editing |
+| **Adding/updating datasets** | data-agent | ❌ Direct Edit to data/*.json |
+| **Checking accessibility/UX** | design-agent | ❌ Manual CSS/HTML changes |
+| **Validating data integrity** | maintenance-agent | ❌ Direct Bash validation scripts |
+| **Explaining concepts to users** | tutor-agent | ❌ Direct explanation without Socratic method |
+
+#### Direct Work vs. Subagent Delegation
+
+**✅ YOU SHOULD do directly:**
+- Reading files to understand project status (Read tool)
+- Running validation scripts (Bash: `python tools/validate_data.py`)
+- Git operations (Bash: git status, commit, push)
+- Creating project infrastructure (directories, config files)
+- Updating CLAUDE.md or README.md (documentation)
+
+**❌ YOU SHOULD NOT do directly:**
+- Writing or editing Markdown articles in content/
+- Adding entries to data/*.json files
+- Conducting academic quality reviews
+- Collecting research paper metadata
+- Making UX/accessibility decisions
+- Creating educational explanations
+
+### Explicit Subagent Invocation Examples
+
+**Paper Collection:**
+```
+"Use scholar-agent to collect papers on 'bayesian optimization materials' from the last 30 days"
+```
+
+**Content Creation:**
+```
+"Use content-agent to create a beginner-level article about neural networks in MI"
+```
+
+**Quality Review:**
+```
+"Use academic-reviewer to review content/methods/bayesian_optimization.md and generate a detailed report"
+```
+
+**Data Management:**
+```
+"Use data-agent to add information about the OQMD database to datasets.json"
+```
+
+**Content Enhancement (THIS is what should have been done instead of direct editing):**
+```
+"Use content-agent to enhance content/basics/mi_introduction.md based on the academic review feedback in reviews/mi_introduction_phase3_review.md. Focus on adding inline citations and updating references."
+```
 
 ### Quality Assurance: Academic Review Gates
 
@@ -476,5 +537,5 @@ git push origin feature/add-quantum-ml-article
 
 ---
 
-**Last Updated**: 2025-10-15
-**CLAUDE.md Version**: 2.0 (Subagent Architecture)
+**Last Updated**: 2025-10-16
+**CLAUDE.md Version**: 2.1 (Added explicit subagent usage guidelines)
