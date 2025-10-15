@@ -2,9 +2,32 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description" content="Yusuke Hashimoto - Specially Appointed Associate Professor at Tohoku University, specializing in Materials Informatics and Spintronics">
-  <title>Yusuke Hashimoto | Tohoku University</title>
+  <meta name="keywords" content="Yusuke Hashimoto,Materials Informatics,Spintronics,Machine Learning,Materials Science,Tohoku University">
+  <meta name="author" content="Yusuke Hashimoto">
+
+  <!-- Apple Mobile Web App -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Hashimoto Lab">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#1e293b">
+  <meta name="format-detection" content="telephone=no">
+
+  <!-- hreflang tags for SEO -->
+  <link rel="alternate" hreflang="ja" href="https://yusukehashimotolab.github.io/jp/index.html">
+  <link rel="alternate" hreflang="en" href="https://yusukehashimotolab.github.io/en/index.html">
+  <link rel="alternate" hreflang="x-default" href="https://yusukehashimotolab.github.io/jp/index.html">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Yusuke Hashimoto | Materials Science Researcher">
+  <meta property="og:description" content="Specially Appointed Associate Professor at Tohoku University. Advancing innovative research bridging materials science and data science">
+  <meta property="og:type" content="profile">
+  <meta property="og:url" content="https://yusukehashimotolab.github.io/en/">
+  <meta property="og:site_name" content="Yusuke Hashimoto">
+
+  <title>Yusuke Hashimoto | Materials Science Researcher - Tohoku University</title>
 
   <style>
     /* ========================================
@@ -24,7 +47,7 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
       line-height: 1.6;
       color: #333;
       background: #fff;
@@ -76,6 +99,10 @@
       font-weight: 600;
     }
 
+    header h1 a {
+      color: inherit;
+    }
+
     nav {
       display: flex;
       flex-wrap: wrap;
@@ -96,10 +123,12 @@
       transition: background 0.2s;
     }
 
-    nav a:hover,
-    nav a:focus {
-      background: rgba(255,255,255,0.1);
-      outline: 2px solid #3b82f6;
+    @media (hover: hover) and (pointer: fine) {
+      nav a:hover,
+      nav a:focus {
+        background: rgba(255,255,255,0.1);
+        outline: 2px solid #3b82f6;
+      }
     }
 
     .header-top {
@@ -184,22 +213,22 @@
       color: #fff;
     }
 
-    .btn-primary:hover,
-    .btn-primary:focus {
-      background: #1d4ed8;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(37,99,235,0.3);
-    }
-
     .btn-secondary {
       background: #fff;
       color: #2563eb;
       border: 2px solid #2563eb;
     }
 
-    .btn-secondary:hover,
-    .btn-secondary:focus {
-      background: #eff6ff;
+    @media (hover: hover) and (pointer: fine) {
+      .btn-primary:hover {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+      }
+
+      .btn-secondary:hover {
+        background: #eff6ff;
+      }
     }
 
     /* ========================================
@@ -281,9 +310,11 @@
       transition: transform 0.2s, box-shadow 0.2s;
     }
 
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    @media (hover: hover) and (pointer: fine) {
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      }
     }
 
     .card-icon {
