@@ -1,32 +1,32 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="東北大学寄附研究部門「ナノ材料プロセスデータ科学」。材料プロセスデータ科学という新たな学際的学問分野の創成を目指します。">
-  <meta name="keywords" content="寄附研究部門,ナノ材料,プロセスデータ科学,東北大学,学際科学フロンティア研究所">
-  <meta name="author" content="橋本佑介">
+  <meta name="description" content="Endowed Research Division: Nanomaterial Process Data Science at Tohoku University. Aiming to establish a new interdisciplinary field of materials process data science.">
+  <meta name="keywords" content="Endowed Division,Nanomaterials,Process Data Science,Tohoku University,FRIS">
+  <meta name="author" content="Yusuke Hashimoto">
 
   <!-- Apple Mobile Web App -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="寄附研究部門">
+  <meta name="apple-mobile-web-app-title" content="Endowed Division">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#1e293b">
+  <meta name="theme-color" content="#2c3e50">
   <meta name="format-detection" content="telephone=no">
 
   <!-- hreflang tags for SEO -->
-  <link rel="alternate" hreflang="ja" href="https://yusukehashimotolab.github.io/jp/endowed.html">
-  <link rel="alternate" hreflang="en" href="https://yusukehashimotolab.github.io/en/endowed.html">
-  <link rel="alternate" hreflang="x-default" href="https://yusukehashimotolab.github.io/jp/endowed.html">
+  <link rel="alternate" hreflang="ja" href="https://yusukehashimotolab.github.io/endowed/jp/">
+  <link rel="alternate" hreflang="en" href="https://yusukehashimotolab.github.io/endowed/en/">
+  <link rel="alternate" hreflang="x-default" href="https://yusukehashimotolab.github.io/endowed/jp/">
 
   <!-- Open Graph -->
-  <meta property="og:title" content="寄附研究部門：ナノ材料プロセスデータ科学 | 東北大学">
-  <meta property="og:description" content="材料プロセスデータ科学という新たな学際的学問分野の創成を目指す研究部門">
+  <meta property="og:title" content="Endowed Research Division: Nanomaterial Process Data Science | Tohoku University">
+  <meta property="og:description" content="Establishing a new interdisciplinary field of materials process data science">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://yusukehashimotolab.github.io/jp/endowed.html">
+  <meta property="og:url" content="https://yusukehashimotolab.github.io/endowed/en/">
 
-  <title>寄附研究部門：ナノ材料プロセスデータ科学 | 東北大学</title>
+  <title>Endowed Research Division: Nanomaterial Process Data Science | Tohoku University</title>
 
   <style>
     /* ========================================
@@ -42,7 +42,7 @@
       font-size: 16px;
       -webkit-text-size-adjust: 100%;
       scroll-behavior: smooth;
-      scroll-padding-top: 100px;
+      scroll-padding-top: 80px;
     }
 
     body {
@@ -74,93 +74,74 @@
     }
 
     /* ========================================
-       Header & Navigation
+       独立ヘッダー & ナビゲーション
        ======================================== */
     header {
-      background: #1e293b;
+      background: #2c3e50;
       color: #fff;
       padding: 1rem 0;
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
 
     .header-content {
       display: flex;
-      flex-direction: column;
+      justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
       gap: 1rem;
     }
 
-    header h1 {
-      font-size: 1.25rem;
-      font-weight: 600;
-    }
-
-    header h1 a {
-      color: inherit;
-    }
-
-    nav {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      justify-content: center;
-    }
-
-    nav a {
-      color: #fff;
-      padding: 0.75rem 1rem;
-      border-radius: 4px;
-      font-size: 0.9rem;
-      min-width: 48px;
-      min-height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s;
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-      nav a:hover,
-      nav a:focus {
-        background: rgba(255,255,255,0.1);
-        outline: 2px solid #3b82f6;
-      }
-    }
-
-    nav a[aria-current="page"] {
-      background: #3b82f6;
-    }
-
-    .header-top {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      position: relative;
-    }
-
-    .lang-switcher-header {
-      position: absolute;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%);
+    .back-link {
       color: #fff;
       padding: 0.5rem 1rem;
+      border: 2px solid rgba(255,255,255,0.3);
       border-radius: 4px;
       font-size: 0.9rem;
       min-height: 44px;
+      min-width: 44px;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.2s;
-      border: 1px solid rgba(255,255,255,0.3);
+      gap: 0.5rem;
+      transition: all 0.2s;
     }
 
     @media (hover: hover) and (pointer: fine) {
-      .lang-switcher-header:hover {
+      .back-link:hover {
         background: rgba(255,255,255,0.1);
+        border-color: #fff;
+      }
+    }
+
+    .site-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      text-align: center;
+      flex: 1;
+    }
+
+    .lang-switcher {
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 4px;
+      font-size: 0.9rem;
+      min-height: 44px;
+      min-width: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      font-weight: 600;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .lang-switcher:hover {
+        background: rgba(255,255,255,0.1);
+        border-color: #fff;
       }
     }
 
@@ -168,29 +149,32 @@
        Page Header
        ======================================== */
     .page-header {
-      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+      color: #fff;
       padding: 3rem 0 2rem;
       text-align: center;
     }
 
-    .page-header h2 {
-      font-size: 2rem;
-      color: #1e293b;
-      margin-bottom: 0.5rem;
-    }
-
     .page-header .subtitle {
       font-size: 0.9rem;
-      color: #64748b;
+      color: #ecf0f1;
       margin-bottom: 1rem;
+      opacity: 0.9;
+    }
+
+    .page-header h1 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
     }
 
     .page-header p {
       font-size: 1rem;
-      color: #64748b;
+      color: #ecf0f1;
       max-width: 800px;
       margin: 0 auto;
       line-height: 1.7;
+      opacity: 0.95;
     }
 
     /* ========================================
@@ -210,9 +194,9 @@
       margin: 0 auto;
     }
 
-    .purpose-card h3 {
+    .purpose-card h2 {
       font-size: 1.8rem;
-      color: #1e293b;
+      color: #2c3e50;
       margin-bottom: 1.5rem;
       font-weight: 600;
       text-align: center;
@@ -245,7 +229,7 @@
       content: "▸";
       position: absolute;
       left: 0;
-      color: #2563eb;
+      color: #3498db;
       font-weight: bold;
       font-size: 1.2rem;
     }
@@ -261,7 +245,7 @@
     .section-title {
       font-size: 2rem;
       text-align: center;
-      color: #1e293b;
+      color: #2c3e50;
       margin-bottom: 3rem;
       font-weight: 600;
     }
@@ -317,21 +301,21 @@
       color: #cbd5e1;
     }
 
-    .member-card h4 {
+    .member-card h3 {
       font-size: 1.3rem;
-      color: #1e293b;
+      color: #2c3e50;
       margin-bottom: 0.5rem;
       font-weight: 600;
     }
 
-    .member-card h4 a {
-      color: #1e293b;
+    .member-card h3 a {
+      color: #2c3e50;
       text-decoration: none;
     }
 
     @media (hover: hover) and (pointer: fine) {
-      .member-card h4 a:hover {
-        color: #2563eb;
+      .member-card h3 a:hover {
+        color: #3498db;
       }
     }
 
@@ -369,19 +353,20 @@
       border-radius: 8px;
       overflow: hidden;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      border-left: 4px solid #2563eb;
+      border-left: 4px solid #3498db;
     }
 
     .news-header {
-      background: #1e293b;
+      background: #2c3e50;
       color: #fff;
       padding: 1.5rem 2rem;
     }
 
     .news-date {
       font-size: 0.9rem;
-      color: #cbd5e1;
+      color: #ecf0f1;
       margin-bottom: 0.5rem;
+      opacity: 0.9;
     }
 
     .news-title {
@@ -405,13 +390,13 @@
     }
 
     .news-content a {
-      color: #2563eb;
+      color: #3498db;
       text-decoration: underline;
     }
 
     @media (hover: hover) and (pointer: fine) {
       .news-content a:hover {
-        color: #1d4ed8;
+        color: #2980b9;
       }
     }
 
@@ -438,9 +423,9 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
-    .location-card h4 {
+    .location-card h3 {
       font-size: 1.3rem;
-      color: #1e293b;
+      color: #2c3e50;
       margin-bottom: 1.5rem;
       font-weight: 600;
       display: flex;
@@ -460,7 +445,7 @@
 
     .info-label {
       font-weight: 600;
-      color: #1e293b;
+      color: #2c3e50;
     }
 
     .access-grid {
@@ -474,12 +459,12 @@
       background: #f8fafc;
       padding: 1.5rem;
       border-radius: 6px;
-      border-left: 4px solid #2563eb;
+      border-left: 4px solid #3498db;
     }
 
-    .access-item h5 {
+    .access-item h4 {
       font-size: 1.1rem;
-      color: #1e293b;
+      color: #2c3e50;
       margin-bottom: 0.5rem;
       font-weight: 600;
     }
@@ -493,14 +478,20 @@
        Footer
        ======================================== */
     footer {
-      background: #1e293b;
-      color: #cbd5e1;
+      background: #2c3e50;
+      color: #ecf0f1;
       padding: 2rem 0;
       text-align: center;
     }
 
     footer a {
-      color: #93c5fd;
+      color: #3498db;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      footer a:hover {
+        color: #5dade2;
+      }
     }
 
     footer p {
@@ -515,28 +506,15 @@
         padding: 0 2rem;
       }
 
-      .header-content {
-        flex-direction: column;
-        align-items: center;
-      }
-
-      header h1 {
-        font-size: 1.5rem;
-      }
-
-      nav {
-        gap: 0.5rem;
-      }
-
-      nav a {
-        font-size: 1rem;
+      .site-title {
+        font-size: 1.3rem;
       }
 
       .page-header {
         padding: 4rem 0 3rem;
       }
 
-      .page-header h2 {
+      .page-header h1 {
         font-size: 2.5rem;
       }
 
@@ -568,7 +546,7 @@
       position: absolute;
       top: -40px;
       left: 0;
-      background: #2563eb;
+      background: #3498db;
       color: white;
       padding: 0.5rem 1rem;
       z-index: 1000;
@@ -580,25 +558,17 @@
   </style>
 </head>
 <body>
-  <a href="#main" class="skip-link">メインコンテンツへスキップ</a>
+  <a href="#main" class="skip-link">Skip to main content</a>
 
   <header>
     <div class="container">
       <div class="header-content">
-        <div class="header-top">
-          <h1><a href="index.html">橋本 佑介, PhD</a></h1>
-          <a href="../en/endowed.html" class="lang-switcher-header">English</a>
-        </div>
-        <nav role="navigation" aria-label="メインナビゲーション">
-          <a href="index.html">ホーム</a>
-          <a href="research.html">研究</a>
-          <a href="publications.ja.html">論文</a>
-          <a href="news.ja.html">ニュース</a>
-          <a href="talks.html">講演</a>
-          <a href="links.html">リンク</a>
-          <a href="contact.ja.html">お問い合わせ</a>
-          <a href="endowed.html" aria-current="page">寄附講座</a>
-        </nav>
+        <a href="../../en/index.html" class="back-link">
+          <span>←</span>
+          <span>Back to Main Site</span>
+        </a>
+        <div class="site-title">Endowed Division: Nanomaterial Process Data Science</div>
+        <a href="../jp/index.html" class="lang-switcher">JA</a>
       </div>
     </div>
   </header>
@@ -607,11 +577,11 @@
     <!-- Page Header -->
     <section class="page-header">
       <div class="container">
-        <p class="subtitle">東北大学学際科学フロンティア研究所</p>
-        <h2>寄附研究部門：ナノ材料プロセスデータ科学</h2>
+        <p class="subtitle">Frontier Research Institute for Interdisciplinary Sciences, Tohoku University</p>
+        <h1>Endowed Research Division:<br>Nanomaterial Process Data Science</h1>
         <p>
-          材料プロセスデータ科学という新たな学際的学問分野の創成を目指し、<br>
-          データサイエンスと材料プロセス工学を融合した革新的研究を展開しています。
+          Aiming to establish a new interdisciplinary field of materials process data science<br>
+          by integrating data science with materials process engineering for innovative research.
         </p>
       </div>
     </section>
@@ -620,20 +590,20 @@
     <section class="purpose-section">
       <div class="container">
         <div class="purpose-card">
-          <h3>研究目的</h3>
+          <h2>Research Purpose</h2>
           <div class="purpose-content">
             <p>
-              本研究では、データサイエンスと材料プロセス工学を融合することで、
-              <strong>「材料プロセスデータ科学」という学際的学問分野の創成</strong>を目的としています。
+              This research aims to <strong>establish a new interdisciplinary field called "Materials Process Data Science"</strong>
+              by integrating data science with materials process engineering.
             </p>
-            <p>具体的には、以下の研究を推進します：</p>
+            <p>Specifically, we are promoting the following research:</p>
             <ul class="purpose-list">
-              <li>ナノ粒子合成に関する材料・プロセス連携データベースを網羅的に構築する</li>
-              <li>構築したデータベースから材料の構造・機能を決定するプロセス特性因子を抽出する</li>
-              <li>高性能ナノ材料創製の指針となるマテリアルズプロセスインフォマティクスを構築する</li>
+              <li>Comprehensively construct a materials-process integrated database for nanoparticle synthesis</li>
+              <li>Extract process characteristic factors that determine material structure and function from the constructed database</li>
+              <li>Establish materials process informatics as a guideline for creating high-performance nanomaterials</li>
             </ul>
             <p>
-              これにより、次世代ナノ材料開発の加速と材料プロセス工学の革新を実現します。
+              This will accelerate next-generation nanomaterial development and revolutionize materials process engineering.
             </p>
           </div>
         </div>
@@ -643,42 +613,42 @@
     <!-- Members Section -->
     <section class="members-section">
       <div class="container">
-        <h3 class="section-title">メンバー</h3>
+        <h2 class="section-title">Members</h2>
         <div class="members-grid">
           <div class="member-card">
             <div class="member-photo">
-              <img src="../assets/images/endowed/tomai.jpg" alt="笘居 高明教授の写真">
+              <img src="../../assets/images/endowed/tomai.jpg" alt="Photo of Prof. Takaaki Tomai">
             </div>
-            <h4>笘居 高明</h4>
-            <p class="member-position">教授</p>
-            <p class="member-affiliation">学際科学フロンティア研究所・多元物質科学研究所</p>
+            <h3>Takaaki Tomai</h3>
+            <p class="member-position">Professor</p>
+            <p class="member-affiliation">FRIS / IMRAM, Tohoku University</p>
           </div>
 
           <div class="member-card">
             <div class="member-photo">
-              <img src="../assets/images/endowed/hashimoto.png" alt="橋本 佑介特任准教授の写真">
+              <img src="../../assets/images/endowed/hashimoto.png" alt="Photo of Assoc. Prof. Yusuke Hashimoto">
             </div>
-            <h4><a href="index.html">橋本 佑介</a></h4>
-            <p class="member-position">特任准教授</p>
-            <p class="member-affiliation">学際科学フロンティア研究所</p>
+            <h3><a href="../../en/index.html">Yusuke Hashimoto</a></h3>
+            <p class="member-position">Specially Appointed Associate Professor</p>
+            <p class="member-affiliation">FRIS, Tohoku University</p>
           </div>
 
           <div class="member-card">
             <div class="member-photo">
-              <img src="../assets/images/endowed/iwase.png" alt="岩瀬 和至准教授の写真">
+              <img src="../../assets/images/endowed/iwase.png" alt="Photo of Assoc. Prof. Kazuyuki Iwase">
             </div>
-            <h4>岩瀬 和至</h4>
-            <p class="member-position">准教授</p>
-            <p class="member-affiliation">多元物質科学研究所</p>
+            <h3>Kazuyuki Iwase</h3>
+            <p class="member-position">Associate Professor</p>
+            <p class="member-affiliation">IMRAM, Tohoku University</p>
           </div>
 
           <div class="member-card">
             <div class="member-photo">
               <div class="no-photo">👤</div>
             </div>
-            <h4>劉松</h4>
-            <p class="member-position">客員准教授</p>
-            <p class="member-affiliation">学際科学フロンティア研究所</p>
+            <h3>Song Liu</h3>
+            <p class="member-position">Visiting Associate Professor</p>
+            <p class="member-affiliation">FRIS, Tohoku University</p>
           </div>
         </div>
       </div>
@@ -687,39 +657,39 @@
     <!-- News Section -->
     <section class="news-section">
       <div class="container">
-        <h3 class="section-title">最新ニュース</h3>
+        <h2 class="section-title">Latest News</h2>
         <div class="news-list">
           <article class="news-item">
             <div class="news-header">
-              <div class="news-date">2025年7月31日</div>
-              <h4 class="news-title">APL Machine Learning誌に論文を発表</h4>
+              <div class="news-date">July 31, 2025</div>
+              <h3 class="news-title">Paper Published in APL Machine Learning</h3>
             </div>
             <div class="news-content">
-              <p>橋本特任准教授らの研究チームが、AIを用いた「材料マップ」の作成に関する論文を国際誌APL Machine Learningに発表しました。</p>
-              <p>本研究では、メッセージパッシング型グラフニューラルネットワークを用いて、実験データと理論計算データを統合した材料マップを開発。材料の構造類似性を視覚的に表現し、未知の高性能材料を迅速に抽出することが可能になりました。</p>
-              <p><a href="https://pubs.aip.org/aip/aml/article/3/3/036104/3355901/" target="_blank" rel="noopener noreferrer">論文詳細はこちら</a></p>
+              <p>Associate Professor Hashimoto and research team published a paper on creating "materials maps" using AI in the international journal APL Machine Learning.</p>
+              <p>This research developed a materials map integrating experimental and theoretical calculation data using message-passing graph neural networks. The map visually represents structural similarity of materials, enabling rapid extraction of unknown high-performance materials.</p>
+              <p><a href="https://pubs.aip.org/aip/aml/article/3/3/036104/3355901/" target="_blank" rel="noopener noreferrer">View Paper Details</a></p>
             </div>
           </article>
 
           <article class="news-item">
             <div class="news-header">
-              <div class="news-date">2024年12月11日</div>
-              <h4 class="news-title">Robot Innovation Week 2024にて講演</h4>
+              <div class="news-date">December 11, 2024</div>
+              <h3 class="news-title">Presentation at Robot Innovation Week 2024</h3>
             </div>
             <div class="news-content">
-              <p>橋本特任准教授がTechShare社の招待により、ロボットアームを使った実験自動化に関する講演を行いました。</p>
-              <p>講演では、研究室で開発している実験自動化システムの実例や、低コストで実現可能な自動化手法について紹介しました。</p>
+              <p>Associate Professor Hashimoto gave a presentation on experimental automation using robotic arms, invited by TechShare Inc.</p>
+              <p>The presentation introduced examples of experimental automation systems developed in our laboratory and low-cost automation methods.</p>
             </div>
           </article>
 
           <article class="news-item">
             <div class="news-header">
-              <div class="news-date">2024年8月4日</div>
-              <h4 class="news-title">設立記念シンポジウムを開催</h4>
+              <div class="news-date">August 4, 2024</div>
+              <h3 class="news-title">Inaugural Symposium Held</h3>
             </div>
             <div class="news-content">
-              <p>学際科学フロンティア研究所内寄附研究部門設立記念シンポジウムを開催しました。</p>
-              <p>シンポジウムでは、本研究部門の設立趣旨や今後の研究方針について発表を行い、材料プロセスデータ科学という新しい学際的分野の創成に向けた議論を交わしました。</p>
+              <p>We held an inaugural symposium for the Endowed Research Division at FRIS.</p>
+              <p>The symposium presented the establishment purpose and future research direction of this division, discussing the creation of materials process data science as a new interdisciplinary field.</p>
             </div>
           </article>
         </div>
@@ -729,30 +699,30 @@
     <!-- Location & Access Section -->
     <section class="location-section">
       <div class="container">
-        <h3 class="section-title">所在地・アクセス</h3>
+        <h2 class="section-title">Location & Access</h2>
         <div class="location-grid">
           <div class="location-card">
-            <h4>📍 所在地・連絡先</h4>
+            <h3>📍 Location & Contact</h3>
             <div class="info-item">
-              <span class="info-label">所在地：</span><br>
-              東北大学学際科学フロンティア研究所<br>
-              〒980-8578 宮城県仙台市青葉区荒巻字青葉6-3
+              <span class="info-label">Address:</span><br>
+              Frontier Research Institute for Interdisciplinary Sciences, Tohoku University<br>
+              6-3 Aramaki Aza Aoba, Aoba-ku, Sendai, Miyagi 980-8578, Japan
             </div>
             <div class="info-item">
-              <span class="info-label">Tel：</span>022-795-5755
+              <span class="info-label">Tel:</span> +81-22-795-5755
             </div>
             <div class="info-item">
-              <span class="info-label">Fax：</span>022-795-5756
+              <span class="info-label">Fax:</span> +81-22-795-5756
             </div>
 
             <div class="access-grid">
               <div class="access-item">
-                <h5>🚇 地下鉄</h5>
-                <p>青葉山駅（北出口）より徒歩4分</p>
+                <h4>🚇 By Subway</h4>
+                <p>4-minute walk from Aobayama Station (North Exit)</p>
               </div>
               <div class="access-item">
-                <h5>🚖 タクシー</h5>
-                <p>仙台駅より約15分（約2,000円）</p>
+                <h4>🚖 By Taxi</h4>
+                <p>15 minutes from Sendai Station (approx. 2,000 yen)</p>
               </div>
             </div>
           </div>
@@ -763,7 +733,7 @@
 
   <footer>
     <div class="container">
-      <p>&copy; 2025 橋本佑介 | 東北大学 学際科学フロンティア研究所</p>
+      <p>&copy; 2025 Tohoku University FRIS | Endowed Research Division: Nanomaterial Process Data Science</p>
       <p>
         <strong>Email:</strong> <a href="mailto:yusuke.hashimoto.b8@tohoku.ac.jp">yusuke.hashimoto.b8@tohoku.ac.jp</a>
       </p>
@@ -771,12 +741,12 @@
   </footer>
 
   <script>
-    // ページ読み込み時にトップへスクロール
+    // Scroll to top on page load
     window.addEventListener('load', function() {
       window.scrollTo(0, 0);
     });
 
-    // ブラウザの戻る/進むでも機能させる
+    // Works with browser back/forward navigation
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
     }
