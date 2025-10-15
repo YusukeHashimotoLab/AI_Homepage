@@ -14,7 +14,8 @@ prerequisites: ["基礎化学", "基礎物理"]
 version: "1.2"
 created_at: "2025-10-16"
 updated_at: "2025-10-16"
-status: "ready_for_publication"
+status: "published"
+publication_date: "2025-10-16"
 review_scores:
   phase3: 81.5
   phase7: 92.5
@@ -435,3 +436,7 @@ MIについてさらに学びたい方は、以下のトピックに進むこと
   - 参考文献[8]の出版年を修正（2023→2019）
   - Phase 7レビュースコア: 92.5/100（承認）
   - ステータス更新: under_review → ready_for_publication
+- 2025-10-16: Phase 9 公式出版（v1.2）
+  - ステータス更新: ready_for_publication → published
+  - 公式出版日: 2025-10-16
+  - 9フェーズワークフロー完了
