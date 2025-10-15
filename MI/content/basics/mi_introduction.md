@@ -11,12 +11,13 @@ learning_objectives:
   - 実際の応用例を通じてMIの可能性を理解する
 topics: ["materials-informatics", "machine-learning", "data-driven-materials"]
 prerequisites: ["基礎化学", "基礎物理"]
-version: "1.1"
+version: "1.2"
 created_at: "2025-10-16"
 updated_at: "2025-10-16"
-status: "under_review"
+status: "ready_for_publication"
 review_scores:
   phase3: 81.5
+  phase7: 92.5
 ---
 
 # マテリアルズ・インフォマティクス（MI）入門
@@ -399,7 +400,7 @@ MIについてさらに学びたい方は、以下のトピックに進むこと
    DOI: [10.1002/aenm.201903242](https://doi.org/10.1002/aenm.201903242)
    *エネルギー材料における機械学習の批判的レビュー。電池材料の予測モデル構築手法を詳説。*
 
-8. Huang, W., Martin, P., & Zhuang, H. L. (2023). "Machine-learning phase prediction of high-entropy alloys." *Acta Materialia*, 169, 225-236.
+8. Huang, W., Martin, P., & Zhuang, H. L. (2019). "Machine-learning phase prediction of high-entropy alloys." *Acta Materialia*, 169, 225-236.
    DOI: [10.1016/j.actamat.2019.03.012](https://doi.org/10.1016/j.actamat.2019.03.012)
    *機械学習による高エントロピー合金の相予測。構造材料開発への応用例を示す。*
 
@@ -430,3 +431,7 @@ MIについてさらに学びたい方は、以下のトピックに進むこと
   - 最新レビュー論文3本を追加（2019-2024年）
   - 各参考文献に日本語の簡潔な説明を追加
   - Phase 3レビュースコア: 81.5/100
+- 2025-10-16: Phase 7レビュー後の最終修正（v1.2）
+  - 参考文献[8]の出版年を修正（2023→2019）
+  - Phase 7レビュースコア: 92.5/100（承認）
+  - ステータス更新: under_review → ready_for_publication
