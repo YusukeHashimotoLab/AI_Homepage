@@ -108,6 +108,36 @@
       background: #3b82f6;
     }
 
+    .header-top {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      position: relative;
+    }
+
+    .lang-switcher-header {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .lang-switcher-header:hover {
+        background: rgba(255,255,255,0.1);
+      }
+    }
+
     /* ========================================
        Page Header
        ======================================== */
@@ -385,8 +415,8 @@
       }
 
       .header-content {
-        flex-direction: row;
-        justify-content: space-between;
+        flex-direction: column;
+        align-items: center;
       }
 
       header h1 {
@@ -450,7 +480,10 @@
   <header>
     <div class="container">
       <div class="header-content">
-        <h1><a href="index.html" style="color: inherit;">Yusuke Hashimoto, PhD</a></h1>
+        <div class="header-top">
+          <h1><a href="index.html" style="color: inherit;">Yusuke Hashimoto, PhD</a></h1>
+          <a href="../jp/research.html" class="lang-switcher-header">日本語</a>
+        </div>
         <nav role="navigation" aria-label="Main navigation">
           <a href="index.html">Home</a>
           <a href="research.html" aria-current="page">Research</a>
