@@ -126,15 +126,24 @@
   <script>
     // Language detection and auto-redirect
     (function() {
+      // Get base path (works for both root site and project site)
+      const basePath = window.location.pathname.replace(/index\.html$/, '');
+      const jpUrl = basePath + 'jp/index.html';
+      const enUrl = basePath + 'en/index.html';
+
+      // Update button hrefs with correct paths
+      document.getElementById('ja-btn').href = jpUrl;
+      document.getElementById('en-btn').href = enUrl;
+
       const userLang = navigator.language || navigator.userLanguage;
       const isJapanese = userLang.toLowerCase().startsWith('ja');
 
       // Set timeout for auto-redirect
       const redirectTimeout = setTimeout(function() {
         if (isJapanese) {
-          window.location.href = 'jp/index.html';
+          window.location.href = jpUrl;
         } else {
-          window.location.href = 'en/index.html';
+          window.location.href = enUrl;
         }
       }, 2000); // Redirect after 2 seconds
 
