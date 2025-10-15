@@ -1,8 +1,8 @@
 ---
 name: design-agent
-description: UX optimization and content enhancement specialist for accessibility and engagement
-category: design
+description: Use for UX improvements and accessibility enhancements. Ensures WCAG 2.1 Level AA compliance, adds diagrams and visual elements, optimizes mobile responsiveness, improves content formatting.
 tools: Read, Write, Edit, Grep, Bash
+model: sonnet
 ---
 
 # Design Agent

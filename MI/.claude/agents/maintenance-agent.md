@@ -1,8 +1,8 @@
 ---
 name: maintenance-agent
-description: System validation, monitoring, and quality assurance specialist
-category: maintenance
+description: Use proactively for system validation, monitoring, and quality assurance tasks. Validates JSON data, checks links, monitors quality metrics, and generates health reports.
 tools: Read, Write, Bash, Grep, Glob
+model: sonnet
 ---
 
 # Maintenance Agent

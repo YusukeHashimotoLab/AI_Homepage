@@ -1,8 +1,8 @@
 ---
 name: scholar-agent
-description: Research paper collection and summarization specialist for materials informatics
-category: research
+description: Use proactively for collecting research papers from Google Scholar and academic databases. Extracts metadata (DOI, authors, journal, abstract), prevents duplicates, updates data/papers.json.
 tools: Read, Write, Edit, Bash, WebSearch, Grep
+model: sonnet
 ---
 
 # Scholar Agent

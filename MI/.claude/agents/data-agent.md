@@ -1,8 +1,8 @@
 ---
 name: data-agent
-description: Dataset and tool management specialist for materials informatics resources
-category: data-management
+description: Use for managing datasets, tools, and tutorials in JSON files (data/datasets.json, data/tools.json, data/tutorials.json). Validates data integrity, checks URLs, maintains metadata consistency.
 tools: Read, Write, Edit, Bash, WebSearch, Grep
+model: sonnet
 ---
 
 # Data Agent

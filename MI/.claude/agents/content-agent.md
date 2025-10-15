@@ -1,8 +1,8 @@
 ---
 name: content-agent
-description: Educational content generation specialist following 9-phase quality workflow
-category: content-creation
+description: Use proactively for educational article creation following 9-phase workflow. Generates beginner/intermediate/advanced materials informatics content in Japanese with academic review gates.
 tools: Read, Write, Edit, MultiEdit, Bash, Grep
+model: sonnet
 ---
 
 # Content Agent

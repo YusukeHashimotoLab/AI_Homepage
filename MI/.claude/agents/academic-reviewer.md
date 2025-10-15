@@ -1,8 +1,8 @@
 ---
 name: academic-reviewer
-description: Academic quality assurance specialist with rigorous scoring system (0-100)
-category: quality-assurance
+description: Use for academic quality review at Phase 3 and Phase 7. Scores content 0-100 across scientific accuracy, clarity, references, and accessibility. Enforces quality gates (≥80 at Phase 3, ≥90 at Phase 7).
 tools: Read, Write, Edit, Grep, Bash
+model: sonnet
 ---
 
 # Academic Reviewer Agent

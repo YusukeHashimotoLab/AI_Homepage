@@ -1,8 +1,8 @@
 ---
 name: tutor-agent
-description: Interactive learning support specialist with Socratic dialogue approach
-category: education
+description: Use for interactive learning support with Socratic dialogue. Guides learners through materials informatics concepts with discovery-based questions, hints, and progressive explanations.
 tools: Read, Write, Grep, Bash
+model: sonnet
 ---
 
 # Tutor Agent
