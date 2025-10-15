@@ -1,0 +1,323 @@
+/*
+ * Components
+ * Reusable UI components
+ */
+
+/* ========================================
+   Header & Navigation
+   ======================================== */
+
+header {
+  background: var(--color-primary-900);
+  color: var(--color-neutral-50);
+  padding: var(--spacing-6) 0;
+  border-bottom: 3px solid var(--color-primary-500);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  box-shadow: var(--shadow-base);
+}
+
+.header-content {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--spacing-6);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-4);
+}
+
+header h1 {
+  font-size: var(--font-size-2xl);
+  margin-bottom: 0;
+  font-weight: var(--font-weight-normal);
+  letter-spacing: 0.5px;
+  color: var(--color-neutral-50);
+}
+
+/* Desktop Navigation */
+nav {
+  display: flex;
+  gap: var(--spacing-4);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+nav a {
+  color: var(--color-neutral-200);
+  text-decoration: none;
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-base);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.3px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+nav a[aria-current="page"] {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--color-neutral-50);
+}
+
+/* Hover only on devices with hover capability */
+@media (hover: hover) and (pointer: fine) {
+  nav a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-neutral-50);
+  }
+}
+
+nav a:focus-visible {
+  outline: 2px solid var(--color-neutral-50);
+  outline-offset: 2px;
+}
+
+/* Mobile Bottom Navigation */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--color-neutral-50);
+  border-top: 1px solid var(--color-neutral-300);
+  display: none;
+  z-index: var(--z-fixed);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.bottom-nav ul {
+  display: flex;
+  justify-content: space-around;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.bottom-nav a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-2);
+  min-width: 60px;
+  min-height: 56px;
+  color: var(--color-neutral-700);
+  text-decoration: none;
+  font-size: var(--font-size-xs);
+  transition: color var(--transition-fast);
+  justify-content: center;
+}
+
+.bottom-nav a[aria-current="page"] {
+  color: var(--color-primary-700);
+  font-weight: var(--font-weight-semibold);
+}
+
+.bottom-nav .nav-icon {
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--spacing-1);
+}
+
+/* ========================================
+   Buttons
+   ======================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-3) var(--spacing-6);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-base);
+  font-size: var(--font-size-base);
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.btn-primary {
+  background: var(--color-primary-700);
+  color: var(--color-neutral-50);
+  border-color: var(--color-primary-700);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover {
+    background: var(--color-primary-500);
+    border-color: var(--color-primary-500);
+  }
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid var(--color-primary-700);
+  outline-offset: 2px;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--color-primary-700);
+  border-color: var(--color-primary-700);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn-secondary:hover {
+    background: var(--color-primary-700);
+    color: var(--color-neutral-50);
+  }
+}
+
+.btn-secondary:focus-visible {
+  outline: 2px solid var(--color-primary-700);
+  outline-offset: 2px;
+}
+
+/* ========================================
+   Cards
+   ======================================== */
+
+.card {
+  background: var(--color-neutral-50);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-base);
+  padding: var(--spacing-6);
+  box-shadow: var(--shadow-base);
+  transition: all var(--transition-base);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+  }
+}
+
+.card-title {
+  font-size: var(--font-size-xl);
+  color: var(--color-primary-900);
+  margin-bottom: var(--spacing-3);
+  font-weight: var(--font-weight-semibold);
+}
+
+.card-content {
+  color: var(--color-neutral-700);
+  line-height: var(--line-height-relaxed);
+}
+
+/* ========================================
+   Forms
+   ======================================== */
+
+label {
+  display: block;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-neutral-900);
+  margin-bottom: var(--spacing-2);
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  padding: var(--spacing-3);
+  border: 2px solid var(--color-neutral-300);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-base);
+  font-family: inherit;
+  transition: border-color var(--transition-base);
+  background: var(--color-neutral-50);
+  color: var(--color-neutral-900);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-accent-500);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+input[required],
+textarea[required] {
+  border-left: 4px solid var(--color-error);
+}
+
+input[required]:focus,
+textarea[required]:focus {
+  border-left: 4px solid var(--color-success);
+}
+
+/* ========================================
+   Footer
+   ======================================== */
+
+footer {
+  background: var(--color-primary-900);
+  color: var(--color-neutral-200);
+  text-align: center;
+  padding: var(--spacing-12) var(--spacing-6);
+  margin-top: var(--spacing-20);
+  border-top: 3px solid var(--color-primary-500);
+}
+
+footer p {
+  margin-bottom: var(--spacing-4);
+}
+
+footer address {
+  font-style: normal;
+}
+
+footer a {
+  color: var(--color-neutral-300);
+  text-decoration: none;
+  transition: color var(--transition-base);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  footer a:hover {
+    color: var(--color-neutral-50);
+    text-decoration: underline;
+  }
+}
+
+/* ========================================
+   Utility Classes
+   ======================================== */
+
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.mb-0 { margin-bottom: 0; }
+.mb-2 { margin-bottom: var(--spacing-2); }
+.mb-4 { margin-bottom: var(--spacing-4); }
+.mb-6 { margin-bottom: var(--spacing-6); }
+.mb-8 { margin-bottom: var(--spacing-8); }
+
+.mt-0 { margin-top: 0; }
+.mt-2 { margin-top: var(--spacing-2); }
+.mt-4 { margin-top: var(--spacing-4); }
+.mt-6 { margin-top: var(--spacing-6); }
+.mt-8 { margin-top: var(--spacing-8); }

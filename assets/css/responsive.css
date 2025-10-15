@@ -1,0 +1,154 @@
+/*
+ * Responsive Styles
+ * Mobile-first responsive adjustments
+ */
+
+/* ========================================
+   Mobile (Default: 0-768px)
+   ======================================== */
+
+/* Bottom navigation visible on mobile */
+@media (max-width: 768px) {
+  .bottom-nav {
+    display: block;
+  }
+
+  /* Add padding to main content to prevent overlap with bottom nav */
+  main {
+    padding-bottom: 80px;
+  }
+
+  /* Header adjustments */
+  header {
+    padding: var(--spacing-4) 0;
+  }
+
+  .header-content {
+    flex-direction: column;
+    padding: 0 var(--spacing-4);
+  }
+
+  header h1 {
+    font-size: var(--font-size-xl);
+    text-align: center;
+  }
+
+  /* Desktop navigation - simplify on mobile */
+  nav {
+    width: 100%;
+    justify-content: center;
+    gap: var(--spacing-2);
+  }
+
+  nav a {
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-sm);
+  }
+
+  /* Language switcher keeps absolute positioning on mobile */
+
+  /* Cards */
+  .card {
+    padding: var(--spacing-4);
+  }
+
+  /* Buttons */
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ========================================
+   Tablet (768px - 1024px)
+   ======================================== */
+
+@media (min-width: 768px) {
+  /* Hide bottom navigation on tablet and up */
+  .bottom-nav {
+    display: none;
+  }
+
+  /* Header */
+  .header-content {
+    flex-direction: row;
+  }
+
+  header h1 {
+    font-size: var(--font-size-2xl);
+  }
+
+  /* Navigation */
+  nav {
+    gap: var(--spacing-3);
+  }
+
+  nav a {
+    padding: var(--spacing-2) var(--spacing-4);
+  }
+}
+
+/* ========================================
+   Desktop (1024px+)
+   ======================================== */
+
+@media (min-width: 1024px) {
+  header h1 {
+    font-size: var(--font-size-3xl);
+  }
+
+  nav {
+    gap: var(--spacing-4);
+  }
+
+  nav a {
+    padding: var(--spacing-3) var(--spacing-5);
+  }
+
+  .container {
+    padding: 0 var(--spacing-8);
+  }
+}
+
+/* ========================================
+   Wide Desktop (1440px+)
+   ======================================== */
+
+@media (min-width: 1440px) {
+  .container {
+    padding: 0 var(--spacing-12);
+  }
+}
+
+/* ========================================
+   Print Styles
+   ======================================== */
+
+@media print {
+  header,
+  nav,
+  .bottom-nav {
+    display: none;
+  }
+
+  body {
+    font-size: 12pt;
+    line-height: 1.5;
+    color: #000;
+    background: #fff;
+  }
+
+  a {
+    color: #000;
+    text-decoration: underline;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+
+  img {
+    max-width: 100%;
+    page-break-inside: avoid;
+  }
+}

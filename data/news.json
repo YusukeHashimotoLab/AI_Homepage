@@ -1,0 +1,29 @@
+[
+  {
+    "id": "news001",
+    "date": "2025-10-14",
+    "title": "新しいホームページを公開しました",
+    "title_en": "New Homepage Launched",
+    "content": "研究室の新しいホームページを公開しました。モバイル対応を強化し、より見やすく使いやすいデザインになりました。",
+    "content_en": "We have launched our new laboratory homepage. The design has been enhanced with improved mobile support for better visibility and usability.",
+    "category": "announcement"
+  },
+  {
+    "id": "news002",
+    "date": "2024-12-15",
+    "title": "Nature Materials誌に論文が掲載されました",
+    "title_en": "Paper Published in Nature Materials",
+    "content": "機械学習を用いた材料探索に関する包括的レビュー論文がNature Materials誌に掲載されました。",
+    "content_en": "Our comprehensive review paper on machine learning for materials discovery has been published in Nature Materials.",
+    "category": "publication"
+  },
+  {
+    "id": "news003",
+    "date": "2024-09-01",
+    "title": "国際シンポジウムで招待講演を行いました",
+    "title_en": "Invited Talk at International Symposium",
+    "content": "Materials Informatics 2024国際シンポジウムにて、マテリアルズインフォマティクスの最新研究について招待講演を行いました。",
+    "content_en": "Delivered an invited talk on the latest research in materials informatics at the Materials Informatics 2024 International Symposium.",
+    "category": "talk"
+  }
+]

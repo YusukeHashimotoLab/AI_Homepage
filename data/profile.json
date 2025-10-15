@@ -1,0 +1,51 @@
+{
+  "name": "橋本 佑介",
+  "name_en": "Yusuke Hashimoto",
+  "title": "特任准教授",
+  "title_en": "Specially Appointed Associate Professor",
+  "affiliation": "東北大学 学際科学フロンティア研究所",
+  "affiliation_en": "Frontier Research Institute for Interdisciplinary Sciences, Tohoku University",
+  "address": "〒980-8578 宮城県仙台市青葉区荒巻字青葉6-3",
+  "address_en": "6-3 Aoba, Aramaki, Aoba-ku, Sendai, Miyagi 980-8578, Japan",
+  "email": "yusuke.hashimoto.b8@tohoku.ac.jp",
+  "joined": "2024-01",
+  "research_interests": [
+    "マテリアルズインフォマティクス",
+    "スピントロニクス",
+    "超高速磁気光学分光",
+    "研究DX",
+    "IoTシステム開発"
+  ],
+  "research_interests_en": [
+    "Materials Informatics",
+    "Spintronics",
+    "Ultrafast Magneto-Optical Spectroscopy",
+    "Research DX",
+    "IoT System Development"
+  ],
+  "education": [
+    {
+      "degree": "博士（理学）",
+      "degree_en": "PhD in Science",
+      "institution": "東京大学",
+      "institution_en": "The University of Tokyo",
+      "year": 2020
+    }
+  ],
+  "experience": [
+    {
+      "position": "特任准教授",
+      "position_en": "Specially Appointed Associate Professor",
+      "institution": "東北大学 学際科学フロンティア研究所",
+      "institution_en": "Frontier Research Institute for Interdisciplinary Sciences, Tohoku University",
+      "period": "2024-present"
+    },
+    {
+      "position": "ポストドクトラル研究員",
+      "position_en": "Postdoctoral Researcher",
+      "institution": "Radboud University (オランダ)",
+      "institution_en": "Radboud University (Netherlands)",
+      "period": "2020-2023"
+    }
+  ]
+}
