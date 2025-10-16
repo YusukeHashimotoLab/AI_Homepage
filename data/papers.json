@@ -1,44 +1,16 @@
 [
   {
     "id": "paper001",
-    "title": "Machine Learning for Materials Discovery: A Comprehensive Review",
-    "title_jp": "材料探索のための機械学習：包括的レビュー",
-    "authors": ["Hashimoto Y.", "Smith J.", "Tanaka K."],
-    "journal": "Nature Materials",
-    "year": 2024,
-    "volume": "23",
-    "pages": "123-145",
-    "doi": "10.1038/nmat.2024.001",
-    "url": "https://doi.org/10.1038/nmat.2024.001",
-    "citations": 42,
-    "tags": ["machine-learning", "materials-informatics", "review"]
-  },
-  {
-    "id": "paper002",
-    "title": "Ultrafast Spin Dynamics in Magnetic Thin Films",
-    "title_jp": "磁性薄膜における超高速スピンダイナミクス",
-    "authors": ["Hashimoto Y.", "Yamamoto H.", "Johnson A."],
-    "journal": "Physical Review Letters",
-    "year": 2023,
-    "volume": "131",
-    "pages": "087201",
-    "doi": "10.1103/PhysRevLett.131.087201",
-    "url": "https://doi.org/10.1103/PhysRevLett.131.087201",
-    "citations": 28,
-    "tags": ["spintronics", "ultrafast-spectroscopy", "magnetism"]
-  },
-  {
-    "id": "paper003",
-    "title": "IoT-based Research DX Platform for Laboratory Management",
-    "title_jp": "研究室管理のためのIoTベース研究DXプラットフォーム",
-    "authors": ["Hashimoto Y.", "Suzuki T.", "Lee M."],
-    "journal": "Scientific Reports",
-    "year": 2023,
-    "volume": "13",
-    "pages": "12345",
-    "doi": "10.1038/s41598-023-12345-6",
-    "url": "https://doi.org/10.1038/s41598-023-12345-6",
-    "citations": 15,
-    "tags": ["research-dx", "iot", "laboratory-automation"]
+    "title": "All-optical observation and reconstruction of spin wave dispersion",
+    "title_jp": "スピン波分散の全光学的観測と再構築",
+    "authors": ["Y. Hashimoto", "S. Daimon", "R. Iguchi", "Y. Oikawa", "K. Shen", "K. Sato", "D. Bossini", "Y. Tabuchi", "T. Satoh", "B. Hillebrands", "G. E. W. Bauer", "T. H. Johansen", "A. Kirilyuk", "T. Rasing", "E. Saitoh"],
+    "journal": "Nature Communications",
+    "year": 2017,
+    "volume": "8",
+    "pages": "15859",
+    "doi": "10.1038/ncomms15859",
+    "url": "https://doi.org/10.1038/ncomms15859",
+    "citations": 67,
+    "tags": ["spintronics", "spin-waves", "magneto-optics", "ultrafast-spectroscopy"]
   }
 ]
