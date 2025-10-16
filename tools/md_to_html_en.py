@@ -407,8 +407,8 @@ def main():
     base_dir = Path("/Users/yusukehashimoto/Documents/pycharm/AI_Homepage")
     en_dir = base_dir / "wp" / "knowledge" / "en"
 
-    # All three series
-    series = ["mi-introduction", "nm-introduction", "pi-introduction"]
+    # All four series
+    series = ["mi-introduction", "nm-introduction", "pi-introduction", "mlp-introduction"]
 
     total_converted = 0
 

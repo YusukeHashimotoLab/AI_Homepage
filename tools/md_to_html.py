@@ -401,34 +401,49 @@ def convert_markdown_to_html(md_file: Path, output_dir: Path) -> None:
 
 
 def main():
-    """Convert all markdown files in wp/knowledge/mi-introduction/"""
+    """Convert all Japanese markdown files in all four series."""
 
-    # Paths
+    # Base paths
     base_dir = Path("/Users/yusukehashimoto/Documents/pycharm/AI_Homepage")
-    md_dir = base_dir / "wp" / "knowledge" / "mi-introduction"
-    output_dir = md_dir  # Output to same directory
+    jp_dir = base_dir / "wp" / "knowledge" / "jp"
 
-    # Find all markdown files
-    md_files = sorted(md_dir.glob("*.md"))
+    # All four series
+    series = ["mi-introduction", "nm-introduction", "pi-introduction", "mlp-introduction"]
 
-    if not md_files:
-        print("❌ No markdown files found in", md_dir)
-        return
+    total_converted = 0
 
-    print(f"🔄 Converting {len(md_files)} markdown files to HTML...")
-    print(f"📁 Source: {md_dir}")
-    print(f"📁 Output: {output_dir}\n")
+    print("🔄 Converting Japanese Markdown files to HTML...")
+    print(f"📁 Base directory: {jp_dir}\n")
 
-    # Convert each file
-    for md_file in md_files:
-        try:
-            convert_markdown_to_html(md_file, output_dir)
-        except Exception as e:
-            print(f"❌ Error converting {md_file.name}: {e}")
+    for series_name in series:
+        series_dir = jp_dir / series_name
 
-    print(f"\n✅ Conversion complete! {len(md_files)} files processed.")
+        if not series_dir.exists():
+            print(f"⚠️  Directory not found: {series_dir}")
+            continue
+
+        # Find all markdown files
+        md_files = sorted(series_dir.glob("*.md"))
+
+        if not md_files:
+            print(f"⚠️  No markdown files found in {series_name}")
+            continue
+
+        print(f"\n📚 Processing {series_name}:")
+        print(f"   Found {len(md_files)} markdown file(s)")
+
+        # Convert each file
+        for md_file in md_files:
+            try:
+                convert_markdown_to_html(md_file, series_dir)
+                total_converted += 1
+            except Exception as e:
+                print(f"❌ Error converting {md_file.name}: {e}")
+
+    print(f"\n\n✅ Conversion complete! {total_converted} file(s) processed.")
     print(f"\n🌐 HTML files are now ready for GitHub Pages:")
-    print(f"   https://yusukehashimotolab.github.io/wp/knowledge/mi-introduction/index.html")
+    for series_name in series:
+        print(f"   https://yusukehashimotolab.github.io/wp/knowledge/jp/{series_name}/index.html")
 
 
 if __name__ == "__main__":
