@@ -3,8 +3,8 @@
 # Site settings
 title: "MI Knowledge Hub"
 description: "マテリアルズ・インフォマティクス（Materials Informatics）の包括的な学習プラットフォーム"
-baseurl: "/MI"
-url: "https://yourusername.github.io"  # ユーザー名に置き換えてください
+baseurl: "/AI_Homepage/MI"
+url: "https://yusukehashimotolab.github.io"
 
 # Language
 lang: ja
