@@ -81,4 +81,7 @@ temp/
 data/
 claudedocs/
 MI/
-/private_data
+private_data/
+tools/
+MI/
+data/
