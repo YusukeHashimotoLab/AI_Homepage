@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第4章：データ管理とポストプロセス（FireWorks, AiiDA） - AI Terakoya</title>
+
+    <style>
+        :root {
+            --color-primary: #2c3e50;
+            --color-primary-dark: #1a252f;
+            --color-accent: #7b2cbf;
+            --color-accent-light: #9d4edd;
+            --color-text: #2d3748;
+            --color-text-light: #4a5568;
+            --color-bg: #ffffff;
+            --color-bg-alt: #f7fafc;
+            --color-border: #e2e8f0;
+            --color-code-bg: #f8f9fa;
+            --color-link: #3182ce;
+            --color-link-hover: #2c5aa0;
+
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+
+            --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+
+            --border-radius: 8px;
+            --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            line-height: 1.7;
+            color: var(--color-text);
+            background-color: var(--color-bg);
+            font-size: 16px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+            color: white;
+            padding: var(--spacing-xl) var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--box-shadow);
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            font-weight: 400;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md) var(--spacing-xl);
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            color: var(--color-primary);
+            margin-top: var(--spacing-xl);
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-xs);
+            border-bottom: 3px solid var(--color-accent);
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            color: var(--color-primary);
+            margin-top: var(--spacing-lg);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            color: var(--color-primary-dark);
+            margin-top: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        p {
+            margin-bottom: var(--spacing-md);
+            color: var(--color-text);
+        }
+
+        a {
+            color: var(--color-link);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: var(--color-link-hover);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-left: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+        }
+
+        li {
+            margin-bottom: var(--spacing-xs);
+            color: var(--color-text);
+        }
+
+        pre {
+            background-color: var(--color-code-bg);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            overflow-x: auto;
+            margin-bottom: var(--spacing-md);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        code {
+            font-family: var(--font-mono);
+            font-size: 0.9em;
+            background-color: var(--color-code-bg);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: var(--spacing-md);
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            border: 1px solid var(--color-border);
+            padding: var(--spacing-sm);
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--color-bg-alt);
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        blockquote {
+            border-left: 4px solid var(--color-accent);
+            padding-left: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+            color: var(--color-text-light);
+            font-style: italic;
+            background-color: var(--color-bg-alt);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        .mermaid {
+            text-align: center;
+            margin: var(--spacing-lg) 0;
+            background-color: var(--color-bg-alt);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        details {
+            background-color: var(--color-bg-alt);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--color-primary);
+            user-select: none;
+            padding: var(--spacing-xs);
+            margin: calc(-1 * var(--spacing-md));
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        summary:hover {
+            background-color: rgba(123, 44, 191, 0.1);
+        }
+
+        details[open] summary {
+            margin-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .learning-objectives {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--color-accent);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .learning-objectives h2 {
+            margin-top: 0;
+            border-bottom: none;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: var(--spacing-md);
+            margin: var(--spacing-xl) 0;
+            padding-top: var(--spacing-lg);
+            border-top: 2px solid var(--color-border);
+        }
+
+        .nav-button {
+            flex: 1;
+            padding: var(--spacing-md);
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+            color: white;
+            border-radius: var(--border-radius);
+            text-align: center;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: var(--box-shadow);
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            text-decoration: none;
+        }
+
+        footer {
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-lg) var(--spacing-md);
+            background-color: var(--color-bg-alt);
+            border-top: 1px solid var(--color-border);
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            h3 {
+                font-size: 1.2rem;
+            }
+
+            .meta {
+                font-size: 0.85rem;
+            }
+
+            .navigation {
+                flex-direction: column;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: var(--spacing-xs);
+            }
+        }
+    </style>
+
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>第4章：データ管理とポストプロセス（FireWorks, AiiDA）</h1>
+            
+            <div class="meta">
+                <span class="meta-item">📖 読了時間: 20-25分</span>
+<span class="meta-item">📊 難易度: 上級</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1>第4章：データ管理とポストプロセス（FireWorks, AiiDA）</h1>
+
+<h2>学習目標</h2>
+
+<p>この章を読むことで、以下を習得できます：</p>
+
+<ul>
+<li>✅ FireWorksで複雑なワークフローを構築できる</li>
+<li>✅ Atomateの標準ワークフローを使いこなせる</li>
+<li>✅ AiiDAでデータプロビナンスを記録できる</li>
+<li>✅ 計算結果を構造化データベースに保存できる</li>
+<li>✅ 結果をNOMADに公開できる</li>
+</ul>
+
+<p>---</p>
+
+<h2>4.1 FireWorksによるワークフロー管理</h2>
+
+<h3>FireWorksのアーキテクチャ</h3>
+
+<pre><code class="language-mermaid">graph TD
+<p>A[Firework] -->|連鎖| B[Workflow]</p>
+<p>B --> C[LaunchPad<br/>MongoDB]</p>
+<p>C -->|タスク割当| D[Rocket Launcher]</p>
+<p>D -->|実行| E[計算ノード]</p>
+<p>E -->|結果| C</p>
+
+<p>style C fill:#4ecdc4</p>
+<p>style A fill:#ffe66d</p>
+<p>style B fill:#ff6b6b</p>
+</code></pre>
+
+<strong>主要コンポーネント</strong>:
+<ul>
+<li><strong>Firework</strong>: 単一タスク（1つのDFT計算）</li>
+<li><strong>Workflow</strong>: 複数Fireworkの連鎖</li>
+<li><strong>LaunchPad</strong>: データベース（MongoDB）</li>
+<li><strong>Rocket</strong>: タスク実行エンジン</li>
+</ul>
+
+<h3>インストールと設定</h3>
+
+<pre><code class="language-bash"><h1>FireWorksインストール</h1>
+<p>pip install fireworks</p>
+
+<h1>MongoDBインストール（macOS）</h1>
+<p>brew install mongodb-community</p>
+
+<h1>MongoDB起動</h1>
+<p>brew services start mongodb-community</p>
+
+<h1>FireWorks設定</h1>
+<p>lpad init</p>
+<h1>→ my_launchpad.yamlが生成される</h1>
+</code></pre>
+
+<strong>my_launchpad.yaml</strong>:
+<pre><code class="language-yaml">host: localhost
+<p>port: 27017</p>
+<p>name: fireworks</p>
+<p>username: null</p>
+<p>password: null</p>
+</code></pre>
+
+<h3>基本的なFirework作成</h3>
+
+<pre><code class="language-python">from fireworks import Firework, LaunchPad, ScriptTask
+<p>from fireworks.core.rocket_launcher import rapidfire</p>
+
+<h1>LaunchPad（データベース）に接続</h1>
+<p>launchpad = LaunchPad(host='localhost', port=27017, name='fireworks')</p>
+
+<h1>Task定義（VASP実行）</h1>
+<p>vasp_task = ScriptTask.from_str(</p>
+<p>'mpirun -np 48 vasp_std',</p>
+<p>use_shell=True</p>
+<p>)</p>
+
+<h1>Firework作成</h1>
+<p>fw = Firework(</p>
+<p>vasp_task,</p>
+<p>name='VASP relaxation',</p>
+<p>spec={'_category': 'VASP'}</p>
+<p>)</p>
+
+<h1>LaunchPadに追加</h1>
+<p>launchpad.add_wf(fw)</p>
+
+<h1>実行</h1>
+<p>rapidfire(launchpad)</p>
+</code></pre>
+
+<h3>Atomateの標準ワークフロー</h3>
+
+<strong>Atomate</strong>は、Materials Projectで使用されている標準ワークフローライブラリです。
+
+<pre><code class="language-python">from atomate.vasp.workflows.base.core import get_wf
+<p>from pymatgen.core import Structure</p>
+
+<h1>構造読み込み</h1>
+<p>structure = Structure.from_file("LiCoO2.cif")</p>
+
+<h1>標準ワークフロー取得</h1>
+<h1>optimize_structure_and_properties:</h1>
+<h1>  1. 構造最適化</h1>
+<h1>  2. 静的計算</h1>
+<h1>  3. バンド構造</h1>
+<h1>  4. DOS計算</h1>
+<p>wf = get_wf(</p>
+<p>structure,</p>
+<p>"optimize_structure_and_properties.yaml"</p>
+<p>)</p>
+
+<h1>LaunchPadに追加</h1>
+<p>launchpad.add_wf(wf)</p>
+
+<h1>実行</h1>
+<p>rapidfire(launchpad, nlaunches='infinite')</p>
+</code></pre>
+
+<h3>カスタムワークフロー作成</h3>
+
+<pre><code class="language-python">from fireworks import Firework, Workflow
+<p>from fireworks.core.firework import FiretaskBase</p>
+<p>from atomate.vasp.firetasks.write_inputs import WriteVaspFromIOSet</p>
+<p>from atomate.vasp.firetasks.run_calc import RunVaspCustodian</p>
+<p>from atomate.vasp.firetasks.parse_outputs import VaspToDb</p>
+<p>from pymatgen.io.vasp.sets import MPRelaxSet, MPStaticSet</p>
+
+<p>class CustomWorkflow:</p>
+<p>"""カスタムワークフロー生成"""</p>
+
+<p>@staticmethod</p>
+<p>def bandgap_workflow(structure):</p>
+<p>"""</p>
+<p>バンドギャップ計算ワークフロー</p>
+<p>1. 構造最適化 → 2. 静的計算 → 3. バンドギャップ抽出</p>
+<p>"""</p>
+<p># Firework 1: 構造最適化</p>
+<p>fw1 = Firework(</p>
+<p>[</p>
+<p>WriteVaspFromIOSet(structure=structure, vasp_input_set=MPRelaxSet),</p>
+<p>RunVaspCustodian(vasp_cmd="vasp_std"),</p>
+<p>VaspToDb(db_file="db.json", task_label="relax")</p>
+<p>],</p>
+<p>name="Structural relaxation",</p>
+<p>spec={"_category": "relax"}</p>
+<p>)</p>
+
+<p># Firework 2: 静的計算</p>
+<p>fw2 = Firework(</p>
+<p>[</p>
+<p>WriteVaspFromIOSet(structure=structure, vasp_input_set=MPStaticSet),</p>
+<p>RunVaspCustodian(vasp_cmd="vasp_std"),</p>
+<p>VaspToDb(db_file="db.json", task_label="static")</p>
+<p>],</p>
+<p>name="Static calculation",</p>
+<p>spec={"_category": "static"}</p>
+<p>)</p>
+
+<p># Firework 3: バンドギャップ抽出</p>
+<p>fw3 = Firework(</p>
+<p>[ExtractBandgapTask()],</p>
+<p>name="Extract bandgap"</p>
+<p>)</p>
+
+<p># ワークフロー構築（fw1 → fw2 → fw3）</p>
+<p>wf = Workflow(</p>
+<p>[fw1, fw2, fw3],</p>
+<p>links_dict={fw1: [fw2], fw2: [fw3]},</p>
+<p>name=f"Bandgap workflow: {structure.composition.reduced_formula}"</p>
+<p>)</p>
+
+<p>return wf</p>
+
+
+<p>class ExtractBandgapTask(FiretaskBase):</p>
+<p>"""バンドギャップ抽出タスク"""</p>
+
+<p>def run_task(self, fw_spec):</p>
+<p>from pymatgen.io.vasp.outputs import Vasprun</p>
+
+<p>vasprun = Vasprun("vasprun.xml")</p>
+<p>bandgap = vasprun.get_band_structure().get_band_gap()</p>
+
+<p>print(f"バンドギャップ: {bandgap['energy']:.3f} eV")</p>
+
+<p># 結果をデータベースに保存</p>
+<p>return {"bandgap": bandgap['energy']}</p>
+
+<h1>使用例</h1>
+<p>structure = Structure.from_file("LiCoO2.cif")</p>
+<p>wf = CustomWorkflow.bandgap_workflow(structure)</p>
+
+<p>launchpad.add_wf(wf)</p>
+<p>rapidfire(launchpad)</p>
+</code></pre>
+
+<h3>エラーハンドリングとリスタート</h3>
+
+<pre><code class="language-python">from custodian.custodian import Custodian
+<p>from custodian.vasp.handlers import VaspErrorHandler, UnconvergedErrorHandler</p>
+<p>from custodian.vasp.jobs import VaspJob</p>
+
+<h1>エラーハンドラー設定</h1>
+<p>handlers = [</p>
+<p>VaspErrorHandler(),           # 一般的なVASPエラー</p>
+<p>UnconvergedErrorHandler(),    # 収束性エラー</p>
+<p>]</p>
+
+<h1>VASPジョブ定義</h1>
+<p>jobs = [</p>
+<p>VaspJob(</p>
+<p>vasp_cmd=["mpirun", "-np", "48", "vasp_std"],</p>
+<p>output_file="vasp.out",</p>
+<p>auto_npar=False</p>
+<p>)</p>
+<p>]</p>
+
+<h1>Custodian実行（自動エラー処理）</h1>
+<p>c = Custodian(</p>
+<p>handlers=handlers,</p>
+<p>jobs=jobs,</p>
+<p>max_errors=5</p>
+<p>)</p>
+
+<p>c.run()</p>
+</code></pre>
+
+<p>---</p>
+
+<h2>4.2 AiiDAによるプロビナンス管理</h2>
+
+<h3>データプロビナンス（来歴追跡）の重要性</h3>
+
+<strong>プロビナンス</strong>とは、計算結果がどのように得られたかの完全な記録です。
+
+<strong>追跡すべき情報</strong>:
+<ul>
+<li>入力データ（構造、パラメータ）</li>
+<li>使用ソフトウェア（VASP 6.3.0等）</li>
+<li>計算環境（ノード、コア数、日時）</li>
+<li>中間結果</li>
+<li>最終結果</li>
+</ul>
+
+<h3>AiiDAインストール</h3>
+
+<pre><code class="language-bash"><h1>AiiDAインストール</h1>
+<p>pip install aiida-core aiida-vasp</p>
+
+<h1>データベース初期化</h1>
+<p>verdi quicksetup</p>
+
+<h1>動作確認</h1>
+<p>verdi status</p>
+</code></pre>
+
+<h3>AiiDAでの計算実行</h3>
+
+<pre><code class="language-python">from aiida import orm, engine
+<p>from aiida.plugins import CalculationFactory, DataFactory</p>
+
+<h1>VASP計算クラス取得</h1>
+<p>VaspCalculation = CalculationFactory('vasp.vasp')</p>
+
+<h1>データ型</h1>
+<p>StructureData = DataFactory('structure')</p>
+<p>KpointsData = DataFactory('array.kpoints')</p>
+
+<h1>構造データ作成</h1>
+<p>structure = StructureData()</p>
+<h1>（構造を設定）</h1>
+
+<h1>k-points設定</h1>
+<p>kpoints = KpointsData()</p>
+<p>kpoints.set_kpoints_mesh([8, 8, 8])</p>
+
+<h1>計算パラメータ</h1>
+<p>parameters = orm.Dict(dict={</p>
+<p>'ENCUT': 520,</p>
+<p>'EDIFF': 1e-5,</p>
+<p>'ISMEAR': 0,</p>
+<p>'SIGMA': 0.05,</p>
+<p>})</p>
+
+<h1>計算ビルダー</h1>
+<p>builder = VaspCalculation.get_builder()</p>
+<p>builder.structure = structure</p>
+<p>builder.kpoints = kpoints</p>
+<p>builder.parameters = parameters</p>
+<p>builder.code = orm.Code.get_from_string('vasp@localhost')</p>
+
+<h1>実行</h1>
+<p>calc_node = engine.submit(builder)</p>
+<p>print(f"計算ノード: {calc_node.pk}")</p>
+</code></pre>
+
+<h3>データクエリ</h3>
+
+<pre><code class="language-python">from aiida.orm import QueryBuilder
+
+<h1>すべてのVASP計算を検索</h1>
+<p>qb = QueryBuilder()</p>
+<p>qb.append(VaspCalculation, filters={'attributes.exit_status': 0})</p>
+
+<p>for calc in qb.all():</p>
+<p>print(f"PK: {calc[0].pk}, Formula: {calc[0].inputs.structure.get_formula()}")</p>
+
+<h1>バンドギャップが1.5-2.5 eVの材料を検索</h1>
+<p>qb = QueryBuilder()</p>
+<p>qb.append(VaspCalculation, tag='calc')</p>
+<p>qb.append(orm.Dict, with_incoming='calc', filters={</p>
+<p>'attributes.band_gap': {'and': [{'>=': 1.5}, {'<=': 2.5}]}</p>
+<p>})</p>
+
+<p>results = qb.all()</p>
+<p>print(f"該当する材料: {len(results)}個")</p>
+</code></pre>
+
+<p>---</p>
+
+<h2>4.3 計算データの構造化</h2>
+
+<h3>JSONスキーマ設計</h3>
+
+<pre><code class="language-python">import json
+<p>from datetime import datetime</p>
+
+<p>class MaterialsDataSchema:</p>
+<p>"""材料計算データのスキーマ"""</p>
+
+<p>@staticmethod</p>
+<p>def create_entry(material_id, formula, structure, calculation_results):</p>
+<p>"""</p>
+<p>データベースエントリを作成</p>
+
+<p>Returns:</p>
+<p>--------</p>
+<p>entry : dict</p>
+<p>構造化データ</p>
+<p>"""</p>
+<p>entry = {</p>
+<p># 識別情報</p>
+<p>"material_id": material_id,</p>
+<p>"formula": formula,</p>
+<p>"created_at": datetime.now().isoformat(),</p>
+
+<p># 構造情報</p>
+<p>"structure": {</p>
+<p>"lattice": structure.lattice.matrix.tolist(),</p>
+<p>"species": [str(site.specie) for site in structure],</p>
+<p>"coords": [site.frac_coords.tolist() for site in structure],</p>
+<p>"space_group": structure.get_space_group_info()[1]</p>
+<p>},</p>
+
+<p># 計算結果</p>
+<p>"properties": {</p>
+<p>"energy": calculation_results.get("energy"),</p>
+<p>"band_gap": calculation_results.get("band_gap"),</p>
+<p>"formation_energy": calculation_results.get("formation_energy"),</p>
+<p>},</p>
+
+<p># 計算メタデータ</p>
+<p>"calculation_metadata": {</p>
+<p>"software": "VASP 6.3.0",</p>
+<p>"functional": "PBE",</p>
+<p>"encut": 520,</p>
+<p>"kpoints": calculation_results.get("kpoints"),</p>
+<p>"converged": calculation_results.get("converged"),</p>
+<p>"calculation_time": calculation_results.get("calculation_time"),</p>
+<p>},</p>
+
+<p># プロビナンス</p>
+<p>"provenance": {</p>
+<p>"input_structure_source": "Materials Project",</p>
+<p>"workflow": "Atomate optimize_structure",</p>
+<p>"hostname": calculation_results.get("hostname"),</p>
+<p>"date": calculation_results.get("date"),</p>
+<p>}</p>
+<p>}</p>
+
+<p>return entry</p>
+
+<h1>使用例</h1>
+<p>entry = MaterialsDataSchema.create_entry(</p>
+<p>material_id="custom-0001",</p>
+<p>formula="LiCoO2",</p>
+<p>structure=structure,</p>
+<p>calculation_results={</p>
+<p>"energy": -45.67,</p>
+<p>"band_gap": 2.3,</p>
+<p>"converged": True,</p>
+<p>"kpoints": [12, 12, 8],</p>
+<p>"calculation_time": "2.5 hours",</p>
+<p>"hostname": "hpc.university.edu",</p>
+<p>"date": "2025-10-17",</p>
+<p>}</p>
+<p>)</p>
+
+<h1>JSON保存</h1>
+<p>with open("data/custom-0001.json", 'w') as f:</p>
+<p>json.dump(entry, f, indent=2)</p>
+</code></pre>
+
+<h3>MongoDBによるデータ管理</h3>
+
+<pre><code class="language-python">from pymongo import MongoClient
+<p>import json</p>
+
+<p>class MaterialsDatabase:</p>
+<p>"""MongoDBによる材料データベース"""</p>
+
+<p>def __init__(self, host='localhost', port=27017, db_name='materials'):</p>
+<p>self.client = MongoClient(host, port)</p>
+<p>self.db = self.client[db_name]</p>
+<p>self.collection = self.db['calculations']</p>
+
+<p># インデックス作成（検索高速化）</p>
+<p>self.collection.create_index("material_id", unique=True)</p>
+<p>self.collection.create_index("formula")</p>
+<p>self.collection.create_index("properties.band_gap")</p>
+
+<p>def insert(self, entry):</p>
+<p>"""データを挿入"""</p>
+<p>result = self.collection.insert_one(entry)</p>
+<p>return result.inserted_id</p>
+
+<p>def find_by_formula(self, formula):</p>
+<p>"""化学式で検索"""</p>
+<p>return list(self.collection.find({"formula": formula}))</p>
+
+<p>def find_by_bandgap_range(self, min_gap, max_gap):</p>
+<p>"""バンドギャップ範囲で検索"""</p>
+<p>query = {</p>
+<p>"properties.band_gap": {</p>
+<p>"$gte": min_gap,</p>
+<p>"$lte": max_gap</p>
+<p>}</p>
+<p>}</p>
+<p>return list(self.collection.find(query))</p>
+
+<p>def get_statistics(self):</p>
+<p>"""統計情報"""</p>
+<p>pipeline = [</p>
+<p>{</p>
+<p>"$group": {</p>
+<p>"_id": None,</p>
+<p>"total": {"$sum": 1},</p>
+<p>"avg_bandgap": {"$avg": "$properties.band_gap"},</p>
+<p>"avg_energy": {"$avg": "$properties.energy"}</p>
+<p>}</p>
+<p>}</p>
+<p>]</p>
+
+<p>result = list(self.collection.aggregate(pipeline))</p>
+<p>return result[0] if result else {}</p>
+
+<h1>使用例</h1>
+<p>db = MaterialsDatabase()</p>
+
+<h1>データ挿入</h1>
+<p>db.insert(entry)</p>
+
+<h1>検索</h1>
+<p>licoo2_results = db.find_by_formula("LiCoO2")</p>
+<p>print(f"LiCoO2の計算: {len(licoo2_results)}件")</p>
+
+<h1>バンドギャップ検索</h1>
+<p>semiconductors = db.find_by_bandgap_range(0.5, 3.0)</p>
+<p>print(f"半導体（0.5-3.0 eV）: {len(semiconductors)}件")</p>
+
+<h1>統計</h1>
+<p>stats = db.get_statistics()</p>
+<p>print(f"平均バンドギャップ: {stats['avg_bandgap']:.2f} eV")</p>
+</code></pre>
+
+<p>---</p>
+
+<h2>4.4 ポストプロセスの自動化</h2>
+
+<h3>DOS/バンド構造の自動プロット</h3>
+
+<pre><code class="language-python">from pymatgen.io.vasp.outputs import Vasprun
+<p>from pymatgen.electronic_structure.plotter import BSPlotter, DosPlotter</p>
+<p>import matplotlib.pyplot as plt</p>
+
+<p>def auto_plot_band_dos(directory):</p>
+<p>"""</p>
+<p>バンド構造とDOSを自動プロット</p>
+
+<p>Parameters:</p>
+<p>-----------</p>
+<p>directory : str</p>
+<p>vasprun.xmlがあるディレクトリ</p>
+<p>"""</p>
+<p>vasprun = Vasprun(f"{directory}/vasprun.xml")</p>
+
+<p># バンド構造</p>
+<p>bs = vasprun.get_band_structure()</p>
+<p>bs_plotter = BSPlotter(bs)</p>
+
+<p>fig = bs_plotter.get_plot(ylim=[-5, 5])</p>
+<p>fig.savefig(f"{directory}/band_structure.png", dpi=300)</p>
+<p>print(f"バンド構造を保存: {directory}/band_structure.png")</p>
+
+<p># DOS</p>
+<p>dos = vasprun.complete_dos</p>
+<p>dos_plotter = DosPlotter()</p>
+<p>dos_plotter.add_dos("Total", dos)</p>
+
+<p>fig = dos_plotter.get_plot(xlim=[-5, 5])</p>
+<p>fig.savefig(f"{directory}/dos.png", dpi=300)</p>
+<p>print(f"DOSを保存: {directory}/dos.png")</p>
+
+<p># バンドギャップ</p>
+<p>bandgap = bs.get_band_gap()</p>
+<p>print(f"バンドギャップ: {bandgap['energy']:.3f} eV ({bandgap['transition']})")</p>
+
+<h1>使用例</h1>
+<p>auto_plot_band_dos("calculations/LiCoO2")</p>
+</code></pre>
+
+<h3>レポート自動生成</h3>
+
+<pre><code class="language-python">from jinja2 import Template
+<p>from datetime import datetime</p>
+
+<p>def generate_report(material_data, output_file="report.html"):</p>
+<p>"""</p>
+<p>計算結果レポートを自動生成</p>
+
+<p>Parameters:</p>
+<p>-----------</p>
+<p>material_data : dict</p>
+<p>材料データ</p>
+<p>output_file : str</p>
+<p>出力HTMLファイル</p>
+<p>"""</p>
+<p>template_str = """</p>
+<!DOCTYPE html>
+<html>
+<head>
+<title>計算レポート: {{ material_data.formula }}</title>
+<style>
+<p>body { font-family: Arial, sans-serif; margin: 40px; }</p>
+<p>table { border-collapse: collapse; width: 100%; }</p>
+<p>th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }</p>
+<p>th { background-color: #4CAF50; color: white; }</p>
+<p>img { max-width: 600px; }</p>
+</style>
+</head>
+<body>
+<h1>{{ material_data.formula }}</h1>
+<p>生成日時: {{ generation_time }}</p>
+
+<h2>構造情報</h2>
+<table>
+<tr><th>項目</th><th>値</th></tr>
+<tr><td>空間群</td><td>{{ material_data.structure.space_group }}</td></tr>
+<tr><td>格子定数 a</td><td>{{ "%.3f"|format(material_data.structure.lattice[0][0]) }} Å</td></tr>
+</table>
+
+<h2>計算結果</h2>
+<table>
+<tr><th>特性</th><th>値</th></tr>
+<tr><td>エネルギー</td><td>{{ "%.3f"|format(material_data.properties.energy) }} eV/atom</td></tr>
+<tr><td>バンドギャップ</td><td>{{ "%.3f"|format(material_data.properties.band_gap) }} eV</td></tr>
+</table>
+
+<h2>バンド構造</h2>
+<img src="band_structure.png" alt="バンド構造">
+
+<h2>状態密度</h2>
+<img src="dos.png" alt="DOS">
+</body>
+</html>
+<p>"""</p>
+
+<p>template = Template(template_str)</p>
+
+<p>html = template.render(</p>
+<p>material_data=material_data,</p>
+<p>generation_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")</p>
+<p>)</p>
+
+<p>with open(output_file, 'w') as f:</p>
+<p>f.write(html)</p>
+
+<p>print(f"レポート生成: {output_file}")</p>
+
+<h1>使用例</h1>
+<p>generate_report(entry, output_file="LiCoO2_report.html")</p>
+</code></pre>
+
+<p>---</p>
+
+<h2>4.5 データ共有とアーカイブ</h2>
+
+<h3>NOMAD Repositoryへのアップロード</h3>
+
+<pre><code class="language-python">import requests
+<p>import json</p>
+
+<p>def upload_to_nomad(data_files, metadata):</p>
+<p>"""</p>
+<p>NOMAD Repositoryにデータをアップロード</p>
+
+<p>Parameters:</p>
+<p>-----------</p>
+<p>data_files : list</p>
+<p>アップロードするファイルリスト</p>
+<p>metadata : dict</p>
+<p>メタデータ</p>
+<p>"""</p>
+<p>nomad_url = "https://nomad-lab.eu/prod/rae/api/v1/uploads"</p>
+
+<p># メタデータ準備</p>
+<p>upload_metadata = {</p>
+<p>"upload_name": metadata.get("name", "Untitled"),</p>
+<p>"references": metadata.get("references", []),</p>
+<p>"coauthors": metadata.get("coauthors", []),</p>
+<p>}</p>
+
+<p># ファイルアップロード</p>
+<p>files = []</p>
+<p>for file_path in data_files:</p>
+<p>files.append(('file', open(file_path, 'rb')))</p>
+
+<p>response = requests.post(</p>
+<p>nomad_url,</p>
+<p>files=files,</p>
+<p>data={'metadata': json.dumps(upload_metadata)},</p>
+<p>headers={'Authorization': f'Bearer {NOMAD_API_TOKEN}'}</p>
+<p>)</p>
+
+<p>if response.status_code == 200:</p>
+<p>upload_id = response.json()['upload_id']</p>
+<p>print(f"アップロード成功: {upload_id}")</p>
+<p>print(f"URL: https://nomad-lab.eu/prod/rae/gui/uploads/{upload_id}")</p>
+<p>return upload_id</p>
+<p>else:</p>
+<p>print(f"アップロード失敗: {response.status_code}")</p>
+<p>return None</p>
+
+<h1>使用例</h1>
+<p>files = [</p>
+<p>"calculations/LiCoO2/vasprun.xml",</p>
+<p>"calculations/LiCoO2/OUTCAR",</p>
+<p>"calculations/LiCoO2/CONTCAR",</p>
+<p>]</p>
+
+<p>metadata = {</p>
+<p>"name": "LiCoO2 battery material calculations",</p>
+<p>"references": ["https://doi.org/10.xxxx/xxxxx"],</p>
+<p>"coauthors": ["Dr. Yusuke Hashimoto"]</p>
+<p>}</p>
+
+<p>upload_to_nomad(files, metadata)</p>
+</code></pre>
+
+<p>---</p>
+
+<h2>4.6 演習問題</h2>
+
+<h3>問題1（難易度: medium）</h3>
+
+<strong>問題</strong>: FireWorksで、構造最適化→静的計算の2ステップワークフローを作成してください。
+
+<details>
+<summary>解答例</summary>
+
+<pre><code class="language-python">from fireworks import Firework, Workflow
+<p>from atomate.vasp.firetasks.write_inputs import WriteVaspFromIOSet</p>
+<p>from atomate.vasp.firetasks.run_calc import RunVaspCustodian</p>
+<p>from pymatgen.io.vasp.sets import MPRelaxSet, MPStaticSet</p>
+<p>from pymatgen.core import Structure</p>
+
+<p>structure = Structure.from_file("POSCAR")</p>
+
+<h1>Firework 1: 構造最適化</h1>
+<p>fw1 = Firework(</p>
+<p>[</p>
+<p>WriteVaspFromIOSet(structure=structure, vasp_input_set=MPRelaxSet),</p>
+<p>RunVaspCustodian(vasp_cmd="vasp_std")</p>
+<p>],</p>
+<p>name="Relax"</p>
+<p>)</p>
+
+<h1>Firework 2: 静的計算</h1>
+<p>fw2 = Firework(</p>
+<p>[</p>
+<p>WriteVaspFromIOSet(structure=structure, vasp_input_set=MPStaticSet),</p>
+<p>RunVaspCustodian(vasp_cmd="vasp_std")</p>
+<p>],</p>
+<p>name="Static"</p>
+<p>)</p>
+
+<h1>ワークフロー</h1>
+<p>wf = Workflow([fw1, fw2], links_dict={fw1: [fw2]})</p>
+
+<p>launchpad.add_wf(wf)</p>
+</code></pre>
+
+</details>
+
+<h3>問題2（難易度: hard）</h3>
+
+<strong>問題</strong>: MongoDBに保存された1000材料のデータから、以下を抽出してください：
+<ol>
+<li>バンドギャップが1.0-2.0 eVの半導体</li>
+<li>形成エネルギーが負（安定）</li>
+<li>結果をCSVに保存</li>
+</ol>
+
+<details>
+<summary>解答例</summary>
+
+<pre><code class="language-python">import pandas as pd
+
+<p>db = MaterialsDatabase()</p>
+
+<h1>クエリ</h1>
+<p>query = {</p>
+<p>"properties.band_gap": {"$gte": 1.0, "$lte": 2.0},</p>
+<p>"properties.formation_energy": {"$lt": 0}</p>
+<p>}</p>
+
+<p>results = list(db.collection.find(query))</p>
+
+<h1>DataFrame化</h1>
+<p>data = []</p>
+<p>for r in results:</p>
+<p>data.append({</p>
+<p>"formula": r["formula"],</p>
+<p>"band_gap": r["properties"]["band_gap"],</p>
+<p>"formation_energy": r["properties"]["formation_energy"],</p>
+<p>"space_group": r["structure"]["space_group"]</p>
+<p>})</p>
+
+<p>df = pd.DataFrame(data)</p>
+
+<h1>CSV保存</h1>
+<p>df.to_csv("stable_semiconductors.csv", index=False)</p>
+<p>print(f"該当材料: {len(df)}個")</p>
+<p>print(df.head())</p>
+</code></pre>
+
+</details>
+
+<p>---</p>
+
+<h2>4.7 まとめ</h2>
+
+<strong>キーポイント</strong>:
+
+<ol>
+<li><strong>FireWorks</strong>: Materials Project標準のワークフロー管理</li>
+<li><strong>Atomate</strong>: 標準化された計算ワークフロー</li>
+<li><strong>AiiDA</strong>: データプロビナンス追跡</li>
+<li><strong>MongoDB</strong>: 大規模データ管理</li>
+<li><strong>NOMAD</strong>: データ公開とFAIR原則</li>
+</ol>
+
+<strong>次のステップ</strong>: 第5章でクラウドHPC活用を学びます。
+
+<strong><a href="./chapter-5.md">第5章: クラウドHPC活用と最適化 →</a></strong>
+
+<p>---</p>
+
+<strong>ライセンス</strong>: CC BY 4.0
+<strong>作成日</strong>: 2025-10-17
+<strong>作成者</strong>: Dr. Yusuke Hashimoto, Tohoku University
+
+
+        <div class="navigation">
+            <a href="chapter-3.html" class="nav-button">← 前章: 第3章</a>
+<a href="chapter-5.html" class="nav-button">次章: 第5章 →</a>
+        </div>
+    </main>
+
+    <footer>
+        <p><strong>作成者</strong>: AI Terakoya Content Team</p>
+        <p><strong>監修</strong>: Dr. Yusuke Hashimoto（東北大学）</p>
+        <p><strong>バージョン</strong>: 1.0 | <strong>作成日</strong>: 2025-10-17</p>
+        <p><strong>ライセンス</strong>: Creative Commons BY 4.0</p>
+        <p>© 2025 AI Terakoya. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mermaidCodeBlocks = document.querySelectorAll('pre.codehilite code.language-mermaid, pre code.language-mermaid');
+
+            mermaidCodeBlocks.forEach(function(codeBlock) {
+                const pre = codeBlock.parentElement;
+                const mermaidCode = codeBlock.textContent;
+
+                const mermaidDiv = document.createElement('div');
+                mermaidDiv.className = 'mermaid';
+                mermaidDiv.textContent = mermaidCode.trim();
+
+                pre.parentNode.replaceChild(mermaidDiv, pre);
+            });
+
+            if (typeof mermaid !== 'undefined') {
+                mermaid.initialize({
+                    startOnLoad: true,
+                    theme: 'default'
+                });
+                mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+            }
+        });
+    </script>
+</body>
+</html>

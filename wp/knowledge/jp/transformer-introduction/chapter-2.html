@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untitled - AI Terakoya</title>
+
+    <style>
+        :root {
+            --color-primary: #2c3e50;
+            --color-primary-dark: #1a252f;
+            --color-accent: #7b2cbf;
+            --color-accent-light: #9d4edd;
+            --color-text: #2d3748;
+            --color-text-light: #4a5568;
+            --color-bg: #ffffff;
+            --color-bg-alt: #f7fafc;
+            --color-border: #e2e8f0;
+            --color-code-bg: #f8f9fa;
+            --color-link: #3182ce;
+            --color-link-hover: #2c5aa0;
+
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+
+            --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+
+            --border-radius: 8px;
+            --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            line-height: 1.7;
+            color: var(--color-text);
+            background-color: var(--color-bg);
+            font-size: 16px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+            color: white;
+            padding: var(--spacing-xl) var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--box-shadow);
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            font-weight: 400;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md) var(--spacing-xl);
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            color: var(--color-primary);
+            margin-top: var(--spacing-xl);
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-xs);
+            border-bottom: 3px solid var(--color-accent);
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            color: var(--color-primary);
+            margin-top: var(--spacing-lg);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            color: var(--color-primary-dark);
+            margin-top: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        p {
+            margin-bottom: var(--spacing-md);
+            color: var(--color-text);
+        }
+
+        a {
+            color: var(--color-link);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: var(--color-link-hover);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-left: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+        }
+
+        li {
+            margin-bottom: var(--spacing-xs);
+            color: var(--color-text);
+        }
+
+        pre {
+            background-color: var(--color-code-bg);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            overflow-x: auto;
+            margin-bottom: var(--spacing-md);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        code {
+            font-family: var(--font-mono);
+            font-size: 0.9em;
+            background-color: var(--color-code-bg);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: var(--spacing-md);
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            border: 1px solid var(--color-border);
+            padding: var(--spacing-sm);
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--color-bg-alt);
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        blockquote {
+            border-left: 4px solid var(--color-accent);
+            padding-left: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+            color: var(--color-text-light);
+            font-style: italic;
+            background-color: var(--color-bg-alt);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: var(--spacing-md);
+            margin: var(--spacing-xl) 0;
+            padding-top: var(--spacing-lg);
+            border-top: 2px solid var(--color-border);
+        }
+
+        .nav-button {
+            flex: 1;
+            padding: var(--spacing-md);
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+            color: white;
+            border-radius: var(--border-radius);
+            text-align: center;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: var(--box-shadow);
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            text-decoration: none;
+        }
+
+        footer {
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-lg) var(--spacing-md);
+            background-color: var(--color-bg-alt);
+            border-top: 1px solid var(--color-border);
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            h3 {
+                font-size: 1.2rem;
+            }
+
+            .meta {
+                font-size: 0.85rem;
+            }
+
+            .navigation {
+                flex-direction: column;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: var(--spacing-xs);
+            }
+        }
+    </style>
+
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Untitled</h1>
+            
+            <div class="meta">
+                <span class="meta-item">📖 読了時間: 20-30分</span>
+                <span class="meta-item">📊 難易度: 中級</span>
+                <span class="meta-item">💻 コード例: 5個</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <p><h1>第2章: 材料向けTransformerアーキテクチャ</h1></p>
+
+<p><strong>学習時間</strong>: 30-35分 | <strong>難易度</strong>: 中級〜上級</p>
+
+<p><h2>📋 この章で学ぶこと</h2></p>
+
+<ul>
+<li>材料科学に特化したTransformerアーキテクチャの設計原理</li>
+<li>Matformer: Materials Transformer for Property Prediction</li>
+<li>CrystalFormer: Crystal Structure Representation</li>
+<li>ChemBERTa: 分子SMILES表現学習</li>
+<li>Perceiver IO: 多様なデータ統合</li>
+<li>実装演習: Matformerで材料特性予測</li>
+</ul>
+
+<p>---</p>
+
+<p><h2>2.1 材料科学特化Transformerの必要性</h2></p>
+
+<p><h3>汎用Transformerの限界</h3></p>
+
+<p><strong>自然言語処理用Transformerをそのまま使う問題</strong>:</p>
+<ul>
+<li>❌ 分子・材料の3D構造情報が失われる</li>
+<li>❌ 化学結合や原子間距離を考慮できない</li>
+<li>❌ 周期的境界条件（結晶）を扱えない</li>
+<li>❌ 物理的制約（保存則、対称性）を無視</li>
+</ul>
+
+<p><h3>材料特化Transformerの特徴</h3></p>
+
+<p><strong>必要な拡張</strong>:</p>
+<ul>
+<li>✅ <strong>3D構造の埋め込み</strong>: 原子座標、距離、角度</li>
+<li>✅ <strong>周期的境界条件</strong>: 結晶格子の繰り返し</li>
+<li>✅ <strong>物理的制約</strong>: 対称性、等変性</li>
+<li>✅ <strong>多様なデータ統合</strong>: 構造 + 組成 + 実験データ</li>
+</ul>
+
+<p><pre><code class="language-mermaid">graph TD</p>
+<p>    A[汎用Transformer] --> B[材料特化Transformer]</p>
+<p>    B --> C[3D構造埋め込み]</p>
+<p>    B --> D[周期境界条件]</p>
+<p>    B --> E[物理制約]</p>
+<p>    B --> F[多様データ統合]</p>
+
+<p>    C --> G[Matformer]</p>
+<p>    D --> G</p>
+<p>    E --> H[CrystalFormer]</p>
+<p>    F --> I[Perceiver IO]</p>
+
+<p>    style G fill:#e1f5ff</p>
+<p>    style H fill:#ffe1f5</p>
+<p>    style I fill:#f5ffe1</p>
+<p></code></pre></p>
+
+<p>---</p>
+
+<p><h2>2.2 Matformer: Materials Transformer</h2></p>
+
+<p><h3>概要</h3></p>
+
+<p><strong>Matformer</strong> (Chen et al., 2022)は、材料の結晶構造から特性を予測するTransformerモデルです。</p>
+
+<p><strong>特徴</strong>:</p>
+<ul>
+<li><strong>Nested Transformer</strong>: 原子レベルとクリスタルレベルの階層的処理</li>
+<li><strong>Distance-aware Attention</strong>: 原子間距離を考慮</li>
+<li><strong>Elastic Inference</strong>: 計算量とメモリを動的に調整</li>
+</ul>
+
+<p><h3>アーキテクチャ</h3></p>
+
+<p><pre><code class="language-mermaid">graph TB</p>
+<p>    subgraph Input</p>
+<p>        A1[原子座標] --> B[原子埋め込み]</p>
+<p>        A2[原子番号] --> B</p>
+<p>        A3[格子定数] --> B</p>
+<p>    end</p>
+
+<p>    B --> C[Positional Encoding]</p>
+<p>    C --> D[Distance Matrix]</p>
+
+<p>    subgraph "Nested Transformer"</p>
+<p>        D --> E1[Atom-level Attention]</p>
+<p>        E1 --> E2[Structure-level Attention]</p>
+<p>    end</p>
+
+<p>    E2 --> F[Pooling]</p>
+<p>    F --> G[Prediction Head]</p>
+<p>    G --> H[バンドギャップ/形成エネルギー]</p>
+
+<p>    style E1 fill:#e1f5ff</p>
+<p>    style E2 fill:#ffe1e1</p>
+<p></code></pre></p>
+
+<p><h3>原子埋め込み（Atom Embedding）</h3></p>
+
+<p><pre><code class="language-python">import torch</p>
+<p>import torch.nn as nn</p>
+<p>import numpy as np</p>
+
+<p>class AtomEmbedding(nn.Module):</p>
+<p>    def __init__(self, num_atoms=118, d_model=256):</p>
+<p>        """</p>
+<p>        原子埋め込み層</p>
+
+<p>        Args:</p>
+<p>            num_atoms: 原子の種類数（周期表、118元素）</p>
+<p>            d_model: 埋め込み次元</p>
+<p>        """</p>
+<p>        super(AtomEmbedding, self).__init__()</p>
+<p>        self.embedding = nn.Embedding(num_atoms, d_model)</p>
+
+<p>    def forward(self, atomic_numbers):</p>
+<p>        """</p>
+<p>        Args:</p>
+<p>            atomic_numbers: (batch_size, num_atoms) 原子番号</p>
+<p>        Returns:</p>
+<p>            embeddings: (batch_size, num_atoms, d_model)</p>
+<p>        """</p>
+<p>        return self.embedding(atomic_numbers)</p>
+
+<p><h1>使用例: NaCl結晶</h1></p>
+<p>batch_size = 2</p>
+<p>num_atoms = 8  <h1>単位格子内の原子数</h1></p>
+
+<p><h1>原子番号: Na(11), Cl(17)</h1></p>
+<p>atomic_numbers = torch.tensor([</p>
+<p>    [11, 17, 11, 17, 11, 17, 11, 17],  <h1>サンプル1</h1></p>
+<p>    [11, 17, 11, 17, 11, 17, 11, 17]   <h1>サンプル2</h1></p>
+<p>])</p>
+
+<p>atom_emb = AtomEmbedding(num_atoms=118, d_model=256)</p>
+<p>embeddings = atom_emb(atomic_numbers)</p>
+<p>print(f"Atom embeddings shape: {embeddings.shape}")  <h1>(2, 8, 256)</h1></p>
+<p></code></pre></p>
+
+<p><h3>Distance-aware Attention</h3></p>
+
+<p><strong>原子間距離を考慮したAttention</strong>:</p>
+
+<p><pre><code class="language-python">class DistanceAwareAttention(nn.Module):</p>
+<p>    def __init__(self, d_model, num_heads, max_distance=10.0):</p>
+<p>        """</p>
+<p>        距離を考慮したAttention</p>
+
+<p>        Args:</p>
+<p>            d_model: モデル次元</p>
+<p>            num_heads: Attentionヘッド数</p>
+<p>            max_distance: 最大距離（Å）</p>
+<p>        """</p>
+<p>        super(DistanceAwareAttention, self).__init__()</p>
+<p>        self.d_model = d_model</p>
+<p>        self.num_heads = num_heads</p>
+<p>        self.d_k = d_model // num_heads</p>
+<p>        self.max_distance = max_distance</p>
+
+<p>        self.W_q = nn.Linear(d_model, d_model)</p>
+<p>        self.W_k = nn.Linear(d_model, d_model)</p>
+<p>        self.W_v = nn.Linear(d_model, d_model)</p>
+<p>        self.W_o = nn.Linear(d_model, d_model)</p>
+
+<p>        <h1>距離埋め込み</h1></p>
+<p>        self.distance_embedding = nn.Linear(1, num_heads)</p>
+
+<p>    def forward(self, x, distance_matrix):</p>
+<p>        """</p>
+<p>        Args:</p>
+<p>            x: (batch_size, num_atoms, d_model)</p>
+<p>            distance_matrix: (batch_size, num_atoms, num_atoms) 原子間距離（Å）</p>
+<p>        """</p>
+<p>        batch_size = x.size(0)</p>
+
+<p>        <h1>Q, K, V</h1></p>
+<p>        Q = self.W_q(x).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)</p>
+<p>        K = self.W_k(x).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)</p>
+<p>        V = self.W_v(x).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)</p>
+
+<p>        <h1>Attention scores</h1></p>
+<p>        scores = torch.matmul(Q, K.transpose(-2, -1)) / np.sqrt(self.d_k)</p>
+
+<p>        <h1>距離バイアス</h1></p>
+<p>        <h1>距離が近いほど大きな値、遠いほど小さな値</h1></p>
+<p>        distance_bias = self.distance_embedding(distance_matrix.unsqueeze(-1))  <h1>(batch, num_atoms, num_atoms, num_heads)</h1></p>
+<p>        distance_bias = distance_bias.permute(0, 3, 1, 2)  <h1>(batch, num_heads, num_atoms, num_atoms)</h1></p>
+
+<p>        <h1>ガウス関数で距離を変換（近い原子ほど高いスコア）</h1></p>
+<p>        distance_factor = torch.exp(-distance_matrix.unsqueeze(1) / 2.0)  <h1>(batch, 1, num_atoms, num_atoms)</h1></p>
+
+<p>        scores = scores + distance_bias * distance_factor</p>
+
+<p>        <h1>Softmax</h1></p>
+<p>        attention_weights = torch.softmax(scores, dim=-1)</p>
+
+<p>        <h1>Attentionの適用</h1></p>
+<p>        output = torch.matmul(attention_weights, V)</p>
+<p>        output = output.transpose(1, 2).contiguous().view(batch_size, -1, self.d_model)</p>
+<p>        output = self.W_o(output)</p>
+
+<p>        return output, attention_weights</p>
+
+<p><h1>使用例</h1></p>
+<p>d_model = 256</p>
+<p>num_heads = 8</p>
+<p>num_atoms = 8</p>
+
+<p>dist_attn = DistanceAwareAttention(d_model, num_heads)</p>
+
+<p>x = torch.randn(2, num_atoms, d_model)</p>
+<p><h1>NaCl結晶の原子間距離（簡略版）</h1></p>
+<p>distance_matrix = torch.tensor([</p>
+<p>    [[0.0, 2.8, 3.9, 4.8, 3.9, 5.5, 4.8, 6.7],  <h1>原子1からの距離</h1></p>
+<p>     [2.8, 0.0, 2.8, 3.9, 5.5, 3.9, 6.7, 4.8],</p>
+<p>     <h1>... 省略</h1></p>
+<p>     [6.7, 4.8, 5.5, 3.9, 4.8, 3.9, 2.8, 0.0]]</p>
+<p>]).repeat(2, 1, 1)  <h1>batch_size分複製</h1></p>
+
+<p>output, attn_weights = dist_attn(x, distance_matrix)</p>
+<p>print(f"Output shape: {output.shape}")  <h1>(2, 8, 256)</h1></p>
+<p></code></pre></p>
+
+<p><h3>Matformerブロック</h3></p>
+
+<p><pre><code class="language-python">class MatformerBlock(nn.Module):</p>
+<p>    def __init__(self, d_model, num_heads, d_ff=1024, dropout=0.1):</p>
+<p>        """</p>
+<p>        Matformerの基本ブロック</p>
+
+<p>        Args:</p>
+<p>            d_model: モデル次元</p>
+<p>            num_heads: Attentionヘッド数</p>
+<p>            d_ff: Feed-Forward層の中間次元</p>
+<p>            dropout: ドロップアウト率</p>
+<p>        """</p>
+<p>        super(MatformerBlock, self).__init__()</p>
+
+<p>        self.distance_attention = DistanceAwareAttention(d_model, num_heads)</p>
+<p>        self.norm1 = nn.LayerNorm(d_model)</p>
+<p>        self.dropout1 = nn.Dropout(dropout)</p>
+
+<p>        <h1>Feed-Forward Network</h1></p>
+<p>        self.ffn = nn.Sequential(</p>
+<p>            nn.Linear(d_model, d_ff),</p>
+<p>            nn.ReLU(),</p>
+<p>            nn.Dropout(dropout),</p>
+<p>            nn.Linear(d_ff, d_model)</p>
+<p>        )</p>
+<p>        self.norm2 = nn.LayerNorm(d_model)</p>
+<p>        self.dropout2 = nn.Dropout(dropout)</p>
+
+<p>    def forward(self, x, distance_matrix):</p>
+<p>        <h1>Distance-aware Attention + Residual</h1></p>
+<p>        attn_output, _ = self.distance_attention(x, distance_matrix)</p>
+<p>        x = self.norm1(x + self.dropout1(attn_output))</p>
+
+<p>        <h1>Feed-Forward + Residual</h1></p>
+<p>        ffn_output = self.ffn(x)</p>
+<p>        x = self.norm2(x + self.dropout2(ffn_output))</p>
+
+<p>        return x</p>
+<p></code></pre></p>
+
+<p>---</p>
+
+<p><h2>2.3 CrystalFormer: 結晶構造Transformer</h2></p>
+
+<p><h3>概要</h3></p>
+
+<p><strong>CrystalFormer</strong>は、結晶の周期的境界条件を考慮したTransformerです。</p>
+
+<p><strong>特徴</strong>:</p>
+<ul>
+<li><strong>Wyckoff位置埋め込み</strong>: 結晶の対称性を考慮</li>
+<li><strong>Fractional Coordinates</strong>: 分数座標での表現</li>
+<li><strong>Space Group Encoding</strong>: 空間群情報の埋め込み</li>
+</ul>
+
+<p><h3>分数座標埋め込み</h3></p>
+
+<p><pre><code class="language-python">class FractionalCoordinateEncoding(nn.Module):</p>
+<p>    def __init__(self, d_model):</p>
+<p>        super(FractionalCoordinateEncoding, self).__init__()</p>
+<p>        self.coord_linear = nn.Linear(3, d_model)</p>
+
+<p>    def forward(self, fractional_coords):</p>
+<p>        """</p>
+<p>        Args:</p>
+<p>            fractional_coords: (batch_size, num_atoms, 3) 分数座標 [0, 1)</p>
+<p>        Returns:</p>
+<p>            encoding: (batch_size, num_atoms, d_model)</p>
+<p>        """</p>
+<p>        <h1>三角関数埋め込み</h1></p>
+<p>        freqs = torch.arange(1, d_model // 6 + 1, dtype=torch.float32)</p>
+<p>        coords_expanded = fractional_coords.unsqueeze(-1) * freqs</p>
+
+<p>        encoding = torch.cat([</p>
+<p>            torch.sin(2 <em> np.pi </em> coords_expanded),</p>
+<p>            torch.cos(2 <em> np.pi </em> coords_expanded)</p>
+<p>        ], dim=-1)</p>
+
+<p>        <h1>線形変換で次元調整</h1></p>
+<p>        encoding = encoding.flatten(start_dim=2)</p>
+<p>        encoding = self.coord_linear(encoding)</p>
+
+<p>        return encoding</p>
+<p></code></pre></p>
+
+<p><h3>周期境界条件の考慮</h3></p>
+
+<p><pre><code class="language-python">def compute_periodic_distance(coords1, coords2, lattice_matrix):</p>
+<p>    """</p>
+<p>    周期境界条件を考慮した距離計算</p>
+
+<p>    Args:</p>
+<p>        coords1: (num_atoms1, 3) 分数座標</p>
+<p>        coords2: (num_atoms2, 3) 分数座標</p>
+<p>        lattice_matrix: (3, 3) 格子ベクトル行列</p>
+<p>    Returns:</p>
+<p>        distances: (num_atoms1, num_atoms2) 最短距離（Å）</p>
+<p>    """</p>
+<p>    <h1>デカルト座標に変換</h1></p>
+<p>    cart1 = torch.matmul(coords1, lattice_matrix)</p>
+<p>    cart2 = torch.matmul(coords2, lattice_matrix)</p>
+
+<p>    <h1>すべての周期イメージを考慮（-1, 0, 1の範囲）</h1></p>
+<p>    offsets = torch.tensor([</p>
+<p>        [i, j, k] for i in [-1, 0, 1]</p>
+<p>                  for j in [-1, 0, 1]</p>
+<p>                  for k in [-1, 0, 1]</p>
+<p>    ], dtype=torch.float32)  <h1>27通り</h1></p>
+
+<p>    min_distances = []</p>
+<p>    for offset in offsets:</p>
+<p>        offset_cart = torch.matmul(offset, lattice_matrix)</p>
+<p>        shifted_cart2 = cart2 + offset_cart</p>
+
+<p>        <h1>距離計算</h1></p>
+<p>        diff = cart1.unsqueeze(1) - shifted_cart2.unsqueeze(0)</p>
+<p>        distances = torch.norm(diff, dim=-1)</p>
+<p>        min_distances.append(distances)</p>
+
+<p>    <h1>最短距離を選択</h1></p>
+<p>    min_distances = torch.stack(min_distances, dim=-1)</p>
+<p>    min_distances, _ = torch.min(min_distances, dim=-1)</p>
+
+<p>    return min_distances</p>
+
+<p><h1>使用例: 単純立方格子</h1></p>
+<p>fractional_coords = torch.tensor([</p>
+<p>    [0.0, 0.0, 0.0],  <h1>原子1</h1></p>
+<p>    [0.5, 0.5, 0.5]   <h1>原子2</h1></p>
+<p>])</p>
+
+<p>lattice_matrix = torch.tensor([</p>
+<p>    [5.0, 0.0, 0.0],</p>
+<p>    [0.0, 5.0, 0.0],</p>
+<p>    [0.0, 0.0, 5.0]</p>
+<p>])  <h1>5Åの立方格子</h1></p>
+
+<p>distances = compute_periodic_distance(fractional_coords, fractional_coords, lattice_matrix)</p>
+<p>print("Distance matrix (Å):")</p>
+<p>print(distances)</p>
+<p></code></pre></p>
+
+<p>---</p>
+
+<p><h2>2.4 ChemBERTa: 分子SMILES表現学習</h2></p>
+
+<p><h3>概要</h3></p>
+
+<p><strong>ChemBERTa</strong>は、分子のSMILES文字列をBERTで学習したモデルです。</p>
+
+<p><strong>特徴</strong>:</p>
+<ul>
+<li><strong>RoBERTa</strong>ベース（BERT改良版）</li>
+<li><strong>10M分子</strong>で事前学習</li>
+<li><strong>転移学習</strong>で少量データでも高精度</li>
+</ul>
+
+<p><h3>SMILESトークン化</h3></p>
+
+<p><pre><code class="language-python">from transformers import RobertaTokenizer</p>
+
+<p>class SMILESTokenizer:</p>
+<p>    def __init__(self):</p>
+<p>        <h1>ChemBERTa用のトークナイザ</h1></p>
+<p>        self.tokenizer = RobertaTokenizer.from_pretrained("seyonec/ChemBERTa-zinc-base-v1")</p>
+
+<p>    def encode(self, smiles_list):</p>
+<p>        """</p>
+<p>        SMILES文字列をトークン化</p>
+
+<p>        Args:</p>
+<p>            smiles_list: SMILESのリスト</p>
+<p>        Returns:</p>
+<p>            input_ids: トークンID</p>
+<p>            attention_mask: マスク</p>
+<p>        """</p>
+<p>        encoded = self.tokenizer(</p>
+<p>            smiles_list,</p>
+<p>            padding=True,</p>
+<p>            truncation=True,</p>
+<p>            max_length=128,</p>
+<p>            return_tensors='pt'</p>
+<p>        )</p>
+<p>        return encoded['input_ids'], encoded['attention_mask']</p>
+
+<p><h1>使用例</h1></p>
+<p>smiles_list = [</p>
+<p>    'CCO',  <h1>エタノール</h1></p>
+<p>    'CC(C)Cc1ccc(cc1)C(C)C(=O)O',  <h1>イブプロフェン</h1></p>
+<p>    'CN1C=NC2=C1C(=O)N(C(=O)N2C)C'  <h1>カフェイン</h1></p>
+<p>]</p>
+
+<p>tokenizer = SMILESTokenizer()</p>
+<p>input_ids, attention_mask = tokenizer.encode(smiles_list)</p>
+
+<p>print(f"Input IDs shape: {input_ids.shape}")</p>
+<p>print(f"Attention mask shape: {attention_mask.shape}")</p>
+<p>print(f"First molecule tokens: {input_ids[0][:10]}")</p>
+<p></code></pre></p>
+
+<p><h3>ChemBERTaモデルの使用</h3></p>
+
+<p><pre><code class="language-python">from transformers import RobertaModel</p>
+
+<p>class ChemBERTaEmbedding(nn.Module):</p>
+<p>    def __init__(self, pretrained_model="seyonec/ChemBERTa-zinc-base-v1"):</p>
+<p>        super(ChemBERTaEmbedding, self).__init__()</p>
+<p>        self.bert = RobertaModel.from_pretrained(pretrained_model)</p>
+
+<p>    def forward(self, input_ids, attention_mask):</p>
+<p>        """</p>
+<p>        Args:</p>
+<p>            input_ids: (batch_size, seq_len)</p>
+<p>            attention_mask: (batch_size, seq_len)</p>
+<p>        Returns:</p>
+<p>            embeddings: (batch_size, hidden_size)</p>
+<p>        """</p>
+<p>        outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)</p>
+
+<p>        <h1>[CLS]トークンの埋め込みを使用</h1></p>
+<p>        cls_embedding = outputs.last_hidden_state[:, 0, :]</p>
+
+<p>        return cls_embedding</p>
+
+<p><h1>分子特性予測モデル</h1></p>
+<p>class MoleculePropertyPredictor(nn.Module):</p>
+<p>    def __init__(self, hidden_size=768, num_properties=1):</p>
+<p>        super(MoleculePropertyPredictor, self).__init__()</p>
+<p>        self.chemberta = ChemBERTaEmbedding()</p>
+<p>        self.predictor = nn.Sequential(</p>
+<p>            nn.Linear(hidden_size, 256),</p>
+<p>            nn.ReLU(),</p>
+<p>            nn.Dropout(0.2),</p>
+<p>            nn.Linear(256, num_properties)</p>
+<p>        )</p>
+
+<p>    def forward(self, input_ids, attention_mask):</p>
+<p>        embeddings = self.chemberta(input_ids, attention_mask)</p>
+<p>        predictions = self.predictor(embeddings)</p>
+<p>        return predictions</p>
+
+<p><h1>使用例</h1></p>
+<p>model = MoleculePropertyPredictor(num_properties=1)  <h1>例: logP予測</h1></p>
+<p>predictions = model(input_ids, attention_mask)</p>
+<p>print(f"Predictions shape: {predictions.shape}")  <h1>(3, 1)</h1></p>
+<p></code></pre></p>
+
+<p>---</p>
+
+<p><h2>2.5 Perceiver IO: 多様なデータ統合</h2></p>
+
+<p><h3>概要</h3></p>
+
+<p><strong>Perceiver IO</strong>は、異なる種類のデータを統合して処理できるTransformerです。</p>
+
+<p><strong>材料科学での応用</strong>:</p>
+<ul>
+<li>構造データ + 組成データ</li>
+<li>実験データ + 計算データ</li>
+<li>画像 + テキスト + 数値</li>
+</ul>
+
+<p><h3>アーキテクチャ</h3></p>
+
+<p><pre><code class="language-mermaid">graph TB</p>
+<p>    A1[構造データ] --> C[Cross-Attention]</p>
+<p>    A2[組成データ] --> C</p>
+<p>    A3[実験データ] --> C</p>
+
+<p>    B[Latent Array] --> C</p>
+<p>    C --> D[Latent Transformer]</p>
+<p>    D --> E[Cross-Attention Decoder]</p>
+<p>    E --> F[予測結果]</p>
+
+<p>    style C fill:#e1f5ff</p>
+<p>    style D fill:#ffe1e1</p>
+<p></code></pre></p>
+
+<p><h3>簡易実装</h3></p>
+
+<p><pre><code class="language-python">class PerceiverBlock(nn.Module):</p>
+<p>    def __init__(self, latent_dim, input_dim, num_latents=64):</p>
+<p>        super(PerceiverBlock, self).__init__()</p>
+<p>        self.num_latents = num_latents</p>
+<p>        self.latent_dim = latent_dim</p>
+
+<p>        <h1>Latent array（学習可能）</h1></p>
+<p>        self.latents = nn.Parameter(torch.randn(num_latents, latent_dim))</p>
+
+<p>        <h1>Cross-Attention: Latent → Input</h1></p>
+<p>        self.cross_attn = nn.MultiheadAttention(latent_dim, num_heads=8, batch_first=True)</p>
+
+<p>        <h1>Self-Attention: Latent → Latent</h1></p>
+<p>        self.self_attn = nn.MultiheadAttention(latent_dim, num_heads=8, batch_first=True)</p>
+
+<p>        <h1>入力を埋め込み</h1></p>
+<p>        self.input_projection = nn.Linear(input_dim, latent_dim)</p>
+
+<p>    def forward(self, x):</p>
+<p>        """</p>
+<p>        Args:</p>
+<p>            x: (batch_size, seq_len, input_dim) 入力データ</p>
+<p>        Returns:</p>
+<p>            latents: (batch_size, num_latents, latent_dim)</p>
+<p>        """</p>
+<p>        batch_size = x.size(0)</p>
+
+<p>        <h1>入力を埋め込み</h1></p>
+<p>        x_embed = self.input_projection(x)</p>
+
+<p>        <h1>Latentを複製</h1></p>
+<p>        latents = self.latents.unsqueeze(0).repeat(batch_size, 1, 1)</p>
+
+<p>        <h1>Cross-Attention: Latent (Query) ← Input (Key, Value)</h1></p>
+<p>        latents, _ = self.cross_attn(latents, x_embed, x_embed)</p>
+
+<p>        <h1>Self-Attention: Latent内部</h1></p>
+<p>        latents, _ = self.self_attn(latents, latents, latents)</p>
+
+<p>        return latents</p>
+
+<p><h1>使用例: 構造データと組成データを統合</h1></p>
+<p>batch_size = 2</p>
+<p>seq_len = 20</p>
+<p>input_dim = 128</p>
+<p>latent_dim = 256</p>
+
+<p>perceiver = PerceiverBlock(latent_dim, input_dim, num_latents=32)</p>
+
+<p><h1>構造データ（例: 原子座標）</h1></p>
+<p>structure_data = torch.randn(batch_size, seq_len, input_dim)</p>
+
+<p>latents = perceiver(structure_data)</p>
+<p>print(f"Latent representation shape: {latents.shape}")  <h1>(2, 32, 256)</h1></p>
+<p></code></pre></p>
+
+<p>---</p>
+
+<p><h2>2.6 実装演習: Matformerで材料特性予測</h2></p>
+
+<p><h3>完全な実装例</h3></p>
+
+<p><pre><code class="language-python">import torch</p>
+<p>import torch.nn as nn</p>
+<p>from torch.utils.data import Dataset, DataLoader</p>
+
+<p><h1>データセット</h1></p>
+<p>class MaterialsDataset(Dataset):</p>
+<p>    def __init__(self, num_samples=100):</p>
+<p>        self.num_samples = num_samples</p>
+
+<p>    def __len__(self):</p>
+<p>        return self.num_samples</p>
+
+<p>    def __getitem__(self, idx):</p>
+<p>        <h1>ダミーデータ（実際はMaterials Projectなどから取得）</h1></p>
+<p>        num_atoms = 8</p>
+<p>        atomic_numbers = torch.randint(1, 30, (num_atoms,))  <h1>原子番号</h1></p>
+<p>        positions = torch.randn(num_atoms, 3)  <h1>原子座標（Å）</h1></p>
+<p>        distance_matrix = torch.cdist(positions, positions)  <h1>距離行列</h1></p>
+
+<p>        <h1>ターゲット: バンドギャップ（eV）</h1></p>
+<p>        target = torch.randn(1)</p>
+
+<p>        return atomic_numbers, distance_matrix, target</p>
+
+<p><h1>Matformerモデル（簡略版）</h1></p>
+<p>class SimpleMatformer(nn.Module):</p>
+<p>    def __init__(self, d_model=256, num_heads=8, num_layers=4):</p>
+<p>        super(SimpleMatformer, self).__init__()</p>
+
+<p>        self.atom_embedding = AtomEmbedding(num_atoms=118, d_model=d_model)</p>
+
+<p>        self.layers = nn.ModuleList([</p>
+<p>            MatformerBlock(d_model, num_heads)</p>
+<p>            for _ in range(num_layers)</p>
+<p>        ])</p>
+
+<p>        self.pooling = nn.AdaptiveAvgPool1d(1)</p>
+<p>        self.predictor = nn.Sequential(</p>
+<p>            nn.Linear(d_model, 128),</p>
+<p>            nn.ReLU(),</p>
+<p>            nn.Linear(128, 1)</p>
+<p>        )</p>
+
+<p>    def forward(self, atomic_numbers, distance_matrix):</p>
+<p>        <h1>原子埋め込み</h1></p>
+<p>        x = self.atom_embedding(atomic_numbers)</p>
+
+<p>        <h1>Matformerブロック</h1></p>
+<p>        for layer in self.layers:</p>
+<p>            x = layer(x, distance_matrix)</p>
+
+<p>        <h1>Global pooling</h1></p>
+<p>        x = x.transpose(1, 2)  <h1>(batch, d_model, num_atoms)</h1></p>
+<p>        x = self.pooling(x).squeeze(-1)  <h1>(batch, d_model)</h1></p>
+
+<p>        <h1>予測</h1></p>
+<p>        output = self.predictor(x)</p>
+<p>        return output</p>
+
+<p><h1>訓練</h1></p>
+<p>def train_matformer():</p>
+<p>    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')</p>
+
+<p>    <h1>データ</h1></p>
+<p>    dataset = MaterialsDataset(num_samples=100)</p>
+<p>    dataloader = DataLoader(dataset, batch_size=8, shuffle=True)</p>
+
+<p>    <h1>モデル</h1></p>
+<p>    model = SimpleMatformer(d_model=256, num_heads=8, num_layers=4).to(device)</p>
+
+<p>    <h1>最適化</h1></p>
+<p>    criterion = nn.MSELoss()</p>
+<p>    optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)</p>
+
+<p>    <h1>訓練ループ</h1></p>
+<p>    model.train()</p>
+<p>    for epoch in range(5):</p>
+<p>        total_loss = 0</p>
+<p>        for atomic_numbers, distance_matrix, target in dataloader:</p>
+<p>            atomic_numbers = atomic_numbers.to(device)</p>
+<p>            distance_matrix = distance_matrix.to(device)</p>
+<p>            target = target.to(device)</p>
+
+<p>            <h1>Forward</h1></p>
+<p>            predictions = model(atomic_numbers, distance_matrix)</p>
+<p>            loss = criterion(predictions, target)</p>
+
+<p>            <h1>Backward</h1></p>
+<p>            optimizer.zero_grad()</p>
+<p>            loss.backward()</p>
+<p>            optimizer.step()</p>
+
+<p>            total_loss += loss.item()</p>
+
+<p>        avg_loss = total_loss / len(dataloader)</p>
+<p>        print(f"Epoch {epoch+1}, Loss: {avg_loss:.4f}")</p>
+
+<p>    return model</p>
+
+<p><h1>実行</h1></p>
+<p>trained_model = train_matformer()</p>
+<p></code></pre></p>
+
+<p>---</p>
+
+<p><h2>2.7 まとめ</h2></p>
+
+<p><h3>重要ポイント</h3></p>
+
+<ol>
+<li><strong>Matformer</strong>: 距離を考慮したAttention、階層的構造</li>
+<li><strong>CrystalFormer</strong>: 周期境界条件、分数座標、空間群</li>
+<li><strong>ChemBERTa</strong>: SMILES表現学習、転移学習</li>
+<li><strong>Perceiver IO</strong>: 多様なデータ統合</li>
+</ol>
+
+<p><h3>次章への準備</h3></p>
+
+<p>第3章では、事前学習モデル（MatBERT、MolBERT）とファインチューニングを学びます。</p>
+
+<p>---</p>
+
+<p><h2>📝 演習問題</h2></p>
+
+<p><h3>問題1: 概念理解</h3></p>
+<p>Distance-aware Attentionが通常のAttentionより材料科学で優れている理由を3つ挙げてください。</p>
+
+<p><details></p>
+<p><summary>解答例</summary></p>
+
+<ol>
+<li><strong>化学結合の考慮</strong>: 原子間距離が近いほど相互作用が強いという物理法則を反映</li>
+<li><strong>長距離相互作用の抑制</strong>: 遠い原子への不要なAttentionを減らし、計算効率向上</li>
+<li><strong>解釈性の向上</strong>: Attention重みが化学的に意味のある結合強度と対応</li>
+</ol>
+<p></details></p>
+
+<p><h3>問題2: 実装</h3></p>
+<p>周期境界条件を考慮せずに距離を計算する単純な関数を実装してください。</p>
+
+<p><pre><code class="language-python">def compute_simple_distance(coords1, coords2):</p>
+<p>    """</p>
+<p>    単純な距離計算（周期境界条件なし）</p>
+
+<p>    Args:</p>
+<p>        coords1: (num_atoms1, 3)</p>
+<p>        coords2: (num_atoms2, 3)</p>
+<p>    Returns:</p>
+<p>        distances: (num_atoms1, num_atoms2)</p>
+<p>    """</p>
+<p>    <h1>ここに実装</h1></p>
+<p>    pass</p>
+<p></code></pre></p>
+
+<p><details></p>
+<p><summary>解答例</summary></p>
+
+<p><pre><code class="language-python">def compute_simple_distance(coords1, coords2):</p>
+<p>    diff = coords1.unsqueeze(1) - coords2.unsqueeze(0)</p>
+<p>    distances = torch.norm(diff, dim=-1)</p>
+<p>    return distances</p>
+<p></code></pre></p>
+<p></details></p>
+
+<p><h3>問題3: 応用</h3></p>
+<p>ChemBERTaを使って、分子の水溶解度を予測するモデルを設計してください。必要な層と構成を説明してください。</p>
+
+<p><details></p>
+<p><summary>解答例</summary></p>
+
+<p><pre><code class="language-python">class SolubilityPredictor(nn.Module):</p>
+<p>    def __init__(self):</p>
+<p>        super(SolubilityPredictor, self).__init__()</p>
+<p>        self.chemberta = ChemBERTaEmbedding()  <h1>768次元</h1></p>
+
+<p>        self.predictor = nn.Sequential(</p>
+<p>            nn.Linear(768, 512),</p>
+<p>            nn.ReLU(),</p>
+<p>            nn.Dropout(0.3),</p>
+<p>            nn.Linear(512, 256),</p>
+<p>            nn.ReLU(),</p>
+<p>            nn.Dropout(0.2),</p>
+<p>            nn.Linear(256, 1)  <h1>溶解度（連続値）</h1></p>
+<p>        )</p>
+
+<p>    def forward(self, input_ids, attention_mask):</p>
+<p>        embeddings = self.chemberta(input_ids, attention_mask)</p>
+<p>        solubility = self.predictor(embeddings)</p>
+<p>        return solubility</p>
+<p></code></pre></p>
+
+<p><strong>設計理由</strong>:</p>
+<ul>
+<li>ChemBERTaで分子の一般的な特徴を抽出</li>
+<li>3層の全結合層で溶解度に特化した表現に変換</li>
+<li>Dropoutで過学習を防止</li>
+<li>出力は連続値（log10(mol/L)など）</li>
+</ul>
+<p></details></p>
+
+<p>---</p>
+
+<p><strong>次章</strong>: <strong><a href="chapter-3.md">第3章: 事前学習モデルと転移学習</a></strong></p>
+
+<p>---</p>
+
+<p><strong>作成者</strong>: 橋本佑介（東北大学）</p>
+<p><strong>最終更新</strong>: 2025年10月17日</p>
+
+
+        
+        <div class="navigation">
+            <a href="chapter-3.html" class="nav-button">次章: 第3章 →</a>
+            <a href="index.html" class="nav-button">← シリーズ目次に戻る</a>
+            <a href="chapter-1.html" class="nav-button">← 前章: 第1章</a>
+        </div>
+    
+    </main>
+
+    <footer>
+        <p><strong>作成者</strong>: AI Terakoya Content Team</p>
+        <p><strong>監修</strong>: Dr. Yusuke Hashimoto(東北大学)</p>
+        <p><strong>バージョン</strong>: 1.0 | <strong>作成日</strong>: 2025-10-17</p>
+        <p><strong>ライセンス</strong>: Creative Commons BY 4.0</p>
+        <p>© 2025 AI Terakoya. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mermaidCodeBlocks = document.querySelectorAll('pre.codehilite code.language-mermaid, pre code.language-mermaid');
+
+            mermaidCodeBlocks.forEach(function(codeBlock) {
+                const pre = codeBlock.parentElement;
+                const mermaidCode = codeBlock.textContent;
+
+                const mermaidDiv = document.createElement('div');
+                mermaidDiv.className = 'mermaid';
+                mermaidDiv.textContent = mermaidCode.trim();
+
+                pre.parentNode.replaceChild(mermaidDiv, pre);
+            });
+
+            if (typeof mermaid !== 'undefined') {
+                mermaid.initialize({
+                    startOnLoad: true,
+                    theme: 'default'
+                });
+                mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+            }
+        });
+    </script>
+</body>
+</html>

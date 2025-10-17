@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untitled - AI Terakoya</title>
+
+    <style>
+        :root {
+            --color-primary: #2c3e50;
+            --color-primary-dark: #1a252f;
+            --color-accent: #7b2cbf;
+            --color-accent-light: #9d4edd;
+            --color-text: #2d3748;
+            --color-text-light: #4a5568;
+            --color-bg: #ffffff;
+            --color-bg-alt: #f7fafc;
+            --color-border: #e2e8f0;
+            --color-code-bg: #f8f9fa;
+            --color-link: #3182ce;
+            --color-link-hover: #2c5aa0;
+
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+
+            --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+
+            --border-radius: 8px;
+            --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            line-height: 1.7;
+            color: var(--color-text);
+            background-color: var(--color-bg);
+            font-size: 16px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+            color: white;
+            padding: var(--spacing-xl) var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--box-shadow);
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            font-weight: 400;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md) var(--spacing-xl);
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            color: var(--color-primary);
+            margin-top: var(--spacing-xl);
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-xs);
+            border-bottom: 3px solid var(--color-accent);
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            color: var(--color-primary);
+            margin-top: var(--spacing-lg);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            color: var(--color-primary-dark);
+            margin-top: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        p {
+            margin-bottom: var(--spacing-md);
+            color: var(--color-text);
+        }
+
+        a {
+            color: var(--color-link);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: var(--color-link-hover);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-left: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+        }
+
+        li {
+            margin-bottom: var(--spacing-xs);
+            color: var(--color-text);
+        }
+
+        pre {
+            background-color: var(--color-code-bg);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            overflow-x: auto;
+            margin-bottom: var(--spacing-md);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        code {
+            font-family: var(--font-mono);
+            font-size: 0.9em;
+            background-color: var(--color-code-bg);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: var(--spacing-md);
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            border: 1px solid var(--color-border);
+            padding: var(--spacing-sm);
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--color-bg-alt);
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        blockquote {
+            border-left: 4px solid var(--color-accent);
+            padding-left: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+            color: var(--color-text-light);
+            font-style: italic;
+            background-color: var(--color-bg-alt);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: var(--spacing-md);
+            margin: var(--spacing-xl) 0;
+            padding-top: var(--spacing-lg);
+            border-top: 2px solid var(--color-border);
+        }
+
+        .nav-button {
+            flex: 1;
+            padding: var(--spacing-md);
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+            color: white;
+            border-radius: var(--border-radius);
+            text-align: center;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: var(--box-shadow);
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            text-decoration: none;
+        }
+
+        footer {
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-lg) var(--spacing-md);
+            background-color: var(--color-bg-alt);
+            border-top: 1px solid var(--color-border);
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            h3 {
+                font-size: 1.2rem;
+            }
+
+            .meta {
+                font-size: 0.85rem;
+            }
+
+            .navigation {
+                flex-direction: column;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: var(--spacing-xs);
+            }
+        }
+    </style>
+
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Untitled</h1>
+            
+            <div class="meta">
+                <span class="meta-item">📖 読了時間: 20-30分</span>
+                <span class="meta-item">📊 難易度: 中級</span>
+                <span class="meta-item">💻 コード例: 5個</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <p><h1>第4章: 生成モデルと逆設計</h1></p>
+
+<p><strong>学習時間</strong>: 20-25分 | <strong>難易度</strong>: 上級</p>
+
+<p><h2>📋 この章で学ぶこと</h2></p>
+
+<ul>
+<li>拡散モデル（Diffusion Models）の原理</li>
+<li>条件付き生成（Conditional Generation）</li>
+<li>分子生成とSMILES生成</li>
+<li>材料逆設計（Inverse Design）</li>
+<li>産業応用とキャリアパス</li>
+</ul>
+
+<p>---</p>
+
+<p><h2>4.1 生成モデルとは</h2></p>
+
+<p><h3>材料科学における生成モデルの重要性</h3></p>
+
+<p><strong>従来のアプローチ（順問題）</strong>:</p>
+<p><pre><code class="language-">材料構造 → 特性予測</p>
+<p></code></pre></p>
+
+<p><strong>逆設計（逆問題）</strong>:</p>
+<p><pre><code class="language-">望ましい特性 → 材料構造生成</p>
+<p></code></pre></p>
+
+<p><strong>生成モデルの利点</strong>:</p>
+<ul>
+<li>✅ 広大な探索空間から候補を自動生成</li>
+<li>✅ 多目的最適化（複数の特性を同時に満足）</li>
+<li>✅ 合成可能性を考慮した生成</li>
+<li>✅ 人間の直感を超えた新規構造の発見</li>
+</ul>
+
+<p><pre><code class="language-mermaid">graph LR</p>
+<p>    A[目標特性] --> B[生成モデル]</p>
+<p>    C[制約条件] --> B</p>
+<p>    B --> D[候補材料]</p>
+<p>    D --> E[特性予測]</p>
+<p>    E --> F{目標達成?}</p>
+<p>    F -->|No| B</p>
+<p>    F -->|Yes| G[実験検証]</p>
+
+<p>    style B fill:#e1f5ff</p>
+<p>    style G fill:#ffe1e1</p>
+<p></code></pre></p>
+
+<p>---</p>
+
+<p><h2>4.2 拡散モデルの原理</h2></p>
+
+<p><h3>拡散モデルとは</h3></p>
+
+<p><strong>基本アイデア</strong>: ノイズ追加プロセスを逆転して、ノイズからデータを生成</p>
+
+<p><strong>Forward Process（ノイズ追加）</strong>:</p>
+<p>$$</p>
+<p>q(x_t | x_{t-1}) = \mathcal{N}(x_t; \sqrt{1-\beta_t} x_{t-1}, \beta_t I)</p>
+<p>$$</p>
+
+<p><strong>Reverse Process（ノイズ除去）</strong>:</p>
+<p>$$</p>
+<p>p_\theta(x_{t-1} | x_t) = \mathcal{N}(x_{t-1}; \mu_\theta(x_t, t), \Sigma_\theta(x_t, t))</p>
+<p>$$</p>
+
+<p><h3>視覚的理解</h3></p>
+
+<p><pre><code class="language-mermaid">graph LR</p>
+<p>    X0[元データ x₀] -->|ノイズ追加| X1[x₁]</p>
+<p>    X1 -->|ノイズ追加| X2[x₂]</p>
+<p>    X2 -->|...| XT[純粋ノイズ xₜ]</p>
+
+<p>    XT -->|ノイズ除去| X2R[x₂]</p>
+<p>    X2R -->|ノイズ除去| X1R[x₁]</p>
+<p>    X1R -->|ノイズ除去| X0R[生成データ x₀]</p>
+
+<p>    style X0 fill:#e1f5ff</p>
+<p>    style XT fill:#ffe1e1</p>
+<p>    style X0R fill:#e1ffe1</p>
+<p></code></pre></p>
+
+<p><h3>簡易実装</h3></p>
+
+<p><pre><code class="language-python">import torch</p>
+<p>import torch.nn as nn</p>
+<p>import torch.nn.functional as F</p>
+<p>import numpy as np</p>
+
+<p>class SimpleDiffusionModel(nn.Module):</p>
+<p>    def __init__(self, input_dim, hidden_dim=256, num_timesteps=1000):</p>
+<p>        super(SimpleDiffusionModel, self).__init__()</p>
+<p>        self.num_timesteps = num_timesteps</p>
+
+<p>        <h1>ノイズスケジュール</h1></p>
+<p>        self.betas = torch.linspace(1e-4, 0.02, num_timesteps)</p>
+<p>        self.alphas = 1.0 - self.betas</p>
+<p>        self.alphas_cumprod = torch.cumprod(self.alphas, dim=0)</p>
+
+<p>        <h1>ノイズ予測ネットワーク</h1></p>
+<p>        self.noise_predictor = nn.Sequential(</p>
+<p>            nn.Linear(input_dim + 1, hidden_dim),  <h1>+1はタイムステップ</h1></p>
+<p>            nn.ReLU(),</p>
+<p>            nn.Linear(hidden_dim, hidden_dim),</p>
+<p>            nn.ReLU(),</p>
+<p>            nn.Linear(hidden_dim, input_dim)</p>
+<p>        )</p>
+
+<p>    def forward_process(self, x0, t):</p>
+<p>        """</p>
+<p>        Forward process: ノイズ追加</p>
+
+<p>        Args:</p>
+<p>            x0: 元データ (batch_size, input_dim)</p>
+<p>            t: タイムステップ (batch_size,)</p>
+<p>        Returns:</p>
+<p>            xt: ノイズが追加されたデータ</p>
+<p>            noise: 追加されたノイズ</p>
+<p>        """</p>
+<p>        batch_size = x0.size(0)</p>
+
+<p>        <h1>タイムステップごとのノイズレベル</h1></p>
+<p>        alpha_t = self.alphas_cumprod[t].view(-1, 1)</p>
+<p>        sqrt_alpha_t = torch.sqrt(alpha_t)</p>
+<p>        sqrt_one_minus_alpha_t = torch.sqrt(1 - alpha_t)</p>
+
+<p>        <h1>ノイズをサンプリング</h1></p>
+<p>        noise = torch.randn_like(x0)</p>
+
+<p>        <h1>ノイズを追加</h1></p>
+<p>        xt = sqrt_alpha_t <em> x0 + sqrt_one_minus_alpha_t </em> noise</p>
+
+<p>        return xt, noise</p>
+
+<p>    def predict_noise(self, xt, t):</p>
+<p>        """</p>
+<p>        ノイズを予測</p>
+
+<p>        Args:</p>
+<p>            xt: ノイズが追加されたデータ</p>
+<p>            t: タイムステップ</p>
+<p>        Returns:</p>
+<p>            predicted_noise: 予測されたノイズ</p>
+<p>        """</p>
+<p>        <h1>タイムステップを埋め込み</h1></p>
+<p>        t_embed = t.float().unsqueeze(1) / self.num_timesteps</p>
+
+<p>        <h1>ノイズ予測</h1></p>
+<p>        x_with_t = torch.cat([xt, t_embed], dim=1)</p>
+<p>        predicted_noise = self.noise_predictor(x_with_t)</p>
+
+<p>        return predicted_noise</p>
+
+<p>    def reverse_process(self, xt, t):</p>
+<p>        """</p>
+<p>        Reverse process: ノイズ除去（1ステップ）</p>
+
+<p>        Args:</p>
+<p>            xt: 現在のデータ</p>
+<p>            t: タイムステップ</p>
+<p>        Returns:</p>
+<p>            x_prev: 1ステップ前のデータ</p>
+<p>        """</p>
+<p>        <h1>ノイズを予測</h1></p>
+<p>        predicted_noise = self.predict_noise(xt, t)</p>
+
+<p>        <h1>パラメータ</h1></p>
+<p>        alpha_t = self.alphas[t].view(-1, 1)</p>
+<p>        alpha_t_cumprod = self.alphas_cumprod[t].view(-1, 1)</p>
+<p>        beta_t = self.betas[t].view(-1, 1)</p>
+
+<p>        <h1>前のステップを計算</h1></p>
+<p>        x_prev = (1 / torch.sqrt(alpha_t)) * (</p>
+<p>            xt - (beta_t / torch.sqrt(1 - alpha_t_cumprod)) * predicted_noise</p>
+<p>        )</p>
+
+<p>        <h1>ノイズを追加（t > 0の場合）</h1></p>
+<p>        if t[0] > 0:</p>
+<p>            noise = torch.randn_like(xt)</p>
+<p>            x_prev = x_prev + torch.sqrt(beta_t) * noise</p>
+
+<p>        return x_prev</p>
+
+<p>    def generate(self, batch_size, input_dim):</p>
+<p>        """</p>
+<p>        データを生成</p>
+
+<p>        Args:</p>
+<p>            batch_size: バッチサイズ</p>
+<p>            input_dim: データ次元</p>
+<p>        Returns:</p>
+<p>            x0: 生成されたデータ</p>
+<p>        """</p>
+<p>        <h1>純粋ノイズから開始</h1></p>
+<p>        xt = torch.randn(batch_size, input_dim)</p>
+
+<p>        <h1>逆プロセスを実行</h1></p>
+<p>        for t in reversed(range(self.num_timesteps)):</p>
+<p>            t_batch = torch.full((batch_size,), t, dtype=torch.long)</p>
+<p>            xt = self.reverse_process(xt, t_batch)</p>
+
+<p>        return xt</p>
+
+<p><h1>使用例: 分子記述子の生成</h1></p>
+<p>input_dim = 128  <h1>記述子の次元</h1></p>
+<p>diffusion_model = SimpleDiffusionModel(input_dim, hidden_dim=256, num_timesteps=100)</p>
+
+<p><h1>訓練データ（ダミー）</h1></p>
+<p>x0 = torch.randn(64, input_dim)  <h1>64分子の記述子</h1></p>
+
+<p><h1>Forward process（ノイズ追加）</h1></p>
+<p>t = torch.randint(0, 100, (64,))</p>
+<p>xt, noise = diffusion_model.forward_process(x0, t)</p>
+
+<p><h1>ノイズ予測</h1></p>
+<p>predicted_noise = diffusion_model.predict_noise(xt, t)</p>
+
+<p><h1>損失</h1></p>
+<p>loss = F.mse_loss(predicted_noise, noise)</p>
+<p>print(f"Training loss: {loss.item():.4f}")</p>
+
+<p><h1>生成</h1></p>
+<p>generated_data = diffusion_model.generate(batch_size=10, input_dim=input_dim)</p>
+<p>print(f"Generated data shape: {generated_data.shape}")</p>
+<p></code></pre></p>
+
+<p>---</p>
+
+<p><h2>4.3 条件付き生成</h2></p>
+
+<p><h3>概要</h3></p>
+
+<p><strong>条件付き生成</strong>: 目標特性を条件として与えて生成</p>
+
+<p><strong>例</strong>:</p>
+<p><pre><code class="language-python"><h1>条件: バンドギャップ = 2.0 eV、形成エネルギー < 0</h1></p>
+<p><h1>生成: 条件を満たす材料構造</h1></p>
+<p></code></pre></p>
+
+<p><h3>実装: Conditional Diffusion</h3></p>
+
+<p><pre><code class="language-python">class ConditionalDiffusionModel(nn.Module):</p>
+<p>    def __init__(self, input_dim, condition_dim, hidden_dim=256, num_timesteps=1000):</p>
+<p>        super(ConditionalDiffusionModel, self).__init__()</p>
+<p>        self.num_timesteps = num_timesteps</p>
+
+<p>        <h1>ノイズスケジュール</h1></p>
+<p>        self.betas = torch.linspace(1e-4, 0.02, num_timesteps)</p>
+<p>        self.alphas = 1.0 - self.betas</p>
+<p>        self.alphas_cumprod = torch.cumprod(self.alphas, dim=0)</p>
+
+<p>        <h1>条件エンコーダ</h1></p>
+<p>        self.condition_encoder = nn.Sequential(</p>
+<p>            nn.Linear(condition_dim, hidden_dim),</p>
+<p>            nn.ReLU(),</p>
+<p>            nn.Linear(hidden_dim, hidden_dim)</p>
+<p>        )</p>
+
+<p>        <h1>ノイズ予測ネットワーク（条件付き）</h1></p>
+<p>        self.noise_predictor = nn.Sequential(</p>
+<p>            nn.Linear(input_dim + hidden_dim + 1, hidden_dim),  <h1>+1はタイムステップ</h1></p>
+<p>            nn.ReLU(),</p>
+<p>            nn.Linear(hidden_dim, hidden_dim),</p>
+<p>            nn.ReLU(),</p>
+<p>            nn.Linear(hidden_dim, input_dim)</p>
+<p>        )</p>
+
+<p>    def predict_noise(self, xt, t, condition):</p>
+<p>        """</p>
+<p>        条件付きノイズ予測</p>
+
+<p>        Args:</p>
+<p>            xt: ノイズが追加されたデータ (batch_size, input_dim)</p>
+<p>            t: タイムステップ (batch_size,)</p>
+<p>            condition: 条件（目標特性） (batch_size, condition_dim)</p>
+<p>        Returns:</p>
+<p>            predicted_noise: 予測されたノイズ</p>
+<p>        """</p>
+<p>        <h1>条件を埋め込み</h1></p>
+<p>        condition_embed = self.condition_encoder(condition)</p>
+
+<p>        <h1>タイムステップを埋め込み</h1></p>
+<p>        t_embed = t.float().unsqueeze(1) / self.num_timesteps</p>
+
+<p>        <h1>結合</h1></p>
+<p>        x_with_condition = torch.cat([xt, condition_embed, t_embed], dim=1)</p>
+
+<p>        <h1>ノイズ予測</h1></p>
+<p>        predicted_noise = self.noise_predictor(x_with_condition)</p>
+
+<p>        return predicted_noise</p>
+
+<p>    def generate_conditional(self, condition, input_dim):</p>
+<p>        """</p>
+<p>        条件付きデータ生成</p>
+
+<p>        Args:</p>
+<p>            condition: 条件 (batch_size, condition_dim)</p>
+<p>            input_dim: データ次元</p>
+<p>        Returns:</p>
+<p>            x0: 生成されたデータ</p>
+<p>        """</p>
+<p>        batch_size = condition.size(0)</p>
+
+<p>        <h1>純粋ノイズから開始</h1></p>
+<p>        xt = torch.randn(batch_size, input_dim)</p>
+
+<p>        <h1>逆プロセス</h1></p>
+<p>        for t in reversed(range(self.num_timesteps)):</p>
+<p>            t_batch = torch.full((batch_size,), t, dtype=torch.long)</p>
+
+<p>            <h1>ノイズ予測</h1></p>
+<p>            predicted_noise = self.predict_noise(xt, t_batch, condition)</p>
+
+<p>            <h1>パラメータ</h1></p>
+<p>            alpha_t = self.alphas[t]</p>
+<p>            alpha_t_cumprod = self.alphas_cumprod[t]</p>
+<p>            beta_t = self.betas[t]</p>
+
+<p>            <h1>前のステップを計算</h1></p>
+<p>            xt = (1 / torch.sqrt(alpha_t)) * (</p>
+<p>                xt - (beta_t / torch.sqrt(1 - alpha_t_cumprod)) * predicted_noise</p>
+<p>            )</p>
+
+<p>            <h1>ノイズを追加（t > 0の場合）</h1></p>
+<p>            if t > 0:</p>
+<p>                noise = torch.randn_like(xt)</p>
+<p>                xt = xt + torch.sqrt(beta_t) * noise</p>
+
+<p>        return xt</p>
+
+<p><h1>使用例</h1></p>
+<p>input_dim = 128</p>
+<p>condition_dim = 3  <h1>バンドギャップ、形成エネルギー、磁気モーメント</h1></p>
+
+<p>conditional_model = ConditionalDiffusionModel(input_dim, condition_dim, hidden_dim=256, num_timesteps=100)</p>
+
+<p><h1>目標特性</h1></p>
+<p>target_properties = torch.tensor([</p>
+<p>    [2.0, -0.5, 0.0],  <h1>バンドギャップ2.0eV、形成エネルギー-0.5eV、非磁性</h1></p>
+<p>    [3.5, -1.0, 2.0],  <h1>バンドギャップ3.5eV、形成エネルギー-1.0eV、磁性</h1></p>
+<p>])</p>
+
+<p><h1>条件付き生成</h1></p>
+<p>generated_materials = conditional_model.generate_conditional(target_properties, input_dim)</p>
+<p>print(f"Generated materials shape: {generated_materials.shape}")  <h1>(2, 128)</h1></p>
+<p></code></pre></p>
+
+<p>---</p>
+
+<p><h2>4.4 分子生成: SMILES生成</h2></p>
+
+<p><h3>概要</h3></p>
+
+<p><strong>SMILES（Simplified Molecular Input Line Entry System）</strong>: 分子を文字列で表現</p>
+
+<p><strong>例</strong>:</p>
+<ul>
+<li>エタノール: <code>CCO</code></li>
+<li>ベンゼン: <code>c1ccccc1</code></li>
+<li>アスピリン: <code>CC(=O)Oc1ccccc1C(=O)O</code></li>
+</ul>
+
+<p><h3>Transformer-based SMILES生成</h3></p>
+
+<p><pre><code class="language-python">from transformers import GPT2Config, GPT2LMHeadModel, GPT2Tokenizer</p>
+
+<p>class SMILESGenerator(nn.Module):</p>
+<p>    def __init__(self, vocab_size=1000, d_model=512, num_layers=6):</p>
+<p>        super(SMILESGenerator, self).__init__()</p>
+
+<p>        <h1>GPT-2 config</h1></p>
+<p>        config = GPT2Config(</p>
+<p>            vocab_size=vocab_size,</p>
+<p>            n_positions=512,</p>
+<p>            n_embd=d_model,</p>
+<p>            n_layer=num_layers,</p>
+<p>            n_head=8</p>
+<p>        )</p>
+
+<p>        self.gpt = GPT2LMHeadModel(config)</p>
+
+<p>    def forward(self, input_ids, labels=None):</p>
+<p>        """</p>
+<p>        Args:</p>
+<p>            input_ids: (batch_size, seq_len)</p>
+<p>            labels: (batch_size, seq_len) 次トークン予測のターゲット</p>
+<p>        """</p>
+<p>        outputs = self.gpt(input_ids, labels=labels)</p>
+<p>        return outputs</p>
+
+<p>    def generate_smiles(self, start_token_id, max_length=100, temperature=1.0):</p>
+<p>        """</p>
+<p>        SMILES文字列を生成</p>
+
+<p>        Args:</p>
+<p>            start_token_id: 開始トークンID</p>
+<p>            max_length: 最大長</p>
+<p>            temperature: サンプリング温度（高いほどランダム）</p>
+<p>        Returns:</p>
+<p>            generated_ids: 生成されたトークンID</p>
+<p>        """</p>
+<p>        generated = [start_token_id]</p>
+
+<p>        for _ in range(max_length):</p>
+<p>            input_ids = torch.tensor([generated])</p>
+<p>            outputs = self.gpt(input_ids)</p>
+<p>            logits = outputs.logits[:, -1, :] / temperature</p>
+
+<p>            <h1>サンプリング</h1></p>
+<p>            probs = F.softmax(logits, dim=-1)</p>
+<p>            next_token = torch.multinomial(probs, num_samples=1).item()</p>
+
+<p>            generated.append(next_token)</p>
+
+<p>            <h1>終了トークンなら停止</h1></p>
+<p>            if next_token == 2:  <h1>[EOS]</h1></p>
+<p>                break</p>
+
+<p>        return generated</p>
+
+<p><h1>条件付きSMILES生成</h1></p>
+<p>class ConditionalSMILESGenerator(nn.Module):</p>
+<p>    def __init__(self, vocab_size=1000, condition_dim=10, d_model=512):</p>
+<p>        super(ConditionalSMILESGenerator, self).__init__()</p>
+
+<p>        <h1>条件エンコーダ</h1></p>
+<p>        self.condition_encoder = nn.Linear(condition_dim, d_model)</p>
+
+<p>        <h1>GPT-2 config</h1></p>
+<p>        config = GPT2Config(</p>
+<p>            vocab_size=vocab_size,</p>
+<p>            n_positions=512,</p>
+<p>            n_embd=d_model,</p>
+<p>            n_layer=6,</p>
+<p>            n_head=8</p>
+<p>        )</p>
+<p>        self.gpt = GPT2LMHeadModel(config)</p>
+
+<p>    def forward(self, input_ids, condition):</p>
+<p>        """</p>
+<p>        Args:</p>
+<p>            input_ids: (batch_size, seq_len)</p>
+<p>            condition: (batch_size, condition_dim) 目標特性</p>
+<p>        """</p>
+<p>        batch_size, seq_len = input_ids.shape</p>
+
+<p>        <h1>条件を埋め込み</h1></p>
+<p>        condition_embed = self.condition_encoder(condition).unsqueeze(1)  <h1>(batch, 1, d_model)</h1></p>
+
+<p>        <h1>トークン埋め込み</h1></p>
+<p>        token_embeddings = self.gpt.transformer.wte(input_ids)</p>
+
+<p>        <h1>条件を先頭に追加</h1></p>
+<p>        embeddings = torch.cat([condition_embed, token_embeddings], dim=1)</p>
+
+<p>        <h1>GPT-2 forward（埋め込みから直接）</h1></p>
+<p>        outputs = self.gpt(inputs_embeds=embeddings)</p>
+
+<p>        return outputs</p>
+
+<p><h1>使用例: 溶解度が高い分子を生成</h1></p>
+<p>condition_dim = 5  <h1>logP, 溶解度, 分子量, HBドナー数, HBアクセプター数</h1></p>
+<p>target_properties = torch.tensor([[1.5, 10.0, 250.0, 2.0, 3.0]])  <h1>高溶解度</h1></p>
+
+<p>conditional_smiles_gen = ConditionalSMILESGenerator(vocab_size=1000, condition_dim=condition_dim)</p>
+<p></code></pre></p>
+
+<p>---</p>
+
+<p><h2>4.5 材料逆設計のワークフロー</h2></p>
+
+<p><h3>完全なワークフロー</h3></p>
+
+<p><pre><code class="language-mermaid">graph TB</p>
+<p>    A[目標特性定義] --> B[条件付き生成モデル]</p>
+<p>    B --> C[候補材料生成]</p>
+<p>    C --> D[特性予測モデル]</p>
+<p>    D --> E{目標達成?}</p>
+<p>    E -->|No| F[候補除外]</p>
+<p>    F --> B</p>
+<p>    E -->|Yes| G[合成可能性チェック]</p>
+<p>    G --> H{合成可能?}</p>
+<p>    H -->|No| F</p>
+<p>    H -->|Yes| I[安定性計算]</p>
+<p>    I --> J{安定?}</p>
+<p>    J -->|No| F</p>
+<p>    J -->|Yes| K[実験候補リスト]</p>
+
+<p>    style A fill:#e1f5ff</p>
+<p>    style K fill:#e1ffe1</p>
+<p></code></pre></p>
+
+<p><h3>実装例</h3></p>
+
+<p><pre><code class="language-python">class MaterialsInverseDesign:</p>
+<p>    def __init__(self, generator, predictor, synthesizability_checker):</p>
+<p>        """</p>
+<p>        材料逆設計システム</p>
+
+<p>        Args:</p>
+<p>            generator: 条件付き生成モデル</p>
+<p>            predictor: 特性予測モデル</p>
+<p>            synthesizability_checker: 合成可能性チェッカー</p>
+<p>        """</p>
+<p>        self.generator = generator</p>
+<p>        self.predictor = predictor</p>
+<p>        self.synthesizability_checker = synthesizability_checker</p>
+
+<p>    def design_materials(self, target_properties, num_candidates=100, threshold=0.1):</p>
+<p>        """</p>
+<p>        材料を逆設計</p>
+
+<p>        Args:</p>
+<p>            target_properties: 目標特性 (condition_dim,)</p>
+<p>            num_candidates: 生成する候補数</p>
+<p>            threshold: 許容誤差</p>
+<p>        Returns:</p>
+<p>            valid_materials: 検証を通過した材料リスト</p>
+<p>        """</p>
+<p>        valid_materials = []</p>
+
+<p>        for i in range(num_candidates):</p>
+<p>            <h1>1. 候補生成</h1></p>
+<p>            candidate = self.generator.generate_conditional(</p>
+<p>                target_properties.unsqueeze(0),</p>
+<p>                input_dim=128</p>
+<p>            )</p>
+
+<p>            <h1>2. 特性予測</h1></p>
+<p>            predicted_properties = self.predictor(candidate)</p>
+
+<p>            <h1>3. 目標との比較</h1></p>
+<p>            error = torch.abs(predicted_properties - target_properties).mean()</p>
+<p>            if error > threshold:</p>
+<p>                continue</p>
+
+<p>            <h1>4. 合成可能性チェック</h1></p>
+<p>            if not self.synthesizability_checker(candidate):</p>
+<p>                continue</p>
+
+<p>            <h1>5. 安定性チェック（省略）</h1></p>
+
+<p>            <h1>合格</h1></p>
+<p>            valid_materials.append({</p>
+<p>                'structure': candidate,</p>
+<p>                'predicted_properties': predicted_properties,</p>
+<p>                'error': error.item()</p>
+<p>            })</p>
+
+<p>        <h1>誤差でソート</h1></p>
+<p>        valid_materials.sort(key=lambda x: x['error'])</p>
+
+<p>        return valid_materials</p>
+
+<p><h1>使用例</h1></p>
+<p>def simple_synthesizability_checker(structure):</p>
+<p>    """</p>
+<p>    簡易合成可能性チェック（実際はより複雑）</p>
+<p>    """</p>
+<p>    <h1>ここでは常にTrueを返す（実際はRetrosynなどを使用）</h1></p>
+<p>    return True</p>
+
+<p><h1>システム構築</h1></p>
+<p>inverse_design_system = MaterialsInverseDesign(</p>
+<p>    generator=conditional_model,</p>
+<p>    predictor=lambda x: torch.randn(x.size(0), 3),  <h1>ダミー予測器</h1></p>
+<p>    synthesizability_checker=simple_synthesizability_checker</p>
+<p>)</p>
+
+<p><h1>目標特性</h1></p>
+<p>target = torch.tensor([2.5, -0.8, 0.0])  <h1>バンドギャップ、形成エネルギー、磁気モーメント</h1></p>
+
+<p><h1>逆設計実行</h1></p>
+<p>designed_materials = inverse_design_system.design_materials(target, num_candidates=50)</p>
+<p>print(f"Found {len(designed_materials)} valid materials")</p>
+
+<p><h1>上位3つを表示</h1></p>
+<p>for i, material in enumerate(designed_materials[:3]):</p>
+<p>    print(f"\nMaterial {i+1}:")</p>
+<p>    print(f"  Predicted properties: {material['predicted_properties']}")</p>
+<p>    print(f"  Error: {material['error']:.4f}")</p>
+<p></code></pre></p>
+
+<p>---</p>
+
+<p><h2>4.6 産業応用とキャリア</h2></p>
+
+<p><h3>実世界の成功事例</h3></p>
+
+<p><h4>1. 創薬: 新規抗生物質の発見</h4></p>
+
+<p><strong>MIT (2020)</strong>:</p>
+<ul>
+<li><strong>手法</strong>: 拡散モデルで分子生成</li>
+<li><strong>成果</strong>: halicin（新規抗生物質）発見</li>
+<li><strong>インパクト</strong>: 従来手法より100倍高速</li>
+</ul>
+
+<p><h4>2. 電池材料: 高エネルギー密度電解質</h4></p>
+
+<p><strong>Stanford/Toyota (2022)</strong>:</p>
+<ul>
+<li><strong>手法</strong>: Transformer + 強化学習</li>
+<li><strong>成果</strong>: リチウム伝導度1.5倍の固体電解質</li>
+<li><strong>インパクト</strong>: 全固体電池の実用化加速</li>
+</ul>
+
+<p><h4>3. 触媒: CO₂還元触媒</h4></p>
+
+<p><strong>CMU (2023)</strong>:</p>
+<ul>
+<li><strong>手法</strong>: 条件付き生成 + DFT計算</li>
+<li><strong>成果</strong>: 効率10倍の触媒発見</li>
+<li><strong>インパクト</strong>: カーボンニュートラル実現への貢献</li>
+</ul>
+
+<p><h3>キャリアパス</h3></p>
+
+<p><strong>AI材料設計エンジニア</strong>:</p>
+<ul>
+<li><strong>職種</strong>: 製薬、化学、材料メーカーのR&D</li>
+<li><strong>年収</strong>: 800-1500万円（日本）、$120k-$250k（米国）</li>
+<li><strong>必要スキル</strong>: Transformer、生成モデル、材料科学</li>
+</ul>
+
+<p><strong>研究者（アカデミア）</strong>:</p>
+<ul>
+<li><strong>職種</strong>: 大学・研究機関のPI</li>
+<li><strong>研究分野</strong>: AI材料科学、計算材料科学</li>
+<li><strong>競争力</strong>: Nature/Science級の論文が求められる</li>
+</ul>
+
+<p><strong>スタートアップ創業</strong>:</p>
+<ul>
+<li><strong>例</strong>: Insilico Medicine（創薬AI）、Citrine Informatics（材料AI）</li>
+<li><strong>資金調達</strong>: シリーズA〜C、数億〜数十億円</li>
+<li><strong>成功例</strong>: IPO、大手企業への買収</li>
+</ul>
+
+<p>---</p>
+
+<p><h2>4.7 まとめ</h2></p>
+
+<p><h3>重要ポイント</h3></p>
+
+<ol>
+<li><strong>拡散モデル</strong>: ノイズから高品質データを生成</li>
+<li><strong>条件付き生成</strong>: 目標特性を指定して材料設計</li>
+<li><strong>SMILES生成</strong>: Transformerで分子構造を生成</li>
+<li><strong>逆設計</strong>: 特性から構造への逆向き探索</li>
+<li><strong>産業応用</strong>: 創薬、電池、触媒で実用化進む</li>
+</ol>
+
+<p><h3>シリーズのまとめ</h3></p>
+
+<p><strong>第1章</strong>: Transformer基礎、Attention機構</p>
+<p><strong>第2章</strong>: 材料特化アーキテクチャ（Matformer、ChemBERTa）</p>
+<p><strong>第3章</strong>: 事前学習モデル、転移学習</p>
+<p><strong>第4章</strong>: 生成モデル、逆設計</p>
+
+<p><strong>次のステップ</strong>:</p>
+<ol>
+<li>実践プロジェクトで経験を積む</li>
+<li>最新論文を読んで知識を更新</li>
+<li>Kaggleコンペに参加して実力を試す</li>
+<li>コミュニティに参加して情報交換</li>
+</ol>
+
+<p>---</p>
+
+<p><h2>📝 演習問題</h2></p>
+
+<p><h3>問題1: 概念理解</h3></p>
+<p>拡散モデルが従来の生成モデル（VAE、GAN）と比べて優れている点を3つ挙げてください。</p>
+
+<p><details></p>
+<p><summary>解答例</summary></p>
+
+<ol>
+<li><strong>学習の安定性</strong>: GANのようなmode collapseが起こりにくい</li>
+<li><strong>サンプル品質</strong>: 高品質で多様なサンプルを生成可能</li>
+<li><strong>柔軟な条件付け</strong>: 様々な条件（特性、制約）を容易に組み込める</li>
+</ol>
+
+<p>追加:</p>
+<ul>
+<li><strong>解釈性</strong>: 生成プロセスが段階的で理解しやすい</li>
+<li><strong>スケーラビリティ</strong>: 大規模データでも効率的に学習</li>
+</ul>
+<p></details></p>
+
+<p><h3>問題2: 実装</h3></p>
+<p>条件付き生成で、複数の目標特性（バンドギャップ、形成エネルギー）を同時に満たす材料を生成するコードを書いてください。</p>
+
+<p><pre><code class="language-python">def multi_objective_generation(generator, target_bandgap, target_formation_energy, num_samples=10):</p>
+<p>    """</p>
+<p>    多目的最適化で材料を生成</p>
+
+<p>    Args:</p>
+<p>        generator: 条件付き生成モデル</p>
+<p>        target_bandgap: 目標バンドギャップ（eV）</p>
+<p>        target_formation_energy: 目標形成エネルギー（eV/atom）</p>
+<p>        num_samples: 生成数</p>
+<p>    Returns:</p>
+<p>        generated_materials: 生成された材料のリスト</p>
+<p>    """</p>
+<p>    <h1>ここに実装</h1></p>
+<p>    pass</p>
+<p></code></pre></p>
+
+<p><details></p>
+<p><summary>解答例</summary></p>
+
+<p><pre><code class="language-python">def multi_objective_generation(generator, target_bandgap, target_formation_energy, num_samples=10):</p>
+<p>    <h1>条件を作成</h1></p>
+<p>    condition = torch.tensor([[target_bandgap, target_formation_energy]])</p>
+<p>    condition = condition.repeat(num_samples, 1)</p>
+
+<p>    <h1>生成</h1></p>
+<p>    generated_materials = generator.generate_conditional(condition, input_dim=128)</p>
+
+<p>    return generated_materials</p>
+
+<p><h1>使用例</h1></p>
+<p>target_bg = 2.0  <h1>2.0 eV</h1></p>
+<p>target_fe = -0.5  <h1>-0.5 eV/atom</h1></p>
+
+<p>materials = multi_objective_generation(conditional_model, target_bg, target_fe, num_samples=20)</p>
+<p>print(f"Generated {materials.shape[0]} materials")</p>
+<p></code></pre></p>
+<p></details></p>
+
+<p><h3>問題3: 応用</h3></p>
+<p>材料逆設計において、生成された候補材料を評価する際の重要な基準を5つ挙げ、それぞれを説明してください。</p>
+
+<p><details></p>
+<p><summary>解答例</summary></p>
+
+<ol>
+<li><strong>目標特性の達成度</strong>:</li>
+</ol>
+<p>   - 予測特性が目標値にどれだけ近いか</p>
+<p>   - 複数特性の場合、パレート最適性</p>
+
+<ol>
+<li><strong>合成可能性</strong>:</li>
+</ol>
+<p>   - 既知の合成手法で作製可能か</p>
+<p>   - 前駆体の入手可能性</p>
+<p>   - 合成条件（温度、圧力）の実現可能性</p>
+
+<ol>
+<li><strong>熱力学的安定性</strong>:</li>
+</ol>
+<p>   - 形成エネルギーが負（安定相）</p>
+<p>   - 他の結晶構造と比較して最安定</p>
+<p>   - 分解反応に対する安定性</p>
+
+<ol>
+<li><strong>化学的妥当性</strong>:</li>
+</ol>
+<p>   - 原子価則を満たす</p>
+<p>   - 結合距離・角度が妥当</p>
+<p>   - 既知の化学系と整合</p>
+
+<ol>
+<li><strong>コストと環境負荷</strong>:</li>
+</ol>
+<p>   - 構成元素の価格と埋蔵量</p>
+<p>   - 有害元素（Cd、Pb等）の使用</p>
+<p>   - リサイクル可能性</p>
+<p></details></p>
+
+<p>---</p>
+
+<p><h2>🎓 シリーズ完了おめでとうございます！</h2></p>
+
+<p>このシリーズを完了したあなたは、Transformerと生成モデルの基礎から応用まで、材料科学での活用方法を習得しました。</p>
+
+<p><h3>次のステップ</h3></p>
+
+<ol>
+<li><strong>実践プロジェクト</strong>:</li>
+</ol>
+<p>   - Materials Projectデータで材料特性予測</p>
+<p>   - QM9データセットで分子生成</p>
+<p>   - 独自データでファインチューニング</p>
+
+<ol>
+<li><strong>論文実装</strong>:</li>
+</ol>
+<p>   - Matformer論文を読んで実装</p>
+<p>   - 最新の生成モデル論文に挑戦</p>
+
+<ol>
+<li><strong>コンペティーション</strong>:</li>
+</ol>
+<p>   - Open Catalyst Challenge</p>
+<p>   - Kaggleの分子予測コンペ</p>
+
+<ol>
+<li><strong>コミュニティ参加</strong>:</li>
+</ol>
+<p>   - Hugging Face Forum</p>
+<p>   - Materials Project Community</p>
+<p>   - 材料科学のカンファレンス（MRS、APS）</p>
+
+<p>---</p>
+
+<p><h2>🔗 参考資料</h2></p>
+
+<p><h3>論文</h3></p>
+<ul>
+<li>Ho et al. (2020) "Denoising Diffusion Probabilistic Models"</li>
+<li>Chen et al. (2022) "Matformer: Nested Transformer for Elastic Inference"</li>
+<li>Xie et al. (2021) "Crystal Diffusion Variational Autoencoder"</li>
+<li>Stokes et al. (2020) "A Deep Learning Approach to Antibiotic Discovery" (Nature)</li>
+</ul>
+
+<p><h3>ツール</h3></p>
+<ul>
+<li><a href="https://github.com/huggingface/diffusers">Hugging Face Diffusers</a></li>
+<li><a href="https://www.rdkit.org/">RDKit</a> - 分子処理</li>
+<li><a href="https://materialsproject.org/">Materials Project API</a></li>
+</ul>
+
+<p><h3>次のシリーズ</h3></p>
+<ul>
+<li><strong>強化学習入門</strong>: 材料探索への強化学習適用</li>
+<li><strong>GNN入門</strong>: グラフニューラルネットワークで分子・材料表現</li>
+</ul>
+
+<p>---</p>
+
+<p><strong>作成者</strong>: 橋本佑介（東北大学）</p>
+<p><strong>最終更新</strong>: 2025年10月17日</p>
+<p><strong>シリーズ</strong>: Transformer・Foundation Models入門（全4章完）</p>
+
+<p><strong>ライセンス</strong>: CC BY 4.0</p>
+
+
+        
+        <div class="navigation">
+            <a href="chapter-5.html" class="nav-button">次章: 第5章 →</a>
+            <a href="index.html" class="nav-button">← シリーズ目次に戻る</a>
+            <a href="chapter-3.html" class="nav-button">← 前章: 第3章</a>
+        </div>
+    
+    </main>
+
+    <footer>
+        <p><strong>作成者</strong>: AI Terakoya Content Team</p>
+        <p><strong>監修</strong>: Dr. Yusuke Hashimoto(東北大学)</p>
+        <p><strong>バージョン</strong>: 1.0 | <strong>作成日</strong>: 2025-10-17</p>
+        <p><strong>ライセンス</strong>: Creative Commons BY 4.0</p>
+        <p>© 2025 AI Terakoya. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mermaidCodeBlocks = document.querySelectorAll('pre.codehilite code.language-mermaid, pre code.language-mermaid');
+
+            mermaidCodeBlocks.forEach(function(codeBlock) {
+                const pre = codeBlock.parentElement;
+                const mermaidCode = codeBlock.textContent;
+
+                const mermaidDiv = document.createElement('div');
+                mermaidDiv.className = 'mermaid';
+                mermaidDiv.textContent = mermaidCode.trim();
+
+                pre.parentNode.replaceChild(mermaidDiv, pre);
+            });
+
+            if (typeof mermaid !== 'undefined') {
+                mermaid.initialize({
+                    startOnLoad: true,
+                    theme: 'default'
+                });
+                mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+            }
+        });
+    </script>
+</body>
+</html>

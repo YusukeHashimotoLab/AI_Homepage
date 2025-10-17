@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1章：ハイスループット計算の必要性とワークフロー設計 - AI Terakoya</title>
+
+    <style>
+        :root {
+            --color-primary: #2c3e50;
+            --color-primary-dark: #1a252f;
+            --color-accent: #7b2cbf;
+            --color-accent-light: #9d4edd;
+            --color-text: #2d3748;
+            --color-text-light: #4a5568;
+            --color-bg: #ffffff;
+            --color-bg-alt: #f7fafc;
+            --color-border: #e2e8f0;
+            --color-code-bg: #f8f9fa;
+            --color-link: #3182ce;
+            --color-link-hover: #2c5aa0;
+
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+
+            --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+
+            --border-radius: 8px;
+            --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            line-height: 1.7;
+            color: var(--color-text);
+            background-color: var(--color-bg);
+            font-size: 16px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+            color: white;
+            padding: var(--spacing-xl) var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--box-shadow);
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            font-weight: 400;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md) var(--spacing-xl);
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            color: var(--color-primary);
+            margin-top: var(--spacing-xl);
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-xs);
+            border-bottom: 3px solid var(--color-accent);
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            color: var(--color-primary);
+            margin-top: var(--spacing-lg);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            color: var(--color-primary-dark);
+            margin-top: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        p {
+            margin-bottom: var(--spacing-md);
+            color: var(--color-text);
+        }
+
+        a {
+            color: var(--color-link);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: var(--color-link-hover);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-left: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+        }
+
+        li {
+            margin-bottom: var(--spacing-xs);
+            color: var(--color-text);
+        }
+
+        pre {
+            background-color: var(--color-code-bg);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            overflow-x: auto;
+            margin-bottom: var(--spacing-md);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        code {
+            font-family: var(--font-mono);
+            font-size: 0.9em;
+            background-color: var(--color-code-bg);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: var(--spacing-md);
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            border: 1px solid var(--color-border);
+            padding: var(--spacing-sm);
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--color-bg-alt);
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        blockquote {
+            border-left: 4px solid var(--color-accent);
+            padding-left: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+            color: var(--color-text-light);
+            font-style: italic;
+            background-color: var(--color-bg-alt);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        .mermaid {
+            text-align: center;
+            margin: var(--spacing-lg) 0;
+            background-color: var(--color-bg-alt);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        details {
+            background-color: var(--color-bg-alt);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--color-primary);
+            user-select: none;
+            padding: var(--spacing-xs);
+            margin: calc(-1 * var(--spacing-md));
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        summary:hover {
+            background-color: rgba(123, 44, 191, 0.1);
+        }
+
+        details[open] summary {
+            margin-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .learning-objectives {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--color-accent);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .learning-objectives h2 {
+            margin-top: 0;
+            border-bottom: none;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: var(--spacing-md);
+            margin: var(--spacing-xl) 0;
+            padding-top: var(--spacing-lg);
+            border-top: 2px solid var(--color-border);
+        }
+
+        .nav-button {
+            flex: 1;
+            padding: var(--spacing-md);
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+            color: white;
+            border-radius: var(--border-radius);
+            text-align: center;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: var(--box-shadow);
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            text-decoration: none;
+        }
+
+        footer {
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-lg) var(--spacing-md);
+            background-color: var(--color-bg-alt);
+            border-top: 1px solid var(--color-border);
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            h3 {
+                font-size: 1.2rem;
+            }
+
+            .meta {
+                font-size: 0.85rem;
+            }
+
+            .navigation {
+                flex-direction: column;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: var(--spacing-xs);
+            }
+        }
+    </style>
+
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>第1章：ハイスループット計算の必要性とワークフロー設計</h1>
+            
+            <div class="meta">
+                <span class="meta-item">📖 読了時間: 20-30分</span>
+<span class="meta-item">📊 難易度: 中級</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1>第1章：ハイスループット計算の必要性とワークフロー設計</h1>
+
+<h2>学習目標</h2>
+
+<p>この章を読むことで、以下を習得できます：</p>
+
+<ul>
+<li>✅ 材料探索空間の広大さを定量的に理解できる</li>
+<li>✅ ハイスループット計算の4つの要素（自動化・並列化・標準化・データ管理）を説明できる</li>
+<li>✅ Materials Project、AFLOW等の成功要因を分析できる</li>
+<li>✅ 効果的なワークフロー設計の原則を理解し、適用できる</li>
+<li>✅ コスト削減効果を定量的に評価できる</li>
+</ul>
+
+<p>---</p>
+
+<h2>1.1 材料探索の課題：なぜハイスループット計算が必要なのか</h2>
+
+<h3>探索空間の広大さ</h3>
+
+<p>材料科学における最大の課題は、<strong>探索すべき空間があまりにも広大である</strong>ことです。</p>
+
+<strong>例：3元系合金の探索</strong>
+
+<p>Li-Ni-Co酸化物電池材料（LiₓNiᵧCoᵧO₂）を考えてみましょう：</p>
+<ul>
+<li>Li組成: 0.0-1.0（10段階）</li>
+<li>Ni組成: 0.0-1.0（10段階）</li>
+<li>Co組成: 0.0-1.0（10段階）</li>
+</ul>
+
+<p>単純計算で <strong>10³ = 1,000通り</strong> です。</p>
+
+<strong>例：5元系高エントロピー合金</strong>
+
+<p>CoCrFeNiMn系で組成比を変化させる場合：</p>
+<ul>
+<li>各元素: 0-100%（10%刻みで11段階）</li>
+<li>組成の合計が100%になる制約</li>
+</ul>
+
+<p>組み合わせは <strong>数万通り</strong> に達します。</p>
+
+<strong>一般的な材料探索の規模</strong>
+
+<pre><code class="language-mermaid">graph LR
+<p>A[単一材料] -->|置換| B[10-100候補]</p>
+<p>B -->|複合材料| C[1,000-10,000候補]</p>
+<p>C -->|高次元探索| D[100,000-1,000,000候補]</p>
+<p>D -->|網羅的探索| E[10^12-10^60候補]</p>
+
+<p>style E fill:#ff6b6b</p>
+</code></pre>
+
+<p>実際の材料探索では、<strong>10¹²（1兆）から10⁶⁰通り</strong>の組み合わせが存在します。</p>
+
+<h3>従来手法の限界</h3>
+
+<strong>1材料あたりのコスト（従来の実験主導型）</strong>
+
+<p>| 項目 | 時間 | コスト（概算） |</p>
+<p>|-----|------|--------------|</p>
+<p>| 文献調査 | 1-2週間 | 10万円 |</p>
+<p>| 試料合成 | 1-4週間 | 30-100万円 |</p>
+<p>| 特性評価 | 2-8週間 | 50-200万円 |</p>
+<p>| データ解析 | 1-2週間 | 10-30万円 |</p>
+<p>| <strong>合計</strong> | <strong>2-4ヶ月</strong> | <strong>100-340万円</strong> |</p>
+
+<strong>年間探索可能数</strong>
+
+<ul>
+<li>熟練研究者1名: <strong>10-50材料/年</strong></li>
+<li>研究室（5-10名）: <strong>50-200材料/年</strong></li>
+</ul>
+
+<strong>問題点</strong>
+
+<ol>
+<li><strong>時間</strong>: 新材料開発に15-20年かかる</li>
+<li><strong>コスト</strong>: 1材料あたり数百万円</li>
+<li><strong>スケーラビリティ</strong>: 人員を増やしても線形にしか改善しない</li>
+<li><strong>再現性</strong>: 実験条件の完全な記録が困難</li>
+</ol>
+
+<h3>Materials Genome Initiative (MGI)の提唱</h3>
+
+<p>2011年、米国オバマ政権が <strong>Materials Genome Initiative (MGI)</strong> を発表しました：</p>
+
+<strong>目標</strong>:
+<ul>
+<li>新材料開発期間を <strong>半減</strong>（20年 → 10年）</li>
+<li>計算科学と実験の <strong>クローズドループ</strong></li>
+<li>データベース・計算インフラの <strong>公共財化</strong></li>
+</ul>
+
+<strong>予算</strong>: 初年度$100M（約100億円）、10年で$250M
+
+<strong>成果</strong>（2011-2021）:
+<ul>
+<li>Materials Project: <strong>140,000材料</strong> のDFT計算</li>
+<li>AFLOW: <strong>3,500,000結晶構造</strong> の自動解析</li>
+<li>開発期間: 実際に <strong>30-50%短縮</strong> を達成</li>
+</ul>
+
+<p>---</p>
+
+<h2>1.2 ハイスループット計算の定義と4つの要素</h2>
+
+<h3>定義</h3>
+
+<blockquote><strong>ハイスループット計算（High-Throughput Computing, HTC）</strong>とは、大量の計算タスクを自動化・並列化し、標準化されたワークフローとデータ管理のもとで効率的に実行する手法である。</blockquote>
+
+<h3>4つの要素</h3>
+
+<pre><code class="language-mermaid">graph TD
+<p>A[ハイスループット計算] --> B[1. 自動化<br/>Automation]</p>
+<p>A --> C[2. 並列化<br/>Parallelization]</p>
+<p>A --> D[3. 標準化<br/>Standardization]</p>
+<p>A --> E[4. データ管理<br/>Data Management]</p>
+
+<p>B --> B1[入力生成の自動化]</p>
+<p>B --> B2[ジョブ投入の自動化]</p>
+<p>B --> B3[エラー処理の自動化]</p>
+
+<p>C --> C1[複数材料の同時計算]</p>
+<p>C --> C2[MPIによるノード並列]</p>
+<p>C --> C3[タスク並列とデータ並列]</p>
+
+<p>D --> D1[計算条件の統一]</p>
+<p>D --> D2[ファイル形式の統一]</p>
+<p>D --> D3[品質管理基準]</p>
+
+<p>E --> E1[データベース設計]</p>
+<p>E --> E2[メタデータ記録]</p>
+<p>E --> E3[検索・可視化]</p>
+
+<p>style A fill:#4ecdc4</p>
+<p>style B fill:#ffe66d</p>
+<p>style C fill:#ff6b6b</p>
+<p>style D fill:#95e1d3</p>
+<p>style E fill:#a8e6cf</p>
+</code></pre>
+
+<h4>要素1: 自動化（Automation）</h4>
+
+<p>人間の介入なしに計算を実行・管理する仕組み。</p>
+
+<strong>例：構造最適化の自動化</strong>
+
+<p>手動の場合：</p>
+<ol>
+<li>初期構造を準備 → 入力ファイル作成 → ジョブ投入</li>
+<li>完了を確認 → 結果をチェック → 収束判定</li>
+<li>未収束なら設定変更 → 再投入</li>
+<li>収束したら次の材料へ</li>
+</ol>
+
+<strong>1材料あたり30分-2時間</strong> かかる（100材料なら50-200時間）
+
+<p>自動化後：</p>
+<pre><code class="language-python">for structure in structures:
+<p>optimize_structure(structure)  # 全自動</p>
+<p>if converged:</p>
+<p>calculate_properties(structure)</p>
+<h1>100材料を一晩で完了（人的労力ゼロ）</h1>
+</code></pre>
+
+<h4>要素2: 並列化（Parallelization）</h4>
+
+<p>複数の計算を同時実行してスループットを向上させる。</p>
+
+<strong>3つの並列化レベル</strong>
+
+<ol>
+<li><strong>タスク並列</strong>: 異なる材料を同時計算</li>
+</ol>
+<p>- 1000材料を100ノードで並列実行 → 10倍高速化</p>
+
+<ol>
+<li><strong>データ並列</strong>: 同一材料のk-point並列計算</li>
+</ol>
+<p>- VASPのKPAR設定で2-4倍高速化</p>
+
+<ol>
+<li><strong>MPI並列</strong>: 1計算を複数コアで分散</li>
+</ol>
+<p>- 48コア並列で10-20倍高速化（スケーリング効率50-70%）</p>
+
+<strong>並列効率の例</strong>
+
+<p>| 並列化手法 | ノード数 | 高速化率 | 効率 |</p>
+<p>|----------|---------|---------|------|</p>
+<p>| タスク並列のみ | 100 | 100x | 100% |</p>
+<p>| MPI並列のみ | 4 | 3.2x | 80% |</p>
+<p>| ハイブリッド | 100x4 | 320x | 80% |</p>
+
+<h4>要素3: 標準化（Standardization）</h4>
+
+<p>計算条件、データフォーマット、品質基準を統一。</p>
+
+<strong>Materials Projectの標準設定</strong>
+
+<pre><code class="language-python"><h1>VASP設定の例（Materials Project）</h1>
+<p>{</p>
+<p>"ENCUT": 520,  # エネルギーカットオフ（eV）</p>
+<p>"EDIFF": 1e-5,  # エネルギー収束判定</p>
+<p>"K-point density": 1000,  # k-point密度（Å⁻³）</p>
+<p>"ISMEAR": -5,  # Tetrahedron法</p>
+<p>}</p>
+</code></pre>
+
+<strong>利点</strong>:
+<ul>
+<li>異なる材料間での <strong>公平な比較</strong></li>
+<li>計算の <strong>再現性</strong> 確保</li>
+<li>エラー検出の <strong>容易化</strong></li>
+</ul>
+
+<h4>要素4: データ管理（Data Management）</h4>
+
+<p>計算結果を構造化して保存・検索可能にする。</p>
+
+<strong>データベーススキーマの例</strong>
+
+<pre><code class="language-json">{
+<p>"material_id": "mp-1234",</p>
+<p>"formula": "LiCoO2",</p>
+<p>"structure": {...},</p>
+<p>"energy": -45.67,  // eV/atom</p>
+<p>"band_gap": 2.3,   // eV</p>
+<p>"calculation_metadata": {</p>
+<p>"vasp_version": "6.3.0",</p>
+<p>"encut": 520,</p>
+<p>"kpoints": [12, 12, 8],</p>
+<p>"calculation_date": "2025-10-17"</p>
+<p>}</p>
+<p>}</p>
+</code></pre>
+
+<strong>検索例</strong>:
+<pre><code class="language-python"><h1>バンドギャップが1.5-2.5 eVの酸化物を検索</h1>
+<p>results = db.find({</p>
+<p>"band_gap": {"$gte": 1.5, "$lte": 2.5},</p>
+<p>"elements": {"$all": ["O"]}</p>
+<p>})</p>
+</code></pre>
+
+<p>---</p>
+
+<h2>1.3 成功事例：Materials Project, AFLOW, OQMD</h2>
+
+<h3>Materials Project（米国）</h3>
+
+<strong>規模</strong> (2025年時点):
+<ul>
+<li>材料数: <strong>140,000+</strong></li>
+<li>計算タスク: <strong>5,000,000+</strong></li>
+<li>DFT計算時間: <strong>5億CPU時間</strong> 以上</li>
+</ul>
+
+<strong>技術スタック</strong>:
+<ul>
+<li>計算コード: VASP</li>
+<li>ワークフロー: FireWorks + Atomate</li>
+<li>データベース: MongoDB</li>
+<li>API: pymatgen + RESTful API</li>
+</ul>
+
+<strong>成果</strong>:
+<ul>
+<li>Li-ion電池材料: <strong>開発期間67%短縮</strong></li>
+<li>熱電材料: <strong>ZT値の予測精度90%</strong></li>
+<li>ペロブスカイト太陽電池: <strong>50,000候補のスクリーニング</strong></li>
+</ul>
+
+<strong>インパクト</strong>:
+<ul>
+<li>引用数: <strong>20,000+回</strong>（Google Scholar）</li>
+<li>産業利用: Tesla, Panasonic, Samsung等</li>
+<li>ユーザー数: <strong>100,000+</strong>（API登録者）</li>
+</ul>
+
+<h3>AFLOW（デューク大学）</h3>
+
+<strong>規模</strong>:
+<ul>
+<li>結晶構造: <strong>3,500,000+</strong></li>
+<li>プロトタイプ: <strong>1,000,000+</strong></li>
+<li>計算特性: バンドギャップ、弾性定数、熱力学安定性</li>
+</ul>
+
+<strong>特徴</strong>:
+<ul>
+<li><strong>結晶対称性解析</strong>: 空間群の自動同定</li>
+<li><strong>プロトタイプデータベース</strong>: 既知構造からの生成</li>
+<li><strong>AFLOW-ML</strong>: 機械学習統合</li>
+</ul>
+
+<strong>応用例</strong>:
+<ul>
+<li>高エントロピー合金: <strong>相安定性予測</strong></li>
+<li>超伝導材料: <strong>Tc予測</strong></li>
+</ul>
+
+<h3>OQMD（Northwestern大学）</h3>
+
+<strong>規模</strong>:
+<ul>
+<li>材料数: <strong>815,000+</strong></li>
+<li>DFT計算: Quantum ESPRESSO</li>
+</ul>
+
+<strong>特徴</strong>:
+<ul>
+<li><strong>熱力学データ</strong>: 形成エネルギー、相平衡</li>
+<li><strong>化学ポテンシャル図</strong>: 安定性の可視化</li>
+</ul>
+
+<h3>JARVIS（NIST）</h3>
+
+<strong>規模</strong>:
+<ul>
+<li>材料数: <strong>40,000+</strong></li>
+<li>多様な特性: 光学、弾性、磁性、トポロジカル</li>
+</ul>
+
+<strong>特徴</strong>:
+<ul>
+<li><strong>機械学習モデル</strong>: 訓練済みモデルの提供</li>
+<li><strong>2D材料</strong>: 単層材料の大規模データベース</li>
+</ul>
+
+<h3>比較表</h3>
+
+<p>| プロジェクト | 材料数 | 計算コード | 特徴 |</p>
+<p>|------------|-------|-----------|------|</p>
+<p>| Materials Project | 140k+ | VASP | 総合、産業利用多 |</p>
+<p>| AFLOW | 3.5M+ | VASP | 結晶構造特化 |</p>
+<p>| OQMD | 815k+ | QE | 熱力学データ |</p>
+<p>| JARVIS | 40k+ | VASP | 多様な特性 |</p>
+
+<p>---</p>
+
+<h2>1.4 ワークフロー設計の原則</h2>
+
+<p>効果的なハイスループット計算には、適切なワークフロー設計が不可欠です。</p>
+
+<h3>原則1: モジュール化（Modularity）</h3>
+
+<p>各タスクを独立したモジュールに分割し、再利用可能にする。</p>
+
+<strong>良い例</strong>:
+
+<pre><code class="language-python"><h1>モジュール化されたワークフロー</h1>
+<p>structure = generate_structure(formula)</p>
+<p>relaxed = relax_structure(structure)</p>
+<p>energy = static_calculation(relaxed)</p>
+<p>band_gap = calculate_band_structure(relaxed)</p>
+<p>dos = calculate_dos(relaxed)</p>
+</code></pre>
+
+<strong>悪い例</strong>:
+
+<pre><code class="language-python"><h1>全てが一体化したスクリプト</h1>
+<h1>一部を再利用したい場合に困難</h1>
+<p>run_everything(formula)  # ブラックボックス</p>
+</code></pre>
+
+<h3>原則2: エラー処理（Error Handling）</h3>
+
+<p>計算失敗は避けられないため、適切なエラー処理が必須。</p>
+
+<strong>エラーの分類</strong>
+
+<pre><code class="language-mermaid">graph TD
+<p>A[計算エラー] --> B[リトライ可能]</p>
+<p>A --> C[設定変更が必要]</p>
+<p>A --> D[致命的エラー]</p>
+
+<p>B --> B1[一時的なI/Oエラー]</p>
+<p>B --> B2[ジョブタイムアウト]</p>
+
+<p>C --> C1[収束性問題]</p>
+<p>C --> C2[メモリ不足]</p>
+
+<p>D --> D1[構造異常]</p>
+<p>D --> D2[ソフトウェアバグ]</p>
+
+<p>B1 -->|自動リトライ| E[成功]</p>
+<p>C1 -->|設定緩和| E</p>
+<p>D1 -->|スキップ| F[次の材料へ]</p>
+</code></pre>
+
+<strong>実装例</strong>:
+
+<pre><code class="language-python">def robust_calculation(structure, max_retries=3):
+<p>for attempt in range(max_retries):</p>
+<p>try:</p>
+<p>result = run_vasp(structure)</p>
+<p>if result.converged:</p>
+<p>return result</p>
+<p>else:</p>
+<p># 収束性問題 → 設定変更</p>
+<p>structure = adjust_parameters(structure)</p>
+<p>except MemoryError:</p>
+<p># メモリ不足 → コア数削減</p>
+<p>reduce_cores()</p>
+<p>except TimeoutError:</p>
+<p># タイムアウト → 時間延長</p>
+<p>extend_time_limit()</p>
+
+<p># 最終的に失敗</p>
+<p>log_failure(structure)</p>
+<p>return None</p>
+</code></pre>
+
+<h3>原則3: 再現性（Reproducibility）</h3>
+
+<p>他の研究者が同じ結果を得られるようにする。</p>
+
+<strong>必須記録項目</strong>:
+
+<ol>
+<li><strong>計算条件</strong>: すべてのパラメータ</li>
+<li><strong>ソフトウェアバージョン</strong>: VASP 6.3.0等</li>
+<li><strong>擬ポテンシャル</strong>: PBE, PAW等</li>
+<li><strong>計算環境</strong>: OS、コンパイラ、ライブラリ</li>
+</ol>
+
+<strong>実装例</strong>:
+
+<pre><code class="language-python"><h1>プロビナンス（来歴）記録</h1>
+<p>metadata = {</p>
+<p>"software": "VASP 6.3.0",</p>
+<p>"potcar": "PBE_54",</p>
+<p>"encut": 520,</p>
+<p>"kpoints": [12, 12, 8],</p>
+<p>"convergence": {</p>
+<p>"energy": 1e-5,</p>
+<p>"force": 0.01</p>
+<p>},</p>
+<p>"compute_environment": {</p>
+<p>"hostname": "hpc.university.edu",</p>
+<p>"nodes": 4,</p>
+<p>"cores_per_node": 48,</p>
+<p>"date": "2025-10-17T10:30:00Z"</p>
+<p>}</p>
+<p>}</p>
+</code></pre>
+
+<h3>原則4: スケーラビリティ（Scalability）</h3>
+
+<p>10材料 → 1,000材料 → 100,000材料に拡張できる設計。</p>
+
+<strong>スケーラビリティのチェックリスト</strong>:
+
+<ul>
+<li>[ ] データベースは大量データに対応できるか（MongoDB、PostgreSQL）</li>
+<li>[ ] ファイルシステムは数十万ファイルに耐えられるか</li>
+<li>[ ] ネットワーク帯域幅は十分か</li>
+<li>[ ] ジョブスケジューラの制限（最大ジョブ数）は大丈夫か</li>
+<li>[ ] データ解析は並列化されているか</li>
+</ul>
+
+<strong>スケーラビリティテスト</strong>:
+
+<pre><code class="language-python"><h1>小規模テスト: 10材料</h1>
+<p>test_workflow(n_materials=10)  # 1時間</p>
+
+<h1>中規模テスト: 100材料</h1>
+<p>test_workflow(n_materials=100)  # 10時間</p>
+
+<h1>大規模テスト: 1,000材料</h1>
+<p>test_workflow(n_materials=1000)  # 100時間</p>
+
+<h1>スケーリング効率を確認</h1>
+<p>scaling_efficiency = (time_10 * 100) / time_1000</p>
+<h1>理想は1.0（線形スケーリング）</h1>
+</code></pre>
+
+<p>---</p>
+
+<h2>1.5 コストと効果の定量分析</h2>
+
+<h3>従来手法 vs ハイスループット計算</h3>
+
+<strong>シナリオ</strong>: 1,000材料のスクリーニング
+
+<h4>従来手法（実験主導）</h4>
+
+<p>| 項目 | 単価 | 数量 | 合計 |</p>
+<p>|-----|------|------|------|</p>
+<p>| 研究員人件費 | 800万円/年 | 5名 × 2年 | 8,000万円 |</p>
+<p>| 試料合成 | 50万円 | 1,000材料 | 5,000万円 |</p>
+<p>| 特性評価 | 30万円 | 1,000材料 | 3,000万円 |</p>
+<p>| <strong>総コスト</strong> | | | <strong>1.6億円</strong> |</p>
+<p>| <strong>期間</strong> | | | <strong>2年</strong> |</p>
+
+<h4>ハイスループット計算</h4>
+
+<p>| 項目 | 単価 | 数量 | 合計 |</p>
+<p>|-----|------|------|------|</p>
+<p>| 研究員人件費 | 800万円/年 | 2名 × 6ヶ月 | 800万円 |</p>
+<p>| 計算リソース | $0.5/CPU時 | 1M CPU時 | 500万円 |</p>
+<p>| ストレージ | $0.02/GB/月 | 10TB × 6ヶ月 | 100万円 |</p>
+<p>| ソフトウェアライセンス | 300万円/年 | 1年 | 300万円 |</p>
+<p>| <strong>総コスト</strong> | | | <strong>1,700万円</strong> |</p>
+<p>| <strong>期間</strong> | | | <strong>6ヶ月</strong> |</p>
+
+<strong>削減効果</strong>:
+<ul>
+<li>コスト削減: <strong>89%</strong> (1.6億円 → 1,700万円)</li>
+<li>期間短縮: <strong>75%</strong> (2年 → 6ヶ月)</li>
+</ul>
+
+<h3>ROI（投資収益率）計算</h3>
+
+<strong>初期投資</strong>:
+<ul>
+<li>環境構築: 500万円</li>
+<li>人材育成: 300万円</li>
+<li><strong>合計</strong>: 800万円</li>
+</ul>
+
+<strong>年間節約額</strong> (1,000材料/年の場合):
+<ul>
+<li>実験コスト削減: 8,000万円/年</li>
+<li>人件費削減: 2,400万円/年</li>
+<li><strong>合計</strong>: 1.04億円/年</li>
+</ul>
+
+<strong>ROI</strong>:
+<pre><code class="language-">ROI = (年間節約額 - 運用コスト) / 初期投資
+<p>= (1.04億円 - 1,700万円) / 800万円</p>
+<p>= 10.9倍</p>
+</code></pre>
+
+<strong>投資回収期間</strong>: 約1ヶ月
+
+<h3>非金銭的メリット</h3>
+
+<ol>
+<li><strong>イノベーション加速</strong>: 試行錯誤サイクル 2年 → 6ヶ月</li>
+<li><strong>競争優位性</strong>: 競合より6-12ヶ月早く市場投入</li>
+<li><strong>データ資産</strong>: 蓄積されたデータベースが財産に</li>
+<li><strong>人材育成</strong>: 計算材料科学のスキル獲得</li>
+</ol>
+
+<p>---</p>
+
+<h2>1.6 ワークフロー設計の実例</h2>
+
+<h3>例1: バンドギャップスクリーニング</h3>
+
+<strong>目標</strong>: 1.5-2.5 eVのバンドギャップを持つ酸化物を発見
+
+<strong>ワークフロー</strong>:
+
+<pre><code class="language-mermaid">graph TD
+<p>A[構造生成] --> B[構造最適化]</p>
+<p>B --> C[静的計算]</p>
+<p>C --> D[バンド構造計算]</p>
+<p>D --> E[バンドギャップ抽出]</p>
+<p>E --> F{1.5-2.5 eV?}</p>
+<p>F -->|Yes| G[候補材料リスト]</p>
+<p>F -->|No| H[除外]</p>
+
+<p>B -->|収束失敗| I[エラーハンドリング]</p>
+<p>I -->|設定変更| B</p>
+<p>I -->|致命的| H</p>
+</code></pre>
+
+<strong>Python疑似コード</strong>:
+
+<pre><code class="language-python">candidate_materials = []
+
+<p>for formula in oxide_formulas:</p>
+<p># Step 1: 構造生成</p>
+<p>structure = generate_structure(formula)</p>
+
+<p># Step 2: 構造最適化</p>
+<p>try:</p>
+<p>relaxed = relax_structure(structure)</p>
+<p>except ConvergenceError:</p>
+<p>relaxed = relax_structure(structure, strict=False)</p>
+
+<p># Step 3: 静的計算</p>
+<p>energy, forces = static_calculation(relaxed)</p>
+
+<p># Step 4: バンド構造</p>
+<p>band_gap = calculate_band_gap(relaxed)</p>
+
+<p># Step 5: フィルタリング</p>
+<p>if 1.5 <= band_gap <= 2.5:</p>
+<p>candidate_materials.append({</p>
+<p>"formula": formula,</p>
+<p>"band_gap": band_gap,</p>
+<p>"energy": energy</p>
+<p>})</p>
+</code></pre>
+
+<h3>例2: 熱力学安定性スクリーニング</h3>
+
+<strong>目標</strong>: 形成エネルギーが負（安定）の材料を発見
+
+<strong>ワークフロー</strong>:
+
+<pre><code class="language-python">stable_materials = []
+
+<p>for composition in compositions:</p>
+<p># 形成エネルギー計算</p>
+<p>E_compound = calculate_energy(composition)</p>
+<p>E_elements = sum([calculate_energy(el) for el in composition.elements])</p>
+
+<p>E_formation = E_compound - E_elements</p>
+
+<p>if E_formation < 0:</p>
+<p># 相分解エネルギーもチェック</p>
+<p>E_decomp = calculate_decomposition_energy(composition)</p>
+
+<p>if E_decomp > 0:  # 相分解しない</p>
+<p>stable_materials.append({</p>
+<p>"composition": composition,</p>
+<p>"E_formation": E_formation,</p>
+<p>"E_decomp": E_decomp</p>
+<p>})</p>
+</code></pre>
+
+<p>---</p>
+
+<h2>1.7 演習問題</h2>
+
+<h3>問題1（難易度: easy）</h3>
+
+<strong>問題</strong>: 100材料のバンドギャップ計算を考えます。従来手法（手動）とハイスループット計算で、それぞれの所要時間を見積もってください。
+
+<strong>条件</strong>:
+<ul>
+<li>1材料あたりの計算時間: 8時間（48コア並列）</li>
+<li>手動作業: 入力準備20分、ジョブ投入5分、結果確認10分</li>
+<li>ハイスループット: 入力準備は自動、100材料を同時投入可能</li>
+</ul>
+
+<details>
+<summary>ヒント</summary>
+
+<p>手動の場合:</p>
+<ul>
+<li>計算時間: 8時間 × 100 = 800時間（直列）</li>
+<li>手動作業: 35分 × 100 = 3,500分 = 58.3時間</li>
+</ul>
+
+<p>ハイスループット:</p>
+<ul>
+<li>計算時間: 8時間（並列）</li>
+<li>手動作業: 1時間（ワークフロー設定のみ）</li>
+</ul>
+
+</details>
+
+<details>
+<summary>解答例</summary>
+
+<strong>従来手法</strong>:
+<ul>
+<li>総時間 = 計算時間（直列） + 手動作業</li>
+<li>= 800時間 + 58.3時間</li>
+<li>= <strong>858.3時間 ≈ 36日</strong></li>
+</ul>
+
+<strong>ハイスループット</strong>:
+<ul>
+<li>総時間 = 計算時間（並列） + 初期設定</li>
+<li>= 8時間 + 1時間</li>
+<li>= <strong>9時間</strong></li>
+</ul>
+
+<strong>効率向上</strong>: 858.3 / 9 ≈ <strong>95倍</strong>
+
+</details>
+
+<h3>問題2（難易度: medium）</h3>
+
+<strong>問題</strong>: Materials Projectの140,000材料を計算するのに必要なCPU時間を見積もってください。
+
+<strong>条件</strong>:
+<ul>
+<li>1材料あたり平均: 構造最適化8時間 + 静的計算2時間 + バンド構造2時間 = 12時間</li>
+<li>使用コア数: 平均48コア/材料</li>
+</ul>
+
+<details>
+<summary>ヒント</summary>
+
+<p>総CPU時間 = 材料数 × 1材料あたりCPU時間</p>
+<p>1材料あたりCPU時間 = 計算時間 × コア数</p>
+
+</details>
+
+<details>
+<summary>解答例</summary>
+
+<strong>計算</strong>:
+<pre><code class="language-">総CPU時間 = 140,000材料 × 12時間 × 48コア
+<p>= 140,000 × 576 CPU時間</p>
+<p>= 80,640,000 CPU時間</p>
+<p>≈ 8,064万 CPU時間</p>
+</code></pre>
+
+<strong>実時間換算</strong>（1,000ノード、各48コア使用）:
+<pre><code class="language-">実時間 = 8,064万 CPU時間 / (1,000ノード × 48コア)
+<p>= 1,680時間</p>
+<p>≈ 70日</p>
+</code></pre>
+
+<p>実際のMaterials Projectは10年以上かけて蓄積しているため、平均的には年間14,000材料ペースです。</p>
+
+</details>
+
+<h3>問題3（難易度: hard）</h3>
+
+<strong>問題</strong>: ハイスループット計算システムの設計を提案してください。
+
+<strong>シナリオ</strong>:
+<ul>
+<li>目標: 10,000材料のスクリーニング（6ヶ月以内）</li>
+<li>予算: 2,000万円</li>
+<li>計算内容: 構造最適化 + 静的計算（1材料12時間、48コア）</li>
+</ul>
+
+<strong>提案すべき項目</strong>:
+<ol>
+<li>必要な計算リソース（ノード数、コア数）</li>
+<li>ワークフロー設計（ツール選択）</li>
+<li>データ管理戦略</li>
+<li>コスト見積もり</li>
+</ol>
+
+<details>
+<summary>ヒント</summary>
+
+<ol>
+<li>総CPU時間を計算</li>
+<li>6ヶ月で完了するために必要な並列度を算出</li>
+<li>クラウド vs オンプレを比較</li>
+<li>FireWorks等のツールを検討</li>
+</ol>
+
+</details>
+
+<details>
+<summary>解答例</summary>
+
+<strong>1. 必要リソース</strong>
+
+<p>総CPU時間:</p>
+<pre><code class="language-">10,000材料 × 12時間 × 48コア = 5,760,000 CPU時間
+</code></pre>
+
+<p>6ヶ月（180日、24時間稼働）で完了するには:</p>
+<pre><code class="language-">必要コア数 = 5,760,000 / (180日 × 24時間)
+<p>= 1,333コア</p>
+<p>≈ 28ノード（48コア/ノード）</p>
+</code></pre>
+
+<strong>2. ワークフロー設計</strong>
+
+<ul>
+<li><strong>ツール</strong>: FireWorks + Atomate</li>
+</ul>
+<p>- 理由: Materials Project実績、VASP統合</p>
+<ul>
+<li><strong>ジョブスケジューラ</strong>: SLURM</li>
+<li><strong>データベース</strong>: MongoDB</li>
+</ul>
+
+<strong>3. データ管理</strong>
+
+<ul>
+<li>計算データ: 各材料100MB → 合計1TB</li>
+<li>データベース: メタデータ10GB</li>
+<li>バックアップ: 2TB（冗長化）</li>
+</ul>
+
+<strong>4. コスト見積もり</strong>
+
+<strong>Option A: クラウド（AWS）</strong>
+
+<p>| 項目 | 単価 | 数量 | 合計 |</p>
+<p>|-----|------|------|------|</p>
+<p>| EC2 (c5.12xlarge, 48コア) | $2.04/時 | 28ノード × 4,320時間 | 2,470万円 |</p>
+<p>| ストレージ (EBS) | $0.10/GB/月 | 2TB × 6ヶ月 | 12万円 |</p>
+<p>| データ転送 | $0.09/GB | 500GB | 4.5万円 |</p>
+<p>| <strong>合計</strong> | | | <strong>2,486万円</strong> |</p>
+
+<strong>Option B: オンプレHPC利用</strong>
+
+<p>| 項目 | 単価 | 数量 | 合計 |</p>
+<p>|-----|------|------|------|</p>
+<p>| HPC利用料 | $0.1/CPU時 | 576万CPU時 | 576万円 |</p>
+<p>| 人件費 | 800万円/年 | 1名 × 0.5年 | 400万円 |</p>
+<p>| ソフトウェア | 300万円/年 | 0.5年 | 150万円 |</p>
+<p>| <strong>合計</strong> | | | <strong>1,126万円</strong> |</p>
+
+<strong>推奨</strong>: Option B（オンプレHPC）
+<ul>
+<li>予算内（2,000万円）で十分</li>
+<li>大学のHPCクラスタを活用</li>
+<li>余剰予算で実験検証に投資</li>
+</ul>
+
+</details>
+
+<p>---</p>
+
+<h2>1.8 まとめ</h2>
+
+<p>この章では、ハイスループット計算の必要性とワークフロー設計の原則を学びました。</p>
+
+<strong>キーポイント</strong>:
+
+<ol>
+<li><strong>探索空間の広大さ</strong>: 10¹²-10⁶⁰通りの組み合わせ</li>
+<li><strong>4つの要素</strong>: 自動化・並列化・標準化・データ管理</li>
+<li><strong>成功事例</strong>: Materials Project（140k材料）、AFLOW（3.5M構造）</li>
+<li><strong>設計原則</strong>: モジュール化、エラー処理、再現性、スケーラビリティ</li>
+<li><strong>コスト削減</strong>: 89%のコスト削減、75%の期間短縮</li>
+</ol>
+
+<strong>次のステップ</strong>:
+
+<p>第2章では、ASEとpymatgenを使った <strong>DFT計算の自動化</strong> を実践します。VASPとQuantum ESPRESSOの入力ファイル自動生成、エラー検出とリスタート、結果解析の自動化を学びます。</p>
+
+<strong><a href="./chapter-2.md">第2章: DFT計算の自動化 →</a></strong>
+
+<p>---</p>
+
+<h2>参考文献</h2>
+
+<ol>
+<li>Jain, A., et al. (2013). "Commentary: The Materials Project: A materials genome approach to accelerating materials innovation." <em>APL Materials</em>, 1(1), 011002.</li>
+</ol>
+
+<ol>
+<li>Curtarolo, S., et al. (2012). "AFLOW: An automatic framework for high-throughput materials discovery." <em>Computational Materials Science</em>, 58, 218-226.</li>
+</ol>
+
+<ol>
+<li>Saal, J. E., et al. (2013). "Materials design and discovery with high-throughput density functional theory: the open quantum materials database (OQMD)." <em>JOM</em>, 65(11), 1501-1509.</li>
+</ol>
+
+<ol>
+<li>Choudhary, K., et al. (2020). "The joint automated repository for various integrated simulations (JARVIS) for data-driven materials design." <em>npj Computational Materials</em>, 6(1), 173.</li>
+</ol>
+
+<ol>
+<li>Materials Genome Initiative (2011). "Materials Genome Initiative for Global Competitiveness." Office of Science and Technology Policy, USA.</li>
+</ol>
+
+<p>---</p>
+
+<strong>ライセンス</strong>: CC BY 4.0
+<strong>作成日</strong>: 2025-10-17
+<strong>作成者</strong>: Dr. Yusuke Hashimoto, Tohoku University
+
+
+        <div class="navigation">
+            <a href="index.html" class="nav-button">← シリーズ目次に戻る</a>
+<a href="chapter-2.html" class="nav-button">次章: 第2章 →</a>
+        </div>
+    </main>
+
+    <footer>
+        <p><strong>作成者</strong>: AI Terakoya Content Team</p>
+        <p><strong>監修</strong>: Dr. Yusuke Hashimoto（東北大学）</p>
+        <p><strong>バージョン</strong>: 1.0 | <strong>作成日</strong>: 2025-10-17</p>
+        <p><strong>ライセンス</strong>: Creative Commons BY 4.0</p>
+        <p>© 2025 AI Terakoya. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mermaidCodeBlocks = document.querySelectorAll('pre.codehilite code.language-mermaid, pre code.language-mermaid');
+
+            mermaidCodeBlocks.forEach(function(codeBlock) {
+                const pre = codeBlock.parentElement;
+                const mermaidCode = codeBlock.textContent;
+
+                const mermaidDiv = document.createElement('div');
+                mermaidDiv.className = 'mermaid';
+                mermaidDiv.textContent = mermaidCode.trim();
+
+                pre.parentNode.replaceChild(mermaidDiv, pre);
+            });
+
+            if (typeof mermaid !== 'undefined') {
+                mermaid.initialize({
+                    startOnLoad: true,
+                    theme: 'default'
+                });
+                mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+            }
+        });
+    </script>
+</body>
+</html>

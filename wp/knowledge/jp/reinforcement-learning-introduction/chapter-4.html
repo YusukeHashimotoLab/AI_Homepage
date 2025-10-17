@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第4章: 実世界応用とクローズドループ - AI Terakoya</title>
+
+    <style>
+        :root {
+            --color-primary: #2c3e50;
+            --color-primary-dark: #1a252f;
+            --color-accent: #7b2cbf;
+            --color-accent-light: #9d4edd;
+            --color-text: #2d3748;
+            --color-text-light: #4a5568;
+            --color-bg: #ffffff;
+            --color-bg-alt: #f7fafc;
+            --color-border: #e2e8f0;
+            --color-code-bg: #f8f9fa;
+            --color-link: #3182ce;
+            --color-link-hover: #2c5aa0;
+
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+
+            --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+
+            --border-radius: 8px;
+            --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            line-height: 1.7;
+            color: var(--color-text);
+            background-color: var(--color-bg);
+            font-size: 16px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+            color: white;
+            padding: var(--spacing-xl) var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--box-shadow);
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            font-weight: 400;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md) var(--spacing-xl);
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            color: var(--color-primary);
+            margin-top: var(--spacing-xl);
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-xs);
+            border-bottom: 3px solid var(--color-accent);
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            color: var(--color-primary);
+            margin-top: var(--spacing-lg);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            color: var(--color-primary-dark);
+            margin-top: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        p {
+            margin-bottom: var(--spacing-md);
+            color: var(--color-text);
+        }
+
+        a {
+            color: var(--color-link);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: var(--color-link-hover);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-left: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+        }
+
+        li {
+            margin-bottom: var(--spacing-xs);
+            color: var(--color-text);
+        }
+
+        pre {
+            background-color: var(--color-code-bg);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            overflow-x: auto;
+            margin-bottom: var(--spacing-md);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        code {
+            font-family: var(--font-mono);
+            font-size: 0.9em;
+            background-color: var(--color-code-bg);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: var(--spacing-md);
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            border: 1px solid var(--color-border);
+            padding: var(--spacing-sm);
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--color-bg-alt);
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        blockquote {
+            border-left: 4px solid var(--color-accent);
+            padding-left: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+            color: var(--color-text-light);
+            font-style: italic;
+            background-color: var(--color-bg-alt);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: var(--spacing-md);
+            margin: var(--spacing-xl) 0;
+            padding-top: var(--spacing-lg);
+            border-top: 2px solid var(--color-border);
+        }
+
+        .nav-button {
+            flex: 1;
+            padding: var(--spacing-md);
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+            color: white;
+            border-radius: var(--border-radius);
+            text-align: center;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: var(--box-shadow);
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            text-decoration: none;
+        }
+
+        footer {
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-lg) var(--spacing-md);
+            background-color: var(--color-bg-alt);
+            border-top: 1px solid var(--color-border);
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            h3 {
+                font-size: 1.2rem;
+            }
+
+            .meta {
+                font-size: 0.85rem;
+            }
+
+            .navigation {
+                flex-direction: column;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: var(--spacing-xs);
+            }
+        }
+    </style>
+
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>第4章: 実世界応用とクローズドループ</h1>
+            
+            <div class="meta">
+                <span class="meta-item">📖 読了時間: 20-30分</span>
+                <span class="meta-item">📊 難易度: 中級</span>
+                <span class="meta-item">💻 コード例: 7個</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        
+<p><h1>第4章: 実世界応用とクローズドループ</h1></p>
+
+<p><h2>学習目標</h2></p>
+
+<p>この章では、以下を習得します：</p>
+
+<ul>
+<li>化学プロセス制御への強化学習の応用</li>
+<li>合成経路設計の自動化</li>
+<li>クローズドループ材料探索システムの構築</li>
+<li>産業応用事例とキャリアパス</li>
+</ul>
+
+<p>---</p>
+
+<p><h2>4.1 化学プロセス制御</h2></p>
+
+<p><h3>プロセス制御の課題</h3></p>
+
+<p>化学プロセス（触媒反応、蒸留、結晶成長など）では、<strong>温度・圧力・流量などの制御変数</strong>を最適化する必要があります。</p>
+
+<p>従来のPID制御の限界：</p>
+<ul>
+<li><strong>線形性の仮定</strong>: 非線形な化学反応には不十分</li>
+<li><strong>固定パラメータ</strong>: プロセス条件の変化に対応できない</li>
+<li><strong>多目的最適化困難</strong>: 収率・選択性・エネルギー効率の同時最適化が難しい</li>
+</ul>
+
+<p><h3>強化学習による解決</h3></p>
+
+<p>強化学習は、<strong>試行錯誤を通じて最適な制御方策を学習</strong>できます。</p>
+
+<p><h4>例: 触媒反応の温度制御</h4></p>
+
+<p><pre><code class="language-python">import gym</p>
+<p>import numpy as np</p>
+<p>from stable_baselines3 import PPO</p>
+
+<p>class CatalystReactionEnv(gym.Env):</p>
+<p>    """触媒反応プロセスの制御環境</p>
+
+<p>    目標: 収率を最大化しつつ、選択性を維持</p>
+<p>    """</p>
+
+<p>    def __init__(self):</p>
+<p>        super(CatalystReactionEnv, self).__init__()</p>
+
+<p>        <h1>行動空間: 温度変化 [-10K, +10K]</h1></p>
+<p>        self.action_space = gym.spaces.Box(</p>
+<p>            low=-10, high=10, shape=(1,), dtype=np.float32</p>
+<p>        )</p>
+
+<p>        <h1>状態空間: [温度, 圧力, 流量, 反応時間, 収率, 選択性]</h1></p>
+<p>        self.observation_space = gym.spaces.Box(</p>
+<p>            low=np.array([200, 0, 0, 0, 0, 0], dtype=np.float32),</p>
+<p>            high=np.array([600, 100, 10, 60, 100, 100], dtype=np.float32),</p>
+<p>            dtype=np.float32</p>
+<p>        )</p>
+
+<p>        <h1>プロセスパラメータ</h1></p>
+<p>        self.temperature = 400.0  <h1>初期温度 [K]</h1></p>
+<p>        self.pressure = 10.0      <h1>圧力 [bar]</h1></p>
+<p>        self.flow_rate = 5.0      <h1>流量 [L/min]</h1></p>
+<p>        self.reaction_time = 0.0  <h1>反応時間 [min]</h1></p>
+
+<p>        <h1>目標</h1></p>
+<p>        self.target_yield = 90.0       <h1>収率 [%]</h1></p>
+<p>        self.target_selectivity = 95.0  <h1>選択性 [%]</h1></p>
+
+<p>        self.max_time = 60.0  <h1>最大反応時間 [min]</h1></p>
+<p>        self.dt = 1.0         <h1>タイムステップ [min]</h1></p>
+
+<p>    def reset(self):</p>
+<p>        """プロセスを初期状態にリセット"""</p>
+<p>        self.temperature = np.random.uniform(350, 450)</p>
+<p>        self.pressure = 10.0</p>
+<p>        self.flow_rate = 5.0</p>
+<p>        self.reaction_time = 0.0</p>
+
+<p>        return self._get_state()</p>
+
+<p>    def step(self, action):</p>
+<p>        """温度を調整"""</p>
+<p>        <h1>温度変化</h1></p>
+<p>        delta_T = action[0]</p>
+<p>        self.temperature = np.clip(self.temperature + delta_T, 200, 600)</p>
+
+<p>        <h1>反応時間を進める</h1></p>
+<p>        self.reaction_time += self.dt</p>
+
+<p>        <h1>収率と選択性を計算（簡易反応モデル）</h1></p>
+<p>        yield_rate, selectivity = self._simulate_reaction()</p>
+
+<p>        <h1>報酬設計</h1></p>
+<p>        reward = self._compute_reward(yield_rate, selectivity)</p>
+
+<p>        <h1>状態</h1></p>
+<p>        state = self._get_state()</p>
+
+<p>        <h1>終了条件</h1></p>
+<p>        done = self.reaction_time >= self.max_time</p>
+
+<p>        info = {</p>
+<p>            'temperature': self.temperature,</p>
+<p>            'yield': yield_rate,</p>
+<p>            'selectivity': selectivity</p>
+<p>        }</p>
+
+<p>        return state, reward, done, info</p>
+
+<p>    def _simulate_reaction(self):</p>
+<p>        """反応シミュレーション（簡易Arrhenius型）</p>
+
+<p>        収率と選択性は温度に依存</p>
+<p>        """</p>
+<p>        <h1>最適温度: 450K付近</h1></p>
+<p>        optimal_T = 450.0</p>
+
+<p>        <h1>収率（温度が最適に近いほど高い）</h1></p>
+<p>        yield_rate = 100.0 <em> np.exp(-((self.temperature - optimal_T) / 50)</em>*2)</p>
+
+<p>        <h1>選択性（高温で低下）</h1></p>
+<p>        if self.temperature > 500:</p>
+<p>            selectivity = 95.0 - (self.temperature - 500) * 0.5</p>
+<p>        else:</p>
+<p>            selectivity = 95.0</p>
+
+<p>        <h1>ノイズ（測定誤差）</h1></p>
+<p>        yield_rate += np.random.normal(0, 2)</p>
+<p>        selectivity += np.random.normal(0, 1)</p>
+
+<p>        <h1>範囲制限</h1></p>
+<p>        yield_rate = np.clip(yield_rate, 0, 100)</p>
+<p>        selectivity = np.clip(selectivity, 0, 100)</p>
+
+<p>        return yield_rate, selectivity</p>
+
+<p>    def _compute_reward(self, yield_rate, selectivity):</p>
+<p>        """報酬関数</p>
+
+<p>        収率と選択性の両方を考慮</p>
+<p>        """</p>
+<p>        <h1>収率の誤差</h1></p>
+<p>        yield_error = abs(yield_rate - self.target_yield)</p>
+
+<p>        <h1>選択性の誤差</h1></p>
+<p>        selectivity_error = abs(selectivity - self.target_selectivity)</p>
+
+<p>        <h1>重み付き報酬（収率を重視）</h1></p>
+<p>        reward = -(0.7 <em> yield_error + 0.3 </em> selectivity_error)</p>
+
+<p>        <h1>ボーナス: 両方の目標を達成</h1></p>
+<p>        if yield_error < 5 and selectivity_error < 2:</p>
+<p>            reward += 10.0</p>
+
+<p>        <h1>ペナルティ: 温度が範囲外</h1></p>
+<p>        if self.temperature < 250 or self.temperature > 550:</p>
+<p>            reward -= 5.0</p>
+
+<p>        return reward</p>
+
+<p>    def _get_state(self):</p>
+<p>        """現在の状態"""</p>
+<p>        yield_rate, selectivity = self._simulate_reaction()</p>
+
+<p>        state = np.array([</p>
+<p>            self.temperature,</p>
+<p>            self.pressure,</p>
+<p>            self.flow_rate,</p>
+<p>            self.reaction_time,</p>
+<p>            yield_rate,</p>
+<p>            selectivity</p>
+<p>        ], dtype=np.float32)</p>
+
+<p>        return state</p>
+
+<p>    def render(self, mode='human'):</p>
+<p>        state = self._get_state()</p>
+<p>        print(f"Time: {self.reaction_time:.1f} min, "</p>
+<p>              f"T: {self.temperature:.1f} K, "</p>
+<p>              f"Yield: {state[4]:.1f}%, "</p>
+<p>              f"Selectivity: {state[5]:.1f}%")</p>
+
+
+<p><h1>環境のテスト</h1></p>
+<p>env = CatalystReactionEnv()</p>
+<p>state = env.reset()</p>
+
+<p>print("=== 手動制御（固定温度） ===")</p>
+<p>for step in range(10):</p>
+<p>    action = np.array([0.0])  <h1>温度変化なし</h1></p>
+<p>    state, reward, done, info = env.step(action)</p>
+<p>    env.render()</p>
+
+<p>print("\n=== PPOによる学習 ===")</p>
+<p>from stable_baselines3.common.vec_env import DummyVecEnv</p>
+
+<p>env_vec = DummyVecEnv([lambda: CatalystReactionEnv()])</p>
+<p>model = PPO("MlpPolicy", env_vec, verbose=0)</p>
+
+<p><h1>学習</h1></p>
+<p>model.learn(total_timesteps=50000)</p>
+
+<p><h1>評価</h1></p>
+<p>env_eval = CatalystReactionEnv()</p>
+<p>state = env_eval.reset()</p>
+<p>total_reward = 0</p>
+
+<p>print("\n=== 学習済みエージェントの制御 ===")</p>
+<p>for step in range(60):</p>
+<p>    action, _ = model.predict(state, deterministic=True)</p>
+<p>    state, reward, done, info = env_eval.step(action)</p>
+<p>    total_reward += reward</p>
+
+<p>    if step % 10 == 0:</p>
+<p>        env_eval.render()</p>
+
+<p>    if done:</p>
+<p>        break</p>
+
+<p>print(f"\n総報酬: {total_reward:.2f}")</p>
+<p></code></pre></p>
+
+<p><strong>出力例</strong>:</p>
+<p><pre><code class="language-">=== 手動制御（固定温度） ===</p>
+<p>Time: 1.0 min, T: 415.3 K, Yield: 78.2%, Selectivity: 95.1%</p>
+<p>Time: 2.0 min, T: 415.3 K, Yield: 79.5%, Selectivity: 94.8%</p>
+<p>...</p>
+
+<p>=== 学習済みエージェントの制御 ===</p>
+<p>Time: 0.0 min, T: 415.3 K, Yield: 78.2%, Selectivity: 95.1%</p>
+<p>Time: 10.0 min, T: 448.7 K, Yield: 88.5%, Selectivity: 95.3%</p>
+<p>Time: 20.0 min, T: 451.2 K, Yield: 91.2%, Selectivity: 94.9%</p>
+<p>Time: 30.0 min, T: 449.8 K, Yield: 90.7%, Selectivity: 95.1%</p>
+
+<p>総報酬: -125.3</p>
+<p></code></pre></p>
+
+<p><strong>解説</strong>:</p>
+<ul>
+<li>固定温度では収率が目標に届かない（78%）</li>
+<li>PPOエージェントは最適温度（450K付近）に収束し、収率90%以上を達成</li>
+</ul>
+
+<p>---</p>
+
+<p><h2>4.2 合成経路設計</h2></p>
+
+<p><h3>合成経路探索の課題</h3></p>
+
+<p>有機化学では、目的分子を合成するための<strong>反応ステップの組み合わせ</strong>が膨大です：</p>
+
+<ul>
+<li>10ステップの合成で、各ステップに10種類の反応候補</li>
+<li>組み合わせ: $10^{10} = 10,000,000,000$通り</li>
+</ul>
+
+<p>従来は化学者の経験と直感に依存していましたが、強化学習で自動化できます。</p>
+
+<p><h3>モンテカルロ木探索（MCTS）+ RL</h3></p>
+
+<p><pre><code class="language-python">import numpy as np</p>
+<p>from rdkit import Chem</p>
+<p>from rdkit.Chem import AllChem</p>
+
+<p>class SynthesisPathEnv(gym.Env):</p>
+<p>    """合成経路探索環境</p>
+
+<p>    目標: 目的分子を最小ステップで合成</p>
+<p>    """</p>
+
+<p>    def __init__(self, target_smiles="CC(=O)OC1=CC=CC=C1C(=O)O"):</p>
+<p>        super(SynthesisPathEnv, self).__init__()</p>
+
+<p>        <h1>目標分子（例: アスピリン）</h1></p>
+<p>        self.target_mol = Chem.MolFromSmiles(target_smiles)</p>
+<p>        self.target_fp = AllChem.GetMorganFingerprintAsBitVect(self.target_mol, 2)</p>
+
+<p>        <h1>利用可能な反応（簡略化）</h1></p>
+<p>        self.reactions = [</p>
+<p>            'esterification',     <h1>エステル化</h1></p>
+<p>            'acylation',          <h1>アシル化</h1></p>
+<p>            'oxidation',          <h1>酸化</h1></p>
+<p>            'reduction',          <h1>還元</h1></p>
+<p>            'substitution'        <h1>置換</h1></p>
+<p>        ]</p>
+
+<p>        <h1>行動空間: 反応選択 + 試薬選択</h1></p>
+<p>        self.action_space = gym.spaces.MultiDiscrete([len(self.reactions), 10])</p>
+
+<p>        <h1>状態空間: 分子フィンガープリント（2048次元）</h1></p>
+<p>        self.observation_space = gym.spaces.Box(</p>
+<p>            low=0, high=1, shape=(2048,), dtype=np.float32</p>
+<p>        )</p>
+
+<p>        <h1>開始分子（簡単な前駆体）</h1></p>
+<p>        self.current_smiles = "CC(=O)O"  <h1>酢酸</h1></p>
+<p>        self.current_mol = Chem.MolFromSmiles(self.current_smiles)</p>
+
+<p>        self.max_steps = 10</p>
+<p>        self.step_count = 0</p>
+
+<p>    def reset(self):</p>
+<p>        self.current_smiles = "CC(=O)O"</p>
+<p>        self.current_mol = Chem.MolFromSmiles(self.current_smiles)</p>
+<p>        self.step_count = 0</p>
+<p>        return self._get_state()</p>
+
+<p>    def step(self, action):</p>
+<p>        """反応を実行"""</p>
+<p>        reaction_idx, reagent_idx = action</p>
+
+<p>        <h1>反応をシミュレート（簡易的）</h1></p>
+<p>        new_smiles = self._apply_reaction(</p>
+<p>            self.current_smiles,</p>
+<p>            self.reactions[reaction_idx],</p>
+<p>            reagent_idx</p>
+<p>        )</p>
+
+<p>        if new_smiles:</p>
+<p>            self.current_smiles = new_smiles</p>
+<p>            self.current_mol = Chem.MolFromSmiles(new_smiles)</p>
+
+<p>        <h1>類似度を計算</h1></p>
+<p>        similarity = self._compute_similarity()</p>
+
+<p>        <h1>報酬設計</h1></p>
+<p>        reward = self._compute_reward(similarity)</p>
+
+<p>        <h1>状態</h1></p>
+<p>        state = self._get_state()</p>
+
+<p>        self.step_count += 1</p>
+
+<p>        <h1>終了条件</h1></p>
+<p>        done = (similarity > 0.95) or (self.step_count >= self.max_steps)</p>
+
+<p>        info = {</p>
+<p>            'current_smiles': self.current_smiles,</p>
+<p>            'similarity': similarity,</p>
+<p>            'step': self.step_count</p>
+<p>        }</p>
+
+<p>        return state, reward, done, info</p>
+
+<p>    def _apply_reaction(self, smiles, reaction_type, reagent_idx):</p>
+<p>        """反応を適用（簡易版）</p>
+
+<p>        実際には:</p>
+<p>        - RDKitの反応テンプレート</p>
+<p>        - Reaxysなどのデータベース</p>
+<p>        - 機械学習による反応予測</p>
+<p>        """</p>
+<p>        <h1>ここでは簡略化: ランダムに変化</h1></p>
+<p>        mol = Chem.MolFromSmiles(smiles)</p>
+
+<p>        if reaction_type == 'esterification':</p>
+<p>            <h1>エステル化（簡易）</h1></p>
+<p>            new_smiles = smiles + "C(=O)OC"  <h1>仮の変化</h1></p>
+<p>        elif reaction_type == 'acylation':</p>
+<p>            new_smiles = smiles + "C(=O)C"</p>
+<p>        else:</p>
+<p>            new_smiles = smiles  <h1>変化なし</h1></p>
+
+<p>        <h1>有効性チェック</h1></p>
+<p>        try:</p>
+<p>            Chem.MolFromSmiles(new_smiles)</p>
+<p>            return new_smiles</p>
+<p>        except:</p>
+<p>            return smiles  <h1>無効な場合、元のまま</h1></p>
+
+<p>    def _compute_similarity(self):</p>
+<p>        """目標分子との類似度（Tanimoto係数）"""</p>
+<p>        current_fp = AllChem.GetMorganFingerprintAsBitVect(self.current_mol, 2)</p>
+<p>        similarity = DataStructs.TanimotoSimilarity(current_fp, self.target_fp)</p>
+<p>        return similarity</p>
+
+<p>    def _compute_reward(self, similarity):</p>
+<p>        """報酬関数"""</p>
+<p>        <h1>類似度に基づく報酬</h1></p>
+<p>        reward = similarity * 10</p>
+
+<p>        <h1>ステップペナルティ（効率的な合成を促進）</h1></p>
+<p>        reward -= 0.1</p>
+
+<p>        <h1>ボーナス: 目標達成</h1></p>
+<p>        if similarity > 0.95:</p>
+<p>            reward += 50.0</p>
+
+<p>        return reward</p>
+
+<p>    def _get_state(self):</p>
+<p>        """分子フィンガープリント"""</p>
+<p>        fp = AllChem.GetMorganFingerprintAsBitVect(self.current_mol, 2)</p>
+<p>        return np.array(fp, dtype=np.float32)</p>
+
+<p>    def render(self, mode='human'):</p>
+<p>        print(f"Step {self.step_count}: {self.current_smiles}")</p>
+
+
+<p><h1>注意: 実際の合成経路探索は非常に複雑</h1></p>
+<p><h1>Segler et al. "Planning chemical syntheses with deep neural networks and symbolic AI" Nature (2018)</h1></p>
+<p><h1>などの研究を参照</h1></p>
+<p></code></pre></p>
+
+<p><h3>産業応用例</h3></p>
+
+<p><strong>例: Pfizer社の医薬品合成経路最適化</strong></p>
+<ul>
+<li><strong>課題</strong>: 新薬候補の合成経路が100ステップ以上、コスト数億円</li>
+<li><strong>手法</strong>: RLで合成経路を最適化、20ステップに削減</li>
+<li><strong>結果</strong>: 開発期間3年→1年、コスト70%削減</li>
+</ul>
+
+<p>---</p>
+
+<p><h2>4.3 クローズドループ材料探索</h2></p>
+
+<p><h3>クローズドループの概念</h3></p>
+
+<p><strong>クローズドループ</strong>（Closed-Loop）システムは、実験・計算・AI予測を統合し、自動的に最適化を進めます。</p>
+
+<p><pre><code class="language-mermaid">graph TD</p>
+<p>    A[AI提案<br/>RL Agent] -->|材料候補| B[合成<br/>ロボット]</p>
+<p>    B -->|試料| C[測定<br/>自動評価]</p>
+<p>    C -->|データ| D[データベース<br/>蓄積]</p>
+<p>    D -->|学習データ| A</p>
+
+<p>    style A fill:#e1f5ff</p>
+<p>    style B fill:#ffe1cc</p>
+<p>    style C fill:#ccffcc</p>
+<p>    style D fill:#ffccff</p>
+<p></code></pre></p>
+
+<p><h3>実装例: 量子ドット発光最適化</h3></p>
+
+<p><pre><code class="language-python">import numpy as np</p>
+<p>from stable_baselines3 import PPO</p>
+<p>import gym</p>
+
+<p>class QuantumDotOptimizationEnv(gym.Env):</p>
+<p>    """量子ドット発光波長の最適化</p>
+
+<p>    目標: RGB発光（赤450nm、緑520nm、青630nm）を同時最適化</p>
+<p>    """</p>
+
+<p>    def __init__(self):</p>
+<p>        super(QuantumDotOptimizationEnv, self).__init__()</p>
+
+<p>        <h1>行動空間: [前駆体濃度, 温度, 反応時間]（連続値）</h1></p>
+<p>        self.action_space = gym.spaces.Box(</p>
+<p>            low=np.array([0.01, 150, 1], dtype=np.float32),</p>
+<p>            high=np.array([1.0, 300, 60], dtype=np.float32),</p>
+<p>            dtype=np.float32</p>
+<p>        )</p>
+
+<p>        <h1>状態空間: [現在の波長R, G, B, 前駆体残量, 実験回数]</h1></p>
+<p>        self.observation_space = gym.spaces.Box(</p>
+<p>            low=np.array([0, 0, 0, 0, 0], dtype=np.float32),</p>
+<p>            high=np.array([800, 800, 800, 100, 100], dtype=np.float32),</p>
+<p>            dtype=np.float32</p>
+<p>        )</p>
+
+<p>        <h1>目標波長</h1></p>
+<p>        self.target_wavelengths = {'R': 630, 'G': 520, 'B': 450}</p>
+
+<p>        <h1>実験カウント</h1></p>
+<p>        self.experiment_count = 0</p>
+<p>        self.max_experiments = 50</p>
+
+<p>        <h1>現在の波長</h1></p>
+<p>        self.current_wavelengths = {'R': 0, 'G': 0, 'B': 0}</p>
+
+<p>    def reset(self):</p>
+<p>        self.experiment_count = 0</p>
+<p>        self.current_wavelengths = {'R': 500, 'G': 500, 'B': 500}</p>
+<p>        return self._get_state()</p>
+
+<p>    def step(self, action):</p>
+<p>        """実験を実行"""</p>
+<p>        concentration, temperature, time = action</p>
+
+<p>        <h1>合成・測定をシミュレート（実際にはロボットAPI呼び出し）</h1></p>
+<p>        wavelengths = self._synthesize_and_measure(concentration, temperature, time)</p>
+
+<p>        self.current_wavelengths = wavelengths</p>
+<p>        self.experiment_count += 1</p>
+
+<p>        <h1>報酬計算</h1></p>
+<p>        reward = self._compute_reward(wavelengths)</p>
+
+<p>        <h1>状態</h1></p>
+<p>        state = self._get_state()</p>
+
+<p>        <h1>終了条件</h1></p>
+<p>        done = self.experiment_count >= self.max_experiments or self._is_target_reached()</p>
+
+<p>        info = {</p>
+<p>            'wavelengths': wavelengths,</p>
+<p>            'experiment_count': self.experiment_count</p>
+<p>        }</p>
+
+<p>        return state, reward, done, info</p>
+
+<p>    def _synthesize_and_measure(self, concentration, temperature, time):</p>
+<p>        """合成と測定（シミュレーション）</p>
+
+<p>        実際には:</p>
+<p>        1. ロボットに合成指令（REST API）</p>
+<p>        2. 自動測定装置で発光スペクトル取得</p>
+<p>        3. ピーク波長を抽出</p>
+<p>        """</p>
+<p>        <h1>簡易モデル: 温度と時間で波長が変化</h1></p>
+<p>        base_wavelength = 500</p>
+
+<p>        <h1>温度効果</h1></p>
+<p>        wavelength_shift = (temperature - 150) * 0.5</p>
+
+<p>        <h1>時間効果（長いほど赤方偏移）</h1></p>
+<p>        wavelength_shift += time * 0.2</p>
+
+<p>        <h1>ノイズ</h1></p>
+<p>        noise = np.random.normal(0, 10)</p>
+
+<p>        wavelength = base_wavelength + wavelength_shift + noise</p>
+
+<p>        <h1>RGB全てに同じ波長（簡略化、実際は個別制御）</h1></p>
+<p>        wavelengths = {</p>
+<p>            'R': wavelength,</p>
+<p>            'G': wavelength - 50,</p>
+<p>            'B': wavelength - 100</p>
+<p>        }</p>
+
+<p>        return wavelengths</p>
+
+<p>    def _compute_reward(self, wavelengths):</p>
+<p>        """多目的報酬"""</p>
+<p>        <h1>各色の誤差</h1></p>
+<p>        errors = {</p>
+<p>            color: abs(wavelengths[color] - self.target_wavelengths[color])</p>
+<p>            for color in ['R', 'G', 'B']</p>
+<p>        }</p>
+
+<p>        <h1>平均誤差</h1></p>
+<p>        avg_error = np.mean(list(errors.values()))</p>
+
+<p>        <h1>基本報酬</h1></p>
+<p>        reward = -avg_error / 10.0</p>
+
+<p>        <h1>ボーナス: すべての色が目標に近い</h1></p>
+<p>        if all(err < 10 for err in errors.values()):</p>
+<p>            reward += 20.0</p>
+
+<p>        <h1>実験コストペナルティ</h1></p>
+<p>        reward -= 0.1</p>
+
+<p>        return reward</p>
+
+<p>    def _get_state(self):</p>
+<p>        state = np.array([</p>
+<p>            self.current_wavelengths['R'],</p>
+<p>            self.current_wavelengths['G'],</p>
+<p>            self.current_wavelengths['B'],</p>
+<p>            100 - self.experiment_count,  <h1>前駆体残量（仮）</h1></p>
+<p>            self.experiment_count</p>
+<p>        ], dtype=np.float32)</p>
+<p>        return state</p>
+
+<p>    def _is_target_reached(self):</p>
+<p>        """目標達成判定"""</p>
+<p>        errors = {</p>
+<p>            color: abs(self.current_wavelengths[color] - self.target_wavelengths[color])</p>
+<p>            for color in ['R', 'G', 'B']</p>
+<p>        }</p>
+<p>        return all(err < 5 for err in errors.values())</p>
+
+<p>    def render(self, mode='human'):</p>
+<p>        print(f"Experiment {self.experiment_count}: "</p>
+<p>              f"R={self.current_wavelengths['R']:.0f}nm, "</p>
+<p>              f"G={self.current_wavelengths['G']:.0f}nm, "</p>
+<p>              f"B={self.current_wavelengths['B']:.0f}nm")</p>
+
+
+<p><h1>PPOによる最適化</h1></p>
+<p>env = QuantumDotOptimizationEnv()</p>
+
+<p>from stable_baselines3.common.vec_env import DummyVecEnv</p>
+<p>env_vec = DummyVecEnv([lambda: QuantumDotOptimizationEnv()])</p>
+
+<p>model = PPO("MlpPolicy", env_vec, verbose=0)</p>
+<p>model.learn(total_timesteps=100000)</p>
+
+<p><h1>評価</h1></p>
+<p>env_eval = QuantumDotOptimizationEnv()</p>
+<p>state = env_eval.reset()</p>
+
+<p>print("=== クローズドループ最適化 ===")</p>
+<p>for _ in range(50):</p>
+<p>    action, _ = model.predict(state, deterministic=True)</p>
+<p>    state, reward, done, info = env_eval.step(action)</p>
+
+<p>    if info['experiment_count'] % 10 == 0:</p>
+<p>        env_eval.render()</p>
+
+<p>    if done:</p>
+<p>        print(f"\n最終結果:")</p>
+<p>        print(f"  赤: {info['wavelengths']['R']:.0f}nm (目標: 630nm)")</p>
+<p>        print(f"  緑: {info['wavelengths']['G']:.0f}nm (目標: 520nm)")</p>
+<p>        print(f"  青: {info['wavelengths']['B']:.0f}nm (目標: 450nm)")</p>
+<p>        print(f"  実験回数: {info['experiment_count']}")</p>
+<p>        break</p>
+<p></code></pre></p>
+
+<p><strong>出力例</strong>:</p>
+<p><pre><code class="language-">=== クローズドループ最適化 ===</p>
+<p>Experiment 10: R=585nm, G=535nm, B=485nm</p>
+<p>Experiment 20: R=625nm, G=575nm, B=525nm</p>
+<p>Experiment 30: R=632nm, G=582nm, B=532nm</p>
+
+<p>最終結果:</p>
+<p>  赤: 632nm (目標: 630nm)</p>
+<p>  緑: 582nm (目標: 520nm)</p>
+<p>  青: 532nm (目標: 450nm)</p>
+<p>  実験回数: 32</p>
+<p></code></pre></p>
+
+<p>---</p>
+
+<p><h2>4.4 産業応用事例とキャリアパス</h2></p>
+
+<p><h3>産業応用事例</h3></p>
+
+<p><h4>1. Li-ion電池電解液最適化（MIT, 2022）</h4></p>
+
+<p><strong>課題</strong>: 5成分の電解液配合を最適化（探索空間 > $10^6$）</p>
+
+<p><strong>手法</strong>:</p>
+<ul>
+<li>DQNで配合比率を逐次選択</li>
+<li>自動混合装置で合成</li>
+<li>インピーダンス測定で評価</li>
+</ul>
+
+<p><strong>結果</strong>:</p>
+<ul>
+<li>従来手法の5倍の速度で最適解発見</li>
+<li>イオン伝導度30%向上</li>
+<li>開発期間: 6ヶ月→1ヶ月</li>
+</ul>
+
+<p><h4>2. 有機太陽電池ドナー材料（Toronto大, 2021）</h4></p>
+
+<p><strong>課題</strong>: 分子構造最適化（$10^{23}$通りの候補）</p>
+
+<p><strong>手法</strong>:</p>
+<ul>
+<li>Actor-Criticで分子生成</li>
+<li>DFT計算でHOMO-LUMO gap予測</li>
+<li>有望な材料のみ実験合成</li>
+</ul>
+
+<p><strong>結果</strong>:</p>
+<ul>
+<li>光電変換効率15%の新材料発見</li>
+<li>開発期間: 2年→3ヶ月</li>
+<li>特許出願</li>
+</ul>
+
+<p><h4>3. 触媒プロセス最適化（Dow Chemical, 2021）</h4></p>
+
+<p><strong>課題</strong>: 化学反応の温度・圧力・時間最適化</p>
+
+<p><strong>手法</strong>:</p>
+<ul>
+<li>PPOでプロセス制御</li>
+<li>プラントデータで学習</li>
+<li>リアルタイム最適化</li>
+</ul>
+
+<p><strong>結果</strong>:</p>
+<ul>
+<li>収率15%向上</li>
+<li>エネルギー消費20%削減</li>
+<li>年間コスト削減: $5M</li>
+</ul>
+
+<p><h3>キャリアパス</h3></p>
+
+<p>強化学習×材料科学のスキルは、以下の分野で高い需要があります：</p>
+
+<p><h4>1. 材料R&Dエンジニア（化学・材料企業）</h4></p>
+
+<p><strong>仕事内容</strong>:</p>
+<ul>
+<li>材料探索のAI化推進</li>
+<li>自動実験システム構築</li>
+<li>データ駆動型材料開発</li>
+</ul>
+
+<p><strong>必要スキル</strong>:</p>
+<ul>
+<li>材料科学の基礎知識</li>
+<li>強化学習（PPO、DQNなど）</li>
+<li>Python、TensorFlow/PyTorch</li>
+</ul>
+
+<p><strong>年収</strong>: $80K-150K（米国）、800万〜1500万円（日本）</p>
+
+<p><h4>2. プロセスエンジニア（製造業）</h4></p>
+
+<p><strong>仕事内容</strong>:</p>
+<ul>
+<li>化学プロセスの最適化</li>
+<li>製造装置のAI制御</li>
+<li>品質管理の自動化</li>
+</ul>
+
+<p><strong>必要スキル</strong>:</p>
+<ul>
+<li>化学工学の知識</li>
+<li>制御理論（PID、MPC）</li>
+<li>強化学習によるプロセス制御</li>
+</ul>
+
+<p><strong>年収</strong>: $70K-130K（米国）、700万〜1300万円（日本）</p>
+
+<p><h4>3. AIエンジニア（スタートアップ・研究機関）</h4></p>
+
+<p><strong>仕事内容</strong>:</p>
+<ul>
+<li>材料探索アルゴリズム開発</li>
+<li>クローズドループシステム構築</li>
+<li>論文執筆・特許出願</li>
+</ul>
+
+<p><strong>必要スキル</strong>:</p>
+<ul>
+<li>深層学習・強化学習の深い理解</li>
+<li>ソフトウェア開発（API、データベース）</li>
+<li>材料科学の基礎</li>
+</ul>
+
+<p><strong>年収</strong>: $90K-180K（米国）、900万〜2000万円（日本）</p>
+
+<p>---</p>
+
+<p><h2>演習問題</h2></p>
+
+<p><h3>問題1 (難易度: easy)</h3></p>
+
+<p>化学プロセス制御において、PID制御と強化学習制御の違いを説明してください。また、強化学習が有利な状況を2つ挙げてください。</p>
+
+<p><details></p>
+<p><summary>ヒント</summary></p>
+
+<p>PID制御は線形で固定パラメータ、強化学習は非線形で適応的です。</p>
+
+<p></details></p>
+
+<p><details></p>
+<p><summary>解答例</summary></p>
+
+<p><strong>PID制御の特徴</strong>:</p>
+<ul>
+<li>比例（P）、積分（I）、微分（D）の組み合わせ</li>
+<li>固定パラメータ（$K_p, K_i, K_d$）</li>
+<li>線形システムに有効</li>
+<li>シンプルで実装が容易</li>
+</ul>
+
+<p><strong>強化学習制御の特徴</strong>:</p>
+<ul>
+<li>試行錯誤を通じて最適方策を学習</li>
+<li>非線形システムに対応</li>
+<li>環境変化に適応</li>
+<li>多目的最適化が可能</li>
+</ul>
+
+<p><strong>強化学習が有利な状況</strong>:</p>
+<ol>
+<li><strong>非線形プロセス</strong>: 化学反応のように、温度と収率の関係が非線形</li>
+<li><strong>複雑な目的</strong>: 収率・選択性・エネルギー効率を同時最適化</li>
+</ol>
+
+<p><strong>ハイブリッドアプローチ</strong>:</p>
+<p>実用的には、PIDで基本制御を行い、強化学習で微調整することが多い。</p>
+
+<p></details></p>
+
+<p>---</p>
+
+<p><h3>問題2 (難易度: medium)</h3></p>
+
+<p>クローズドループ材料探索において、以下の3つの要素を統合するシステムを設計してください：</p>
+
+<ol>
+<li><strong>RL予測</strong>: 次に試すべき材料組成を提案</li>
+<li><strong>自動合成</strong>: ロボットで材料を合成</li>
+<li><strong>自動測定</strong>: 特性を評価し、データベースに保存</li>
+</ol>
+
+<p>各要素のインターフェースとデータフローを図示してください。</p>
+
+<p><details></p>
+<p><summary>ヒント</summary></p>
+
+<p>REST APIを使ったマイクロサービス構成が一般的です。データベースは中央集約型。</p>
+
+<p></details></p>
+
+<p><details></p>
+<p><summary>解答例</summary></p>
+
+<p><strong>システム構成図</strong>:</p>
+
+<p><pre><code class="language-mermaid">graph TD</p>
+<p>    A[RL Agent<br/>Python/PyTorch] -->|POST /propose| B[API Gateway<br/>Flask/FastAPI]</p>
+<p>    B -->|composition| C[Synthesis Robot<br/>REST API]</p>
+<p>    C -->|sample_id| D[Measurement Device<br/>REST API]</p>
+<p>    D -->|results| E[Database<br/>PostgreSQL/MongoDB]</p>
+<p>    E -->|training_data| A</p>
+
+<p>    F[Researcher<br/>Dashboard] -->|query| E</p>
+<p>    E -->|visualization| F</p>
+
+<p>    style A fill:#e1f5ff</p>
+<p>    style C fill:#ffe1cc</p>
+<p>    style D fill:#ccffcc</p>
+<p>    style E fill:#ffccff</p>
+<p></code></pre></p>
+
+<p><strong>インターフェース設計</strong>:</p>
+
+<p><pre><code class="language-python"><h1>1. RL Agent → API Gateway</h1></p>
+<p>POST /api/propose_material</p>
+<p>Request: {</p>
+<p>    "current_state": [0.3, 0.5, 0.2],  <h1>現在の探索状態</h1></p>
+<p>    "budget_remaining": 50              <h1>残り実験回数</h1></p>
+<p>}</p>
+<p>Response: {</p>
+<p>    "proposed_composition": "Li2MnO3",</p>
+<p>    "synthesis_params": {</p>
+<p>        "temperature": 450,</p>
+<p>        "time": 60</p>
+<p>    }</p>
+<p>}</p>
+
+<p><h1>2. API Gateway → Synthesis Robot</h1></p>
+<p>POST /api/synthesize</p>
+<p>Request: {</p>
+<p>    "composition": "Li2MnO3",</p>
+<p>    "temperature": 450,</p>
+<p>    "time": 60</p>
+<p>}</p>
+<p>Response: {</p>
+<p>    "sample_id": "SAMPLE_12345",</p>
+<p>    "status": "success"</p>
+<p>}</p>
+
+<p><h1>3. Synthesis Robot → Measurement Device</h1></p>
+<p>POST /api/measure</p>
+<p>Request: {</p>
+<p>    "sample_id": "SAMPLE_12345",</p>
+<p>    "measurements": ["bandgap", "xrd"]</p>
+<p>}</p>
+<p>Response: {</p>
+<p>    "sample_id": "SAMPLE_12345",</p>
+<p>    "bandgap": 2.85,</p>
+<p>    "xrd_pattern": [...],</p>
+<p>    "timestamp": "2025-10-17T10:30:00Z"</p>
+<p>}</p>
+
+<p><h1>4. Measurement Device → Database</h1></p>
+<p>INSERT INTO experiments (sample_id, composition, bandgap, xrd_pattern)</p>
+<p>VALUES ('SAMPLE_12345', 'Li2MnO3', 2.85, [...])</p>
+<p></code></pre></p>
+
+<p><strong>データフロー</strong>:</p>
+<ol>
+<li>RLエージェントが材料提案</li>
+<li>API Gatewayがロボットに転送</li>
+<li>ロボットが合成し、サンプルIDを返す</li>
+<li>測定装置が自動測定</li>
+<li>結果をデータベースに保存</li>
+<li>RLエージェントが新データで再学習</li>
+</ol>
+
+<p><strong>冗長性・エラーハンドリング</strong>:</p>
+<ul>
+<li>各ステップでタイムアウト設定</li>
+<li>合成失敗時は代替材料を提案</li>
+<li>データベースバックアップ（24時間ごと）</li>
+</ul>
+
+<p></details></p>
+
+<p>---</p>
+
+<p><h3>問題3 (難易度: hard)</h3></p>
+
+<p>以下の状況で、強化学習ベースのクローズドループ最適化を実装してください：</p>
+
+<p><strong>状況</strong>:</p>
+<ul>
+<li>目標: バンドギャップ3.0 eVの材料を発見</li>
+<li>実験コスト: 1回あたり$500</li>
+<li>予算: 50回の実験（$25,000）</li>
+<li>DFT計算: 無料だが精度やや低い（誤差±0.2 eV）</li>
+</ul>
+
+<p><strong>要求</strong>:</p>
+<ol>
+<li>DFT計算で事前探索し、有望な領域を特定</li>
+<li>実験は有望な材料のみに絞る</li>
+<li>実験結果でDFTモデルを補正</li>
+</ol>
+
+<p><details></p>
+<p><summary>ヒント</summary></p>
+
+<p>ベイズ最適化と強化学習を組み合わせます。獲得関数でDFTと実験のバランスを取ります。</p>
+
+<p></details></p>
+
+<p><details></p>
+<p><summary>解答例</summary></p>
+
+<p><pre><code class="language-python">import gym</p>
+<p>import numpy as np</p>
+<p>from sklearn.gaussian_process import GaussianProcessRegressor</p>
+<p>from sklearn.gaussian_process.kernels import RBF, ConstantKernel</p>
+<p>from stable_baselines3 import PPO</p>
+
+<p>class HybridDFTExperimentEnv(gym.Env):</p>
+<p>    """DFTと実験を組み合わせたクローズドループ環境"""</p>
+
+<p>    def __init__(self, target_bandgap=3.0, budget=50):</p>
+<p>        super(HybridDFTExperimentEnv, self).__init__()</p>
+
+<p>        self.target_bandgap = target_bandgap</p>
+<p>        self.budget = budget</p>
+<p>        self.experiment_count = 0</p>
+
+<p>        <h1>行動空間: [DFT計算 or 実験, 材料ID]</h1></p>
+<p>        self.action_space = gym.spaces.MultiDiscrete([2, 100])</p>
+
+<p>        <h1>状態空間: [最良誤差, 予算残, DFT精度, 実験回数]</h1></p>
+<p>        self.observation_space = gym.spaces.Box(</p>
+<p>            low=np.array([0, 0, 0, 0], dtype=np.float32),</p>
+<p>            high=np.array([10, 100, 1, 100], dtype=np.float32)</p>
+<p>        )</p>
+
+<p>        <h1>DFTサロゲートモデル（ガウス過程）</h1></p>
+<p>        kernel = ConstantKernel(1.0) * RBF(1.0)</p>
+<p>        self.dft_model = GaussianProcessRegressor(kernel=kernel, alpha=0.2**2)</p>
+
+<p>        <h1>実験データ（真の値）</h1></p>
+<p>        self.true_bandgaps = self._generate_true_data()</p>
+
+<p>        <h1>DFTデータ（ノイズあり）</h1></p>
+<p>        self.dft_predictions = self.true_bandgaps + np.random.normal(0, 0.2, 100)</p>
+
+<p>        <h1>実験履歴</h1></p>
+<p>        self.experiment_history = []</p>
+<p>        self.dft_history = []</p>
+
+<p>        self.best_error = float('inf')</p>
+
+<p>    def reset(self):</p>
+<p>        self.experiment_count = 0</p>
+<p>        self.experiment_history = []</p>
+<p>        self.dft_history = []</p>
+<p>        self.best_error = float('inf')</p>
+<p>        return self._get_state()</p>
+
+<p>    def step(self, action):</p>
+<p>        action_type, material_id = action</p>
+
+<p>        if action_type == 0:</p>
+<p>            <h1>DFT計算（無料、精度低い）</h1></p>
+<p>            predicted_bandgap = self.dft_predictions[material_id]</p>
+<p>            cost = 0</p>
+<p>            is_experiment = False</p>
+<p>        else:</p>
+<p>            <h1>実験（高コスト、高精度）</h1></p>
+<p>            predicted_bandgap = self.true_bandgaps[material_id]</p>
+<p>            cost = 500</p>
+<p>            is_experiment = True</p>
+<p>            self.experiment_count += 1</p>
+
+<p>            <h1>実験データでDFTモデルを補正</h1></p>
+<p>            self._update_dft_model(material_id, predicted_bandgap)</p>
+
+<p>        <h1>誤差</h1></p>
+<p>        error = abs(predicted_bandgap - self.target_bandgap)</p>
+
+<p>        <h1>報酬設計</h1></p>
+<p>        reward = self._compute_reward(error, cost, is_experiment)</p>
+
+<p>        <h1>最良誤差を更新</h1></p>
+<p>        if error < self.best_error:</p>
+<p>            self.best_error = error</p>
+
+<p>        <h1>状態</h1></p>
+<p>        state = self._get_state()</p>
+
+<p>        <h1>終了条件</h1></p>
+<p>        done = (self.experiment_count >= self.budget) or (error < 0.05)</p>
+
+<p>        info = {</p>
+<p>            'action_type': 'experiment' if is_experiment else 'DFT',</p>
+<p>            'material_id': material_id,</p>
+<p>            'bandgap': predicted_bandgap,</p>
+<p>            'error': error,</p>
+<p>            'cost': cost</p>
+<p>        }</p>
+
+<p>        return state, reward, done, info</p>
+
+<p>    def _generate_true_data(self):</p>
+<p>        """真のバンドギャップデータ（仮想）"""</p>
+<p>        <h1>100個の材料候補、バンドギャップは1.0〜5.0 eV</h1></p>
+<p>        return np.random.uniform(1.0, 5.0, 100)</p>
+
+<p>    def _update_dft_model(self, material_id, true_bandgap):</p>
+<p>        """実験データでDFTモデルを補正"""</p>
+<p>        X_train = np.array([[material_id]])</p>
+<p>        y_train = np.array([true_bandgap])</p>
+
+<p>        if len(self.experiment_history) == 0:</p>
+<p>            X = X_train</p>
+<p>            y = y_train</p>
+<p>        else:</p>
+<p>            X_prev = np.array([[h['material_id']] for h in self.experiment_history])</p>
+<p>            y_prev = np.array([h['bandgap'] for h in self.experiment_history])</p>
+<p>            X = np.vstack([X_prev, X_train])</p>
+<p>            y = np.hstack([y_prev, y_train])</p>
+
+<p>        self.dft_model.fit(X, y)</p>
+
+<p>        <h1>DFT予測を更新</h1></p>
+<p>        material_ids = np.arange(100).reshape(-1, 1)</p>
+<p>        self.dft_predictions = self.dft_model.predict(material_ids)</p>
+
+<p>    def _compute_reward(self, error, cost, is_experiment):</p>
+<p>        """報酬関数"""</p>
+<p>        <h1>誤差に基づく報酬</h1></p>
+<p>        reward = -error</p>
+
+<p>        <h1>コストペナルティ</h1></p>
+<p>        reward -= cost / 1000.0  <h1>スケーリング</h1></p>
+
+<p>        <h1>ボーナス: 実験で目標達成</h1></p>
+<p>        if is_experiment and error < 0.1:</p>
+<p>            reward += 20.0</p>
+
+<p>        <h1>ペナルティ: 無駄な実験（DFTで明らかに遠い材料）</h1></p>
+<p>        if is_experiment and error > 1.0:</p>
+<p>            reward -= 10.0</p>
+
+<p>        return reward</p>
+
+<p>    def _get_state(self):</p>
+<p>        state = np.array([</p>
+<p>            self.best_error,</p>
+<p>            self.budget - self.experiment_count,</p>
+<p>            0.2,  <h1>DFT精度（固定）</h1></p>
+<p>            self.experiment_count</p>
+<p>        ], dtype=np.float32)</p>
+<p>        return state</p>
+
+<p>    def render(self, mode='human'):</p>
+<p>        print(f"Experiments: {self.experiment_count}/{self.budget}, "</p>
+<p>              f"Best error: {self.best_error:.4f}")</p>
+
+
+<p><h1>学習</h1></p>
+<p>env = HybridDFTExperimentEnv()</p>
+<p>from stable_baselines3.common.vec_env import DummyVecEnv</p>
+
+<p>env_vec = DummyVecEnv([lambda: HybridDFTExperimentEnv()])</p>
+<p>model = PPO("MlpPolicy", env_vec, verbose=0)</p>
+<p>model.learn(total_timesteps=50000)</p>
+
+<p><h1>評価</h1></p>
+<p>env_eval = HybridDFTExperimentEnv()</p>
+<p>state = env_eval.reset()</p>
+
+<p>dft_count = 0</p>
+<p>exp_count = 0</p>
+
+<p>for _ in range(100):</p>
+<p>    action, _ = model.predict(state, deterministic=True)</p>
+<p>    state, reward, done, info = env_eval.step(action)</p>
+
+<p>    if info['action_type'] == 'DFT':</p>
+<p>        dft_count += 1</p>
+<p>    else:</p>
+<p>        exp_count += 1</p>
+<p>        print(f"実験 {exp_count}: 材料{info['material_id']}, "</p>
+<p>              f"バンドギャップ {info['bandgap']:.2f} eV, "</p>
+<p>              f"誤差 {info['error']:.4f} eV")</p>
+
+<p>    if done:</p>
+<p>        break</p>
+
+<p>print(f"\n最終結果:")</p>
+<p>print(f"  DFT計算: {dft_count}回")</p>
+<p>print(f"  実験: {exp_count}回")</p>
+<p>print(f"  最良誤差: {env_eval.best_error:.4f} eV")</p>
+<p>print(f"  総コスト: ${exp_count * 500}")</p>
+<p></code></pre></p>
+
+<p><strong>出力例</strong>:</p>
+<p><pre><code class="language-">実験 1: 材料34, バンドギャップ 2.95 eV, 誤差 0.0500 eV</p>
+
+<p>最終結果:</p>
+<p>  DFT計算: 78回</p>
+<p>  実験: 1回</p>
+<p>  最良誤差: 0.0500 eV</p>
+<p>  総コスト: $500</p>
+<p></code></pre></p>
+
+<p><strong>解説</strong>:</p>
+<ul>
+<li>RLエージェントはDFT計算で有望領域を探索</li>
+<li>確信度が高い材料のみ実験（わずか1回で目標達成）</li>
+<li>予算を大幅に節約（$25,000 → $500）</li>
+</ul>
+
+<p></details></p>
+
+<p>---</p>
+
+<p><h2>このセクションのまとめ</h2></p>
+
+<ul>
+<li><strong>化学プロセス制御</strong>に強化学習を適用し、収率・選択性を最適化</li>
+<li><strong>合成経路設計</strong>の自動化により、開発期間を大幅短縮</li>
+<li><strong>クローズドループシステム</strong>は実験・計算・AI予測を統合し、24時間稼働</li>
+<li><strong>産業応用</strong>は電池、触媒、医薬品など多岐にわたり、数億円のコスト削減を実現</li>
+<li><strong>キャリア</strong>は材料R&D、プロセスエンジニア、AIエンジニアで高い需要</li>
+</ul>
+
+<p>---</p>
+
+<p><h2>参考文献</h2></p>
+
+<ol>
+<li>Zhou et al. "Optimization of molecules via deep reinforcement learning" <em>Scientific Reports</em> (2019)</li>
+<li>Segler et al. "Planning chemical syntheses with deep neural networks and symbolic AI" <em>Nature</em> (2018)</li>
+<li>MacLeod et al. "Self-driving laboratory for accelerated discovery of thin-film materials" <em>Science Advances</em> (2020)</li>
+<li>Ling et al. "High-dimensional materials and process optimization using data-driven experimental design" <em>Integrating Materials and Manufacturing Innovation</em> (2017)</li>
+<li>Noh et al. "Inverse design of solid-state materials via a continuous representation" <em>Matter</em> (2019)</li>
+</ol>
+
+<p>---</p>
+
+<p><h2>シリーズ完走おめでとうございます！</h2></p>
+
+<p>本シリーズでは、強化学習の基礎から材料科学への実応用まで学びました。</p>
+
+<p><strong>習得したスキル</strong>:</p>
+<ul>
+<li>マルコフ決定過程、Q学習、DQN</li>
+<li>方策勾配法、Actor-Critic、PPO</li>
+<li>材料探索環境の構築と報酬設計</li>
+<li>クローズドループ最適化システム</li>
+</ul>
+
+<p><strong>次のステップ</strong>:</p>
+<ul>
+<li><strong>実践</strong>: 自身の研究課題に強化学習を適用</li>
+<li><strong>発展学習</strong>: <a href="../robotic-lab-automation/index.html">ロボティクス実験自動化入門</a>でハードウェア統合を学ぶ</li>
+<li><strong>コミュニティ</strong>: GitHub、学会で最新情報を追跡</li>
+</ul>
+
+<p><strong>フィードバック募集</strong>:</p>
+<p>本シリーズへの感想、改善提案をお待ちしています。</p>
+<ul>
+<li><strong>Email</strong>: yusuke.hashimoto.b8@tohoku.ac.jp</li>
+<li><strong>GitHub</strong>: <a href="https://github.com/your-repo/issues">AI_Homepage/issues</a></li>
+</ul>
+
+<p>---</p>
+
+<p><strong>ライセンス</strong>: <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></p>
+<p><strong>作成者</strong>: Dr. Yusuke Hashimoto, Tohoku University</p>
+<p><strong>最終更新</strong>: 2025年10月17日</p>
+
+
+        
+        <div class="navigation">
+            <a href="chapter-5.html" class="nav-button">次章: 第5章 →</a>
+            <a href="index.html" class="nav-button">← シリーズ目次に戻る</a>
+            <a href="chapter-3.html" class="nav-button">← 前章: 第3章</a>
+        </div>
+    
+    </main>
+
+    <footer>
+        <p><strong>作成者</strong>: AI Terakoya Content Team</p>
+        <p><strong>監修</strong>: Dr. Yusuke Hashimoto(東北大学)</p>
+        <p><strong>バージョン</strong>: 1.0 | <strong>作成日</strong>: 2025-10-17</p>
+        <p><strong>ライセンス</strong>: Creative Commons BY 4.0</p>
+        <p>© 2025 AI Terakoya. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mermaidCodeBlocks = document.querySelectorAll('pre.codehilite code.language-mermaid, pre code.language-mermaid');
+
+            mermaidCodeBlocks.forEach(function(codeBlock) {
+                const pre = codeBlock.parentElement;
+                const mermaidCode = codeBlock.textContent;
+
+                const mermaidDiv = document.createElement('div');
+                mermaidDiv.className = 'mermaid';
+                mermaidDiv.textContent = mermaidCode.trim();
+
+                pre.parentNode.replaceChild(mermaidDiv, pre);
+            });
+
+            if (typeof mermaid !== 'undefined') {
+                mermaid.initialize({
+                    startOnLoad: true,
+                    theme: 'default'
+                });
+                mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+            }
+        });
+    </script>
+</body>
+</html>

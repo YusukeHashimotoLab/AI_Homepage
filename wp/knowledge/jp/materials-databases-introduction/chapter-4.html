@@ -1,0 +1,1619 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第4章：独自データベース構築 - AI Terakoya</title>
+    <style>
+        :root {
+            --color-primary-900: #1a252f;
+            --color-primary-700: #2c3e50;
+            --color-primary-500: #34495e;
+            --color-primary-300: #4a5f7a;
+            --color-accent: #7b2cbf;
+            --color-accent-light: #9d4edd;
+            --color-bg: #ffffff;
+            --color-bg-secondary: #f8f9fa;
+            --color-text: #2c3e50;
+            --color-text-light: #6c757d;
+            --color-border: #e9ecef;
+            --color-code-bg: #f8f9fa;
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            --font-base: 1rem;
+            --font-sm: 0.875rem;
+            --font-lg: 1.125rem;
+            --font-xl: 1.5rem;
+            --font-2xl: 2rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", sans-serif;
+            line-height: 1.7;
+            color: var(--color-text);
+            background: var(--color-bg);
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+            color: white;
+            padding: var(--spacing-xl) var(--spacing-md);
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header h1 {
+            font-size: var(--font-2xl);
+            margin-bottom: var(--spacing-sm);
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: var(--font-lg);
+            opacity: 0.95;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+            justify-content: center;
+            font-size: var(--font-sm);
+            opacity: 0.9;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: var(--spacing-xl) var(--spacing-md);
+        }
+
+        h2 {
+            font-size: var(--font-xl);
+            color: var(--color-accent);
+            margin: var(--spacing-lg) 0 var(--spacing-md) 0;
+            padding-bottom: var(--spacing-xs);
+            border-bottom: 2px solid var(--color-accent-light);
+        }
+
+        h3 {
+            font-size: var(--font-lg);
+            color: var(--color-primary-700);
+            margin: var(--spacing-md) 0 var(--spacing-sm) 0;
+        }
+
+        h4 {
+            font-size: var(--font-base);
+            color: var(--color-primary-500);
+            margin: var(--spacing-sm) 0;
+        }
+
+        p {
+            margin-bottom: var(--spacing-md);
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin: var(--spacing-md) 0;
+            padding-left: var(--spacing-lg);
+        }
+
+        li {
+            margin-bottom: var(--spacing-xs);
+        }
+
+        code {
+            background: var(--color-code-bg);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: var(--color-accent);
+        }
+
+        pre {
+            background: var(--color-code-bg);
+            border-left: 4px solid var(--color-accent);
+            padding: var(--spacing-md);
+            overflow-x: auto;
+            border-radius: 4px;
+            margin: var(--spacing-md) 0;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--color-text);
+        }
+
+        .mermaid {
+            background: white;
+            padding: var(--spacing-md);
+            border-radius: 8px;
+            margin: var(--spacing-md) 0;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: var(--spacing-md) 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: var(--spacing-sm);
+            text-align: left;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        th {
+            background: var(--color-accent);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: var(--color-bg-secondary);
+        }
+
+        details {
+            background: var(--color-bg-secondary);
+            padding: var(--spacing-md);
+            border-radius: 8px;
+            margin: var(--spacing-md) 0;
+            border: 1px solid var(--color-border);
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--color-accent);
+            padding: var(--spacing-sm);
+            margin: calc(-1 * var(--spacing-md));
+            margin-bottom: var(--spacing-md);
+            background: white;
+            border-radius: 8px 8px 0 0;
+        }
+
+        summary:hover {
+            background: var(--color-bg-secondary);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: var(--spacing-md);
+            margin: var(--spacing-xl) 0;
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--color-border);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-primary {
+            background: var(--color-accent);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--color-primary-500);
+            color: white;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .btn-primary:hover {
+                background: var(--color-accent-light);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(123, 44, 191, 0.3);
+            }
+
+            .btn-secondary:hover {
+                background: var(--color-primary-700);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+        }
+
+        footer {
+            background: var(--color-primary-900);
+            color: white;
+            padding: var(--spacing-lg);
+            text-align: center;
+            margin-top: var(--spacing-xl);
+        }
+
+        footer a {
+            color: var(--color-accent-light);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: var(--font-xl);
+            }
+
+            .subtitle {
+                font-size: var(--font-base);
+            }
+
+            .meta {
+                font-size: 0.8rem;
+            }
+
+            .navigation {
+                flex-direction: column;
+            }
+        }
+    </style>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>第4章：独自データベース構築</h1>
+            <p class="subtitle"></p>
+            <div class="meta">
+                <span class="meta-item">📖 読了時間: 15-20分</span>
+                <span class="meta-item">📊 難易度: 初級〜中級</span>
+                <span class="meta-item">💻 コード例: 10</span>
+                <span class="meta-item">📝 演習問題: 3</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <p>
+<h1>第4章：独自データベース構築</h1>
+</p>
+<p>
+<strong>SQLiteからPostgreSQLまで - 実験データの構造化と公開</strong>
+</p>
+<p>
+<h2>学習目標</h2>
+</p>
+<p>
+この章を読むことで、以下を習得できます：
+</p>
+<p>
+<ul><li>✅ 材料データベースのスキーマを設計できる</li>
+<li>✅ SQLiteで実用的なデータベースを構築できる</li>
+<li>✅ PostgreSQLで大規模データを管理できる</li>
+<li>✅ バックアップとバージョン管理ができる</li>
+<li>✅ データを公開し、DOIを取得できる</li>
+</p>
+<p>
+<strong>読了時間</strong>: 15-20分
+<strong>コード例</strong>: 10個
+<strong>演習問題</strong>: 3問
+</p>
+<p>
+---
+</p>
+<p>
+<h2>4.1 データベース設計の基礎</h2>
+</p>
+<p>
+<h3>4.1.1 スキーマ設計の原則</h3>
+</p>
+<p>
+材料データベースのスキーマ設計では、以下の3つの主要テーブルを定義します：
+</p>
+<p>
+1. <strong>Materials（材料）</strong>: 材料の基本情報
+2. <strong>Properties（特性）</strong>: 測定された特性データ
+3. <strong>Experiments（実験）</strong>: 実験条件とメタデータ
+</p>
+<p>
+<strong>ER図（Entity-Relationship Diagram）</strong>:
+</p>
+<p>
+<pre><code class="language-mermaid">erDiagram
+    Materials ||--o{ Properties : has
+    Materials ||--o{ Experiments : tested_in
+    Experiments ||--o{ Properties : produces
+</p>
+<p>
+    Materials {
+        int material_id PK
+        string formula
+        string structure_type
+        float density
+        datetime created_at
+    }
+</p>
+<p>
+    Properties {
+        int property_id PK
+        int material_id FK
+        int experiment_id FK
+        string property_type
+        float value
+        float uncertainty
+        string unit
+    }
+</p>
+<p>
+    Experiments {
+        int experiment_id PK
+        string experiment_type
+        datetime date
+        string operator
+        string conditions
+    }
+</code></pre>
+</p>
+<p>
+<h3>4.1.2 正規化</h3>
+</p>
+<p>
+<strong>第1正規形（1NF）</strong>: 各列は原子的な値
+<strong>第2正規形（2NF）</strong>: 部分関数従属性を排除
+<strong>第3正規形（3NF）</strong>: 推移的関数従属性を排除
+</p>
+<p>
+<strong>コード例1: スキーマ定義（SQLite）</strong>
+</p>
+<p>
+<pre><code class="language-python">import sqlite3
+</p>
+<p>
+<h1>データベース接続</h1>
+conn = sqlite3.connect('materials.db')
+cursor = conn.cursor()
+</p>
+<p>
+<h1>Materialsテーブル</h1>
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS materials (
+    material_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    formula TEXT NOT NULL,
+    structure_type TEXT,
+    density REAL,
+    space_group INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    notes TEXT
+)
+''')
+</p>
+<p>
+<h1>Propertiesテーブル</h1>
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS properties (
+    property_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    material_id INTEGER NOT NULL,
+    experiment_id INTEGER,
+    property_type TEXT NOT NULL,
+    value REAL NOT NULL,
+    uncertainty REAL,
+    unit TEXT,
+    measured_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (material_id) REFERENCES materials(material_id),
+    FOREIGN KEY (experiment_id) REFERENCES experiments(experiment_id)
+)
+''')
+</p>
+<p>
+<h1>Experimentsテーブル</h1>
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS experiments (
+    experiment_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    experiment_type TEXT NOT NULL,
+    date DATE,
+    operator TEXT,
+    temperature REAL,
+    pressure REAL,
+    conditions TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+''')
+</p>
+<p>
+<h1>インデックス作成（検索高速化）</h1>
+cursor.execute('''
+CREATE INDEX IF NOT EXISTS idx_formula
+ON materials(formula)
+''')
+</p>
+<p>
+cursor.execute('''
+CREATE INDEX IF NOT EXISTS idx_property_type
+ON properties(property_type)
+''')
+</p>
+<p>
+conn.commit()
+print("データベーススキーマ作成完了")
+</code></pre>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>4.2 SQLiteによるローカルDB</h2>
+</p>
+<p>
+<h3>4.2.1 CRUD操作</h3>
+</p>
+<p>
+<strong>コード例2: Create（データ挿入）</strong>
+</p>
+<p>
+<pre><code class="language-python">import sqlite3
+from datetime import datetime
+</p>
+<p>
+conn = sqlite3.connect('materials.db')
+cursor = conn.cursor()
+</p>
+<p>
+def insert_material(formula, structure_type, density):
+    """材料データの挿入"""
+    cursor.execute('''
+    INSERT INTO materials (formula, structure_type, density)
+    VALUES (?, ?, ?)
+    ''', (formula, structure_type, density))
+</p>
+<p>
+    conn.commit()
+    material_id = cursor.lastrowid
+    print(f"材料追加: ID={material_id}, {formula}")
+    return material_id
+</p>
+<p>
+def insert_property(
+    material_id,
+    property_type,
+    value,
+    uncertainty=None,
+    unit=None
+):
+    """特性データの挿入"""
+    cursor.execute('''
+    INSERT INTO properties
+    (material_id, property_type, value, uncertainty, unit)
+    VALUES (?, ?, ?, ?, ?)
+    ''', (material_id, property_type, value, uncertainty, unit))
+</p>
+<p>
+    conn.commit()
+    print(f"特性追加: {property_type}={value} {unit}")
+</p>
+<p>
+<h1>使用例</h1>
+mat_id = insert_material("TiO2", "rutile", 4.23)
+insert_property(mat_id, "band_gap", 3.0, 0.1, "eV")
+insert_property(mat_id, "refractive_index", 2.61, 0.02, "")
+</code></pre>
+</p>
+<p>
+<strong>コード例3: Read（データ取得）</strong>
+</p>
+<p>
+<pre><code class="language-python">def query_materials(formula_pattern=None):
+    """材料検索"""
+    if formula_pattern:
+        cursor.execute('''
+        SELECT * FROM materials
+        WHERE formula LIKE ?
+        ''', (f"%{formula_pattern}%",))
+    else:
+        cursor.execute('SELECT * FROM materials')
+</p>
+<p>
+    results = cursor.fetchall()
+</p>
+<p>
+    print(f"検索結果: {len(results)}件")
+    for row in results:
+        print(f"ID: {row[0]}, Formula: {row[1]}, "
+              f"Type: {row[2]}, Density: {row[3]}")
+</p>
+<p>
+    return results
+</p>
+<p>
+def query_properties(material_id):
+    """特性データ取得"""
+    cursor.execute('''
+    SELECT p.property_type, p.value, p.uncertainty, p.unit
+    FROM properties p
+    WHERE p.material_id = ?
+    ''', (material_id,))
+</p>
+<p>
+    results = cursor.fetchall()
+</p>
+<p>
+    print(f"\n材料ID {material_id} の特性:")
+    for row in results:
+        prop_type, value, unc, unit = row
+        if unc:
+            print(f"- {prop_type}: {value} ± {unc} {unit}")
+        else:
+            print(f"- {prop_type}: {value} {unit}")
+</p>
+<p>
+    return results
+</p>
+<p>
+<h1>使用例</h1>
+query_materials("TiO2")
+query_properties(1)
+</code></pre>
+</p>
+<p>
+<strong>コード例4: Update（データ更新）</strong>
+</p>
+<p>
+<pre><code class="language-python">def update_material(material_id, **kwargs):
+    """材料データの更新"""
+    set_clause = ", ".join(
+        [f"{key} = ?" for key in kwargs.keys()]
+    )
+    values = list(kwargs.values()) + [material_id]
+</p>
+<p>
+    cursor.execute(f'''
+    UPDATE materials
+    SET {set_clause}
+    WHERE material_id = ?
+    ''', values)
+</p>
+<p>
+    conn.commit()
+    print(f"材料ID {material_id} を更新しました")
+</p>
+<p>
+<h1>使用例</h1>
+update_material(1, density=4.24, notes="Updated density")
+</code></pre>
+</p>
+<p>
+<strong>コード例5: Delete（データ削除）</strong>
+</p>
+<p>
+<pre><code class="language-python">def delete_material(material_id):
+    """材料データの削除（カスケード）"""
+    # 関連する特性データも削除
+    cursor.execute('''
+    DELETE FROM properties WHERE material_id = ?
+    ''', (material_id,))
+</p>
+<p>
+    cursor.execute('''
+    DELETE FROM materials WHERE material_id = ?
+    ''', (material_id,))
+</p>
+<p>
+    conn.commit()
+    print(f"材料ID {material_id} を削除しました")
+</p>
+<p>
+<h1>使用例（慎重に使用）</h1>
+<h1>delete_material(1)</h1>
+</code></pre>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>4.3 PostgreSQL/MySQLでの大規模データ管理</h2>
+</p>
+<p>
+<h3>4.3.1 PostgreSQL接続</h3>
+</p>
+<p>
+<strong>コード例6: PostgreSQL接続とスキーマ作成</strong>
+</p>
+<p>
+<pre><code class="language-python">import psycopg2
+from psycopg2 import sql
+</p>
+<p>
+<h1>PostgreSQL接続</h1>
+conn = psycopg2.connect(
+    host="localhost",
+    database="materials_db",
+    user="your_username",
+    password="your_password"
+)
+</p>
+<p>
+cursor = conn.cursor()
+</p>
+<p>
+<h1>テーブル作成（PostgreSQL版）</h1>
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS materials (
+    material_id SERIAL PRIMARY KEY,
+    formula VARCHAR(100) NOT NULL,
+    structure_type VARCHAR(50),
+    density REAL,
+    space_group INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    notes TEXT,
+    UNIQUE(formula)
+)
+''')
+</p>
+<p>
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS properties (
+    property_id SERIAL PRIMARY KEY,
+    material_id INTEGER NOT NULL,
+    experiment_id INTEGER,
+    property_type VARCHAR(50) NOT NULL,
+    value REAL NOT NULL,
+    uncertainty REAL,
+    unit VARCHAR(20),
+    measured_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (material_id)
+        REFERENCES materials(material_id)
+        ON DELETE CASCADE,
+    FOREIGN KEY (experiment_id)
+        REFERENCES experiments(experiment_id)
+        ON DELETE SET NULL
+)
+''')
+</p>
+<p>
+<h1>GINインデックス（全文検索用）</h1>
+cursor.execute('''
+CREATE INDEX IF NOT EXISTS idx_formula_gin
+ON materials USING GIN (to_tsvector('english', formula))
+''')
+</p>
+<p>
+conn.commit()
+print("PostgreSQLスキーマ作成完了")
+</code></pre>
+</p>
+<p>
+<h3>4.3.2 バルクインサート</h3>
+</p>
+<p>
+<strong>コード例7: 大量データの効率的挿入</strong>
+</p>
+<p>
+<pre><code class="language-python">import pandas as pd
+from psycopg2.extras import execute_batch
+</p>
+<p>
+def bulk_insert_materials(df):
+    """DataFrameから一括挿入"""
+    data = [
+        (
+            row['formula'],
+            row['structure_type'],
+            row['density']
+        )
+        for _, row in df.iterrows()
+    ]
+</p>
+<p>
+    insert_query = '''
+    INSERT INTO materials (formula, structure_type, density)
+    VALUES (%s, %s, %s)
+    ON CONFLICT (formula) DO NOTHING
+    '''
+</p>
+<p>
+    execute_batch(cursor, insert_query, data, page_size=1000)
+    conn.commit()
+</p>
+<p>
+    print(f"{len(data)}件のデータを挿入しました")
+</p>
+<p>
+<h1>使用例</h1>
+df = pd.DataFrame({
+    'formula': ['TiO2', 'ZnO', 'GaN', 'SiC'],
+    'structure_type': ['rutile', 'wurtzite', 'wurtzite', 'zincblende'],
+    'density': [4.23, 5.61, 6.15, 3.21]
+})
+</p>
+<p>
+bulk_insert_materials(df)
+</code></pre>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>4.4 バックアップ戦略</h2>
+</p>
+<p>
+<h3>4.4.1 定期バックアップ</h3>
+</p>
+<p>
+<strong>コード例8: 自動バックアップスクリプト</strong>
+</p>
+<p>
+<pre><code class="language-python">import sqlite3
+import shutil
+from datetime import datetime
+import os
+</p>
+<p>
+class DatabaseBackup:
+    """データベースバックアップ管理"""
+</p>
+<p>
+    def __init__(self, db_path, backup_dir="backups"):
+        self.db_path = db_path
+        self.backup_dir = backup_dir
+        os.makedirs(backup_dir, exist_ok=True)
+</p>
+<p>
+    def create_backup(self):
+        """バックアップ作成"""
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_name = f"materials_db_{timestamp}.db"
+        backup_path = os.path.join(
+            self.backup_dir, backup_name
+        )
+</p>
+<p>
+        # データベースをコピー
+        shutil.copy2(self.db_path, backup_path)
+</p>
+<p>
+        # 圧縮（オプション）
+        import gzip
+        with open(backup_path, 'rb') as f_in:
+            with gzip.open(f"{backup_path}.gz", 'wb') as f_out:
+                shutil.copyfileobj(f_in, f_out)
+</p>
+<p>
+        os.remove(backup_path)  # 非圧縮版を削除
+</p>
+<p>
+        print(f"バックアップ作成: {backup_path}.gz")
+        return f"{backup_path}.gz"
+</p>
+<p>
+    def restore_backup(self, backup_file):
+        """バックアップから復元"""
+        import gzip
+</p>
+<p>
+        # 解凍
+        temp_db = "temp_restored.db"
+        with gzip.open(backup_file, 'rb') as f_in:
+            with open(temp_db, 'wb') as f_out:
+                shutil.copyfileobj(f_in, f_out)
+</p>
+<p>
+        # 現在のDBをバックアップ
+        self.create_backup()
+</p>
+<p>
+        # 復元
+        shutil.move(temp_db, self.db_path)
+        print(f"データベース復元完了: {backup_file}")
+</p>
+<p>
+    def list_backups(self):
+        """バックアップ一覧"""
+        backups = sorted(
+            [f for f in os.listdir(self.backup_dir)
+             if f.endswith('.gz')]
+        )
+</p>
+<p>
+        print("=== バックアップ一覧 ===")
+        for i, backup in enumerate(backups, 1):
+            size = os.path.getsize(
+                os.path.join(self.backup_dir, backup)
+            ) / 1024  # KB
+            print(f"{i}. {backup} ({size:.1f} KB)")
+</p>
+<p>
+        return backups
+</p>
+<p>
+<h1>使用例</h1>
+backup_mgr = DatabaseBackup('materials.db')
+backup_mgr.create_backup()
+backup_mgr.list_backups()
+</code></pre>
+</p>
+<p>
+<h3>4.4.2 バージョン管理（Git LFS）</h3>
+</p>
+<p>
+<strong>コード例9: Git LFSでデータバージョン管理</strong>
+</p>
+<p>
+<pre><code class="language-bash"># Git LFSセットアップ
+git lfs install
+</p>
+<p>
+<h1>大容量ファイルを追跡</h1>
+git lfs track "*.db"
+git lfs track "*.db.gz"
+</p>
+<p>
+<h1>.gitattributesに自動追加される</h1>
+cat .gitattributes
+<h1>*.db filter=lfs diff=lfs merge=lfs -text</h1>
+<h1>*.db.gz filter=lfs diff=lfs merge=lfs -text</h1>
+</p>
+<p>
+<h1>コミット</h1>
+git add materials.db .gitattributes
+git commit -m "Add materials database"
+git push origin main
+</code></pre>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>4.5 データ公開とDOI取得</h2>
+</p>
+<p>
+<h3>4.5.1 Zenodoへのアップロード</h3>
+</p>
+<p>
+<strong>コード例10: Zenodo APIでデータ公開</strong>
+</p>
+<p>
+<pre><code class="language-python">import requests
+import json
+</p>
+<p>
+ZENODO_TOKEN = "your_zenodo_token"
+ZENODO_URL = "https://zenodo.org/api/deposit/depositions"
+</p>
+<p>
+def create_zenodo_deposit(
+    title,
+    description,
+    creators,
+    keywords
+):
+    """Zenodoにデポジット作成"""
+</p>
+<p>
+    headers = {
+        "Content-Type": "application/json"
+    }
+    params = {"access_token": ZENODO_TOKEN}
+</p>
+<p>
+    # メタデータ
+    data = {
+        "metadata": {
+            "title": title,
+            "upload_type": "dataset",
+            "description": description,
+            "creators": creators,
+            "keywords": keywords,
+            "access_right": "open",
+            "license": "cc-by-4.0"
+        }
+    }
+</p>
+<p>
+    # デポジット作成
+    response = requests.post(
+        ZENODO_URL,
+        params=params,
+        json=data,
+        headers=headers
+    )
+</p>
+<p>
+    if response.status_code == 201:
+        deposition = response.json()
+        deposition_id = deposition['id']
+        bucket_url = deposition['links']['bucket']
+</p>
+<p>
+        print(f"デポジット作成成功: ID={deposition_id}")
+        return deposition_id, bucket_url
+    else:
+        print(f"エラー: {response.status_code}")
+        print(response.text)
+        return None, None
+</p>
+<p>
+def upload_file_to_zenodo(bucket_url, file_path):
+    """ファイルアップロード"""
+    params = {"access_token": ZENODO_TOKEN}
+</p>
+<p>
+    with open(file_path, 'rb') as f:
+        response = requests.put(
+            f"{bucket_url}/{os.path.basename(file_path)}",
+            params=params,
+            data=f
+        )
+</p>
+<p>
+    if response.status_code == 200:
+        print(f"ファイルアップロード成功: {file_path}")
+        return True
+    else:
+        print(f"アップロードエラー: {response.status_code}")
+        return False
+</p>
+<p>
+def publish_zenodo_deposit(deposition_id):
+    """デポジット公開（DOI取得）"""
+    params = {"access_token": ZENODO_TOKEN}
+    url = f"{ZENODO_URL}/{deposition_id}/actions/publish"
+</p>
+<p>
+    response = requests.post(url, params=params)
+</p>
+<p>
+    if response.status_code == 202:
+        result = response.json()
+        doi = result['doi']
+        print(f"公開成功！ DOI: {doi}")
+        return doi
+    else:
+        print(f"公開エラー: {response.status_code}")
+        return None
+</p>
+<p>
+<h1>使用例</h1>
+deposition_id, bucket_url = create_zenodo_deposit(
+    title="Materials Database - Experimental Data",
+    description="Experimental materials properties dataset",
+    creators=[
+        {"name": "Hashimoto, Yusuke",
+         "affiliation": "Tohoku University"}
+    ],
+    keywords=["materials science", "database",
+              "properties"]
+)
+</p>
+<p>
+if deposition_id:
+    # ファイルアップロード
+    upload_file_to_zenodo(bucket_url, "materials.db.gz")
+</p>
+<p>
+    # 公開（DOI取得）
+    doi = publish_zenodo_deposit(deposition_id)
+    print(f"\nDOI: https://doi.org/{doi}")
+</code></pre>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>4.6 実践プロジェクト</h2>
+</p>
+<p>
+<h3>4.6.1 実験データの構造化</h3>
+</p>
+<p>
+<pre><code class="language-mermaid">flowchart LR
+    A[実験ノート] --> B[Excelデータ]
+    B --> C[pandas DataFrame]
+    C --> D[データクリーニング]
+    D --> E[SQLiteに挿入]
+    E --> F[品質チェック]
+    F --> G[PostgreSQLに移行]
+    G --> H[Zenodoに公開]
+    H --> I[DOI取得]
+</p>
+<p>
+    style A fill:#e3f2fd
+    style I fill:#e8f5e9
+</code></pre>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>4.7 本章のまとめ</h2>
+</p>
+<p>
+<h3>学んだこと</h3>
+</p>
+<p>
+1. <strong>データベース設計</strong>
+   - ER図によるスキーマ設計
+   - 正規化（1NF、2NF、3NF）
+   - インデックス戦略
+</p>
+<p>
+2. <strong>SQLite実装</strong>
+   - CRUD操作（Create、Read、Update、Delete）
+   - トランザクション管理
+   - クエリ最適化
+</p>
+<p>
+3. <strong>PostgreSQL</strong>
+   - 大規模データ対応
+   - バルクインサート
+   - 全文検索インデックス
+</p>
+<p>
+4. <strong>バックアップ</strong>
+   - 定期バックアップ自動化
+   - 圧縮ストレージ
+   - Git LFSによるバージョン管理
+</p>
+<p>
+5. <strong>データ公開</strong>
+   - Zenodo APIでアップロード
+   - DOI取得
+   - オープンライセンス選択
+</p>
+<p>
+<h3>重要なポイント</h3>
+</p>
+<p>
+<li>✅ スキーマ設計は最初が肝心</li>
+<li>✅ SQLiteは小〜中規模に最適</li>
+<li>✅ PostgreSQLは大規模データに対応</li>
+<li>✅ バックアップは必須（3-2-1ルール）</li>
+<li>✅ データ公開でDOI取得、引用可能に</li>
+</p>
+<p>
+<h3>シリーズ完了！</h3>
+</p>
+<p>
+おめでとうございます！材料データベース活用入門シリーズを完了しました。
+</p>
+<p>
+<strong>習得したスキル</strong>:
+<li>4大材料データベースの活用</li>
+<li>Materials Project APIの完全マスター</li>
+<li>複数DBの統合とクリーニング</li>
+<li>独自データベースの構築と公開</li>
+</p>
+<p>
+<strong>次のステップ</strong>:
+<li><a href="../mi-introduction/index.md">MI入門シリーズ</a>で機械学習を学ぶ</li>
+<li><a href="../bayesian-optimization/index.md">ベイズ最適化入門</a>で効率的探索</li>
+<li>独自の研究プロジェクトに応用</li>
+</p>
+<p>
+<strong><a href="./index.md">← シリーズ目次に戻る</a></strong>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>演習問題</h2>
+</p>
+<p>
+<h3>問題1（難易度：easy）</h3>
+</p>
+<p>
+SQLiteで材料データベースを作成し、以下のデータを挿入してください。
+</p>
+<p>
+<strong>データ</strong>:
+<li>TiO2: rutile, 密度4.23 g/cm³, バンドギャップ3.0 eV</li>
+<li>ZnO: wurtzite, 密度5.61 g/cm³, バンドギャップ3.4 eV</li></ul>
+</p>
+<p>
+<strong>要求事項</strong>:
+1. materials、propertiesテーブル作成
+2. データ挿入
+3. 全データ取得して表示
+</p>
+<p>
+<details>
+<summary>解答例</summary>
+</p>
+<p>
+<pre><code class="language-python">import sqlite3
+</p>
+<p>
+conn = sqlite3.connect('materials_practice.db')
+cursor = conn.cursor()
+</p>
+<p>
+<h1>テーブル作成</h1>
+cursor.execute('''
+CREATE TABLE materials (
+    material_id INTEGER PRIMARY KEY,
+    formula TEXT,
+    structure_type TEXT,
+    density REAL
+)
+''')
+</p>
+<p>
+cursor.execute('''
+CREATE TABLE properties (
+    property_id INTEGER PRIMARY KEY,
+    material_id INTEGER,
+    property_type TEXT,
+    value REAL,
+    unit TEXT,
+    FOREIGN KEY (material_id) REFERENCES materials(material_id)
+)
+''')
+</p>
+<p>
+<h1>データ挿入</h1>
+materials_data = [
+    ('TiO2', 'rutile', 4.23),
+    ('ZnO', 'wurtzite', 5.61)
+]
+</p>
+<p>
+for formula, struct, density in materials_data:
+    cursor.execute('''
+    INSERT INTO materials (formula, structure_type, density)
+    VALUES (?, ?, ?)
+    ''', (formula, struct, density))
+</p>
+<p>
+<h1>バンドギャップ追加</h1>
+cursor.execute('''
+INSERT INTO properties (material_id, property_type, value, unit)
+VALUES (1, 'band_gap', 3.0, 'eV')
+''')
+</p>
+<p>
+cursor.execute('''
+INSERT INTO properties (material_id, property_type, value, unit)
+VALUES (2, 'band_gap', 3.4, 'eV')
+''')
+</p>
+<p>
+conn.commit()
+</p>
+<p>
+<h1>データ取得</h1>
+cursor.execute('''
+SELECT m.formula, m.structure_type, m.density, p.value
+FROM materials m
+JOIN properties p ON m.material_id = p.material_id
+WHERE p.property_type = 'band_gap'
+''')
+</p>
+<p>
+print("=== データベース内容 ===")
+for row in cursor.fetchall():
+    print(f"{row[0]}: {row[1]}, {row[2]} g/cm³, "
+          f"Eg={row[3]} eV")
+</p>
+<p>
+conn.close()
+</code></pre>
+</p>
+<p>
+</details>
+</p>
+<p>
+---
+</p>
+<p>
+<h3>問題2（難易度：medium）</h3>
+</p>
+<p>
+バックアップシステムを構築してください。
+</p>
+<p>
+<strong>要求事項</strong>:
+1. 日次バックアップ（圧縮）
+2. 最新5世代のみ保持
+3. バックアップ一覧表示機能
+</p>
+<p>
+<details>
+<summary>解答例</summary>
+</p>
+<p>
+<pre><code class="language-python">import os
+import shutil
+import gzip
+from datetime import datetime
+</p>
+<p>
+class BackupManager:
+    def __init__(self, db_path, backup_dir="backups",
+                 max_backups=5):
+        self.db_path = db_path
+        self.backup_dir = backup_dir
+        self.max_backups = max_backups
+        os.makedirs(backup_dir, exist_ok=True)
+</p>
+<p>
+    def create_backup(self):
+        """バックアップ作成"""
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_name = f"backup_{timestamp}.db.gz"
+        backup_path = os.path.join(self.backup_dir,
+                                   backup_name)
+</p>
+<p>
+        # 圧縮バックアップ
+        with open(self.db_path, 'rb') as f_in:
+            with gzip.open(backup_path, 'wb') as f_out:
+                shutil.copyfileobj(f_in, f_out)
+</p>
+<p>
+        print(f"バックアップ作成: {backup_name}")
+</p>
+<p>
+        # 古いバックアップ削除
+        self.cleanup_old_backups()
+</p>
+<p>
+    def cleanup_old_backups(self):
+        """古いバックアップ削除"""
+        backups = sorted(
+            [f for f in os.listdir(self.backup_dir)
+             if f.endswith('.db.gz')]
+        )
+</p>
+<p>
+        if len(backups) > self.max_backups:
+            to_delete = backups[:-self.max_backups]
+            for backup in to_delete:
+                os.remove(
+                    os.path.join(self.backup_dir, backup)
+                )
+                print(f"削除: {backup}")
+</p>
+<p>
+    def list_backups(self):
+        """バックアップ一覧"""
+        backups = sorted(
+            [f for f in os.listdir(self.backup_dir)
+             if f.endswith('.db.gz')]
+        )
+</p>
+<p>
+        print("=== バックアップ一覧 ===")
+        for backup in backups:
+            size = os.path.getsize(
+                os.path.join(self.backup_dir, backup)
+            ) / 1024
+            print(f"{backup} ({size:.1f} KB)")
+</p>
+<p>
+<h1>使用例</h1>
+backup_mgr = BackupManager('materials_practice.db',
+                           max_backups=5)
+backup_mgr.create_backup()
+backup_mgr.list_backups()
+</code></pre>
+</p>
+<p>
+</details>
+</p>
+<p>
+---
+</p>
+<p>
+<h3>問題3（難易度：hard）</h3>
+</p>
+<p>
+実験データをSQLiteに格納し、Zenodoに公開する完全なワークフローを構築してください。
+</p>
+<p>
+<strong>要求事項</strong>:
+1. Excelファイルから実験データ読み込み
+2. SQLiteに格納
+3. データ品質チェック
+4. バックアップ作成
+5. Zenodoメタデータ準備（公開は任意）
+</p>
+<p>
+<details>
+<summary>解答例</summary>
+</p>
+<p>
+<pre><code class="language-python">import pandas as pd
+import sqlite3
+import json
+from datetime import datetime
+</p>
+<p>
+class ExperimentalDataPipeline:
+    """実験データ公開パイプライン"""
+</p>
+<p>
+    def __init__(self, db_path='experimental_data.db'):
+        self.db_path = db_path
+        self.conn = sqlite3.connect(db_path)
+        self.setup_database()
+</p>
+<p>
+    def setup_database(self):
+        """データベース初期化"""
+        cursor = self.conn.cursor()
+</p>
+<p>
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS experiments (
+            experiment_id INTEGER PRIMARY KEY,
+            material_formula TEXT,
+            experiment_type TEXT,
+            date DATE,
+            operator TEXT
+        )
+        ''')
+</p>
+<p>
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS measurements (
+            measurement_id INTEGER PRIMARY KEY,
+            experiment_id INTEGER,
+            property_type TEXT,
+            value REAL,
+            uncertainty REAL,
+            unit TEXT,
+            FOREIGN KEY (experiment_id)
+                REFERENCES experiments(experiment_id)
+        )
+        ''')
+</p>
+<p>
+        self.conn.commit()
+</p>
+<p>
+    def load_excel_data(self, file_path):
+        """Excelからデータ読み込み"""
+        df = pd.read_excel(file_path)
+        print(f"データ読み込み: {len(df)}件")
+        return df
+</p>
+<p>
+    def insert_data(self, df):
+        """データ挿入"""
+        cursor = self.conn.cursor()
+</p>
+<p>
+        for _, row in df.iterrows():
+            # 実験データ挿入
+            cursor.execute('''
+            INSERT INTO experiments
+            (material_formula, experiment_type, date, operator)
+            VALUES (?, ?, ?, ?)
+            ''', (
+                row['formula'],
+                row['experiment_type'],
+                row['date'],
+                row['operator']
+            ))
+</p>
+<p>
+            exp_id = cursor.lastrowid
+</p>
+<p>
+            # 測定値挿入
+            cursor.execute('''
+            INSERT INTO measurements
+            (experiment_id, property_type, value,
+             uncertainty, unit)
+            VALUES (?, ?, ?, ?, ?)
+            ''', (
+                exp_id,
+                row['property'],
+                row['value'],
+                row.get('uncertainty'),
+                row['unit']
+            ))
+</p>
+<p>
+        self.conn.commit()
+        print(f"{len(df)}件のデータを挿入")
+</p>
+<p>
+    def quality_check(self):
+        """品質チェック"""
+        cursor = self.conn.cursor()
+</p>
+<p>
+        # データ件数
+        cursor.execute('SELECT COUNT(*) FROM experiments')
+        exp_count = cursor.fetchone()[0]
+</p>
+<p>
+        cursor.execute('SELECT COUNT(*) FROM measurements')
+        meas_count = cursor.fetchone()[0]
+</p>
+<p>
+        # 欠損値チェック
+        cursor.execute('''
+        SELECT COUNT(*) FROM measurements
+        WHERE uncertainty IS NULL
+        ''')
+        missing_unc = cursor.fetchone()[0]
+</p>
+<p>
+        print("=== 品質レポート ===")
+        print(f"実験数: {exp_count}")
+        print(f"測定数: {meas_count}")
+        print(f"不確かさ欠損: {missing_unc}件")
+</p>
+<p>
+    def prepare_zenodo_metadata(self, output_file='zenodo_metadata.json'):
+        """Zenodoメタデータ準備"""
+        metadata = {
+            "title": "Experimental Materials Database",
+            "upload_type": "dataset",
+            "description": "Experimental data from lab measurements",
+            "creators": [
+                {
+                    "name": "Your Name",
+                    "affiliation": "Your Institution"
+                }
+            ],
+            "keywords": [
+                "materials science",
+                "experimental data",
+                "properties"
+            ],
+            "access_right": "open",
+            "license": "cc-by-4.0",
+            "version": "1.0",
+            "publication_date": datetime.now().strftime("%Y-%m-%d")
+        }
+</p>
+<p>
+        with open(output_file, 'w') as f:
+            json.dump(metadata, f, indent=2)
+</p>
+<p>
+        print(f"メタデータ保存: {output_file}")
+</p>
+<p>
+    def run(self, excel_file):
+        """パイプライン実行"""
+        print("=== 実験データ公開パイプライン ===")
+</p>
+<p>
+        # データ読み込み
+        df = self.load_excel_data(excel_file)
+</p>
+<p>
+        # データ挿入
+        self.insert_data(df)
+</p>
+<p>
+        # 品質チェック
+        self.quality_check()
+</p>
+<p>
+        # バックアップ
+        backup_mgr = BackupManager(self.db_path)
+        backup_mgr.create_backup()
+</p>
+<p>
+        # Zenodoメタデータ準備
+        self.prepare_zenodo_metadata()
+</p>
+<p>
+        print("\n=== 完了 ===")
+        print("次のステップ:")
+        print("1. データベース確認")
+        print("2. Zenodoにアップロード")
+        print("3. DOI取得")
+</p>
+<p>
+<h1>使用例（Excelファイルが必要）</h1>
+<h1>pipeline = ExperimentalDataPipeline()</h1>
+<h1>pipeline.run('experimental_data.xlsx')</h1>
+</code></pre>
+</p>
+<p>
+</details>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>参考文献</h2>
+</p>
+<p>
+1. Wilkinson, M. D. et al. (2016). "The FAIR Guiding Principles." <em>Scientific Data</em>, 3, 160018.
+   DOI: <a href="https://doi.org/10.1038/sdata.2016.18">10.1038/sdata.2016.18</a>
+</p>
+<p>
+2. Zenodo Documentation. "Developers." URL: <a href="https://developers.zenodo.org">developers.zenodo.org</a>
+</p>
+<p>
+3. SQLite Documentation. URL: <a href="https://sqlite.org/docs.html">sqlite.org/docs</a>
+</p>
+<p>
+4. PostgreSQL Documentation. URL: <a href="https://www.postgresql.org/docs/">postgresql.org/docs</a>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>ナビゲーション</h2>
+</p>
+<p>
+<h3>前の章</h3>
+<strong><a href="./chapter-3.md">第3章：データベース統合とワークフロー ←</a></strong>
+</p>
+<p>
+<h3>シリーズ目次</h3>
+<strong><a href="./index.md">← シリーズ目次に戻る</a></strong>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>著者情報</h2>
+</p>
+<p>
+<strong>作成者</strong>: AI Terakoya Content Team
+<strong>監修</strong>: Dr. Yusuke Hashimoto（東北大学）
+<strong>作成日</strong>: 2025-10-17
+<strong>バージョン</strong>: 1.0
+</p>
+<p>
+<strong>ライセンス</strong>: Creative Commons BY 4.0
+</p>
+<p>
+---
+</p>
+<p>
+<strong>材料データベース活用入門シリーズを完了しました！おめでとうございます！</strong>
+</p>
+<p>
+<strong>次のステップ</strong>: <a href="../mi-introduction/index.md">MI入門シリーズ</a>で機械学習の世界へ
+
+</p>
+
+        <div class="navigation">
+            <div>
+                <a href="chapter-3.html" class="btn btn-secondary">← 前へ</a>
+                <a href="index.html" class="btn btn-secondary">目次へ</a>
+            </div>
+            <div>
+                
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 AI Terakoya - Tohoku University. All rights reserved.</p>
+        <p><a href="https://ai.tohoku.ac.jp">AI Terakoya Home</a></p>
+    </footer>
+</body>
+</html>

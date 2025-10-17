@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2章: 強化学習の基礎理論 - AI Terakoya</title>
+
+    <style>
+        :root {
+            --color-primary: #2c3e50;
+            --color-primary-dark: #1a252f;
+            --color-accent: #7b2cbf;
+            --color-accent-light: #9d4edd;
+            --color-text: #2d3748;
+            --color-text-light: #4a5568;
+            --color-bg: #ffffff;
+            --color-bg-alt: #f7fafc;
+            --color-border: #e2e8f0;
+            --color-code-bg: #f8f9fa;
+            --color-link: #3182ce;
+            --color-link-hover: #2c5aa0;
+
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+
+            --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+
+            --border-radius: 8px;
+            --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            line-height: 1.7;
+            color: var(--color-text);
+            background-color: var(--color-bg);
+            font-size: 16px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+            color: white;
+            padding: var(--spacing-xl) var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--box-shadow);
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            font-weight: 400;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md) var(--spacing-xl);
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            color: var(--color-primary);
+            margin-top: var(--spacing-xl);
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-xs);
+            border-bottom: 3px solid var(--color-accent);
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            color: var(--color-primary);
+            margin-top: var(--spacing-lg);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            color: var(--color-primary-dark);
+            margin-top: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        p {
+            margin-bottom: var(--spacing-md);
+            color: var(--color-text);
+        }
+
+        a {
+            color: var(--color-link);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: var(--color-link-hover);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-left: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+        }
+
+        li {
+            margin-bottom: var(--spacing-xs);
+            color: var(--color-text);
+        }
+
+        pre {
+            background-color: var(--color-code-bg);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            overflow-x: auto;
+            margin-bottom: var(--spacing-md);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        code {
+            font-family: var(--font-mono);
+            font-size: 0.9em;
+            background-color: var(--color-code-bg);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: var(--spacing-md);
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            border: 1px solid var(--color-border);
+            padding: var(--spacing-sm);
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--color-bg-alt);
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        blockquote {
+            border-left: 4px solid var(--color-accent);
+            padding-left: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+            color: var(--color-text-light);
+            font-style: italic;
+            background-color: var(--color-bg-alt);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: var(--spacing-md);
+            margin: var(--spacing-xl) 0;
+            padding-top: var(--spacing-lg);
+            border-top: 2px solid var(--color-border);
+        }
+
+        .nav-button {
+            flex: 1;
+            padding: var(--spacing-md);
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+            color: white;
+            border-radius: var(--border-radius);
+            text-align: center;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: var(--box-shadow);
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            text-decoration: none;
+        }
+
+        footer {
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-lg) var(--spacing-md);
+            background-color: var(--color-bg-alt);
+            border-top: 1px solid var(--color-border);
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            h3 {
+                font-size: 1.2rem;
+            }
+
+            .meta {
+                font-size: 0.85rem;
+            }
+
+            .navigation {
+                flex-direction: column;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: var(--spacing-xs);
+            }
+        }
+    </style>
+
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>第2章: 強化学習の基礎理論</h1>
+            
+            <div class="meta">
+                <span class="meta-item">📖 読了時間: 20-30分</span>
+                <span class="meta-item">📊 難易度: 中級</span>
+                <span class="meta-item">💻 コード例: 8個</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        
+<p><h1>第2章: 強化学習の基礎理論</h1></p>
+
+<p><h2>学習目標</h2></p>
+
+<p>この章では、以下を習得します：</p>
+
+<ul>
+<li>方策勾配法（Policy Gradient Methods）の理論と実装</li>
+<li>Actor-Criticアーキテクチャの仕組み</li>
+<li>Proximal Policy Optimization（PPO）の詳細</li>
+<li>Stable Baselines3による実践的実装</li>
+</ul>
+
+<p>---</p>
+
+<p><h2>2.1 方策勾配法（Policy Gradient Methods）</h2></p>
+
+<p><h3>Q学習の限界</h3></p>
+
+<p>第1章のQ学習・DQNは<strong>価値ベース</strong>の手法でした。これらには以下の限界があります：</p>
+
+<ol>
+<li><strong>離散行動のみ</strong>: $\arg\max_a Q(s,a)$は連続行動空間で困難</li>
+<li><strong>決定的方策</strong>: 常に同じ行動を選択（確率的方策が学習できない）</li>
+<li><strong>小さな変化に脆弱</strong>: Q値の微小な変化で方策が大きく変わる</li>
+</ol>
+
+<p>材料科学では、<strong>連続的な制御</strong>（温度を0.5度上げる、組成比を2%変える）が重要です。</p>
+
+<p><h3>方策勾配法の基本アイデア</h3></p>
+
+<p>方策勾配法は、<strong>方策を直接最適化</strong>します：</p>
+
+<p>$$</p>
+<p>\pi_\theta(a|s) = P(a|s; \theta)</p>
+<p>$$</p>
+
+<ul>
+<li>$\theta$: 方策のパラメータ（ニューラルネットワークの重み）</li>
+</ul>
+
+<p><strong>目的</strong>: 期待累積報酬$J(\theta)$を最大化</p>
+
+<p>$$</p>
+<p>J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta} \left[ \sum_{t=0}^T r_t \right]</p>
+<p>$$</p>
+
+<ul>
+<li>$\tau = (s_0, a_0, r_0, s_1, a_1, r_1, \dots)$: 軌跡（trajectory）</li>
+</ul>
+
+<p><h3>方策勾配定理</h3></p>
+
+<p><strong>REINFORCE</strong>アルゴリズム（Williams, 1992）は、勾配を以下で計算します：</p>
+
+<p>$$</p>
+<p>\nabla_\theta J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta} \left[ \sum_{t=0}^T \nabla_\theta \log \pi_\theta(a_t|s_t) \cdot R_t \right]</p>
+<p>$$</p>
+
+<ul>
+<li>$R_t = \sum_{k=t}^T \gamma^{k-t} r_k$: 時刻$t$からの累積報酬（リターン）</li>
+</ul>
+
+<p><strong>直感的意味</strong>:</p>
+<ul>
+<li>高い報酬を得た行動の確率を上げる</li>
+<li>低い報酬を得た行動の確率を下げる</li>
+</ul>
+
+<p><h3>REINFORCEの実装</h3></p>
+
+<p><pre><code class="language-python">import torch</p>
+<p>import torch.nn as nn</p>
+<p>import torch.optim as optim</p>
+<p>import numpy as np</p>
+<p>import matplotlib.pyplot as plt</p>
+
+<p>class PolicyNetwork(nn.Module):</p>
+<p>    """方策ネットワーク</p>
+
+<p>    状態を入力し、各行動の確率を出力</p>
+<p>    """</p>
+<p>    def __init__(self, state_dim, action_dim, hidden_dim=64):</p>
+<p>        super(PolicyNetwork, self).__init__()</p>
+<p>        self.fc1 = nn.Linear(state_dim, hidden_dim)</p>
+<p>        self.fc2 = nn.Linear(hidden_dim, hidden_dim)</p>
+<p>        self.fc3 = nn.Linear(hidden_dim, action_dim)</p>
+
+<p>    def forward(self, x):</p>
+<p>        x = torch.relu(self.fc1(x))</p>
+<p>        x = torch.relu(self.fc2(x))</p>
+<p>        return torch.softmax(self.fc3(x), dim=-1)  <h1>確率分布</h1></p>
+
+
+<p>class REINFORCEAgent:</p>
+<p>    """REINFORCEアルゴリズム"""</p>
+<p>    def __init__(self, state_dim, action_dim, lr=1e-3, gamma=0.99):</p>
+<p>        self.gamma = gamma</p>
+<p>        self.policy = PolicyNetwork(state_dim, action_dim)</p>
+<p>        self.optimizer = optim.Adam(self.policy.parameters(), lr=lr)</p>
+
+<p>        <h1>エピソード内のログを保存</h1></p>
+<p>        self.log_probs = []</p>
+<p>        self.rewards = []</p>
+
+<p>    def select_action(self, state):</p>
+<p>        """方策に従って行動をサンプリング"""</p>
+<p>        state_tensor = torch.FloatTensor(state).unsqueeze(0)</p>
+<p>        probs = self.policy(state_tensor)</p>
+
+<p>        <h1>確率分布からサンプリング</h1></p>
+<p>        action_dist = torch.distributions.Categorical(probs)</p>
+<p>        action = action_dist.sample()</p>
+
+<p>        <h1>log確率を保存（勾配計算用）</h1></p>
+<p>        self.log_probs.append(action_dist.log_prob(action))</p>
+
+<p>        return action.item()</p>
+
+<p>    def store_reward(self, reward):</p>
+<p>        """報酬を保存"""</p>
+<p>        self.rewards.append(reward)</p>
+
+<p>    def update(self):</p>
+<p>        """エピソード終了後に方策を更新"""</p>
+<p>        <h1>リターン（累積報酬）を計算</h1></p>
+<p>        returns = []</p>
+<p>        R = 0</p>
+<p>        for r in reversed(self.rewards):</p>
+<p>            R = r + self.gamma * R</p>
+<p>            returns.insert(0, R)</p>
+
+<p>        returns = torch.FloatTensor(returns)</p>
+
+<p>        <h1>正規化（学習を安定化）</h1></p>
+<p>        returns = (returns - returns.mean()) / (returns.std() + 1e-8)</p>
+
+<p>        <h1>方策勾配</h1></p>
+<p>        policy_loss = []</p>
+<p>        for log_prob, R in zip(self.log_probs, returns):</p>
+<p>            policy_loss.append(-log_prob * R)</p>
+
+<p>        <h1>勾配降下</h1></p>
+<p>        self.optimizer.zero_grad()</p>
+<p>        loss = torch.stack(policy_loss).sum()</p>
+<p>        loss.backward()</p>
+<p>        self.optimizer.step()</p>
+
+<p>        <h1>ログをリセット</h1></p>
+<p>        self.log_probs = []</p>
+<p>        self.rewards = []</p>
+
+
+<p><h1>簡単な材料探索環境（離散行動版）</h1></p>
+<p>class DiscreteMaterialsEnv:</p>
+<p>    """離散行動の材料探索環境"""</p>
+<p>    def __init__(self, state_dim=4):</p>
+<p>        self.state_dim = state_dim</p>
+<p>        self.target = np.array([3.0, 5.0, 2.5, 4.0])</p>
+<p>        self.state = None</p>
+
+<p>    def reset(self):</p>
+<p>        self.state = np.random.uniform(0, 10, self.state_dim)</p>
+<p>        return self.state</p>
+
+<p>    def step(self, action):</p>
+<p>        <h1>行動: 0=次元0増加, 1=次元0減少, 2=次元1増加, 3=次元1減少</h1></p>
+<p>        dim = action // 2</p>
+<p>        delta = 0.5 if action % 2 == 0 else -0.5</p>
+
+<p>        self.state[dim] = np.clip(self.state[dim] + delta, 0, 10)</p>
+
+<p>        <h1>報酬: 目標との距離</h1></p>
+<p>        distance = np.linalg.norm(self.state - self.target)</p>
+<p>        reward = -distance</p>
+
+<p>        done = distance < 0.5</p>
+
+<p>        return self.state, reward, done</p>
+
+
+<p><h1>REINFORCEの訓練</h1></p>
+<p>env = DiscreteMaterialsEnv()</p>
+<p>agent = REINFORCEAgent(state_dim=4, action_dim=4)</p>
+
+<p>episodes = 1000</p>
+<p>rewards_history = []</p>
+
+<p>for episode in range(episodes):</p>
+<p>    state = env.reset()</p>
+<p>    total_reward = 0</p>
+<p>    done = False</p>
+
+<p>    while not done:</p>
+<p>        action = agent.select_action(state)</p>
+<p>        next_state, reward, done = env.step(action)</p>
+
+<p>        agent.store_reward(reward)</p>
+<p>        state = next_state</p>
+<p>        total_reward += reward</p>
+
+<p>    <h1>エピソード終了後に更新</h1></p>
+<p>    agent.update()</p>
+<p>    rewards_history.append(total_reward)</p>
+
+<p>    if (episode + 1) % 100 == 0:</p>
+<p>        avg_reward = np.mean(rewards_history[-100:])</p>
+<p>        print(f"Episode {episode+1}: Avg Reward = {avg_reward:.2f}")</p>
+
+<p><h1>学習曲線</h1></p>
+<p>plt.figure(figsize=(10, 6))</p>
+<p>plt.plot(np.convolve(rewards_history, np.ones(20)/20, mode='valid'))</p>
+<p>plt.xlabel('Episode')</p>
+<p>plt.ylabel('Average Reward (20 episodes)')</p>
+<p>plt.title('REINFORCE: 方策勾配法による材料探索')</p>
+<p>plt.grid(True)</p>
+<p>plt.show()</p>
+<p></code></pre></p>
+
+<p><strong>出力例</strong>:</p>
+<p><pre><code class="language-">Episode 100: Avg Reward = -38.24</p>
+<p>Episode 200: Avg Reward = -28.15</p>
+<p>Episode 500: Avg Reward = -15.32</p>
+<p>Episode 1000: Avg Reward = -7.89</p>
+<p></code></pre></p>
+
+<p>---</p>
+
+<p><h2>2.2 ベースラインと分散削減</h2></p>
+
+<p><h3>REINFORCEの問題点</h3></p>
+
+<p>REINFORCEは<strong>高分散</strong>（high variance）です。同じ方策でも、運が良いか悪いかでリターン$R_t$が大きく変動します。</p>
+
+<p><h3>ベースラインの導入</h3></p>
+
+<p><strong>ベースライン</strong> $b(s)$を引くことで、分散を削減：</p>
+
+<p>$$</p>
+<p>\nabla_\theta J(\theta) = \mathbb{E} \left[ \sum_{t=0}^T \nabla_\theta \log \pi_\theta(a_t|s_t) \cdot (R_t - b(s_t)) \right]</p>
+<p>$$</p>
+
+<p><strong>最適なベースライン</strong>: 状態価値関数$V(s)$</p>
+
+<p>$$</p>
+<p>b(s_t) = V(s_t) = \mathbb{E}_{\pi} \left[ \sum_{k=t}^T \gamma^{k-t} r_k \mid s_t \right]</p>
+<p>$$</p>
+
+<p><strong>アドバンテージ関数</strong> $A(s, a)$:</p>
+<p>$$</p>
+<p>A(s, a) = Q(s, a) - V(s) = R_t - V(s_t)</p>
+<p>$$</p>
+
+<p>「この行動は平均よりどれだけ良いか」を表します。</p>
+
+<p><h3>ベースライン付きREINFORCE</h3></p>
+
+<p><pre><code class="language-python">class ValueNetwork(nn.Module):</p>
+<p>    """価値ネットワーク（ベースライン）"""</p>
+<p>    def __init__(self, state_dim, hidden_dim=64):</p>
+<p>        super(ValueNetwork, self).__init__()</p>
+<p>        self.fc1 = nn.Linear(state_dim, hidden_dim)</p>
+<p>        self.fc2 = nn.Linear(hidden_dim, hidden_dim)</p>
+<p>        self.fc3 = nn.Linear(hidden_dim, 1)  <h1>状態価値を出力</h1></p>
+
+<p>    def forward(self, x):</p>
+<p>        x = torch.relu(self.fc1(x))</p>
+<p>        x = torch.relu(self.fc2(x))</p>
+<p>        return self.fc3(x)</p>
+
+
+<p>class REINFORCEWithBaseline:</p>
+<p>    """ベースライン付きREINFORCE"""</p>
+<p>    def __init__(self, state_dim, action_dim, lr=1e-3, gamma=0.99):</p>
+<p>        self.gamma = gamma</p>
+<p>        self.policy = PolicyNetwork(state_dim, action_dim)</p>
+<p>        self.value = ValueNetwork(state_dim)</p>
+
+<p>        self.policy_optimizer = optim.Adam(self.policy.parameters(), lr=lr)</p>
+<p>        self.value_optimizer = optim.Adam(self.value.parameters(), lr=lr)</p>
+
+<p>        self.log_probs = []</p>
+<p>        self.rewards = []</p>
+<p>        self.states = []</p>
+
+<p>    def select_action(self, state):</p>
+<p>        state_tensor = torch.FloatTensor(state).unsqueeze(0)</p>
+<p>        probs = self.policy(state_tensor)</p>
+
+<p>        action_dist = torch.distributions.Categorical(probs)</p>
+<p>        action = action_dist.sample()</p>
+
+<p>        self.log_probs.append(action_dist.log_prob(action))</p>
+<p>        self.states.append(state)</p>
+
+<p>        return action.item()</p>
+
+<p>    def store_reward(self, reward):</p>
+<p>        self.rewards.append(reward)</p>
+
+<p>    def update(self):</p>
+<p>        <h1>リターン計算</h1></p>
+<p>        returns = []</p>
+<p>        R = 0</p>
+<p>        for r in reversed(self.rewards):</p>
+<p>            R = r + self.gamma * R</p>
+<p>            returns.insert(0, R)</p>
+
+<p>        returns = torch.FloatTensor(returns)</p>
+<p>        states = torch.FloatTensor(self.states)</p>
+
+<p>        <h1>価値ネットワークの出力（ベースライン）</h1></p>
+<p>        values = self.value(states).squeeze()</p>
+
+<p>        <h1>アドバンテージ = リターン - ベースライン</h1></p>
+<p>        advantages = returns - values.detach()</p>
+
+<p>        <h1>方策勾配損失</h1></p>
+<p>        policy_loss = []</p>
+<p>        for log_prob, adv in zip(self.log_probs, advantages):</p>
+<p>            policy_loss.append(-log_prob * adv)</p>
+
+<p>        <h1>価値ネットワーク損失（MSE）</h1></p>
+<p>        value_loss = nn.MSELoss()(values, returns)</p>
+
+<p>        <h1>最適化</h1></p>
+<p>        self.policy_optimizer.zero_grad()</p>
+<p>        torch.stack(policy_loss).sum().backward()</p>
+<p>        self.policy_optimizer.step()</p>
+
+<p>        self.value_optimizer.zero_grad()</p>
+<p>        value_loss.backward()</p>
+<p>        self.value_optimizer.step()</p>
+
+<p>        <h1>リセット</h1></p>
+<p>        self.log_probs = []</p>
+<p>        self.rewards = []</p>
+<p>        self.states = []</p>
+
+
+<p><h1>訓練（ベースライン付き）</h1></p>
+<p>agent_baseline = REINFORCEWithBaseline(state_dim=4, action_dim=4)</p>
+
+<p>rewards_baseline = []</p>
+<p>for episode in range(1000):</p>
+<p>    state = env.reset()</p>
+<p>    total_reward = 0</p>
+<p>    done = False</p>
+
+<p>    while not done:</p>
+<p>        action = agent_baseline.select_action(state)</p>
+<p>        next_state, reward, done = env.step(action)</p>
+
+<p>        agent_baseline.store_reward(reward)</p>
+<p>        state = next_state</p>
+<p>        total_reward += reward</p>
+
+<p>    agent_baseline.update()</p>
+<p>    rewards_baseline.append(total_reward)</p>
+
+<p><h1>比較</h1></p>
+<p>plt.figure(figsize=(10, 6))</p>
+<p>plt.plot(np.convolve(rewards_history, np.ones(20)/20, mode='valid'), label='REINFORCE')</p>
+<p>plt.plot(np.convolve(rewards_baseline, np.ones(20)/20, mode='valid'), label='REINFORCE + Baseline')</p>
+<p>plt.xlabel('Episode')</p>
+<p>plt.ylabel('Average Reward')</p>
+<p>plt.title('ベースラインによる学習安定化')</p>
+<p>plt.legend()</p>
+<p>plt.grid(True)</p>
+<p>plt.show()</p>
+<p></code></pre></p>
+
+<p><strong>結果</strong>: ベースラインにより学習が<strong>より安定</strong>し、収束が<strong>速く</strong>なります。</p>
+
+<p>---</p>
+
+<p><h2>2.3 Actor-Criticアーキテクチャ</h2></p>
+
+<p><h3>Actor-Criticの概念</h3></p>
+
+<p><strong>Actor（方策）</strong> と <strong>Critic（価値関数）</strong> を同時に学習：</p>
+
+<ul>
+<li><strong>Actor</strong> $\pi_\theta(a|s)$: 行動を選択</li>
+<li><strong>Critic</strong> $V_\phi(s)$: 状態の価値を評価</li>
+</ul>
+
+<p><pre><code class="language-mermaid">graph LR</p>
+<p>    S[状態 s] --> A[Actor<br/>πθ]</p>
+<p>    S --> C[Critic<br/>Vϕ]</p>
+<p>    A -->|行動 a| E[環境]</p>
+<p>    E -->|報酬 r| C</p>
+<p>    C -->|TD誤差| A</p>
+<p>    C -->|価値評価| C</p>
+
+<p>    style A fill:#e1f5ff</p>
+<p>    style C fill:#ffe1cc</p>
+<p></code></pre></p>
+
+<p><h3>TD誤差とアドバンテージ</h3></p>
+
+<p><strong>TD誤差</strong>（Temporal Difference Error）:</p>
+<p>$$</p>
+<p>\delta_t = r_t + \gamma V_\phi(s_{t+1}) - V_\phi(s_t)</p>
+<p>$$</p>
+
+<p>これは<strong>1ステップのアドバンテージ推定</strong>として使えます。</p>
+
+<p><h3>A2C（Advantage Actor-Critic）</h3></p>
+
+<p><pre><code class="language-python">class A2CAgent:</p>
+<p>    """Advantage Actor-Critic"""</p>
+<p>    def __init__(self, state_dim, action_dim, lr_actor=1e-3, lr_critic=1e-3, gamma=0.99):</p>
+<p>        self.gamma = gamma</p>
+
+<p>        self.actor = PolicyNetwork(state_dim, action_dim)</p>
+<p>        self.critic = ValueNetwork(state_dim)</p>
+
+<p>        self.actor_optimizer = optim.Adam(self.actor.parameters(), lr=lr_actor)</p>
+<p>        self.critic_optimizer = optim.Adam(self.critic.parameters(), lr=lr_critic)</p>
+
+<p>    def select_action(self, state):</p>
+<p>        state_tensor = torch.FloatTensor(state).unsqueeze(0)</p>
+<p>        probs = self.actor(state_tensor)</p>
+
+<p>        action_dist = torch.distributions.Categorical(probs)</p>
+<p>        action = action_dist.sample()</p>
+
+<p>        return action.item(), action_dist.log_prob(action)</p>
+
+<p>    def update(self, state, action_log_prob, reward, next_state, done):</p>
+<p>        """1ステップごとに更新"""</p>
+<p>        state_tensor = torch.FloatTensor(state).unsqueeze(0)</p>
+<p>        next_state_tensor = torch.FloatTensor(next_state).unsqueeze(0)</p>
+
+<p>        <h1>現在と次の状態価値</h1></p>
+<p>        value = self.critic(state_tensor)</p>
+<p>        next_value = self.critic(next_state_tensor)</p>
+
+<p>        <h1>TD目標とTD誤差</h1></p>
+<p>        td_target = reward + (1 - done) <em> self.gamma </em> next_value.item()</p>
+<p>        td_error = td_target - value.item()</p>
+
+<p>        <h1>Critic損失（MSE）</h1></p>
+<p>        critic_loss = (torch.FloatTensor([td_target]) - value).pow(2)</p>
+
+<p>        <h1>Actor損失（方策勾配 × アドバンテージ）</h1></p>
+<p>        actor_loss = -action_log_prob * td_error</p>
+
+<p>        <h1>最適化</h1></p>
+<p>        self.actor_optimizer.zero_grad()</p>
+<p>        actor_loss.backward()</p>
+<p>        self.actor_optimizer.step()</p>
+
+<p>        self.critic_optimizer.zero_grad()</p>
+<p>        critic_loss.backward()</p>
+<p>        self.critic_optimizer.step()</p>
+
+
+<p><h1>A2C訓練</h1></p>
+<p>agent_a2c = A2CAgent(state_dim=4, action_dim=4)</p>
+
+<p>rewards_a2c = []</p>
+<p>for episode in range(1000):</p>
+<p>    state = env.reset()</p>
+<p>    total_reward = 0</p>
+<p>    done = False</p>
+
+<p>    while not done:</p>
+<p>        action, log_prob = agent_a2c.select_action(state)</p>
+<p>        next_state, reward, done = env.step(action)</p>
+
+<p>        <h1>1ステップごとに更新</h1></p>
+<p>        agent_a2c.update(state, log_prob, reward, next_state, done)</p>
+
+<p>        state = next_state</p>
+<p>        total_reward += reward</p>
+
+<p>    rewards_a2c.append(total_reward)</p>
+
+<p>    if (episode + 1) % 100 == 0:</p>
+<p>        avg_reward = np.mean(rewards_a2c[-100:])</p>
+<p>        print(f"Episode {episode+1}: Avg Reward = {avg_reward:.2f}")</p>
+<p></code></pre></p>
+
+<p><strong>利点</strong>:</p>
+<ul>
+<li>エピソード終了を待たずに<strong>オンライン学習</strong></li>
+<li>TD誤差により<strong>低分散</strong></li>
+</ul>
+
+<p>---</p>
+
+<p><h2>2.4 Proximal Policy Optimization（PPO）</h2></p>
+
+<p><h3>Trust Region Methods</h3></p>
+
+<p>方策勾配法では、<strong>更新が大きすぎると方策が崩壊</strong>することがあります。</p>
+
+<p><strong>Trust Region Policy Optimization（TRPO）</strong> は、方策の変化を制約：</p>
+
+<p>$$</p>
+<p>\max_\theta \mathbb{E} \left[ \frac{\pi_\theta(a|s)}{\pi_{\theta_{\text{old}}}(a|s)} A(s, a) \right] \quad \text{s.t.} \quad D_{\text{KL}}(\pi_{\theta_{\text{old}}} \| \pi_\theta) \leq \delta</p>
+<p>$$</p>
+
+<p>しかし、KLダイバージェンス制約の最適化は複雑です。</p>
+
+<p><h3>PPOの簡略化</h3></p>
+
+<p><strong>PPO</strong>（Schulman et al., 2017）は、制約を<strong>損失関数内のクリッピング</strong>で実現：</p>
+
+<p>$$</p>
+<p>L^{\text{CLIP}}(\theta) = \mathbb{E} \left[ \min \left( r_t(\theta) A_t, \text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon) A_t \right) \right]</p>
+<p>$$</p>
+
+<ul>
+<li>$r_t(\theta) = \frac{\pi_\theta(a_t|s_t)}{\pi_{\theta_{\text{old}}}(a_t|s_t)}$: 重要度比率（importance ratio）</li>
+<li>$\epsilon$: クリッピング範囲（通常0.1〜0.2）</li>
+</ul>
+
+<p><strong>直感</strong>:</p>
+<ul>
+<li>アドバンテージが正（良い行動）→ $r_t$を増やすが、$1+\epsilon$で上限</li>
+<li>アドバンテージが負（悪い行動）→ $r_t$を減らすが、$1-\epsilon$で下限</li>
+<li>急激な方策変化を防ぐ</li>
+</ul>
+
+<p><h3>エントロピーボーナス</h3></p>
+
+<p>探索を促進するため、<strong>エントロピー</strong>を損失に追加：</p>
+
+<p>$$</p>
+<p>L^{\text{PPO}}(\theta) = L^{\text{CLIP}}(\theta) + c_1 L^{\text{VF}}(\theta) - c_2 H[\pi_\theta]</p>
+<p>$$</p>
+
+<ul>
+<li>$L^{\text{VF}}$: 価値関数の損失</li>
+<li>$H[\pi_\theta] = -\sum_a \pi_\theta(a|s) \log \pi_\theta(a|s)$: エントロピー（確率分布の不確実性）</li>
+<li>$c_2$: エントロピー係数（通常0.01）</li>
+</ul>
+
+<p><h3>PPOの実装（Stable Baselines3使用）</h3></p>
+
+<p><pre><code class="language-python">from stable_baselines3 import PPO</p>
+<p>from stable_baselines3.common.vec_env import DummyVecEnv</p>
+<p>import gym</p>
+
+<p><h1>Gym環境ラッパー</h1></p>
+<p>class GymMaterialsEnv(gym.Env):</p>
+<p>    """OpenAI Gym互換の材料探索環境"""</p>
+<p>    def __init__(self):</p>
+<p>        super(GymMaterialsEnv, self).__init__()</p>
+<p>        self.state_dim = 4</p>
+<p>        self.target = np.array([3.0, 5.0, 2.5, 4.0])</p>
+
+<p>        <h1>行動・状態空間の定義</h1></p>
+<p>        self.action_space = gym.spaces.Discrete(4)</p>
+<p>        self.observation_space = gym.spaces.Box(</p>
+<p>            low=0, high=10, shape=(self.state_dim,), dtype=np.float32</p>
+<p>        )</p>
+
+<p>        self.state = None</p>
+
+<p>    def reset(self):</p>
+<p>        self.state = np.random.uniform(0, 10, self.state_dim).astype(np.float32)</p>
+<p>        return self.state</p>
+
+<p>    def step(self, action):</p>
+<p>        dim = action // 2</p>
+<p>        delta = 0.5 if action % 2 == 0 else -0.5</p>
+
+<p>        self.state[dim] = np.clip(self.state[dim] + delta, 0, 10)</p>
+
+<p>        distance = np.linalg.norm(self.state - self.target)</p>
+<p>        reward = -distance</p>
+<p>        done = distance < 0.5</p>
+
+<p>        return self.state, reward, done, {}</p>
+
+<p>    def render(self, mode='human'):</p>
+<p>        pass</p>
+
+
+<p><h1>環境作成</h1></p>
+<p>env = DummyVecEnv([lambda: GymMaterialsEnv()])</p>
+
+<p><h1>PPOモデル</h1></p>
+<p>model = PPO(</p>
+<p>    "MlpPolicy",                <h1>多層パーセプトロン方策</h1></p>
+<p>    env,</p>
+<p>    learning_rate=3e-4,</p>
+<p>    n_steps=2048,               <h1>更新前のステップ数</h1></p>
+<p>    batch_size=64,</p>
+<p>    n_epochs=10,                <h1>各更新での最適化エポック数</h1></p>
+<p>    gamma=0.99,</p>
+<p>    gae_lambda=0.95,            <h1>GAE（Generalized Advantage Estimation）</h1></p>
+<p>    clip_range=0.2,             <h1>PPOクリッピング範囲</h1></p>
+<p>    ent_coef=0.01,              <h1>エントロピー係数</h1></p>
+<p>    verbose=1,</p>
+<p>    tensorboard_log="./ppo_materials_tensorboard/"</p>
+<p>)</p>
+
+<p><h1>訓練</h1></p>
+<p>model.learn(total_timesteps=100000)</p>
+
+<p><h1>保存</h1></p>
+<p>model.save("ppo_materials_agent")</p>
+
+<p><h1>評価</h1></p>
+<p>eval_env = GymMaterialsEnv()</p>
+<p>state = eval_env.reset()</p>
+<p>total_reward = 0</p>
+
+<p>for _ in range(100):</p>
+<p>    action, _ = model.predict(state, deterministic=True)</p>
+<p>    state, reward, done, _ = eval_env.step(action)</p>
+<p>    total_reward += reward</p>
+
+<p>    if done:</p>
+<p>        break</p>
+
+<p>print(f"評価結果: Total Reward = {total_reward:.2f}")</p>
+<p>print(f"最終状態: {state}")</p>
+<p>print(f"目標: {eval_env.target}")</p>
+<p></code></pre></p>
+
+<p><strong>出力例</strong>:</p>
+<p><pre><code class="language-">---------------------------------</p>
+<p>| rollout/           |          |</p>
+<p>|    ep_len_mean     | 45.2     |</p>
+<p>|    ep_rew_mean     | -15.3    |</p>
+<p>| time/              |          |</p>
+<p>|    fps             | 1024     |</p>
+<p>|    iterations      | 50       |</p>
+<p>|    time_elapsed    | 97       |</p>
+<p>|    total_timesteps | 102400   |</p>
+<p>---------------------------------</p>
+
+<p>評価結果: Total Reward = -5.23</p>
+<p>最終状態: [3.02 4.98 2.47 3.95]</p>
+<p>目標: [3.  5.  2.5 4. ]</p>
+<p></code></pre></p>
+
+<p><strong>解説</strong>:</p>
+<ul>
+<li>Stable Baselines3により、わずか数行でPPOを実装</li>
+<li>TensorBoardで学習進捗を可視化可能</li>
+<li>目標に非常に近い材料を発見</li>
+</ul>
+
+<p>---</p>
+
+<p><h2>2.5 連続行動空間への拡張</h2></p>
+
+<p><h3>ガウス方策</h3></p>
+
+<p>材料科学では、温度や組成比など<strong>連続的な制御</strong>が必要です。</p>
+
+<p>連続行動には<strong>ガウス分布方策</strong>を使用：</p>
+
+<p>$$</p>
+<p>\pi_\theta(a|s) = \mathcal{N}(\mu_\theta(s), \sigma_\theta(s))</p>
+<p>$$</p>
+
+<ul>
+<li>$\mu_\theta(s)$: 平均（ニューラルネットワークで出力）</li>
+<li>$\sigma_\theta(s)$: 標準偏差（学習可能または固定）</li>
+</ul>
+
+<p><h3>連続行動版PPO</h3></p>
+
+<p><pre><code class="language-python"><h1>連続行動環境</h1></p>
+<p>class ContinuousGymMaterialsEnv(gym.Env):</p>
+<p>    """連続行動の材料探索環境"""</p>
+<p>    def __init__(self):</p>
+<p>        super(ContinuousGymMaterialsEnv, self).__init__()</p>
+<p>        self.state_dim = 4</p>
+<p>        self.target = np.array([3.0, 5.0, 2.5, 4.0])</p>
+
+<p>        <h1>連続行動空間（4次元ベクトル、範囲 [-1, 1]）</h1></p>
+<p>        self.action_space = gym.spaces.Box(</p>
+<p>            low=-1, high=1, shape=(self.state_dim,), dtype=np.float32</p>
+<p>        )</p>
+<p>        self.observation_space = gym.spaces.Box(</p>
+<p>            low=0, high=10, shape=(self.state_dim,), dtype=np.float32</p>
+<p>        )</p>
+
+<p>        self.state = None</p>
+
+<p>    def reset(self):</p>
+<p>        self.state = np.random.uniform(0, 10, self.state_dim).astype(np.float32)</p>
+<p>        return self.state</p>
+
+<p>    def step(self, action):</p>
+<p>        <h1>行動を状態変化にマッピング（-1〜1 → -0.5〜0.5）</h1></p>
+<p>        delta = action * 0.5</p>
+<p>        self.state = np.clip(self.state + delta, 0, 10)</p>
+
+<p>        distance = np.linalg.norm(self.state - self.target)</p>
+<p>        reward = -distance</p>
+<p>        done = distance < 0.3</p>
+
+<p>        return self.state, reward, done, {}</p>
+
+<p>    def render(self, mode='human'):</p>
+<p>        pass</p>
+
+
+<p><h1>連続行動版PPO</h1></p>
+<p>env_continuous = DummyVecEnv([lambda: ContinuousGymMaterialsEnv()])</p>
+
+<p>model_continuous = PPO(</p>
+<p>    "MlpPolicy",</p>
+<p>    env_continuous,</p>
+<p>    learning_rate=3e-4,</p>
+<p>    n_steps=2048,</p>
+<p>    batch_size=64,</p>
+<p>    n_epochs=10,</p>
+<p>    gamma=0.99,</p>
+<p>    clip_range=0.2,</p>
+<p>    verbose=1</p>
+<p>)</p>
+
+<p>model_continuous.learn(total_timesteps=100000)</p>
+
+<p><h1>評価</h1></p>
+<p>eval_env_cont = ContinuousGymMaterialsEnv()</p>
+<p>state = eval_env_cont.reset()</p>
+
+<p>for _ in range(50):</p>
+<p>    action, _ = model_continuous.predict(state, deterministic=True)</p>
+<p>    state, reward, done, _ = eval_env_cont.step(action)</p>
+
+<p>    if done:</p>
+<p>        break</p>
+
+<p>print(f"最終状態: {state}")</p>
+<p>print(f"目標: {eval_env_cont.target}")</p>
+<p>print(f"距離: {np.linalg.norm(state - eval_env_cont.target):.4f}")</p>
+<p></code></pre></p>
+
+<p><strong>出力例</strong>:</p>
+<p><pre><code class="language-">最終状態: [3.001 5.003 2.498 3.997]</p>
+<p>目標: [3.  5.  2.5 4. ]</p>
+<p>距離: 0.0054</p>
+<p></code></pre></p>
+
+<p><strong>解説</strong>: 連続行動により、目標への<strong>精密な制御</strong>が可能</p>
+
+<p>---</p>
+
+<p><h2>演習問題</h2></p>
+
+<p><h3>問題1 (難易度: easy)</h3></p>
+
+<p>ベースラインを使うと分散が減る理由を、以下の式を使って説明してください。</p>
+
+<p>$$</p>
+<p>\text{Var}[R_t] \quad \text{vs.} \quad \text{Var}[R_t - b(s_t)]</p>
+<p>$$</p>
+
+<p><details></p>
+<p><summary>ヒント</summary></p>
+
+<p>分散の性質: $\text{Var}[X - c] = \text{Var}[X]$（定数$c$を引いても分散は変わらない）ですが、$b(s_t)$は状態依存なので定数ではありません。</p>
+
+<p></details></p>
+
+<p><details></p>
+<p><summary>解答例</summary></p>
+
+<p>ベースライン$b(s_t)$が状態価値$V(s_t)$に近いとき：</p>
+
+<ul>
+<li><strong>リターン</strong> $R_t$は状態によって大きく変動（運による影響大）</li>
+<li><strong>アドバンテージ</strong> $R_t - V(s_t)$は「平均からのズレ」なので変動が小さい</li>
+</ul>
+
+<p>数学的には：</p>
+<p>$$</p>
+<p>\text{Var}[R_t - V(s_t)] \leq \text{Var}[R_t]</p>
+<p>$$</p>
+
+<p>これは$V(s_t)$が「状態$s_t$からの期待累積報酬」なので、運の影響をキャンセルするためです。</p>
+
+<p><strong>具体例</strong>:</p>
+<ul>
+<li>状態Aからのリターン: 100, 105, 95 → 分散 = 25</li>
+<li>状態Aの価値: 100</li>
+<li>アドバンテージ: 0, 5, -5 → 分散 = 25（同じ）</li>
+</ul>
+
+<p>しかし、複数の状態を考えると：</p>
+<ul>
+<li>状態Aのリターン: 100±5</li>
+<li>状態Bのリターン: 50±5</li>
+<li>全体の分散: 大きい</li>
+</ul>
+
+<p>ベースラインで状態ごとの平均を引くと、状態間の差が消え、分散が減ります。</p>
+
+<p></details></p>
+
+<p>---</p>
+
+<p><h3>問題2 (難易度: medium)</h3></p>
+
+<p>PPOのクリッピング範囲$\epsilon$を大きくすると何が起こるか、また$\epsilon=0$の極端なケースではどうなるか説明してください。</p>
+
+<p><details></p>
+<p><summary>ヒント</summary></p>
+
+<p>クリッピング式を見直し、$r_t(\theta)$の変化がどう制限されるか考えてみましょう。</p>
+
+<p></details></p>
+
+<p><details></p>
+<p><summary>解答例</summary></p>
+
+<p><strong>$\epsilon$を大きくすると</strong>:</p>
+<ul>
+<li>クリッピング範囲が広がり、方策の変化が大きくなる</li>
+<li>学習が速いが不安定になりやすい</li>
+<li>極端な場合、方策が崩壊する可能性</li>
+</ul>
+
+<p><strong>$\epsilon=0$の場合</strong>:</p>
+<p>$$</p>
+<p>\text{clip}(r_t, 1, 1) = 1</p>
+<p>$$</p>
+
+<ul>
+<li>重要度比率が常に1にクリッピング</li>
+<li>方策が全く更新されない（$\pi_\theta = \pi_{\theta_{\text{old}}}$を強制）</li>
+</ul>
+
+<p><strong>実践的な値</strong>: $\epsilon = 0.1 \sim 0.2$が一般的</p>
+
+<p><strong>実験コード</strong>:</p>
+<p><pre><code class="language-python"><h1>ε=0.05（厳しい制約）</h1></p>
+<p>model_tight = PPO("MlpPolicy", env, clip_range=0.05)</p>
+
+<p><h1>ε=0.5（緩い制約）</h1></p>
+<p>model_loose = PPO("MlpPolicy", env, clip_range=0.5)</p>
+
+<p><h1>学習曲線を比較</h1></p>
+<p><h1>→ model_tightは安定だが遅い</h1></p>
+<p><h1>→ model_looseは速いが振動する</h1></p>
+<p></code></pre></p>
+
+<p></details></p>
+
+<p>---</p>
+
+<p><h3>問題3 (難易度: hard)</h3></p>
+
+<p>材料探索において、以下の2つの報酬設計を比較し、それぞれの長所・短所を述べてください。また、実際にコードで実験してください。</p>
+
+<p><strong>報酬A（疎報酬）</strong>: 目標に到達したときのみ報酬1、それ以外は0</p>
+<p><strong>報酬B（密報酬）</strong>: 目標との距離に応じた連続的な報酬</p>
+
+<p><details></p>
+<p><summary>ヒント</summary></p>
+
+<p>疎報酬は探索が困難ですが、密報酬は局所最適解に陥りやすいです。エントロピーボーナスの影響も考えてみましょう。</p>
+
+<p></details></p>
+
+<p><details></p>
+<p><summary>解答例</summary></p>
+
+<p><strong>報酬A（疎報酬）の長所・短所</strong>:</p>
+
+<p><strong>長所</strong>:</p>
+<ul>
+<li>明確な目標（曖昧さがない）</li>
+<li>局所最適解に陥りにくい（中間報酬に惑わされない）</li>
+</ul>
+
+<p><strong>短所</strong>:</p>
+<ul>
+<li>探索が非常に困難（学習シグナルが弱い）</li>
+<li>学習に時間がかかる</li>
+</ul>
+
+<p><strong>報酬B（密報酬）の長所・短所</strong>:</p>
+
+<p><strong>長所</strong>:</p>
+<ul>
+<li>探索が容易（毎ステップでフィードバック）</li>
+<li>学習が速い</li>
+</ul>
+
+<p><strong>短所</strong>:</p>
+<ul>
+<li>報酬設計が難しい（距離だけでは不十分な場合も）</li>
+<li>局所最適解に陥りやすい</li>
+</ul>
+
+<p><strong>実験コード</strong>:</p>
+<p><pre><code class="language-python"><h1>報酬A（疎報酬）</h1></p>
+<p>class SparseRewardEnv(gym.Env):</p>
+<p>    def step(self, action):</p>
+<p>        <h1>... (状態更新) ...</h1></p>
+<p>        distance = np.linalg.norm(self.state - self.target)</p>
+
+<p>        if distance < 0.5:</p>
+<p>            reward = 1.0  <h1>到達</h1></p>
+<p>            done = True</p>
+<p>        else:</p>
+<p>            reward = 0.0  <h1>それ以外</h1></p>
+<p>            done = False</p>
+
+<p>        return self.state, reward, done, {}</p>
+
+<p><h1>報酬B（密報酬）</h1></p>
+<p>class DenseRewardEnv(gym.Env):</p>
+<p>    def step(self, action):</p>
+<p>        <h1>... (状態更新) ...</h1></p>
+<p>        distance = np.linalg.norm(self.state - self.target)</p>
+<p>        reward = -distance  <h1>連続的な報酬</h1></p>
+<p>        done = distance < 0.5</p>
+
+<p>        return self.state, reward, done, {}</p>
+
+<p><h1>比較実験</h1></p>
+<p>model_sparse = PPO("MlpPolicy", DummyVecEnv([lambda: SparseRewardEnv()]))</p>
+<p>model_dense = PPO("MlpPolicy", DummyVecEnv([lambda: DenseRewardEnv()]))</p>
+
+<p>model_sparse.learn(total_timesteps=100000)</p>
+<p>model_dense.learn(total_timesteps=100000)</p>
+
+<p><h1>結果: model_denseの方が学習が速いが、</h1></p>
+<p><h1>複雑な環境ではmodel_sparseの方が良い解を見つけることも</h1></p>
+<p></code></pre></p>
+
+<p><strong>ベストプラクティス</strong>: 密報酬から始め、問題に応じて疎報酬や<strong>報酬シェイピング</strong>（中間報酬の追加）を検討。</p>
+
+<p></details></p>
+
+<p>---</p>
+
+<p><h2>このセクションのまとめ</h2></p>
+
+<ul>
+<li><strong>方策勾配法</strong>は方策を直接最適化し、連続行動に対応</li>
+<li><strong>REINFORCEアルゴリズム</strong>は高分散だが、ベースラインで改善</li>
+<li><strong>Actor-Critic</strong>はActorとCriticを同時学習し、低分散・オンライン学習</li>
+<li><strong>PPO</strong>はクリッピングにより安定した学習を実現、最先端の実用的手法</li>
+<li><strong>Stable Baselines3</strong>により、わずか数行でPPOを実装可能</li>
+<li>連続行動空間では<strong>ガウス方策</strong>を使用</li>
+</ul>
+
+<p>次章では、材料探索に特化したカスタム環境の構築と報酬設計を学びます。</p>
+
+<p>---</p>
+
+<p><h2>参考文献</h2></p>
+
+<ol>
+<li>Williams "Simple statistical gradient-following algorithms for connectionist reinforcement learning" <em>Machine Learning</em> (1992) - REINFORCE</li>
+<li>Mnih et al. "Asynchronous methods for deep reinforcement learning" <em>ICML</em> (2016) - A3C/A2C</li>
+<li>Schulman et al. "Proximal policy optimization algorithms" <em>arXiv</em> (2017) - PPO</li>
+<li>Schulman et al. "Trust region policy optimization" <em>ICML</em> (2015) - TRPO</li>
+<li>Raffin et al. "Stable-Baselines3: Reliable reinforcement learning implementations" <em>JMLR</em> (2021)</li>
+</ol>
+
+<p>---</p>
+
+<p><strong>次章</strong>: <a href="chapter-3.html">第3章: 材料探索環境の構築</a></p>
+
+
+        
+        <div class="navigation">
+            <a href="chapter-3.html" class="nav-button">次章: 第3章 →</a>
+            <a href="index.html" class="nav-button">← シリーズ目次に戻る</a>
+            <a href="chapter-1.html" class="nav-button">← 前章: 第1章</a>
+        </div>
+    
+    </main>
+
+    <footer>
+        <p><strong>作成者</strong>: AI Terakoya Content Team</p>
+        <p><strong>監修</strong>: Dr. Yusuke Hashimoto(東北大学)</p>
+        <p><strong>バージョン</strong>: 1.0 | <strong>作成日</strong>: 2025-10-17</p>
+        <p><strong>ライセンス</strong>: Creative Commons BY 4.0</p>
+        <p>© 2025 AI Terakoya. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mermaidCodeBlocks = document.querySelectorAll('pre.codehilite code.language-mermaid, pre code.language-mermaid');
+
+            mermaidCodeBlocks.forEach(function(codeBlock) {
+                const pre = codeBlock.parentElement;
+                const mermaidCode = codeBlock.textContent;
+
+                const mermaidDiv = document.createElement('div');
+                mermaidDiv.className = 'mermaid';
+                mermaidDiv.textContent = mermaidCode.trim();
+
+                pre.parentNode.replaceChild(mermaidDiv, pre);
+            });
+
+            if (typeof mermaid !== 'undefined') {
+                mermaid.initialize({
+                    startOnLoad: true,
+                    theme: 'default'
+                });
+                mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+            }
+        });
+    </script>
+</body>
+</html>

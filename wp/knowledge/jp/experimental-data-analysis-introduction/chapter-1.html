@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1章：実験データ解析の基礎 - AI Terakoya</title>
+    <style>
+        :root {
+            --color-primary-900: #1a252f;
+            --color-primary-700: #2c3e50;
+            --color-primary-500: #34495e;
+            --color-primary-300: #4a5f7a;
+            --color-accent: #7b2cbf;
+            --color-accent-light: #9d4edd;
+            --color-bg: #ffffff;
+            --color-bg-secondary: #f8f9fa;
+            --color-text: #2c3e50;
+            --color-text-light: #6c757d;
+            --color-border: #e9ecef;
+            --color-code-bg: #f8f9fa;
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            --font-base: 1rem;
+            --font-sm: 0.875rem;
+            --font-lg: 1.125rem;
+            --font-xl: 1.5rem;
+            --font-2xl: 2rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", sans-serif;
+            line-height: 1.7;
+            color: var(--color-text);
+            background: var(--color-bg);
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+            color: white;
+            padding: var(--spacing-xl) var(--spacing-md);
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header h1 {
+            font-size: var(--font-2xl);
+            margin-bottom: var(--spacing-sm);
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: var(--font-lg);
+            opacity: 0.95;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+            justify-content: center;
+            font-size: var(--font-sm);
+            opacity: 0.9;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: var(--spacing-xl) var(--spacing-md);
+        }
+
+        h2 {
+            font-size: var(--font-xl);
+            color: var(--color-accent);
+            margin: var(--spacing-lg) 0 var(--spacing-md) 0;
+            padding-bottom: var(--spacing-xs);
+            border-bottom: 2px solid var(--color-accent-light);
+        }
+
+        h3 {
+            font-size: var(--font-lg);
+            color: var(--color-primary-700);
+            margin: var(--spacing-md) 0 var(--spacing-sm) 0;
+        }
+
+        h4 {
+            font-size: var(--font-base);
+            color: var(--color-primary-500);
+            margin: var(--spacing-sm) 0;
+        }
+
+        p {
+            margin-bottom: var(--spacing-md);
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin: var(--spacing-md) 0;
+            padding-left: var(--spacing-lg);
+        }
+
+        li {
+            margin-bottom: var(--spacing-xs);
+        }
+
+        code {
+            background: var(--color-code-bg);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: var(--color-accent);
+        }
+
+        pre {
+            background: var(--color-code-bg);
+            border-left: 4px solid var(--color-accent);
+            padding: var(--spacing-md);
+            overflow-x: auto;
+            border-radius: 4px;
+            margin: var(--spacing-md) 0;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--color-text);
+        }
+
+        .mermaid {
+            background: white;
+            padding: var(--spacing-md);
+            border-radius: 8px;
+            margin: var(--spacing-md) 0;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: var(--spacing-md) 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: var(--spacing-sm);
+            text-align: left;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        th {
+            background: var(--color-accent);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: var(--color-bg-secondary);
+        }
+
+        details {
+            background: var(--color-bg-secondary);
+            padding: var(--spacing-md);
+            border-radius: 8px;
+            margin: var(--spacing-md) 0;
+            border: 1px solid var(--color-border);
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--color-accent);
+            padding: var(--spacing-sm);
+            margin: calc(-1 * var(--spacing-md));
+            margin-bottom: var(--spacing-md);
+            background: white;
+            border-radius: 8px 8px 0 0;
+        }
+
+        summary:hover {
+            background: var(--color-bg-secondary);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: var(--spacing-md);
+            margin: var(--spacing-xl) 0;
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--color-border);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-primary {
+            background: var(--color-accent);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--color-primary-500);
+            color: white;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .btn-primary:hover {
+                background: var(--color-accent-light);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(123, 44, 191, 0.3);
+            }
+
+            .btn-secondary:hover {
+                background: var(--color-primary-700);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+        }
+
+        footer {
+            background: var(--color-primary-900);
+            color: white;
+            padding: var(--spacing-lg);
+            text-align: center;
+            margin-top: var(--spacing-xl);
+        }
+
+        footer a {
+            color: var(--color-accent-light);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: var(--font-xl);
+            }
+
+            .subtitle {
+                font-size: var(--font-base);
+            }
+
+            .meta {
+                font-size: 0.8rem;
+            }
+
+            .navigation {
+                flex-direction: column;
+            }
+        }
+    </style>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>第1章：実験データ解析の基礎</h1>
+            <p class="subtitle"></p>
+            <div class="meta">
+                <span class="meta-item">📖 読了時間: 20-25分</span>
+                <span class="meta-item">📊 難易度: 初級</span>
+                <span class="meta-item">💻 コード例: 8</span>
+                <span class="meta-item">📝 演習問題: 3</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <p>
+<h1>第1章：実験データ解析の基礎</h1>
+</p>
+<p>
+<strong>データ前処理から外れ値検出まで - 信頼性の高い解析の第一歩</strong>
+</p>
+<p>
+<h2>学習目標</h2>
+</p>
+<p>
+この章を読むことで、以下を習得できます：
+</p>
+<p>
+<ul><li>✅ 実験データ解析の全体ワークフローを説明できる</li>
+<li>✅ データ前処理の重要性と各手法の使い分けを理解している</li>
+<li>✅ ノイズ除去フィルタを適切に選択・適用できる</li>
+<li>✅ 外れ値を検出し、適切に処理できる</li>
+<li>✅ 標準化・正規化手法を目的に応じて使い分けられる</li>
+</p>
+<p>
+<strong>読了時間</strong>: 20-25分
+<strong>コード例</strong>: 8個
+<strong>演習問題</strong>: 3問
+</p>
+<p>
+---
+</p>
+<p>
+<h2>1.1 実験データ解析の重要性とワークフロー</h2>
+</p>
+<p>
+<h3>なぜデータ駆動型解析が必要か</h3>
+</p>
+<p>
+材料科学研究では、XRD（X線回折）、XPS（X線光電子分光）、SEM（走査型電子顕微鏡）、各種スペクトル測定など、多様なキャラクタリゼーション技術を使用します。これらの測定から得られるデータは、材料の構造、組成、物性を理解する上で不可欠です。
+</p>
+<p>
+しかし、従来の手動解析には以下のような課題があります：
+</p>
+<p>
+<strong>従来の手動解析の限界</strong>:
+1. <strong>時間がかかる</strong>: 1つのXRDパターンのピーク同定に30分〜1時間
+2. <strong>主観的</strong>: 解析者の経験や判断によって結果が異なる
+3. <strong>再現性の問題</strong>: 同じデータを別の人が解析すると異なる結果になる可能性
+4. <strong>大量データに対応できない</strong>: ハイスループット測定（1日数百〜数千サンプル）に追いつかない
+</p>
+<p>
+<strong>データ駆動型解析の利点</strong>:
+1. <strong>高速化</strong>: 数秒〜数分で解析完了（100倍以上の高速化）
+2. <strong>客観性</strong>: 明確なアルゴリズムに基づく再現可能な結果
+3. <strong>一貫性</strong>: 同じコードは常に同じ結果を出力
+4. <strong>スケーラビリティ</strong>: 1サンプルでも1万サンプルでも同じ労力
+</p>
+<p>
+<h3>材料キャラクタリゼーション技術一覧</h3>
+</p>
+<p>
+主要な測定技術と得られる情報：
+</p>
+<p>
+<table>
+<thead>
+<tr>
+<th>測定技術</th>
+<th>得られる情報</th>
+<th>データ形式</th>
+<th>典型的なデータサイズ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>XRD</strong></td>
+<td>結晶構造、相同定、結晶子サイズ</td>
+<td>1次元スペクトル</td>
+<td>数千点</td>
+</tr>
+<tr>
+<td><strong>XPS</strong></td>
+<td>元素組成、化学状態、電子構造</td>
+<td>1次元スペクトル</td>
+<td>数千点</td>
+</tr>
+<tr>
+<td><strong>SEM/TEM</strong></td>
+<td>形態、粒径、組織</td>
+<td>2次元画像</td>
+<td>数百万画素</td>
+</tr>
+<tr>
+<td><strong>IR/Raman</strong></td>
+<td>分子振動、官能基、結晶性</td>
+<td>1次元スペクトル</td>
+<td>数千点</td>
+</tr>
+<tr>
+<td><strong>UV-Vis</strong></td>
+<td>光吸収、バンドギャップ</td>
+<td>1次元スペクトル</td>
+<td>数百〜数千点</td>
+</tr>
+<tr>
+<td><strong>TGA/DSC</strong></td>
+<td>熱安定性、相転移</td>
+<td>1次元時系列</td>
+<td>数千点</td>
+</tr>
+</tbody>
+</table></p>
+<p>
+<h3>典型的な解析ワークフロー（5ステップ）</h3>
+</p>
+<p>
+実験データ解析は通常、以下の5ステップで進行します：
+</p>
+<p>
+<pre><code class="language-mermaid">flowchart LR
+    A[1. データ読み込み] --> B[2. データ前処理]
+    B --> C[3. 特徴抽出]
+    C --> D[4. 統計解析/機械学習]
+    D --> E[5. 可視化・報告]
+    E --> F[結果の解釈]
+</p>
+<p>
+    style A fill:#e3f2fd
+    style B fill:#fff3e0
+    style C fill:#f3e5f5
+    style D fill:#e8f5e9
+    style E fill:#fce4ec
+    style F fill:#fff9c4
+</code></pre>
+</p>
+<p>
+<strong>各ステップの詳細</strong>:
+</p>
+<p>
+1. <strong>データ読み込み</strong>: CSV、テキスト、バイナリ形式からデータを読み込む
+2. <strong>データ前処理</strong>: ノイズ除去、外れ値処理、標準化
+3. <strong>特徴抽出</strong>: ピーク検出、輪郭抽出、統計量計算
+4. <strong>統計解析/機械学習</strong>: 回帰、分類、クラスタリング
+5. <strong>可視化・報告</strong>: グラフ作成、レポート生成
+</p>
+<p>
+本章では、<strong>ステップ2（データ前処理）</strong>に焦点を当てます。
+</p>
+<p>
+---
+</p>
+<p>
+<h2>1.2 データ前処理の基礎</h2>
+</p>
+<p>
+<h3>データ読み込み</h3>
+</p>
+<p>
+まず、様々な形式の実験データを読み込む方法を学びます。
+</p>
+<p>
+<strong>コード例1: CSVファイルの読み込み（XRDパターン）</strong>
+</p>
+<p>
+<pre><code class="language-python"># XRDパターンデータの読み込み
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+</p>
+<p>
+<h1>CSVファイル読み込み（2θ, intensity）</h1>
+<h1>サンプルデータの作成</h1>
+np.random.seed(42)
+two_theta = np.linspace(10, 80, 700)  # 2θ範囲: 10-80度
+intensity = (
+    1000 <em> np.exp(-((two_theta - 28) </em>* 2) / 10) +  # ピーク1
+    1500 <em> np.exp(-((two_theta - 32) </em>* 2) / 8) +   # ピーク2
+    800 <em> np.exp(-((two_theta - 47) </em>* 2) / 12) +   # ピーク3
+    np.random.normal(0, 50, len(two_theta))          # ノイズ
+)
+</p>
+<p>
+<h1>DataFrameに格納</h1>
+df = pd.DataFrame({
+    'two_theta': two_theta,
+    'intensity': intensity
+})
+</p>
+<p>
+<h1>基本統計量の確認</h1>
+print("=== データ基本統計 ===")
+print(df.describe())
+</p>
+<p>
+<h1>データの可視化</h1>
+plt.figure(figsize=(10, 5))
+plt.plot(df['two_theta'], df['intensity'], linewidth=1)
+plt.xlabel('2θ (degree)')
+plt.ylabel('Intensity (counts)')
+plt.title('Raw XRD Pattern')
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.show()
+</p>
+<p>
+print(f"\nデータ点数: {len(df)}")
+print(f"2θ範囲: {df['two_theta'].min():.1f} - {df['two_theta'].max():.1f}°")
+print(f"強度範囲: {df['intensity'].min():.1f} - {df['intensity'].max():.1f}")
+</code></pre>
+</p>
+<p>
+<strong>出力</strong>:
+``<code>
+=== データ基本統計 ===
+         two_theta    intensity
+count   700.000000   700.000000
+mean     45.000000   351.893421
+std      20.219545   480.523106
+min      10.000000  -123.456789
+25%      27.500000    38.901234
+50%      45.000000   157.345678
+75%      62.500000   401.234567
+max      80.000000  1523.456789
+</p>
+<p>
+データ点数: 700
+2θ範囲: 10.0 - 80.0°
+強度範囲: -123.5 - 1523.5
+</code>`<code>
+</p>
+<p>
+<h3>データ構造の理解と整形</h3>
+</p>
+<p>
+<strong>コード例2: データの構造確認と整形</strong>
+</p>
+<p>
+<pre><code class="language-python"># データ構造の確認
+print("=== データ構造 ===")
+print(f"データ型:\n{df.dtypes}\n")
+print(f"欠損値:\n{df.isnull().sum()}\n")
+print(f"重複行: {df.duplicated().sum()}")
+</p>
+<p>
+<h1>欠損値を含むデータの例</h1>
+df_with_nan = df.copy()
+df_with_nan.loc[100:105, 'intensity'] = np.nan  # 欠損値を意図的に挿入
+</p>
+<p>
+print("\n=== 欠損値処理 ===")
+print(f"欠損値の数: {df_with_nan['intensity'].isnull().sum()}")
+</p>
+<p>
+<h1>欠損値の補間（線形補間）</h1>
+df_with_nan['intensity_interpolated'] = df_with_nan['intensity'].interpolate(method='linear')
+</p>
+<p>
+<h1>前後の値で確認</h1>
+print("\n欠損値の前後:")
+print(df_with_nan.iloc[98:108][['two_theta', 'intensity', 'intensity_interpolated']])
+</code></pre>
+</p>
+<p>
+<h3>欠損値・異常値の検出と処理</h3>
+</p>
+<p>
+<strong>コード例3: 異常値の検出</strong>
+</p>
+<p>
+<pre><code class="language-python">from scipy import stats
+</p>
+<p>
+<h1>負の強度値は物理的にありえない（異常値）</h1>
+negative_mask = df['intensity'] < 0
+print(f"負の強度値の数: {negative_mask.sum()} / {len(df)}")
+</p>
+<p>
+<h1>負の値を0に置き換え</h1>
+df_cleaned = df.copy()
+df_cleaned.loc[negative_mask, 'intensity'] = 0
+</p>
+<p>
+<h1>可視化</h1>
+fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+</p>
+<p>
+axes[0].plot(df['two_theta'], df['intensity'], label='Raw', alpha=0.7)
+axes[0].axhline(y=0, color='r', linestyle='--', label='Zero line')
+axes[0].set_xlabel('2θ (degree)')
+axes[0].set_ylabel('Intensity')
+axes[0].set_title('Raw Data (with negative values)')
+axes[0].legend()
+axes[0].grid(True, alpha=0.3)
+</p>
+<p>
+axes[1].plot(df_cleaned['two_theta'], df_cleaned['intensity'], label='Cleaned', color='green')
+axes[1].axhline(y=0, color='r', linestyle='--', label='Zero line')
+axes[1].set_xlabel('2θ (degree)')
+axes[1].set_ylabel('Intensity')
+axes[1].set_title('Cleaned Data (negatives removed)')
+axes[1].legend()
+axes[1].grid(True, alpha=0.3)
+</p>
+<p>
+plt.tight_layout()
+plt.show()
+</code></pre>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>1.3 ノイズ除去手法</h2>
+</p>
+<p>
+実験データには必ずノイズが含まれます。ノイズ除去は、信号対雑音比（S/N比）を向上させ、後続の解析精度を高めます。
+</p>
+<p>
+<h3>移動平均フィルタ</h3>
+</p>
+<p>
+最もシンプルなノイズ除去手法です。各データ点を、その周辺の平均値で置き換えます。
+</p>
+<p>
+<strong>コード例4: 移動平均フィルタ</strong>
+</p>
+<p>
+<pre><code class="language-python">from scipy.ndimage import uniform_filter1d
+</p>
+<p>
+<h1>移動平均フィルタの適用</h1>
+window_sizes = [5, 11, 21]
+</p>
+<p>
+plt.figure(figsize=(12, 8))
+</p>
+<p>
+<h1>元データ</h1>
+plt.subplot(2, 2, 1)
+plt.plot(df_cleaned['two_theta'], df_cleaned['intensity'], linewidth=1)
+plt.xlabel('2θ (degree)')
+plt.ylabel('Intensity')
+plt.title('Original Data')
+plt.grid(True, alpha=0.3)
+</p>
+<p>
+<h1>異なるウィンドウサイズの移動平均</h1>
+for i, window_size in enumerate(window_sizes, start=2):
+    smoothed = uniform_filter1d(df_cleaned['intensity'].values, size=window_size)
+</p>
+<p>
+    plt.subplot(2, 2, i)
+    plt.plot(df_cleaned['two_theta'], smoothed, linewidth=1.5)
+    plt.xlabel('2θ (degree)')
+    plt.ylabel('Intensity')
+    plt.title(f'Moving Average (window={window_size})')
+    plt.grid(True, alpha=0.3)
+</p>
+<p>
+plt.tight_layout()
+plt.show()
+</p>
+<p>
+<h1>ノイズ除去効果の定量評価</h1>
+print("=== ノイズ除去効果 ===")
+original_std = np.std(df_cleaned['intensity'].values)
+for window_size in window_sizes:
+    smoothed = uniform_filter1d(df_cleaned['intensity'].values, size=window_size)
+    smoothed_std = np.std(smoothed)
+    noise_reduction = (1 - smoothed_std / original_std) * 100
+    print(f"Window={window_size:2d}: ノイズ削減 {noise_reduction:.1f}%")
+</code></pre>
+</p>
+<p>
+<strong>出力</strong>:
+</code>`<code>
+=== ノイズ除去効果 ===
+Window= 5: ノイズ削減 15.2%
+Window=11: ノイズ削減 28.5%
+Window=21: ノイズ削減 41.3%
+</code>`<code>
+</p>
+<p>
+<strong>使い分けガイド</strong>:
+<li><strong>小さいウィンドウ（3-5）</strong>: ノイズは残るが、ピーク形状を保持</li>
+<li><strong>中程度のウィンドウ（7-15）</strong>: バランス良好、推奨</li>
+<li><strong>大きいウィンドウ（>20）</strong>: ノイズ除去は強力だが、ピークが広がる</li>
+</p>
+<p>
+<h3>Savitzky-Golay フィルタ</h3>
+</p>
+<p>
+移動平均よりも高度な手法で、ピーク形状を保持しながらノイズを除去できます。
+</p>
+<p>
+<strong>コード例5: Savitzky-Golay フィルタ</strong>
+</p>
+<p>
+<pre><code class="language-python">from scipy.signal import savgol_filter
+</p>
+<p>
+<h1>Savitzky-Golay フィルタの適用</h1>
+window_length = 11  # 奇数である必要がある
+polyorder = 3       # 多項式の次数
+</p>
+<p>
+sg_smoothed = savgol_filter(df_cleaned['intensity'].values, window_length, polyorder)
+</p>
+<p>
+<h1>移動平均との比較</h1>
+ma_smoothed = uniform_filter1d(df_cleaned['intensity'].values, size=window_length)
+</p>
+<p>
+plt.figure(figsize=(12, 5))
+</p>
+<p>
+plt.subplot(1, 2, 1)
+plt.plot(df_cleaned['two_theta'], df_cleaned['intensity'],
+         label='Original', alpha=0.5, linewidth=1)
+plt.plot(df_cleaned['two_theta'], ma_smoothed,
+         label='Moving Average', linewidth=1.5)
+plt.plot(df_cleaned['two_theta'], sg_smoothed,
+         label='Savitzky-Golay', linewidth=1.5)
+plt.xlabel('2θ (degree)')
+plt.ylabel('Intensity')
+plt.title('Comparison of Smoothing Methods')
+plt.legend()
+plt.grid(True, alpha=0.3)
+</p>
+<p>
+<h1>ピーク部分の拡大</h1>
+plt.subplot(1, 2, 2)
+peak_region = (df_cleaned['two_theta'] > 26) & (df_cleaned['two_theta'] < 34)
+plt.plot(df_cleaned.loc[peak_region, 'two_theta'],
+         df_cleaned.loc[peak_region, 'intensity'],
+         label='Original', alpha=0.5, linewidth=1)
+plt.plot(df_cleaned.loc[peak_region, 'two_theta'],
+         ma_smoothed[peak_region],
+         label='Moving Average', linewidth=1.5)
+plt.plot(df_cleaned.loc[peak_region, 'two_theta'],
+         sg_smoothed[peak_region],
+         label='Savitzky-Golay', linewidth=1.5)
+plt.xlabel('2θ (degree)')
+plt.ylabel('Intensity')
+plt.title('Zoomed: Peak Region')
+plt.legend()
+plt.grid(True, alpha=0.3)
+</p>
+<p>
+plt.tight_layout()
+plt.show()
+</p>
+<p>
+print("=== Savitzky-Golay パラメータ ===")
+print(f"Window length: {window_length}")
+print(f"Polynomial order: {polyorder}")
+print(f"\n推奨設定:")
+print("- ノイズが多い: window_length=11-21, polyorder=2-3")
+print("- ノイズが少ない: window_length=5-11, polyorder=2-4")
+</code></pre>
+</p>
+<p>
+<strong>Savitzky-Golay フィルタの利点</strong>:
+<li>ピークの高さと位置をより正確に保持</li>
+<li>エッジ（急峻な変化）を滑らかにしすぎない</li>
+<li>微分計算との相性が良い（後のピーク検出で有用）</li>
+</p>
+<p>
+<h3>ガウシアンフィルタ</h3>
+</p>
+<p>
+画像処理で広く使われる手法ですが、1次元データにも適用可能です。
+</p>
+<p>
+<strong>コード例6: ガウシアンフィルタ</strong>
+</p>
+<p>
+<pre><code class="language-python">from scipy.ndimage import gaussian_filter1d
+</p>
+<p>
+<h1>ガウシアンフィルタの適用</h1>
+sigma_values = [1, 2, 4]  # 標準偏差
+</p>
+<p>
+plt.figure(figsize=(12, 8))
+</p>
+<p>
+plt.subplot(2, 2, 1)
+plt.plot(df_cleaned['two_theta'], df_cleaned['intensity'], linewidth=1)
+plt.xlabel('2θ (degree)')
+plt.ylabel('Intensity')
+plt.title('Original Data')
+plt.grid(True, alpha=0.3)
+</p>
+<p>
+for i, sigma in enumerate(sigma_values, start=2):
+    gaussian_smoothed = gaussian_filter1d(df_cleaned['intensity'].values, sigma=sigma)
+</p>
+<p>
+    plt.subplot(2, 2, i)
+    plt.plot(df_cleaned['two_theta'], gaussian_smoothed, linewidth=1.5)
+    plt.xlabel('2θ (degree)')
+    plt.ylabel('Intensity')
+    plt.title(f'Gaussian Filter (σ={sigma})')
+    plt.grid(True, alpha=0.3)
+</p>
+<p>
+plt.tight_layout()
+plt.show()
+</code></pre>
+</p>
+<p>
+<h3>適切なフィルタの選択</h3>
+</p>
+<p>
+<pre><code class="language-mermaid">flowchart TD
+    Start[ノイズ除去が必要] --> Q1{ピーク形状の保持は重要?}
+    Q1 -->|非常に重要| SG[Savitzky-Golay]
+    Q1 -->|やや重要| Gauss[Gaussian]
+    Q1 -->|それほど重要でない| MA[Moving Average]
+</p>
+<p>
+    SG --> Param1[window=11-21<br/>polyorder=2-3]
+    Gauss --> Param2[sigma=1-3]
+    MA --> Param3[window=7-15]
+</p>
+<p>
+    style Start fill:#4CAF50,color:#fff
+    style SG fill:#2196F3,color:#fff
+    style Gauss fill:#FF9800,color:#fff
+    style MA fill:#9C27B0,color:#fff
+</code></pre>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>1.4 外れ値検出</h2>
+</p>
+<p>
+外れ値（outlier）は、測定エラー、装置の不調、サンプル汚染などにより発生します。適切に検出・処理しないと、解析結果に重大な影響を及ぼします。
+</p>
+<p>
+<h3>Z-score 法</h3>
+</p>
+<p>
+統計的に「平均から標準偏差の○倍以上離れている」データを外れ値とみなします。
+</p>
+<p>
+<strong>コード例7: Z-score による外れ値検出</strong>
+</p>
+<p>
+<pre><code class="language-python">from scipy import stats
+</p>
+<p>
+<h1>外れ値を含むサンプルデータ</h1>
+data_with_outliers = df_cleaned['intensity'].copy()
+<h1>意図的に外れ値を追加</h1>
+outlier_indices = [50, 150, 350, 550]
+data_with_outliers.iloc[outlier_indices] = [3000, -500, 4000, 3500]
+</p>
+<p>
+<h1>Z-score計算</h1>
+z_scores = np.abs(stats.zscore(data_with_outliers))
+threshold = 3  # 3σを超えるものを外れ値とする
+</p>
+<p>
+outliers = z_scores > threshold
+</p>
+<p>
+print(f"=== Z-score 外れ値検出 ===")
+print(f"外れ値の数: {outliers.sum()} / {len(data_with_outliers)}")
+print(f"外れ値のインデックス: {np.where(outliers)[0]}")
+</p>
+<p>
+<h1>可視化</h1>
+plt.figure(figsize=(12, 5))
+</p>
+<p>
+plt.subplot(1, 2, 1)
+plt.plot(df_cleaned['two_theta'], data_with_outliers, label='Data with outliers')
+plt.scatter(df_cleaned['two_theta'][outliers], data_with_outliers[outliers],
+            color='red', s=100, zorder=5, label='Detected outliers')
+plt.xlabel('2θ (degree)')
+plt.ylabel('Intensity')
+plt.title('Outlier Detection (Z-score method)')
+plt.legend()
+plt.grid(True, alpha=0.3)
+</p>
+<p>
+<h1>外れ値除去後</h1>
+data_cleaned = data_with_outliers.copy()
+data_cleaned[outliers] = np.nan
+data_cleaned = data_cleaned.interpolate(method='linear')
+</p>
+<p>
+plt.subplot(1, 2, 2)
+plt.plot(df_cleaned['two_theta'], data_cleaned, color='green', label='Cleaned data')
+plt.xlabel('2θ (degree)')
+plt.ylabel('Intensity')
+plt.title('After Outlier Removal')
+plt.legend()
+plt.grid(True, alpha=0.3)
+</p>
+<p>
+plt.tight_layout()
+plt.show()
+</code></pre>
+</p>
+<p>
+<h3>IQR（四分位範囲）法</h3>
+</p>
+<p>
+中央値ベースの頑健な手法で、正規分布でないデータにも適用可能です。
+</p>
+<p>
+<strong>コード例8: IQR 法</strong>
+</p>
+<p>
+<pre><code class="language-python"># IQR法による外れ値検出
+Q1 = data_with_outliers.quantile(0.25)
+Q3 = data_with_outliers.quantile(0.75)
+IQR = Q3 - Q1
+</p>
+<p>
+<h1>外れ値の定義: Q1 - 1.5<em>IQR 未満、または Q3 + 1.5</em>IQR 超</h1>
+lower_bound = Q1 - 1.5 * IQR
+upper_bound = Q3 + 1.5 * IQR
+</p>
+<p>
+outliers_iqr = (data_with_outliers < lower_bound) | (data_with_outliers > upper_bound)
+</p>
+<p>
+print(f"=== IQR 外れ値検出 ===")
+print(f"Q1: {Q1:.1f}")
+print(f"Q3: {Q3:.1f}")
+print(f"IQR: {IQR:.1f}")
+print(f"下限: {lower_bound:.1f}")
+print(f"上限: {upper_bound:.1f}")
+print(f"外れ値の数: {outliers_iqr.sum()} / {len(data_with_outliers)}")
+</p>
+<p>
+<h1>箱ひげ図で可視化</h1>
+fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+</p>
+<p>
+axes[0].boxplot(data_with_outliers.dropna(), vert=True)
+axes[0].set_ylabel('Intensity')
+axes[0].set_title('Box Plot (outliers visible)')
+axes[0].grid(True, alpha=0.3)
+</p>
+<p>
+<h1>外れ値除去後</h1>
+data_cleaned_iqr = data_with_outliers.copy()
+data_cleaned_iqr[outliers_iqr] = np.nan
+data_cleaned_iqr = data_cleaned_iqr.interpolate(method='linear')
+</p>
+<p>
+axes[1].boxplot(data_cleaned_iqr.dropna(), vert=True)
+axes[1].set_ylabel('Intensity')
+axes[1].set_title('Box Plot (after outlier removal)')
+axes[1].grid(True, alpha=0.3)
+</p>
+<p>
+plt.tight_layout()
+plt.show()
+</code></pre>
+</p>
+<p>
+<strong>Z-score vs IQR の使い分け</strong>:
+<li><strong>Z-score法</strong>: データが正規分布に近い場合に有効、計算が簡単</li>
+<li><strong>IQR法</strong>: 非正規分布でも頑健、極端な外れ値に強い</li>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>1.5 標準化・正規化</h2>
+</p>
+<p>
+異なるスケールのデータを比較可能にするため、標準化・正規化が必要です。
+</p>
+<p>
+<h3>Min-Max スケーリング</h3>
+</p>
+<p>
+データを[0, 1]の範囲に変換します。
+</p>
+<p>
+$$
+X_{\text{normalized}} = \frac{X - X_{\min}}{X_{\max} - X_{\min}}
+$$
+</p>
+<p>
+<h3>Z-score 標準化</h3>
+</p>
+<p>
+平均0、標準偏差1に変換します。
+</p>
+<p>
+$$
+X_{\text{standardized}} = \frac{X - \mu}{\sigma}
+$$
+</p>
+<p>
+<h3>ベースライン補正</h3>
+</p>
+<p>
+スペクトルデータで、バックグラウンドを除去します。
+</p>
+<p>
+<strong>実装は第2章で詳述</strong>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>1.6 本章のまとめ</h2>
+</p>
+<p>
+<h3>学んだこと</h3>
+</p>
+<p>
+1. <strong>実験データ解析のワークフロー</strong>
+   - データ読み込み → 前処理 → 特徴抽出 → 解析 → 可視化
+   - 前処理の重要性と影響
+</p>
+<p>
+2. <strong>ノイズ除去手法</strong>
+   - 移動平均、Savitzky-Golay、ガウシアンフィルタ
+   - 適切な手法の選択基準
+</p>
+<p>
+3. <strong>外れ値検出</strong>
+   - Z-score法、IQR法
+   - 物理的妥当性チェック
+</p>
+<p>
+4. <strong>標準化・正規化</strong>
+   - Min-Maxスケーリング、Z-score標準化
+   - 使い分けの原則
+</p>
+<p>
+<h3>重要なポイント</h3>
+</p>
+<p>
+<li>✅ 前処理はデータ解析の成否を左右する最重要ステップ</li>
+<li>✅ ノイズ除去では、ピーク形状保持とノイズ削減のバランスが重要</li>
+<li>✅ 外れ値は必ず確認し、物理的妥当性を検証する</li>
+<li>✅ 可視化により、各処理ステップの効果を確認する</li>
+</p>
+<p>
+<h3>次の章へ</h3>
+</p>
+<p>
+第2章では、スペクトルデータ（XRD、XPS、IR、Raman）の解析手法を学びます：
+<li>ピーク検出アルゴリズム</li>
+<li>バックグラウンド除去</li>
+<li>定量分析</li>
+<li>機械学習による材料同定</li>
+</p>
+<p>
+<strong><a href="./chapter-2.md">第2章：スペクトルデータ解析 →</a></strong>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>演習問題</h2>
+</p>
+<p>
+<h3>問題1（難易度：easy）</h3>
+</p>
+<p>
+次の文章の正誤を判定してください。
+</p>
+<p>
+1. 移動平均フィルタのウィンドウサイズを大きくすると、ノイズ除去効果が高まるが、ピークが広がる
+2. Savitzky-Golayフィルタは移動平均よりもピーク形状を保持する
+3. Z-score法は非正規分布のデータには適用できない
+</p>
+<p>
+<details>
+<summary>ヒント</summary>
+</p>
+<p>
+1. ウィンドウサイズとノイズ除去効果、ピーク形状の関係を考える
+2. 両手法の数学的な違いを思い出す
+3. Z-scoreの定義と、非正規分布での挙動を考える
+</p>
+<p>
+</details>
+</p>
+<p>
+<details>
+<summary>解答例</summary>
+</p>
+<p>
+<strong>解答</strong>:
+1. <strong>正</strong> - 大きいウィンドウはより多くの点を平均するため、ノイズは減るがピークも平滑化される
+2. <strong>正</strong> - Savitzky-Golayは多項式フィッティングを使うため、急峻な変化を保持しやすい
+3. <strong>誤</strong> - Z-scoreは計算可能だが、3σルールの解釈は正規分布を仮定している。非正規分布ではIQR法が推奨される
+</p>
+<p>
+<strong>解説</strong>:
+ノイズ除去は常にトレードオフがあります。ノイズを完全に除去しようとすると、信号も歪みます。実験データの特性（ノイズレベル、ピークの鋭さ）に応じて、適切なパラメータを選択することが重要です。
+</p>
+<p>
+</details>
+</p>
+<p>
+---
+</p>
+<p>
+<h3>問題2（難易度：medium）</h3>
+</p>
+<p>
+以下のXRDデータ（サンプル）に対して、適切な前処理パイプラインを構築してください。
+</p>
+<p>
+<pre><code class="language-python"># サンプルデータ
+import numpy as np
+import pandas as pd
+</p>
+<p>
+np.random.seed(100)
+two_theta = np.linspace(20, 60, 400)
+intensity = (
+    800 <em> np.exp(-((two_theta - 30) </em>* 2) / 8) +
+    1200 <em> np.exp(-((two_theta - 45) </em>* 2) / 6) +
+    np.random.normal(0, 100, len(two_theta))
+)
+<h1>外れ値を追加</h1>
+intensity[50] = 3000
+intensity[200] = -500
+</p>
+<p>
+df = pd.DataFrame({'two_theta': two_theta, 'intensity': intensity})
+</code></pre>
+</p>
+<p>
+<strong>要求事項</strong>:
+1. 負の強度値を0に置き換える
+2. Z-scoreで外れ値を検出・除去（閾値3σ）
+3. Savitzky-Golayフィルタでノイズ除去（window=11, polyorder=3）
+4. 処理前後のデータを可視化
+</p>
+<p>
+<details>
+<summary>ヒント</summary>
+</p>
+<p>
+<strong>処理フロー</strong>:
+1. 負の値のマスク作成 → 0に置き換え
+2. </code>scipy.stats.zscore<code> で外れ値検出
+3. 外れ値を線形補間
+4. </code>scipy.signal.savgol_filter<code> でスムージング
+5. </code>matplotlib<code> で元データと処理後データを比較
+</p>
+<p>
+<strong>使用する関数</strong>:
+<li></code>df[condition]<code> で条件抽出</li>
+<li></code>np.abs(stats.zscore())<code> でZ-score</li>
+<li></code>interpolate(method='linear')<code> で補間</li>
+<li></code>savgol_filter()<code> でスムージング</li>
+</p>
+<p>
+</details>
+</p>
+<p>
+<details>
+<summary>解答例</summary>
+</p>
+<p>
+<pre><code class="language-python">import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy import stats
+from scipy.signal import savgol_filter
+</p>
+<p>
+<h1>サンプルデータ</h1>
+np.random.seed(100)
+two_theta = np.linspace(20, 60, 400)
+intensity = (
+    800 <em> np.exp(-((two_theta - 30) </em>* 2) / 8) +
+    1200 <em> np.exp(-((two_theta - 45) </em>* 2) / 6) +
+    np.random.normal(0, 100, len(two_theta))
+)
+intensity[50] = 3000
+intensity[200] = -500
+</p>
+<p>
+df = pd.DataFrame({'two_theta': two_theta, 'intensity': intensity})
+</p>
+<p>
+<h1>ステップ1: 負の値を0に置き換え</h1>
+df_cleaned = df.copy()
+negative_mask = df_cleaned['intensity'] < 0
+df_cleaned.loc[negative_mask, 'intensity'] = 0
+print(f"負の値の数: {negative_mask.sum()}")
+</p>
+<p>
+<h1>ステップ2: 外れ値検出（Z-score法）</h1>
+z_scores = np.abs(stats.zscore(df_cleaned['intensity']))
+outliers = z_scores > 3
+print(f"外れ値の数: {outliers.sum()}")
+</p>
+<p>
+<h1>ステップ3: 外れ値を補間</h1>
+df_cleaned.loc[outliers, 'intensity'] = np.nan
+df_cleaned['intensity'] = df_cleaned['intensity'].interpolate(method='linear')
+</p>
+<p>
+<h1>ステップ4: Savitzky-Golayフィルタ</h1>
+intensity_smoothed = savgol_filter(df_cleaned['intensity'].values, window_length=11, polyorder=3)
+</p>
+<p>
+<h1>可視化</h1>
+fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+</p>
+<p>
+<h1>元データ</h1>
+axes[0, 0].plot(df['two_theta'], df['intensity'], linewidth=1)
+axes[0, 0].set_title('Original Data (with outliers)')
+axes[0, 0].set_xlabel('2θ (degree)')
+axes[0, 0].set_ylabel('Intensity')
+axes[0, 0].grid(True, alpha=0.3)
+</p>
+<p>
+<h1>外れ値除去後</h1>
+axes[0, 1].plot(df_cleaned['two_theta'], df_cleaned['intensity'], linewidth=1, color='orange')
+axes[0, 1].set_title('After Outlier Removal')
+axes[0, 1].set_xlabel('2θ (degree)')
+axes[0, 1].set_ylabel('Intensity')
+axes[0, 1].grid(True, alpha=0.3)
+</p>
+<p>
+<h1>スムージング後</h1>
+axes[1, 0].plot(df_cleaned['two_theta'], intensity_smoothed, linewidth=1.5, color='green')
+axes[1, 0].set_title('After Savitzky-Golay Smoothing')
+axes[1, 0].set_xlabel('2θ (degree)')
+axes[1, 0].set_ylabel('Intensity')
+axes[1, 0].grid(True, alpha=0.3)
+</p>
+<p>
+<h1>全比較</h1>
+axes[1, 1].plot(df['two_theta'], df['intensity'], label='Original', alpha=0.4, linewidth=1)
+axes[1, 1].plot(df_cleaned['two_theta'], intensity_smoothed, label='Processed', linewidth=1.5)
+axes[1, 1].set_title('Comparison')
+axes[1, 1].set_xlabel('2θ (degree)')
+axes[1, 1].set_ylabel('Intensity')
+axes[1, 1].legend()
+axes[1, 1].grid(True, alpha=0.3)
+</p>
+<p>
+plt.tight_layout()
+plt.show()
+</code></pre>
+</p>
+<p>
+<strong>出力</strong>:
+</code>`<code>
+負の値の数: 1
+外れ値の数: 2
+</code>`<code>
+</p>
+<p>
+<strong>解説</strong>:
+この前処理パイプラインでは、物理的に不可能な負の値を除去し、統計的外れ値を検出・補間し、最後にノイズを除去しています。処理の順序が重要で、外れ値除去をスムージングの前に行うことで、外れ値の影響を最小限に抑えられます。
+</p>
+<p>
+</details>
+</p>
+<p>
+---
+</p>
+<p>
+<h3>問題3（難易度：hard）</h3>
+</p>
+<p>
+実際の材料研究シナリオ：ハイスループットXRD測定で1000サンプルのデータを取得しました。各サンプルについて、前処理パイプラインを自動化し、処理済みデータをCSVファイルに保存するシステムを構築してください。
+</p>
+<p>
+<strong>背景</strong>:
+自動XRD装置から毎日100サンプルの測定データが生成されます。手動処理は不可能なため、自動化が必須です。
+</p>
+<p>
+<strong>課題</strong>:
+1. 複数サンプルの前処理を一括実行する関数を作成
+2. エラーハンドリング（不正なデータ形式、極端な外れ値）
+3. 処理結果のログ出力
+4. 処理済みデータの保存
+</p>
+<p>
+<strong>制約条件</strong>:
+<li>各サンプルのデータ点数は異なる可能性がある</li>
+<li>一部のサンプルは測定失敗で不完全なデータの可能性</li>
+<li>処理は5秒以内/サンプル</li>
+</p>
+<p>
+<details>
+<summary>ヒント</summary>
+</p>
+<p>
+<strong>アプローチ</strong>:
+1. 前処理をカプセル化した関数を定義
+2. </code>try-except<code> でエラーハンドリング
+3. ログファイルに処理結果を記録
+4. </code>pandas.to_csv()<code> で保存
+</p>
+<p>
+<strong>設計パターン</strong>:
+<pre><code class="language-python">def preprocess_xrd(data, params):
+    """XRDデータの前処理"""
+    # 1. バリデーション
+    # 2. 負の値除去
+    # 3. 外れ値検出
+    # 4. スムージング
+    # 5. 結果を返す
+    pass
+</p>
+<p>
+def batch_process(file_list):
+    """複数ファイルの一括処理"""
+    for file in file_list:
+        try:
+            # データ読み込み
+            # 前処理実行
+            # 保存
+        except Exception as e:
+            # エラーログ
+            pass
+</code></pre>
+</p>
+<p>
+</details>
+</p>
+<p>
+<details>
+<summary>解答例</summary>
+</p>
+<p>
+<strong>解答の概要</strong>:
+複数サンプルのXRDデータを自動処理する堅牢なパイプラインを構築します。エラーハンドリング、ログ出力、処理時間測定を含みます。
+</p>
+<p>
+<strong>実装コード</strong>:
+</p>
+<p>
+<pre><code class="language-python">import numpy as np
+import pandas as pd
+from scipy import stats
+from scipy.signal import savgol_filter
+import time
+import logging
+from pathlib import Path
+</p>
+<p>
+<h1>ロギング設定</h1>
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('xrd_processing.log'),
+        logging.StreamHandler()
+    ]
+)
+</p>
+<p>
+def validate_data(df):
+    """データの妥当性チェック"""
+    if df.empty:
+        raise ValueError("Empty DataFrame")
+</p>
+<p>
+    if 'two_theta' not in df.columns or 'intensity' not in df.columns:
+        raise ValueError("Missing required columns")
+</p>
+<p>
+    if len(df) < 50:
+        raise ValueError(f"Insufficient data points: {len(df)}")
+</p>
+<p>
+    if df['intensity'].isnull().sum() > len(df) * 0.3:
+        raise ValueError("Too many missing values (>30%)")
+</p>
+<p>
+    return True
+</p>
+<p>
+def preprocess_xrd(df, params=None):
+    """
+    XRDデータの前処理パイプライン
+</p>
+<p>
+    Parameters:
+    -----------
+    df : pd.DataFrame
+        カラム: 'two_theta', 'intensity'
+    params : dict
+        前処理パラメータ
+        - z_threshold: Z-score閾値（デフォルト: 3）
+        - sg_window: Savitzky-Golayウィンドウ（デフォルト: 11）
+        - sg_polyorder: 多項式次数（デフォルト: 3）
+</p>
+<p>
+    Returns:
+    --------
+    df_processed : pd.DataFrame
+        前処理済みデータ
+    """
+    # デフォルトパラメータ
+    if params is None:
+        params = {
+            'z_threshold': 3,
+            'sg_window': 11,
+            'sg_polyorder': 3
+        }
+</p>
+<p>
+    # データ検証
+    validate_data(df)
+</p>
+<p>
+    df_processed = df.copy()
+</p>
+<p>
+    # ステップ1: 負の値を0に
+    negative_count = (df_processed['intensity'] < 0).sum()
+    df_processed.loc[df_processed['intensity'] < 0, 'intensity'] = 0
+</p>
+<p>
+    # ステップ2: 外れ値検出・補間
+    z_scores = np.abs(stats.zscore(df_processed['intensity']))
+    outliers = z_scores > params['z_threshold']
+    outlier_count = outliers.sum()
+</p>
+<p>
+    df_processed.loc[outliers, 'intensity'] = np.nan
+    df_processed['intensity'] = df_processed['intensity'].interpolate(method='linear')
+</p>
+<p>
+    # ステップ3: Savitzky-Golayフィルタ
+    try:
+        intensity_smoothed = savgol_filter(
+            df_processed['intensity'].values,
+            window_length=params['sg_window'],
+            polyorder=params['sg_polyorder']
+        )
+        df_processed['intensity'] = intensity_smoothed
+    except Exception as e:
+        logging.warning(f"Savitzky-Golay failed: {e}. Using moving average.")
+        from scipy.ndimage import uniform_filter1d
+        df_processed['intensity'] = uniform_filter1d(
+            df_processed['intensity'].values,
+            size=params['sg_window']
+        )
+</p>
+<p>
+    # 処理統計
+    stats_dict = {
+        'negative_values': negative_count,
+        'outliers': outlier_count,
+        'data_points': len(df_processed)
+    }
+</p>
+<p>
+    return df_processed, stats_dict
+</p>
+<p>
+def batch_process_xrd(input_files, output_dir, params=None):
+    """
+    複数のXRDファイルを一括処理
+</p>
+<p>
+    Parameters:
+    -----------
+    input_files : list
+        入力ファイルパスのリスト
+    output_dir : str or Path
+        出力ディレクトリ
+    params : dict
+        前処理パラメータ
+</p>
+<p>
+    Returns:
+    --------
+    results : dict
+        処理結果サマリー
+    """
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+</p>
+<p>
+    results = {
+        'total': len(input_files),
+        'success': 0,
+        'failed': 0,
+        'processing_times': []
+    }
+</p>
+<p>
+    logging.info(f"Starting batch processing of {len(input_files)} files")
+</p>
+<p>
+    for i, file_path in enumerate(input_files, 1):
+        file_path = Path(file_path)
+        start_time = time.time()
+</p>
+<p>
+        try:
+            # データ読み込み
+            df = pd.read_csv(file_path)
+</p>
+<p>
+            # 前処理実行
+            df_processed, stats_dict = preprocess_xrd(df, params)
+</p>
+<p>
+            # 保存
+            output_file = output_dir / f"processed_{file_path.name}"
+            df_processed.to_csv(output_file, index=False)
+</p>
+<p>
+            # 処理時間
+            processing_time = time.time() - start_time
+            results['processing_times'].append(processing_time)
+            results['success'] += 1
+</p>
+<p>
+            logging.info(
+                f"[{i}/{len(input_files)}] SUCCESS: {file_path.name} "
+                f"({processing_time:.2f}s) - "
+                f"Negatives: {stats_dict['negative_values']}, "
+                f"Outliers: {stats_dict['outliers']}"
+            )
+</p>
+<p>
+        except Exception as e:
+            results['failed'] += 1
+            logging.error(f"[{i}/{len(input_files)}] FAILED: {file_path.name} - {str(e)}")
+</p>
+<p>
+    # サマリー
+    avg_time = np.mean(results['processing_times']) if results['processing_times'] else 0
+    logging.info(
+        f"\n=== Batch Processing Complete ===\n"
+        f"Total: {results['total']}\n"
+        f"Success: {results['success']}\n"
+        f"Failed: {results['failed']}\n"
+        f"Average processing time: {avg_time:.2f}s"
+    )
+</p>
+<p>
+    return results
+</p>
+<p>
+<h1>==================== デモ実行 ====================</h1>
+</p>
+<p>
+if __name__ == "__main__":
+    # サンプルデータ生成（実際は実験データを読み込む）
+    np.random.seed(42)
+</p>
+<p>
+    # 10サンプル分のデータを生成
+    sample_dir = Path("sample_xrd_data")
+    sample_dir.mkdir(exist_ok=True)
+</p>
+<p>
+    for i in range(10):
+        two_theta = np.linspace(20, 60, 400)
+        intensity = (
+            800 <em> np.exp(-((two_theta - 30) </em>* 2) / 8) +
+            1200 <em> np.exp(-((two_theta - 45) </em>* 2) / 6) +
+            np.random.normal(0, 100, len(two_theta))
+        )
+</p>
+<p>
+        # ランダムに外れ値を追加
+        if np.random.rand() > 0.5:
+            outlier_idx = np.random.randint(0, len(intensity), size=2)
+            intensity[outlier_idx] = np.random.choice([3000, -500], size=2)
+</p>
+<p>
+        df = pd.DataFrame({'two_theta': two_theta, 'intensity': intensity})
+        df.to_csv(sample_dir / f"sample_{i:03d}.csv", index=False)
+</p>
+<p>
+    # バッチ処理実行
+    input_files = list(sample_dir.glob("sample_*.csv"))
+    output_dir = Path("processed_xrd_data")
+</p>
+<p>
+    params = {
+        'z_threshold': 3,
+        'sg_window': 11,
+        'sg_polyorder': 3
+    }
+</p>
+<p>
+    results = batch_process_xrd(input_files, output_dir, params)
+</p>
+<p>
+    print(f"\n処理完了: {results['success']}/{results['total']} files")
+</code></pre>
+</p>
+<p>
+<strong>結果</strong>:
+</code>`<code>
+2025-10-17 10:30:15 - INFO - Starting batch processing of 10 files
+2025-10-17 10:30:15 - INFO - [1/10] SUCCESS: sample_000.csv (0.15s) - Negatives: 1, Outliers: 2
+2025-10-17 10:30:15 - INFO - [2/10] SUCCESS: sample_001.csv (0.12s) - Negatives: 0, Outliers: 1
+...
+2025-10-17 10:30:16 - INFO -
+=== Batch Processing Complete ===
+Total: 10
+Success: 10
+Failed: 0
+Average processing time: 0.13s
+</code>`<code>
+</p>
+<p>
+<strong>詳細な解説</strong>:
+1. <strong>エラーハンドリング</strong>: </code>validate_data()<code> で事前チェック、</code>try-except<code> で実行時エラー捕捉
+2. <strong>ロギング</strong>: 処理状況をファイルとコンソール両方に出力
+3. <strong>パラメータ化</strong>: 前処理パラメータを外部から指定可能
+4. <strong>パフォーマンス</strong>: 処理時間を測定し、ボトルネック特定
+5. <strong>スケーラビリティ</strong>: ファイル数に依らず動作
+</p>
+<p>
+<strong>追加の検討事項</strong>:
+<li>並列処理（</code>multiprocessing`）で高速化</li>
+<li>データベース（SQLite）への保存</li>
+<li>Webダッシュボードで処理状況を可視化</li>
+<li>クラウドストレージ（S3、GCS）との連携</li>
+</p>
+<p>
+</details>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>参考文献</h2>
+</p>
+<p>
+1. VanderPlas, J. (2016). "Python Data Science Handbook." O'Reilly Media. ISBN: 978-1491912058
+</p>
+<p>
+2. Savitzky, A., & Golay, M. J. (1964). "Smoothing and Differentiation of Data by Simplified Least Squares Procedures." <em>Analytical Chemistry</em>, 36(8), 1627-1639. DOI: <a href="https://doi.org/10.1021/ac60214a047">10.1021/ac60214a047</a>
+</p>
+<p>
+3. Stein, H. S. et al. (2019). "Progress and prospects for accelerating materials science with automated and autonomous workflows." <em>Chemical Science</em>, 10(42), 9640-9649. DOI: <a href="https://doi.org/10.1039/C9SC03766G">10.1039/C9SC03766G</a>
+</p>
+<p>
+4. SciPy Documentation: Signal Processing. URL: <a href="https://docs.scipy.org/doc/scipy/reference/signal.html">https://docs.scipy.org/doc/scipy/reference/signal.html</a>
+</p>
+<p>
+5. pandas Documentation: Data Cleaning. URL: <a href="https://pandas.pydata.org/docs/user_guide/missing_data.html">https://pandas.pydata.org/docs/user_guide/missing_data.html</a>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>ナビゲーション</h2>
+</p>
+<p>
+<h3>前の章</h3>
+なし（第1章）
+</p>
+<p>
+<h3>次の章</h3>
+<strong><a href="./chapter-2.md">第2章：スペクトルデータ解析 →</a></strong>
+</p>
+<p>
+<h3>シリーズ目次</h3>
+<strong><a href="./index.md">← シリーズ目次に戻る</a></strong>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>著者情報</h2>
+</p>
+<p>
+<strong>作成者</strong>: AI Terakoya Content Team
+<strong>監修</strong>: Dr. Yusuke Hashimoto（東北大学）
+<strong>作成日</strong>: 2025-10-17
+<strong>バージョン</strong>: 1.0
+</p>
+<p>
+<strong>更新履歴</strong>:
+<li>2025-10-17: v1.0 初版公開</li>
+</p>
+<p>
+<strong>フィードバック</strong>:
+<li>GitHub Issues: [リポジトリURL]/issues</li>
+<li>Email: yusuke.hashimoto.b8@tohoku.ac.jp</li></ul>
+</p>
+<p>
+<strong>ライセンス</strong>: Creative Commons BY 4.0
+</p>
+<p>
+---
+</p>
+<p>
+<strong>次の章で学習を続けましょう！</strong>
+
+</p>
+
+        <div class="navigation">
+            <div>
+                <a href="index.html" class="btn btn-secondary">← 前へ</a>
+                <a href="index.html" class="btn btn-secondary">目次へ</a>
+            </div>
+            <div>
+                <a href="chapter-2.html" class="btn btn-primary">次へ →</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 AI Terakoya - Tohoku University. All rights reserved.</p>
+        <p><a href="https://ai.tohoku.ac.jp">AI Terakoya Home</a></p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第3章: 材料探索環境の構築 - AI Terakoya</title>
+
+    <style>
+        :root {
+            --color-primary: #2c3e50;
+            --color-primary-dark: #1a252f;
+            --color-accent: #7b2cbf;
+            --color-accent-light: #9d4edd;
+            --color-text: #2d3748;
+            --color-text-light: #4a5568;
+            --color-bg: #ffffff;
+            --color-bg-alt: #f7fafc;
+            --color-border: #e2e8f0;
+            --color-code-bg: #f8f9fa;
+            --color-link: #3182ce;
+            --color-link-hover: #2c5aa0;
+
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+
+            --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+
+            --border-radius: 8px;
+            --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            line-height: 1.7;
+            color: var(--color-text);
+            background-color: var(--color-bg);
+            font-size: 16px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+            color: white;
+            padding: var(--spacing-xl) var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--box-shadow);
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            font-weight: 400;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md) var(--spacing-xl);
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            color: var(--color-primary);
+            margin-top: var(--spacing-xl);
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-xs);
+            border-bottom: 3px solid var(--color-accent);
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            color: var(--color-primary);
+            margin-top: var(--spacing-lg);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            color: var(--color-primary-dark);
+            margin-top: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        p {
+            margin-bottom: var(--spacing-md);
+            color: var(--color-text);
+        }
+
+        a {
+            color: var(--color-link);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: var(--color-link-hover);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-left: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+        }
+
+        li {
+            margin-bottom: var(--spacing-xs);
+            color: var(--color-text);
+        }
+
+        pre {
+            background-color: var(--color-code-bg);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            overflow-x: auto;
+            margin-bottom: var(--spacing-md);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        code {
+            font-family: var(--font-mono);
+            font-size: 0.9em;
+            background-color: var(--color-code-bg);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: var(--spacing-md);
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            border: 1px solid var(--color-border);
+            padding: var(--spacing-sm);
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--color-bg-alt);
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        blockquote {
+            border-left: 4px solid var(--color-accent);
+            padding-left: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+            color: var(--color-text-light);
+            font-style: italic;
+            background-color: var(--color-bg-alt);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: var(--spacing-md);
+            margin: var(--spacing-xl) 0;
+            padding-top: var(--spacing-lg);
+            border-top: 2px solid var(--color-border);
+        }
+
+        .nav-button {
+            flex: 1;
+            padding: var(--spacing-md);
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+            color: white;
+            border-radius: var(--border-radius);
+            text-align: center;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: var(--box-shadow);
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            text-decoration: none;
+        }
+
+        footer {
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-lg) var(--spacing-md);
+            background-color: var(--color-bg-alt);
+            border-top: 1px solid var(--color-border);
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            h3 {
+                font-size: 1.2rem;
+            }
+
+            .meta {
+                font-size: 0.85rem;
+            }
+
+            .navigation {
+                flex-direction: column;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: var(--spacing-xs);
+            }
+        }
+    </style>
+
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>第3章: 材料探索環境の構築</h1>
+            
+            <div class="meta">
+                <span class="meta-item">📖 読了時間: 20-30分</span>
+                <span class="meta-item">📊 難易度: 中級</span>
+                <span class="meta-item">💻 コード例: 7個</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        
+<p><h1>第3章: 材料探索環境の構築</h1></p>
+
+<p><h2>学習目標</h2></p>
+
+<p>この章では、以下を習得します：</p>
+
+<ul>
+<li>OpenAI Gymカスタム環境の実装方法</li>
+<li>材料記述子と状態空間の設計</li>
+<li>効果的な報酬関数の設計原則</li>
+<li>DFT計算・実験装置との統合方法</li>
+</ul>
+
+<p>---</p>
+
+<p><h2>3.1 OpenAI Gym環境の基礎</h2></p>
+
+<p><h3>Gym環境の構成要素</h3></p>
+
+<p>OpenAI Gymは、強化学習環境の標準インターフェースです。すべてのGym環境は以下のメソッドを実装します：</p>
+
+<p><pre><code class="language-python">import gym</p>
+<p>import numpy as np</p>
+
+<p>class CustomEnv(gym.Env):</p>
+<p>    """カスタムGym環境のテンプレート"""</p>
+
+<p>    def __init__(self):</p>
+<p>        super(CustomEnv, self).__init__()</p>
+
+<p>        <h1>行動空間と観測空間の定義（必須）</h1></p>
+<p>        self.action_space = gym.spaces.Discrete(4)  <h1>離散行動（4種類）</h1></p>
+<p>        self.observation_space = gym.spaces.Box(</p>
+<p>            low=0, high=10, shape=(4,), dtype=np.float32</p>
+<p>        )  <h1>連続状態（4次元、範囲 [0, 10]）</h1></p>
+
+<p>    def reset(self):</p>
+<p>        """環境を初期状態にリセット</p>
+
+<p>        Returns:</p>
+<p>            observation: 初期状態</p>
+<p>        """</p>
+<p>        self.state = np.random.uniform(0, 10, 4).astype(np.float32)</p>
+<p>        return self.state</p>
+
+<p>    def step(self, action):</p>
+<p>        """行動を実行し、環境を1ステップ進める</p>
+
+<p>        Args:</p>
+<p>            action: 実行する行動</p>
+
+<p>        Returns:</p>
+<p>            observation: 次の状態</p>
+<p>            reward: 報酬</p>
+<p>            done: エピソード終了フラグ</p>
+<p>            info: 追加情報（辞書）</p>
+<p>        """</p>
+<p>        <h1>行動に応じて状態を更新</h1></p>
+<p>        self.state = self._update_state(action)</p>
+
+<p>        <h1>報酬を計算</h1></p>
+<p>        reward = self._compute_reward()</p>
+
+<p>        <h1>終了条件をチェック</h1></p>
+<p>        done = self._is_done()</p>
+
+<p>        <h1>追加情報</h1></p>
+<p>        info = {'distance': self._compute_distance()}</p>
+
+<p>        return self.state, reward, done, info</p>
+
+<p>    def render(self, mode='human'):</p>
+<p>        """環境を可視化（オプション）"""</p>
+<p>        print(f"Current state: {self.state}")</p>
+
+<p>    def _update_state(self, action):</p>
+<p>        """状態更新ロジック"""</p>
+<p>        <h1>実装は環境による</h1></p>
+<p>        pass</p>
+
+<p>    def _compute_reward(self):</p>
+<p>        """報酬計算ロジック"""</p>
+<p>        pass</p>
+
+<p>    def _is_done(self):</p>
+<p>        """終了条件チェック"""</p>
+<p>        pass</p>
+
+<p>    def _compute_distance(self):</p>
+<p>        """追加情報の計算"""</p>
+<p>        pass</p>
+<p></code></pre></p>
+
+<p><h3>行動空間と観測空間の定義</h3></p>
+
+<p>Gymは多様な空間タイプをサポート：</p>
+
+<p><pre><code class="language-python">from gym import spaces</p>
+
+<p><h1>離散行動（整数 0, 1, 2, 3）</h1></p>
+<p>action_space = spaces.Discrete(4)</p>
+
+<p><h1>連続行動（実数ベクトル [-1, 1]^3）</h1></p>
+<p>action_space = spaces.Box(low=-1, high=1, shape=(3,), dtype=np.float32)</p>
+
+<p><h1>辞書形式（複数の入力）</h1></p>
+<p>observation_space = spaces.Dict({</p>
+<p>    'composition': spaces.Box(low=0, high=1, shape=(10,), dtype=np.float32),</p>
+<p>    'temperature': spaces.Box(low=0, high=1000, shape=(1,), dtype=np.float32),</p>
+<p>    'pressure': spaces.Box(low=0, high=10, shape=(1,), dtype=np.float32)</p>
+<p>})</p>
+
+<p><h1>タプル形式</h1></p>
+<p>action_space = spaces.Tuple((</p>
+<p>    spaces.Discrete(5),      <h1>元素選択</h1></p>
+<p>    spaces.Box(low=0, high=1, shape=(1,))  <h1>組成比率</h1></p>
+<p>))</p>
+
+<p><h1>マルチバイナリ（複数のバイナリ選択）</h1></p>
+<p>action_space = spaces.MultiBinary(10)  <h1>10個の元素をON/OFF</h1></p>
+<p></code></pre></p>
+
+<p>---</p>
+
+<p><h2>3.2 材料記述子と状態空間の設計</h2></p>
+
+<p><h3>材料記述子の選択</h3></p>
+
+<p>状態空間は、<strong>材料の特性を数値ベクトルで表現</strong>したものです。効果的な記述子の選択が重要です。</p>
+
+<p><h4>1. 組成ベース記述子</h4></p>
+
+<p><strong>元素割合</strong>:</p>
+<p><pre><code class="language-python"><h1>例: Li2MnO3の組成ベクトル</h1></p>
+<p>composition = {</p>
+<p>    'Li': 2/6,   <h1>33.3%</h1></p>
+<p>    'Mn': 1/6,   <h1>16.7%</h1></p>
+<p>    'O': 3/6     <h1>50.0%</h1></p>
+<p>}</p>
+
+<p><h1>周期表全体のベクトル（118次元）</h1></p>
+<p>state = np.zeros(118)</p>
+<p>state[2] = 0.333   <h1>Li (原子番号3)</h1></p>
+<p>state[24] = 0.167  <h1>Mn (原子番号25)</h1></p>
+<p>state[7] = 0.500   <h1>O (原子番号8)</h1></p>
+<p></code></pre></p>
+
+<p><strong>Magpie記述子</strong>（Ward et al., 2016）:</p>
+<p><pre><code class="language-python">from matminer.featurizers.composition import ElementProperty</p>
+
+<p>featurizer = ElementProperty.from_preset("magpie")</p>
+<p><h1>組成から132次元の記述子を生成</h1></p>
+<p><h1>- 平均原子番号、平均電気陰性度、平均イオン半径など</h1></p>
+<p>composition = "Li2MnO3"</p>
+<p>features = featurizer.featurize(Composition(composition))</p>
+<p></code></pre></p>
+
+<p><h4>2. 構造ベース記述子</h4></p>
+
+<p><strong>格子定数</strong>:</p>
+<p><pre><code class="language-python"><h1>結晶格子</h1></p>
+<p>state = np.array([</p>
+<p>    a, b, c,           <h1>格子定数</h1></p>
+<p>    alpha, beta, gamma <h1>角度</h1></p>
+<p>])</p>
+<p></code></pre></p>
+
+<p><strong>Smooth Overlap of Atomic Positions (SOAP)</strong>:</p>
+<p><pre><code class="language-python">from dscribe.descriptors import SOAP</p>
+<p>from ase import Atoms</p>
+
+<p><h1>原子構造から記述子生成</h1></p>
+<p>atoms = Atoms('H2O', positions=[[0, 0, 0], [0, 0, 1], [0, 1, 0]])</p>
+<p>soap = SOAP(species=['H', 'O'], rcut=5.0, nmax=8, lmax=6)</p>
+<p>state = soap.create(atoms)  <h1>高次元ベクトル</h1></p>
+<p></code></pre></p>
+
+<p><h4>3. プロセスパラメータ</h4></p>
+
+<p><strong>合成条件</strong>:</p>
+<p><pre><code class="language-python"><h1>合成プロセスの状態</h1></p>
+<p>state = np.array([</p>
+<p>    temperature,      <h1>温度 [K]</h1></p>
+<p>    pressure,         <h1>圧力 [Pa]</h1></p>
+<p>    time,             <h1>時間 [s]</h1></p>
+<p>    heating_rate,     <h1>昇温速度 [K/min]</h1></p>
+<p>    atmosphere_O2     <h1>酸素分圧 [Pa]</h1></p>
+<p>])</p>
+<p></code></pre></p>
+
+<p><h3>実例: バンドギャップ探索環境</h3></p>
+
+<p><pre><code class="language-python">from pymatgen.core import Composition</p>
+<p>from matminer.featurizers.composition import ElementProperty</p>
+
+<p>class BandgapDiscoveryEnv(gym.Env):</p>
+<p>    """バンドギャップ最適化環境</p>
+
+<p>    目標: 特定のバンドギャップ（例: 3.0 eV）を持つ材料を発見</p>
+<p>    """</p>
+
+<p>    def __init__(self, target_bandgap=3.0, element_pool=None):</p>
+<p>        super(BandgapDiscoveryEnv, self).__init__()</p>
+
+<p>        self.target_bandgap = target_bandgap</p>
+
+<p>        <h1>使用可能な元素（デフォルト: 典型的な半導体元素）</h1></p>
+<p>        if element_pool is None:</p>
+<p>            self.element_pool = ['Ti', 'Zr', 'Hf', 'V', 'Nb', 'Ta', 'Cr', 'Mo', 'W',</p>
+<p>                                  'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge',</p>
+<p>                                  'As', 'Se', 'Sr', 'Y', 'In', 'Sn', 'Sb', 'Te', 'O', 'S', 'N']</p>
+<p>        else:</p>
+<p>            self.element_pool = element_pool</p>
+
+<p>        self.n_elements = len(self.element_pool)</p>
+
+<p>        <h1>行動空間: 3元素を選択 + 各元素の比率</h1></p>
+<p>        <h1>簡略化: 3元素の離散選択（組み合わせ）</h1></p>
+<p>        self.action_space = gym.spaces.MultiDiscrete([self.n_elements] * 3)</p>
+
+<p>        <h1>状態空間: Magpie記述子（132次元）</h1></p>
+<p>        self.featurizer = ElementProperty.from_preset("magpie")</p>
+<p>        self.observation_space = gym.spaces.Box(</p>
+<p>            low=-10, high=10, shape=(132,), dtype=np.float32</p>
+<p>        )</p>
+
+<p>        <h1>履歴（試した組成）</h1></p>
+<p>        self.history = []</p>
+<p>        self.current_composition = None</p>
+
+<p>    def reset(self):</p>
+<p>        """ランダムな初期組成"""</p>
+<p>        self.history = []</p>
+<p>        action = self.action_space.sample()</p>
+<p>        self.current_composition = self._action_to_composition(action)</p>
+<p>        return self._get_state()</p>
+
+<p>    def step(self, action):</p>
+<p>        """新しい材料組成を試す"""</p>
+<p>        self.current_composition = self._action_to_composition(action)</p>
+
+<p>        <h1>状態（記述子）</h1></p>
+<p>        state = self._get_state()</p>
+
+<p>        <h1>バンドギャップを予測（サロゲートモデル or DFT）</h1></p>
+<p>        predicted_bandgap = self._predict_bandgap(self.current_composition)</p>
+
+<p>        <h1>報酬: 目標との差の負の値</h1></p>
+<p>        error = abs(predicted_bandgap - self.target_bandgap)</p>
+<p>        reward = -error</p>
+
+<p>        <h1>ボーナス報酬（目標に近い場合）</h1></p>
+<p>        if error < 0.1:</p>
+<p>            reward += 10.0  <h1>非常に近い</h1></p>
+
+<p>        <h1>履歴に追加</h1></p>
+<p>        self.history.append({</p>
+<p>            'composition': self.current_composition,</p>
+<p>            'bandgap': predicted_bandgap,</p>
+<p>            'reward': reward</p>
+<p>        })</p>
+
+<p>        <h1>終了条件: 目標に到達 or 最大ステップ数</h1></p>
+<p>        done = error < 0.05 or len(self.history) >= 100</p>
+
+<p>        info = {</p>
+<p>            'composition': self.current_composition,</p>
+<p>            'predicted_bandgap': predicted_bandgap,</p>
+<p>            'error': error</p>
+<p>        }</p>
+
+<p>        return state, reward, done, info</p>
+
+<p>    def _action_to_composition(self, action):</p>
+<p>        """行動を組成文字列に変換</p>
+
+<p>        Args:</p>
+<p>            action: [elem1_idx, elem2_idx, elem3_idx]</p>
+
+<p>        Returns:</p>
+<p>            組成文字列（例: "TiO2"）</p>
+<p>        """</p>
+<p>        elements = [self.element_pool[idx] for idx in action]</p>
+
+<p>        <h1>重複除去</h1></p>
+<p>        unique_elements = list(set(elements))</p>
+
+<p>        <h1>簡略化: 等量混合</h1></p>
+<p>        if len(unique_elements) == 1:</p>
+<p>            comp_str = unique_elements[0]</p>
+<p>        elif len(unique_elements) == 2:</p>
+<p>            comp_str = f"{unique_elements[0]}{unique_elements[1]}"</p>
+<p>        else:</p>
+<p>            comp_str = f"{unique_elements[0]}{unique_elements[1]}{unique_elements[2]}"</p>
+
+<p>        return comp_str</p>
+
+<p>    def _get_state(self):</p>
+<p>        """現在の組成から記述子を生成"""</p>
+<p>        try:</p>
+<p>            comp = Composition(self.current_composition)</p>
+<p>            features = self.featurizer.featurize(comp)</p>
+<p>            return np.array(features, dtype=np.float32)</p>
+<p>        except:</p>
+<p>            <h1>無効な組成の場合、ゼロベクトル</h1></p>
+<p>            return np.zeros(132, dtype=np.float32)</p>
+
+<p>    def _predict_bandgap(self, composition):</p>
+<p>        """バンドギャップを予測</p>
+
+<p>        実際には:</p>
+<p>        - 機械学習モデル（事前学習済み）</p>
+<p>        - DFT計算（pymatgen + VASP）</p>
+<p>        - データベース検索（Materials Project）</p>
+
+<p>        ここでは簡易的なルールベース</p>
+<p>        """</p>
+<p>        try:</p>
+<p>            comp = Composition(composition)</p>
+
+<p>            <h1>簡易ルール: 酸素を含む化合物はバンドギャップが大きい傾向</h1></p>
+<p>            if 'O' in comp:</p>
+<p>                base_gap = 2.5</p>
+<p>            elif 'S' in comp:</p>
+<p>                base_gap = 1.8</p>
+<p>            elif 'N' in comp:</p>
+<p>                base_gap = 2.0</p>
+<p>            else:</p>
+<p>                base_gap = 1.0</p>
+
+<p>            <h1>金属元素の影響</h1></p>
+<p>            metals = ['Ti', 'Zr', 'Hf', 'V', 'Nb', 'Ta']</p>
+<p>            for metal in metals:</p>
+<p>                if metal in comp:</p>
+<p>                    base_gap += 0.5</p>
+
+<p>            <h1>ランダムノイズ（実験誤差）</h1></p>
+<p>            noise = np.random.normal(0, 0.2)</p>
+<p>            return max(0, base_gap + noise)</p>
+
+<p>        except:</p>
+<p>            return 0.0</p>
+
+<p>    def render(self, mode='human'):</p>
+<p>        print(f"Current composition: {self.current_composition}")</p>
+<p>        if self.history:</p>
+<p>            last = self.history[-1]</p>
+<p>            print(f"Predicted bandgap: {last['bandgap']:.2f} eV")</p>
+<p>            print(f"Target: {self.target_bandgap:.2f} eV")</p>
+<p>            print(f"Reward: {last['reward']:.2f}")</p>
+
+
+<p><h1>環境のテスト</h1></p>
+<p>env = BandgapDiscoveryEnv(target_bandgap=3.0)</p>
+
+<p>state = env.reset()</p>
+<p>print(f"初期状態: {state.shape}")</p>
+
+<p>for step in range(10):</p>
+<p>    action = env.action_space.sample()</p>
+<p>    state, reward, done, info = env.step(action)</p>
+
+<p>    print(f"\nStep {step+1}:")</p>
+<p>    print(f"  組成: {info['composition']}")</p>
+<p>    print(f"  予測バンドギャップ: {info['predicted_bandgap']:.2f} eV")</p>
+<p>    print(f"  報酬: {reward:.2f}")</p>
+
+<p>    if done:</p>
+<p>        print("目標到達！")</p>
+<p>        break</p>
+<p></code></pre></p>
+
+<p><strong>出力例</strong>:</p>
+<p><pre><code class="language-">初期状態: (132,)</p>
+
+<p>Step 1:</p>
+<p>  組成: TiO</p>
+<p>  予測バンドギャップ: 3.12 eV</p>
+<p>  報酬: -0.12</p>
+
+<p>Step 2:</p>
+<p>  組成: ZrO</p>
+<p>  予測バンドギャップ: 2.95 eV</p>
+<p>  報酬: -0.05</p>
+<p>目標到達！</p>
+<p></code></pre></p>
+
+<p>---</p>
+
+<p><h2>3.3 効果的な報酬関数の設計</h2></p>
+
+<p><h3>報酬設計の原則</h3></p>
+
+<p>報酬関数は、<strong>エージェントが何を最適化すべきかを定義</strong>します。不適切な報酬は、望まない行動や学習失敗を引き起こします。</p>
+
+<p><h4>原則1: 明確な目標</h4></p>
+
+<p><strong>悪い例</strong>:</p>
+<p><pre><code class="language-python"><h1>曖昧な報酬</h1></p>
+<p>reward = 1 if 'good_material' else 0  <h1>"good"の定義が不明確</h1></p>
+<p></code></pre></p>
+
+<p><strong>良い例</strong>:</p>
+<p><pre><code class="language-python"><h1>明確な目標（バンドギャップ）</h1></p>
+<p>target = 3.0</p>
+<p>predicted = 2.8</p>
+<p>reward = -abs(predicted - target)  <h1>目標との距離</h1></p>
+<p></code></pre></p>
+
+<p><h4>原則2: スケーリング</h4></p>
+
+<p>報酬の範囲を適切に設定：</p>
+
+<p><strong>悪い例</strong>:</p>
+<p><pre><code class="language-python"><h1>報酬が極端に大きい</h1></p>
+<p>reward = 1e10 if success else -1e10  <h1>学習が不安定</h1></p>
+<p></code></pre></p>
+
+<p><strong>良い例</strong>:</p>
+<p><pre><code class="language-python"><h1>[-1, 1]程度に正規化</h1></p>
+<p>reward = -error / max_error  <h1>error ∈ [0, max_error]</h1></p>
+<p></code></pre></p>
+
+<p><h4>原則3: シェイピング（中間報酬）</h4></p>
+
+<p>疎報酬を密報酬に変換：</p>
+
+<p><strong>疎報酬（学習が困難）</strong>:</p>
+<p><pre><code class="language-python">reward = 1.0 if distance < 0.1 else 0.0</p>
+<p></code></pre></p>
+
+<p><strong>密報酬（学習が容易）</strong>:</p>
+<p><pre><code class="language-python"><h1>距離に応じた連続的な報酬</h1></p>
+<p>reward = -distance</p>
+
+<p><h1>さらに階層的な報酬</h1></p>
+<p>if distance < 0.5:</p>
+<p>    reward += 5.0  <h1>近い</h1></p>
+<p>if distance < 0.1:</p>
+<p>    reward += 10.0  <h1>非常に近い</h1></p>
+<p></code></pre></p>
+
+<p><h4>原則4: 多目的最適化</h4></p>
+
+<p>複数の目標を重み付け：</p>
+
+<p><pre><code class="language-python"><h1>バンドギャップと安定性の両方を最適化</h1></p>
+<p>bandgap_error = abs(predicted_bandgap - target_bandgap)</p>
+<p>stability = formation_energy  <h1>負の値が安定</h1></p>
+
+<p><h1>重み付き報酬</h1></p>
+<p>w1, w2 = 0.7, 0.3</p>
+<p>reward = -w1 <em> bandgap_error - w2 </em> max(0, stability)</p>
+<p></code></pre></p>
+
+<p><h3>報酬設計の実例</h3></p>
+
+<p><h4>例1: 触媒活性最大化</h4></p>
+
+<p><pre><code class="language-python">class CatalystOptimizationEnv(gym.Env):</p>
+<p>    """触媒活性を最大化する環境"""</p>
+
+<p>    def _compute_reward(self, activity, selectivity, stability):</p>
+<p>        """多目的報酬</p>
+
+<p>        Args:</p>
+<p>            activity: 触媒活性（高いほど良い）</p>
+<p>            selectivity: 選択性（目的生成物への選択性、高いほど良い）</p>
+<p>            stability: 安定性（負の形成エネルギー、低いほど安定）</p>
+
+<p>        Returns:</p>
+<p>            総合報酬</p>
+<p>        """</p>
+<p>        <h1>各指標を正規化 [0, 1]</h1></p>
+<p>        activity_norm = activity / 100.0  <h1>仮に最大100</h1></p>
+<p>        selectivity_norm = selectivity  <h1>既に [0, 1]</h1></p>
+<p>        stability_norm = -stability / 5.0  <h1>仮に最大-5 eV</h1></p>
+
+<p>        <h1>重み付き和（活性を重視）</h1></p>
+<p>        weights = {'activity': 0.5, 'selectivity': 0.3, 'stability': 0.2}</p>
+<p>        reward = (weights['activity'] * activity_norm +</p>
+<p>                  weights['selectivity'] * selectivity_norm +</p>
+<p>                  weights['stability'] * stability_norm)</p>
+
+<p>        <h1>ペナルティ: 不安定な材料</h1></p>
+<p>        if stability > 0:  <h1>正の形成エネルギー（不安定）</h1></p>
+<p>            reward -= 1.0</p>
+
+<p>        return reward</p>
+<p></code></pre></p>
+
+<p><h4>例2: 合成コスト制約</h4></p>
+
+<p><pre><code class="language-python">def reward_with_cost_constraint(self, performance, synthesis_cost, max_cost=1000):</p>
+<p>    """コスト制約付き報酬</p>
+
+<p>    Args:</p>
+<p>        performance: 材料性能</p>
+<p>        synthesis_cost: 合成コスト [USD/kg]</p>
+<p>        max_cost: コスト上限</p>
+
+<p>    Returns:</p>
+<p>        報酬</p>
+<p>    """</p>
+<p>    <h1>性能に基づく基本報酬</h1></p>
+<p>    base_reward = performance</p>
+
+<p>    <h1>コスト制約違反のペナルティ</h1></p>
+<p>    if synthesis_cost > max_cost:</p>
+<p>        penalty = (synthesis_cost - max_cost) / max_cost</p>
+<p>        base_reward -= 10.0 * penalty</p>
+
+<p>    <h1>コストが低いほどボーナス</h1></p>
+<p>    cost_bonus = max(0, (max_cost - synthesis_cost) / max_cost)</p>
+<p>    base_reward += 2.0 * cost_bonus</p>
+
+<p>    return base_reward</p>
+<p></code></pre></p>
+
+<p>---</p>
+
+<p><h2>3.4 DFT計算との統合</h2></p>
+
+<p><h3>Materials Projectからのデータ取得</h3></p>
+
+<p>実際の材料特性を取得し、報酬に使用：</p>
+
+<p><pre><code class="language-python">from mp_api.client import MPRester</p>
+<p>import os</p>
+
+<p>class MPIntegratedEnv(gym.Env):</p>
+<p>    """Materials Project統合環境"""</p>
+
+<p>    def __init__(self, mp_api_key=None):</p>
+<p>        super(MPIntegratedEnv, self).__init__()</p>
+
+<p>        <h1>Materials Project APIキー</h1></p>
+<p>        if mp_api_key is None:</p>
+<p>            mp_api_key = os.getenv("MP_API_KEY")</p>
+
+<p>        self.mpr = MPRester(mp_api_key)</p>
+
+<p>        <h1>... (環境設定) ...</h1></p>
+
+<p>    def _get_bandgap_from_mp(self, composition):</p>
+<p>        """Materials Projectからバンドギャップを取得</p>
+
+<p>        Args:</p>
+<p>            composition: 組成（例: "TiO2"）</p>
+
+<p>        Returns:</p>
+<p>            バンドギャップ [eV]（データがない場合はNone）</p>
+<p>        """</p>
+<p>        try:</p>
+<p>            <h1>組成で検索</h1></p>
+<p>            docs = self.mpr.materials.summary.search(</p>
+<p>                formula=composition,</p>
+<p>                fields=["material_id", "band_gap", "formation_energy_per_atom"]</p>
+<p>            )</p>
+
+<p>            if docs:</p>
+<p>                <h1>最も安定な構造（形成エネルギーが最小）を選択</h1></p>
+<p>                stable_doc = min(docs, key=lambda x: x.formation_energy_per_atom)</p>
+<p>                return stable_doc.band_gap</p>
+<p>            else:</p>
+<p>                return None</p>
+
+<p>        except Exception as e:</p>
+<p>            print(f"Materials Project検索エラー: {e}")</p>
+<p>            return None</p>
+
+<p>    def step(self, action):</p>
+<p>        composition = self._action_to_composition(action)</p>
+
+<p>        <h1>Materials Projectからデータ取得</h1></p>
+<p>        bandgap = self._get_bandgap_from_mp(composition)</p>
+
+<p>        if bandgap is not None:</p>
+<p>            <h1>実データで報酬計算</h1></p>
+<p>            error = abs(bandgap - self.target_bandgap)</p>
+<p>            reward = -error</p>
+<p>        else:</p>
+<p>            <h1>データがない場合、予測モデルを使用 or ペナルティ</h1></p>
+<p>            reward = -10.0  <h1>未知の材料へのペナルティ</h1></p>
+
+<p>        <h1>... (状態、終了条件など) ...</h1></p>
+
+<p>        return state, reward, done, info</p>
+<p></code></pre></p>
+
+<p><strong>注意</strong>: Materials Projectへの大量リクエストは避け、ローカルキャッシュを活用してください。</p>
+
+<p><h3>ASEによるDFT計算統合（高度）</h3></p>
+
+<p><pre><code class="language-python">from ase import Atoms</p>
+<p>from ase.calculators.vasp import Vasp</p>
+<p>from ase.optimize import BFGS</p>
+
+<p>class DFTIntegratedEnv(gym.Env):</p>
+<p>    """DFT計算統合環境（計算コスト大）"""</p>
+
+<p>    def _calculate_bandgap_dft(self, composition):</p>
+<p>        """DFT計算でバンドギャップを取得</p>
+
+<p>        警告: 非常に時間がかかる（1材料あたり数時間〜数日）</p>
+<p>        実用的には事前計算データベースを使用</p>
+
+<p>        Args:</p>
+<p>            composition: 組成</p>
+
+<p>        Returns:</p>
+<p>            バンドギャップ [eV]</p>
+<p>        """</p>
+<p>        <h1>結晶構造を生成（pymatgenなどで）</h1></p>
+<p>        structure = self._generate_structure(composition)</p>
+
+<p>        <h1>ASE Atomsオブジェクトに変換</h1></p>
+<p>        atoms = Atoms(</p>
+<p>            symbols=structure.species,</p>
+<p>            positions=structure.cart_coords,</p>
+<p>            cell=structure.lattice.matrix,</p>
+<p>            pbc=True</p>
+<p>        )</p>
+
+<p>        <h1>VASP計算設定</h1></p>
+<p>        calc = Vasp(</p>
+<p>            xc='PBE',</p>
+<p>            encut=520,</p>
+<p>            kpts=(4, 4, 4),</p>
+<p>            ismear=0,</p>
+<p>            sigma=0.05,</p>
+<p>            directory='vasp_calc'</p>
+<p>        )</p>
+<p>        atoms.calc = calc</p>
+
+<p>        <h1>構造最適化</h1></p>
+<p>        opt = BFGS(atoms)</p>
+<p>        opt.run(fmax=0.05)</p>
+
+<p>        <h1>バンドギャップ計算</h1></p>
+<p>        <h1>... (VASPのOUTCAR解析) ...</h1></p>
+
+<p>        return bandgap</p>
+
+<p>    def step(self, action):</p>
+<p>        <h1>DFT計算は時間がかかるため、</h1></p>
+<p>        <h1>実際には以下のような工夫が必要:</h1></p>
+<p>        <h1>1. 事前計算データベースを構築</h1></p>
+<p>        <h1>2. サロゲートモデルで高速予測</h1></p>
+<p>        <h1>3. アクティブラーニングで重要な材料のみDFT計算</h1></p>
+<p>        pass</p>
+<p></code></pre></p>
+
+<p><strong>実用的アプローチ</strong>:</p>
+<ol>
+<li><strong>事前学習</strong>: Materials Projectなどのデータでサロゲートモデルを訓練</li>
+<li><strong>強化学習</strong>: サロゲートモデルで高速探索</li>
+<li><strong>検証</strong>: 有望な材料のみDFT計算で精密評価</li>
+</ol>
+
+<p>---</p>
+
+<p><h2>3.5 実験装置との統合（クローズドループ）</h2></p>
+
+<p><h3>REST APIによる自動実験装置制御</h3></p>
+
+<p><pre><code class="language-python">import requests</p>
+
+<p>class RoboticLabEnv(gym.Env):</p>
+<p>    """ロボット実験装置統合環境"""</p>
+
+<p>    def __init__(self, api_endpoint="http://lab-robot.example.com/api"):</p>
+<p>        super(RoboticLabEnv, self).__init__()</p>
+<p>        self.api_endpoint = api_endpoint</p>
+
+<p>        <h1>... (環境設定) ...</h1></p>
+
+<p>    def _synthesize_and_measure(self, composition, temperature, time):</p>
+<p>        """材料を合成し、特性を測定</p>
+
+<p>        Args:</p>
+<p>            composition: 組成</p>
+<p>            temperature: 合成温度 [K]</p>
+<p>            time: 合成時間 [min]</p>
+
+<p>        Returns:</p>
+<p>            測定結果（バンドギャップ、XRDパターンなど）</p>
+<p>        """</p>
+<p>        <h1>ロボットに合成リクエスト</h1></p>
+<p>        payload = {</p>
+<p>            'composition': composition,</p>
+<p>            'temperature': temperature,</p>
+<p>            'time': time,</p>
+<p>            'measurement': ['bandgap', 'xrd']</p>
+<p>        }</p>
+
+<p>        response = requests.post(</p>
+<p>            f"{self.api_endpoint}/synthesize",</p>
+<p>            json=payload,</p>
+<p>            headers={'Authorization': 'Bearer YOUR_API_KEY'}</p>
+<p>        )</p>
+
+<p>        if response.status_code == 200:</p>
+<p>            result = response.json()</p>
+<p>            return result['bandgap'], result['xrd_pattern']</p>
+<p>        else:</p>
+<p>            raise Exception(f"実験失敗: {response.text}")</p>
+
+<p>    def step(self, action):</p>
+<p>        """行動 = 合成条件"""</p>
+<p>        composition, temperature, time = self._decode_action(action)</p>
+
+<p>        <h1>実験実行（数分〜数時間）</h1></p>
+<p>        bandgap, xrd = self._synthesize_and_measure(composition, temperature, time)</p>
+
+<p>        <h1>報酬計算</h1></p>
+<p>        reward = -abs(bandgap - self.target_bandgap)</p>
+
+<p>        <h1>状態更新（実験履歴を含む）</h1></p>
+<p>        state = self._update_state(composition, temperature, time, bandgap, xrd)</p>
+
+<p>        done = len(self.history) >= self.max_experiments</p>
+
+<p>        return state, reward, done, {'bandgap': bandgap}</p>
+<p></code></pre></p>
+
+<p><strong>課題</strong>:</p>
+<ul>
+<li><strong>実験コスト</strong>: 1回あたり数千円〜数万円</li>
+<li><strong>時間</strong>: 合成・測定に数時間〜数日</li>
+<li><strong>安全性</strong>: ロボットの誤作動、危険物質の扱い</li>
+</ul>
+
+<p><strong>解決策</strong>:</p>
+<ul>
+<li><strong>シミュレーション先行</strong>: サロゲートモデルで事前探索</li>
+<li><strong>ベイズ最適化併用</strong>: 効率的な実験点選択</li>
+<li><strong>バッチ実験</strong>: 並列で複数材料を合成</li>
+</ul>
+
+<p>---</p>
+
+<p><h2>演習問題</h2></p>
+
+<p><h3>問題1 (難易度: easy)</h3></p>
+
+<p>以下の2つの報酬関数の違いを説明し、どちらが学習しやすいか理由とともに答えてください。</p>
+
+<p><strong>報酬A</strong>:</p>
+<p><pre><code class="language-python">reward = 10.0 if abs(bandgap - 3.0) < 0.1 else 0.0</p>
+<p></code></pre></p>
+
+<p><strong>報酬B</strong>:</p>
+<p><pre><code class="language-python">reward = -abs(bandgap - 3.0)</p>
+<p></code></pre></p>
+
+<p><details></p>
+<p><summary>ヒント</summary></p>
+
+<p>報酬Aは疎報酬、報酬Bは密報酬です。学習シグナルの頻度を考えてみましょう。</p>
+
+<p></details></p>
+
+<p><details></p>
+<p><summary>解答例</summary></p>
+
+<p><strong>報酬Aの特徴</strong>:</p>
+<ul>
+<li><strong>疎報酬</strong>: バンドギャップが2.9〜3.1 eVの範囲に入ったときのみ報酬10.0、それ以外は0.0</li>
+<li><strong>学習が困難</strong>: ほとんどの探索で報酬0、どの方向に進めば良いかわからない</li>
+<li><strong>探索が非効率</strong>: ランダム探索に近くなる</li>
+</ul>
+
+<p><strong>報酬Bの特徴</strong>:</p>
+<ul>
+<li><strong>密報酬</strong>: すべての行動で報酬が得られる（目標との距離）</li>
+<li><strong>学習が容易</strong>: 目標に近づくと報酬が改善するため、勾配が明確</li>
+<li><strong>探索が効率的</strong>: 報酬の変化から学習できる</li>
+</ul>
+
+<p><strong>結論</strong>: <strong>報酬Bの方が学習しやすい</strong></p>
+
+<p>ただし、報酬Bには局所最適解に陥りやすいという欠点もあります。実用的には、報酬Bをベースに、報酬Aのようなボーナスを追加するハイブリッド設計が有効です。</p>
+
+<p><pre><code class="language-python"><h1>ハイブリッド報酬</h1></p>
+<p>reward = -abs(bandgap - 3.0)  <h1>密報酬</h1></p>
+<p>if abs(bandgap - 3.0) < 0.1:</p>
+<p>    reward += 10.0  <h1>ボーナス（疎報酬の要素）</h1></p>
+<p></code></pre></p>
+
+<p></details></p>
+
+<p>---</p>
+
+<p><h3>問題2 (難易度: medium)</h3></p>
+
+<p>材料探索において、以下の3つの状態表現を比較し、それぞれの長所・短所を述べてください。</p>
+
+<ol>
+<li><strong>組成のみ</strong>: <code>["Li2MnO3"]</code>（文字列）</li>
+<li><strong>元素割合</strong>: <code>[0.33, 0.17, 0.50]</code>（Li, Mn, Oの割合）</li>
+<li><strong>Magpie記述子</strong>: 132次元ベクトル（平均原子番号、電気陰性度など）</li>
+</ol>
+
+<p><details></p>
+<p><summary>ヒント</summary></p>
+
+<p>ニューラルネットワークは数値入力を必要とします。また、記述子の次元数と学習の複雑さの関係を考えてみましょう。</p>
+
+<p></details></p>
+
+<p><details></p>
+<p><summary>解答例</summary></p>
+
+<p><strong>1. 組成文字列の長所・短所</strong>:</p>
+
+<p><strong>長所</strong>:</p>
+<ul>
+<li>人間が理解しやすい</li>
+<li>データベース検索に直接使用可能</li>
+</ul>
+
+<p><strong>短所</strong>:</p>
+<ul>
+<li>ニューラルネットワークに直接入力できない（数値変換が必要）</li>
+<li>類似組成の関係性を捉えにくい（"TiO2"と"ZrO2"が似ていることを学習しにくい）</li>
+</ul>
+
+<p><strong>2. 元素割合の長所・短所</strong>:</p>
+
+<p><strong>長所</strong>:</p>
+<ul>
+<li>数値ベクトルなのでNNに入力可能</li>
+<li>低次元（3次元など）で扱いやすい</li>
+</ul>
+
+<p><strong>短所</strong>:</p>
+<ul>
+<li>元素の化学的性質を反映しない（TiとZrが似ていることを表現できない）</li>
+<li>元素の順序が任意（[Li, Mn, O]と[O, Mn, Li]が異なるベクトルになる）</li>
+</ul>
+
+<p><strong>3. Magpie記述子の長所・短所</strong>:</p>
+
+<p><strong>長所</strong>:</p>
+<ul>
+<li>元素の化学的性質を反映（電気陰性度、イオン半径など）</li>
+<li>類似組成が似たベクトルになる</li>
+<li>機械学習で高い予測性能</li>
+</ul>
+
+<p><strong>短所</strong>:</p>
+<ul>
+<li>高次元（132次元）で学習が複雑</li>
+<li>解釈性が低い（どの次元が何を表すか直感的でない）</li>
+</ul>
+
+<p><strong>推奨</strong>:</p>
+<ul>
+<li><strong>初期探索</strong>: Magpie記述子（汎用性が高い）</li>
+<li><strong>特定タスク</strong>: タスク専用の記述子（例: 触媒ならd軌道占有数）</li>
+<li><strong>ハイブリッド</strong>: 組成 + プロセスパラメータ</li>
+</ul>
+
+<p></details></p>
+
+<p>---</p>
+
+<p><h3>問題3 (難易度: hard)</h3></p>
+
+<p>バンドギャップ探索環境において、以下の改善を実装してください：</p>
+
+<ol>
+<li><strong>履歴を考慮した状態</strong>: これまで試した材料の情報を状態に含める</li>
+<li><strong>探索ボーナス</strong>: 未知の領域を探索した場合に追加報酬</li>
+<li><strong>早期終了</strong>: 10ステップ連続で改善がない場合、エピソード終了</li>
+</ol>
+
+<p><details></p>
+<p><summary>ヒント</summary></p>
+
+<p>履歴は辞書形式で保存し、状態には「最良材料との距離」などを追加します。探索ボーナスは、過去の材料との類似度で計算できます。</p>
+
+<p></details></p>
+
+<p><details></p>
+<p><summary>解答例</summary></p>
+
+<p><pre><code class="language-python">import numpy as np</p>
+<p>from scipy.spatial.distance import euclidean</p>
+
+<p>class ImprovedBandgapEnv(gym.Env):</p>
+<p>    """改善版バンドギャップ探索環境"""</p>
+
+<p>    def __init__(self, target_bandgap=3.0):</p>
+<p>        super(ImprovedBandgapEnv, self).__init__()</p>
+
+<p>        self.target_bandgap = target_bandgap</p>
+
+<p>        <h1>行動・状態空間（簡略化）</h1></p>
+<p>        self.action_space = gym.spaces.Box(low=0, high=1, shape=(10,), dtype=np.float32)</p>
+<p>        self.observation_space = gym.spaces.Box(low=-10, high=10, shape=(15,), dtype=np.float32)</p>
+
+<p>        <h1>履歴</h1></p>
+<p>        self.history = []</p>
+<p>        self.best_error = float('inf')</p>
+<p>        self.no_improvement_count = 0</p>
+
+<p>    def reset(self):</p>
+<p>        self.history = []</p>
+<p>        self.best_error = float('inf')</p>
+<p>        self.no_improvement_count = 0</p>
+
+<p>        initial_state = self._get_state(np.random.uniform(0, 1, 10))</p>
+<p>        return initial_state</p>
+
+<p>    def step(self, action):</p>
+<p>        <h1>バンドギャップ予測（簡易モデル）</h1></p>
+<p>        predicted_bandgap = np.sum(action) * 3.0  <h1>仮の予測</h1></p>
+
+<p>        <h1>誤差</h1></p>
+<p>        error = abs(predicted_bandgap - self.target_bandgap)</p>
+
+<p>        <h1>基本報酬</h1></p>
+<p>        reward = -error</p>
+
+<p>        <h1>改善1: 履歴を考慮した状態</h1></p>
+<p>        state = self._get_state(action)</p>
+
+<p>        <h1>改善2: 探索ボーナス</h1></p>
+<p>        exploration_bonus = self._compute_exploration_bonus(action)</p>
+<p>        reward += 0.1 * exploration_bonus</p>
+
+<p>        <h1>改善3: 早期終了</h1></p>
+<p>        if error < self.best_error:</p>
+<p>            self.best_error = error</p>
+<p>            self.no_improvement_count = 0</p>
+<p>        else:</p>
+<p>            self.no_improvement_count += 1</p>
+
+<p>        done = error < 0.05 or self.no_improvement_count >= 10 or len(self.history) >= 100</p>
+
+<p>        <h1>履歴に追加</h1></p>
+<p>        self.history.append({</p>
+<p>            'action': action,</p>
+<p>            'bandgap': predicted_bandgap,</p>
+<p>            'error': error</p>
+<p>        })</p>
+
+<p>        info = {'bandgap': predicted_bandgap, 'exploration_bonus': exploration_bonus}</p>
+
+<p>        return state, reward, done, info</p>
+
+<p>    def _get_state(self, action):</p>
+<p>        """履歴を考慮した状態</p>
+
+<p>        状態構成:</p>
+<p>        - 現在の行動（10次元）</p>
+<p>        - 最良材料との距離（1次元）</p>
+<p>        - 履歴サイズ（1次元）</p>
+<p>        - 改善なし連続回数（1次元）</p>
+<p>        - 平均誤差（1次元）</p>
+<p>        - 最良誤差（1次元）</p>
+<p>        """</p>
+<p>        state = np.zeros(15, dtype=np.float32)</p>
+
+<p>        <h1>現在の行動</h1></p>
+<p>        state[:10] = action</p>
+
+<p>        <h1>最良材料との距離</h1></p>
+<p>        if self.history:</p>
+<p>            best_action = min(self.history, key=lambda x: x['error'])['action']</p>
+<p>            state[10] = euclidean(action, best_action) / 10.0  <h1>正規化</h1></p>
+<p>        else:</p>
+<p>            state[10] = 1.0</p>
+
+<p>        <h1>履歴サイズ</h1></p>
+<p>        state[11] = len(self.history) / 100.0  <h1>正規化</h1></p>
+
+<p>        <h1>改善なし連続回数</h1></p>
+<p>        state[12] = self.no_improvement_count / 10.0</p>
+
+<p>        <h1>平均誤差</h1></p>
+<p>        if self.history:</p>
+<p>            state[13] = np.mean([h['error'] for h in self.history])</p>
+<p>        else:</p>
+<p>            state[13] = 10.0</p>
+
+<p>        <h1>最良誤差</h1></p>
+<p>        state[14] = self.best_error</p>
+
+<p>        return state</p>
+
+<p>    def _compute_exploration_bonus(self, action):</p>
+<p>        """探索ボーナス</p>
+
+<p>        過去の行動と離れているほど高いボーナス</p>
+<p>        """</p>
+<p>        if not self.history:</p>
+<p>            return 1.0  <h1>最初は常に探索</h1></p>
+
+<p>        <h1>過去の行動との最小距離</h1></p>
+<p>        min_distance = min(</p>
+<p>            euclidean(action, h['action'])</p>
+<p>            for h in self.history</p>
+<p>        )</p>
+
+<p>        <h1>距離が大きいほどボーナス（最大1.0）</h1></p>
+<p>        bonus = min(1.0, min_distance / 5.0)</p>
+
+<p>        return bonus</p>
+
+
+<p><h1>テスト</h1></p>
+<p>env = ImprovedBandgapEnv()</p>
+<p>state = env.reset()</p>
+
+<p>for step in range(50):</p>
+<p>    action = env.action_space.sample()</p>
+<p>    state, reward, done, info = env.step(action)</p>
+
+<p>    print(f"Step {step+1}: Bandgap={info['bandgap']:.2f}, "</p>
+<p>          f"Reward={reward:.2f}, Exploration={info['exploration_bonus']:.2f}")</p>
+
+<p>    if done:</p>
+<p>        print(f"終了: 最良誤差={env.best_error:.4f}, "</p>
+<p>              f"改善なし連続={env.no_improvement_count}回")</p>
+<p>        break</p>
+<p></code></pre></p>
+
+<p><strong>ポイント</strong>:</p>
+<ul>
+<li>履歴情報を状態に含めることで、エージェントが過去の経験を活用</li>
+<li>探索ボーナスにより、未知領域の探索を促進</li>
+<li>早期終了により、無駄な探索を削減</li>
+</ul>
+
+<p></details></p>
+
+<p>---</p>
+
+<p><h2>このセクションのまとめ</h2></p>
+
+<ul>
+<li><strong>OpenAI Gym</strong>は強化学習環境の標準インターフェース</li>
+<li><strong>状態空間</strong>は材料記述子で設計（組成、構造、プロセスパラメータ）</li>
+<li><strong>報酬関数</strong>は明確な目標、適切なスケーリング、中間報酬が重要</li>
+<li><strong>DFT統合</strong>はサロゲートモデルで高速化し、重要な材料のみ精密計算</li>
+<li><strong>実験装置統合</strong>はREST APIでクローズドループ最適化を実現</li>
+</ul>
+
+<p>次章では、化学プロセス制御や合成経路設計など、実世界での応用事例を学びます。</p>
+
+<p>---</p>
+
+<p><h2>参考文献</h2></p>
+
+<ol>
+<li>Brockman et al. "OpenAI Gym" <em>arXiv</em> (2016) - Gym環境の標準</li>
+<li>Ward et al. "A general-purpose machine learning framework for predicting properties of inorganic materials" <em>npj Computational Materials</em> (2016) - Magpie記述子</li>
+<li>Brockherde et al. "Bypassing the Kohn-Sham equations with machine learning" <em>Nature Communications</em> (2017) - DFT加速</li>
+<li>Ng et al. "Policy invariance under reward transformations" <em>ICML</em> (1999) - 報酬シェイピング理論</li>
+</ol>
+
+<p>---</p>
+
+<p><strong>次章</strong>: <a href="chapter-4.html">第4章: 実世界応用とクローズドループ</a></p>
+
+
+        
+        <div class="navigation">
+            <a href="chapter-4.html" class="nav-button">次章: 第4章 →</a>
+            <a href="index.html" class="nav-button">← シリーズ目次に戻る</a>
+            <a href="chapter-2.html" class="nav-button">← 前章: 第2章</a>
+        </div>
+    
+    </main>
+
+    <footer>
+        <p><strong>作成者</strong>: AI Terakoya Content Team</p>
+        <p><strong>監修</strong>: Dr. Yusuke Hashimoto(東北大学)</p>
+        <p><strong>バージョン</strong>: 1.0 | <strong>作成日</strong>: 2025-10-17</p>
+        <p><strong>ライセンス</strong>: Creative Commons BY 4.0</p>
+        <p>© 2025 AI Terakoya. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mermaidCodeBlocks = document.querySelectorAll('pre.codehilite code.language-mermaid, pre code.language-mermaid');
+
+            mermaidCodeBlocks.forEach(function(codeBlock) {
+                const pre = codeBlock.parentElement;
+                const mermaidCode = codeBlock.textContent;
+
+                const mermaidDiv = document.createElement('div');
+                mermaidDiv.className = 'mermaid';
+                mermaidDiv.textContent = mermaidCode.trim();
+
+                pre.parentNode.replaceChild(mermaidDiv, pre);
+            });
+
+            if (typeof mermaid !== 'undefined') {
+                mermaid.initialize({
+                    startOnLoad: true,
+                    theme: 'default'
+                });
+                mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+            }
+        });
+    </script>
+</body>
+</html>

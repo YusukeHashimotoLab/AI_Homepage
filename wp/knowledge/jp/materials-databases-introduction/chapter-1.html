@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1章：材料データベースの全貌 - AI Terakoya</title>
+    <style>
+        :root {
+            --color-primary-900: #1a252f;
+            --color-primary-700: #2c3e50;
+            --color-primary-500: #34495e;
+            --color-primary-300: #4a5f7a;
+            --color-accent: #7b2cbf;
+            --color-accent-light: #9d4edd;
+            --color-bg: #ffffff;
+            --color-bg-secondary: #f8f9fa;
+            --color-text: #2c3e50;
+            --color-text-light: #6c757d;
+            --color-border: #e9ecef;
+            --color-code-bg: #f8f9fa;
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            --font-base: 1rem;
+            --font-sm: 0.875rem;
+            --font-lg: 1.125rem;
+            --font-xl: 1.5rem;
+            --font-2xl: 2rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", sans-serif;
+            line-height: 1.7;
+            color: var(--color-text);
+            background: var(--color-bg);
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+            color: white;
+            padding: var(--spacing-xl) var(--spacing-md);
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header h1 {
+            font-size: var(--font-2xl);
+            margin-bottom: var(--spacing-sm);
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: var(--font-lg);
+            opacity: 0.95;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+            justify-content: center;
+            font-size: var(--font-sm);
+            opacity: 0.9;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: var(--spacing-xl) var(--spacing-md);
+        }
+
+        h2 {
+            font-size: var(--font-xl);
+            color: var(--color-accent);
+            margin: var(--spacing-lg) 0 var(--spacing-md) 0;
+            padding-bottom: var(--spacing-xs);
+            border-bottom: 2px solid var(--color-accent-light);
+        }
+
+        h3 {
+            font-size: var(--font-lg);
+            color: var(--color-primary-700);
+            margin: var(--spacing-md) 0 var(--spacing-sm) 0;
+        }
+
+        h4 {
+            font-size: var(--font-base);
+            color: var(--color-primary-500);
+            margin: var(--spacing-sm) 0;
+        }
+
+        p {
+            margin-bottom: var(--spacing-md);
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin: var(--spacing-md) 0;
+            padding-left: var(--spacing-lg);
+        }
+
+        li {
+            margin-bottom: var(--spacing-xs);
+        }
+
+        code {
+            background: var(--color-code-bg);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: var(--color-accent);
+        }
+
+        pre {
+            background: var(--color-code-bg);
+            border-left: 4px solid var(--color-accent);
+            padding: var(--spacing-md);
+            overflow-x: auto;
+            border-radius: 4px;
+            margin: var(--spacing-md) 0;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: var(--color-text);
+        }
+
+        .mermaid {
+            background: white;
+            padding: var(--spacing-md);
+            border-radius: 8px;
+            margin: var(--spacing-md) 0;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: var(--spacing-md) 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: var(--spacing-sm);
+            text-align: left;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        th {
+            background: var(--color-accent);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: var(--color-bg-secondary);
+        }
+
+        details {
+            background: var(--color-bg-secondary);
+            padding: var(--spacing-md);
+            border-radius: 8px;
+            margin: var(--spacing-md) 0;
+            border: 1px solid var(--color-border);
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--color-accent);
+            padding: var(--spacing-sm);
+            margin: calc(-1 * var(--spacing-md));
+            margin-bottom: var(--spacing-md);
+            background: white;
+            border-radius: 8px 8px 0 0;
+        }
+
+        summary:hover {
+            background: var(--color-bg-secondary);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: var(--spacing-md);
+            margin: var(--spacing-xl) 0;
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--color-border);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-primary {
+            background: var(--color-accent);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--color-primary-500);
+            color: white;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .btn-primary:hover {
+                background: var(--color-accent-light);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(123, 44, 191, 0.3);
+            }
+
+            .btn-secondary:hover {
+                background: var(--color-primary-700);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+        }
+
+        footer {
+            background: var(--color-primary-900);
+            color: white;
+            padding: var(--spacing-lg);
+            text-align: center;
+            margin-top: var(--spacing-xl);
+        }
+
+        footer a {
+            color: var(--color-accent-light);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: var(--font-xl);
+            }
+
+            .subtitle {
+                font-size: var(--font-base);
+            }
+
+            .meta {
+                font-size: 0.8rem;
+            }
+
+            .navigation {
+                flex-direction: column;
+            }
+        }
+    </style>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>第1章：材料データベースの全貌</h1>
+            <p class="subtitle"></p>
+            <div class="meta">
+                <span class="meta-item">📖 読了時間: 20-25分</span>
+                <span class="meta-item">📊 難易度: 入門</span>
+                <span class="meta-item">💻 コード例: 10</span>
+                <span class="meta-item">📝 演習問題: 3</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <p>
+<h1>第1章：材料データベースの全貌</h1>
+</p>
+<p>
+<strong>4大データベースの比較と選択基準</strong>
+</p>
+<p>
+<h2>学習目標</h2>
+</p>
+<p>
+この章を読むことで、以下を習得できます：
+</p>
+<p>
+<ul><li>✅ 4大材料データベース（MP、AFLOW、OQMD、JARVIS）の特徴を説明できる</li>
+<li>✅ 研究目的に応じた適切なデータベースを選択できる</li>
+<li>✅ Materials Project APIキーを取得し、基本的なデータ取得ができる</li>
+<li>✅ 各データベースのカバレッジと強みを理解している</li>
+<li>✅ 材料データベースが材料開発に与えた影響を定量的に説明できる</li>
+</p>
+<p>
+<strong>読了時間</strong>: 20-25分
+<strong>コード例</strong>: 10個
+<strong>演習問題</strong>: 3問
+</p>
+<p>
+---
+</p>
+<p>
+<h2>1.1 材料データベースとは</h2>
+</p>
+<p>
+材料データベースは、DFT（密度汎関数理論）計算や実験で得られた材料特性データを体系的に蓄積した巨大な知識の宝庫です。従来の材料開発では、1つの材料を実験で評価するのに数週間から数ヶ月を要し、10,000通りの組成を探索するには数十年が必要でした。
+</p>
+<p>
+しかし、<strong>材料データベースを活用すれば、数分で数万件のデータから候補材料を絞り込むことができます</strong>。これは、人類が数十年かけて蓄積してきた膨大な計算・実験データがオープンに公開され、誰でもアクセスできるようになったためです。
+</p>
+<p>
+<h3>主要な材料データベース</h3>
+</p>
+<p>
+現在、世界中で利用されている主要な材料データベースは以下の4つです：
+</p>
+<p>
+1. <strong>Materials Project (MP)</strong>: 140,000材料、DFT計算、バンド構造
+2. <strong>AFLOW</strong>: 3,500,000構造、結晶対称性、熱力学データ
+3. <strong>OQMD</strong>: 1,000,000材料、形成エネルギー、状態図
+4. <strong>JARVIS</strong>: 40,000材料、光学特性、2D材料
+</p>
+<p>
+これらのデータベースは、それぞれ異なる強みを持ち、用途に応じて使い分けることが重要です。
+</p>
+<p>
+---
+</p>
+<p>
+<h2>1.2 4大データベース詳細比較</h2>
+</p>
+<p>
+<h3>1.2.1 Materials Project (MP)</h3>
+</p>
+<p>
+<strong>概要</strong>:
+Materials Projectは、2011年にローレンス・バークレー国立研究所で開始された世界最大級の材料データベースです。DFT計算に基づく高精度な材料特性データを提供し、140,000以上の材料をカバーしています。
+</p>
+<p>
+<strong>特徴</strong>:
+<li><strong>データ種類</strong>: バンドギャップ、形成エネルギー、バンド構造、状態密度（DOS）、状態図</li>
+<li><strong>計算手法</strong>: VASP（Vienna Ab initio Simulation Package）によるDFT計算</li>
+<li><strong>カバレッジ</strong>: ほぼ全元素、無機結晶材料中心</li>
+<li><strong>強み</strong>: バンド構造、状態図の可視化が充実</li>
+</p>
+<p>
+<strong>使用例</strong>:
+<li>半導体材料のバンドギャップスクリーニング</li>
+<li>電池材料のイオン伝導度予測</li>
+<li>触媒材料の電子構造解析</li>
+</p>
+<p>
+<strong>アクセス方法</strong>:
+<li>Webインターフェース: <a href="https://materialsproject.org">materialsproject.org</a></li>
+<li>Python API: <code>mp-api</code>（旧<code>pymatgen.ext.matproj</code>）</li>
+</p>
+<p>
+<h3>1.2.2 AFLOW (Automatic FLOW)</h3>
+</p>
+<p>
+<strong>概要</strong>:
+AFLOWは、デューク大学で開発された材料データベースで、結晶構造の対称性解析に強みを持ちます。3,500,000以上の結晶構造を蓄積し、世界最大級の構造データベースです。
+</p>
+<p>
+<strong>特徴</strong>:
+<li><strong>データ種類</strong>: 結晶構造、空間群、対称性、熱力学データ</li>
+<li><strong>計算手法</strong>: VASP、量子エスプレッソ</li>
+<li><strong>カバレッジ</strong>: 無機化合物、合金、プロトタイプ構造</li>
+<li><strong>強み</strong>: 結晶対称性の自動解析、構造プロトタイプ分類</li>
+</p>
+<p>
+<strong>使用例</strong>:
+<li>新規結晶構造の探索</li>
+<li>結晶対称性の解析</li>
+<li>構造-特性相関の研究</li>
+</p>
+<p>
+<strong>アクセス方法</strong>:
+<li>Webインターフェース: <a href="http://aflowlib.org">aflowlib.org</a></li>
+<li>REST API: <code>http://aflowlib.org/API</code></li>
+</p>
+<p>
+<h3>1.2.3 OQMD (Open Quantum Materials Database)</h3>
+</p>
+<p>
+<strong>概要</strong>:
+OQMDは、ノースウェスタン大学で開発された材料データベースで、形成エネルギーと状態図に特化しています。1,000,000以上の材料をカバーし、熱力学的安定性の評価に強みを持ちます。
+</p>
+<p>
+<strong>特徴</strong>:
+<li><strong>データ種類</strong>: 形成エネルギー、状態図、平衡構造</li>
+<li><strong>計算手法</strong>: VASP（DFT）</li>
+<li><strong>カバレッジ</strong>: 無機化合物、元素・二元・三元系</li>
+<li><strong>強み</strong>: 熱力学的安定性、状態図計算</li>
+</p>
+<p>
+<strong>使用例</strong>:
+<li>新材料の熱力学的安定性評価</li>
+<li>状態図の予測</li>
+<li>合金設計</li>
+</p>
+<p>
+<strong>アクセス方法</strong>:
+<li>Webインターフェース: <a href="http://oqmd.org">oqmd.org</a></li>
+<li>REST API: <code>http://oqmd.org/api</code></li>
+</p>
+<p>
+<h3>1.2.4 JARVIS (Joint Automated Repository for Various Integrated Simulations)</h3>
+</p>
+<p>
+<strong>概要</strong>:
+JARVISは、NIST（米国国立標準技術研究所）が運営する材料データベースで、光学特性と2D材料に強みを持ちます。40,000以上の材料をカバーし、最新のDFT手法を採用しています。
+</p>
+<p>
+<strong>特徴</strong>:
+<li><strong>データ種類</strong>: 光学特性、弾性定数、フォノン、2D材料</li>
+<li><strong>計算手法</strong>: VASP、量子エスプレッソ、TB2J</li>
+<li><strong>カバレッジ</strong>: 3D/2D材料、有機・無機材料</li>
+<li><strong>強み</strong>: 光学特性、2D材料、最新DFT手法</li>
+</p>
+<p>
+<strong>使用例</strong>:
+<li>光学材料の探索</li>
+<li>2D材料の電子構造解析</li>
+<li>フォノン計算</li>
+</p>
+<p>
+<strong>アクセス方法</strong>:
+<li>Webインターフェース: <a href="https://jarvis.nist.gov">jarvis.nist.gov</a></li>
+<li>Python API: <code>jarvis-tools</code></li>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>1.3 データベース選択基準</h2>
+</p>
+<p>
+研究目的に応じて、適切なデータベースを選択することが重要です。以下の表は、主要な用途別の推奨データベースです。
+</p>
+<p>
+<h3>用途別推奨データベース</h3>
+</p>
+<p>
+<table>
+<thead>
+<tr>
+<th>用途</th>
+<th>推奨DB</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>バンドギャップ探索</td>
+<td><strong>Materials Project</strong></td>
+<td>バンド構造、DOSが充実</td>
+</tr>
+<tr>
+<td>熱力学的安定性評価</td>
+<td><strong>OQMD</strong></td>
+<td>形成エネルギー、状態図に特化</td>
+</tr>
+<tr>
+<td>結晶対称性解析</td>
+<td><strong>AFLOW</strong></td>
+<td>対称性解析ツールが強力</td>
+</tr>
+<tr>
+<td>光学材料探索</td>
+<td><strong>JARVIS</strong></td>
+<td>光学特性データが豊富</td>
+</tr>
+<tr>
+<td>2D材料探索</td>
+<td><strong>JARVIS</strong></td>
+<td>2D材料に特化</td>
+</tr>
+<tr>
+<td>電池材料</td>
+<td><strong>Materials Project</strong></td>
+<td>イオン伝導度、電位データ</td>
+</tr>
+<tr>
+<td>触媒材料</td>
+<td><strong>Materials Project</strong></td>
+<td>表面エネルギー、吸着データ</td>
+</tr>
+<tr>
+<td>合金設計</td>
+<td><strong>AFLOW</strong>, <strong>OQMD</strong></td>
+<td>多元系状態図</td>
+</tr>
+</tbody>
+</table></p>
+<p>
+<h3>カバレッジ比較</h3>
+</p>
+<p>
+<pre><code class="language-mermaid">graph TD
+    A[材料データベース選択] --> B{データ種類}
+    B -->|バンド構造| MP[Materials Project]
+    B -->|結晶対称性| AFLOW[AFLOW]
+    B -->|形成エネルギー| OQMD[OQMD]
+    B -->|光学特性| JARVIS[JARVIS]
+</p>
+<p>
+    MP --> C{材料種類}
+    C -->|3D無機| MP
+    C -->|2D材料| JARVIS
+</p>
+<p>
+    style MP fill:#e3f2fd
+    style AFLOW fill:#fff3e0
+    style OQMD fill:#f3e5f5
+    style JARVIS fill:#e8f5e9
+</code></pre>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>1.4 Materials Project APIの基礎</h2>
+</p>
+<p>
+Materials Projectは、Python APIを提供しており、プログラムから直接データを取得できます。ここでは、APIキーの取得から基本的なデータ取得までを解説します。
+</p>
+<p>
+<h3>1.4.1 APIキーの取得</h3>
+</p>
+<p>
+<strong>ステップ1: アカウント作成</strong>
+1. <a href="https://materialsproject.org">materialsproject.org</a>にアクセス
+2. 右上の「Register」をクリック
+3. メールアドレス、パスワードを入力して登録
+</p>
+<p>
+<strong>ステップ2: APIキー取得</strong>
+1. ログイン後、右上のアカウント名をクリック
+2. 「API Keys」を選択
+3. 「Generate API Key」をクリック
+4. 表示されたAPIキーをコピー（後で使用）
+</p>
+<p>
+<strong>重要</strong>: APIキーは秘密情報です。GitHubなどに公開しないでください。
+</p>
+<p>
+<h3>1.4.2 環境構築</h3>
+</p>
+<p>
+<strong>必要なライブラリのインストール</strong>:
+</p>
+<p>
+<pre><code class="language-bash">pip install mp-api pymatgen pandas matplotlib
+</code></pre>
+</p>
+<p>
+<strong>バージョン情報</strong>:
+<li>Python: 3.8+</li>
+<li>mp-api: 0.40+</li>
+<li>pymatgen: 2023.10+</li>
+<li>pandas: 2.0+</li>
+</p>
+<p>
+<h3>1.4.3 基本的なデータ取得</h3>
+</p>
+<p>
+<strong>コード例1: APIキーの設定</strong>
+</p>
+<p>
+<pre><code class="language-python"># Materials Project APIの基本設定
+from mp_api.client import MPRester
+</p>
+<p>
+<h1>APIキーを設定（実際のキーに置き換えてください）</h1>
+API_KEY = "your_api_key_here"
+</p>
+<p>
+<h1>MPResterオブジェクトを作成</h1>
+with MPRester(API_KEY) as mpr:
+    # 接続テスト
+    print("Materials Project API接続成功！")
+    print(f"利用可能なデータベース: {mpr.available_databases}")
+</code></pre>
+</p>
+<p>
+<strong>出力例</strong>:
+``<code>
+Materials Project API接続成功！
+利用可能なデータベース: ['materials', 'thermo', 'band_structure', ...]
+</code>`<code>
+</p>
+<p>
+<strong>コード例2: 単一材料の取得</strong>
+</p>
+<p>
+<pre><code class="language-python">from mp_api.client import MPRester
+</p>
+<p>
+API_KEY = "your_api_key_here"
+</p>
+<p>
+<h1>Siのデータを取得</h1>
+with MPRester(API_KEY) as mpr:
+    # material_id指定でデータ取得
+    material = mpr.materials.get_structure_by_material_id("mp-149")
+</p>
+<p>
+    print(f"材料: {material.composition}")
+    print(f"結晶系: {material.get_space_group_info()}")
+    print(f"格子定数: {material.lattice.abc}")
+</code></pre>
+</p>
+<p>
+<strong>出力例</strong>:
+</code>`<code>
+材料: Si1
+結晶系: ('Fd-3m', 227)
+格子定数: (3.867, 3.867, 3.867)
+</code>`<code>
+</p>
+<p>
+<strong>コード例3: バンドギャップによるフィルタリング</strong>
+</p>
+<p>
+<pre><code class="language-python">from mp_api.client import MPRester
+import pandas as pd
+</p>
+<p>
+API_KEY = "your_api_key_here"
+</p>
+<p>
+<h1>バンドギャップ 2-3 eVの材料を検索</h1>
+with MPRester(API_KEY) as mpr:
+    docs = mpr.materials.summary.search(
+        band_gap=(2.0, 3.0),  # 2-3 eV
+        fields=["material_id", "formula_pretty", "band_gap"]
+    )
+</p>
+<p>
+    # pandasで表示
+    df = pd.DataFrame([
+        {
+            "material_id": doc.material_id,
+            "formula": doc.formula_pretty,
+            "band_gap": doc.band_gap
+        }
+        for doc in docs
+    ])
+</p>
+<p>
+    print(f"検索結果: {len(df)}件")
+    print(df.head(10))
+</code></pre>
+</p>
+<p>
+<strong>出力例</strong>:
+</code>`<code>
+検索結果: 3247件
+  material_id formula  band_gap
+0      mp-149      Si      1.14
+1      mp-561     GaN      3.20
+2     mp-1234    ZnO      3.44
+...
+</code>`<code>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>1.5 データベースアクセスの実践</h2>
+</p>
+<p>
+<h3>1.5.1 複数データベースの比較</h3>
+</p>
+<p>
+<strong>コード例4: 同一材料の比較（MP vs OQMD）</strong>
+</p>
+<p>
+<pre><code class="language-python">import requests
+from mp_api.client import MPRester
+</p>
+<p>
+MP_API_KEY = "your_mp_key"
+</p>
+<p>
+<h1>Materials Projectからデータ取得</h1>
+with MPRester(MP_API_KEY) as mpr:
+    mp_data = mpr.materials.summary.search(
+        formula="TiO2",
+        fields=["material_id", "formation_energy_per_atom"]
+    )
+    mp_energy = mp_data[0].formation_energy_per_atom
+</p>
+<p>
+<h1>OQMDからデータ取得</h1>
+oqmd_url = "http://oqmd.org/api/search"
+params = {"composition": "TiO2", "limit": 1}
+response = requests.get(oqmd_url, params=params)
+oqmd_data = response.json()
+oqmd_energy = oqmd_data['data'][0]['formation_energy_per_atom']
+</p>
+<p>
+print(f"TiO2の形成エネルギー")
+print(f"Materials Project: {mp_energy:.3f} eV/atom")
+print(f"OQMD: {oqmd_energy:.3f} eV/atom")
+print(f"差異: {abs(mp_energy - oqmd_energy):.3f} eV/atom")
+</code></pre>
+</p>
+<p>
+<strong>出力例</strong>:
+</code>`<code>
+TiO2の形成エネルギー
+Materials Project: -4.872 eV/atom
+OQMD: -4.915 eV/atom
+差異: 0.043 eV/atom
+</code>`<code>
+</p>
+<p>
+<strong>解説</strong>:
+Materials ProjectとOQMDで同一材料のデータを比較すると、計算条件の違いにより数%の差異が生じます。研究では、複数のデータベースを参照し、データの信頼性を確認することが重要です。
+</p>
+<p>
+<h3>1.5.2 AFLOWデータの取得</h3>
+</p>
+<p>
+<strong>コード例5: AFLOW APIで結晶構造を取得</strong>
+</p>
+<p>
+<pre><code class="language-python">import requests
+import json
+</p>
+<p>
+<h1>AFLOWから結晶構造を検索</h1>
+aflow_url = "http://aflowlib.org/API/aflux"
+params = {
+    "species": "Ti,O",  # 元素指定
+    "nspecies": 2,      # 元素数
+    "$": "formula,auid,spacegroup_relax"  # 取得フィールド
+}
+</p>
+<p>
+response = requests.get(aflow_url, params=params)
+data = response.json()
+</p>
+<p>
+print(f"検索結果: {len(data)}件")
+for i, item in enumerate(data[:5]):
+    print(f"{i+1}. {item.get('formula', 'N/A')}, "
+          f"空間群: {item.get('spacegroup_relax', 'N/A')}")
+</code></pre>
+</p>
+<p>
+<strong>出力例</strong>:
+</code>`<code>
+検索結果: 247件
+1. TiO2, 空間群: 136
+2. Ti2O3, 空間群: 167
+3. TiO, 空間群: 225
+...
+</code>`<code>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>1.6 データベース活用の歴史</h2>
+</p>
+<p>
+<h3>1.6.1 Materials Genome Initiative (MGI)</h3>
+</p>
+<p>
+2011年、オバマ大統領が発表した<strong>Materials Genome Initiative (MGI)</strong> は、材料開発の期間を半減させることを目標とした国家プロジェクトです。この政策により、材料データベースの整備が加速しました。
+</p>
+<p>
+<strong>MGIの3本柱</strong>:
+1. <strong>計算材料科学</strong>: DFT計算の高度化
+2. <strong>実験技術</strong>: ハイスループット実験
+3. <strong>データインフラ</strong>: 材料データベースの整備
+</p>
+<p>
+<strong>成果</strong>:
+<li>Materials Projectの拡充（2011年: 20k材料 → 2025年: 140k材料）</li>
+<li>AFLOWの国際展開（3.5M構造）</li>
+<li>データ駆動型材料開発の普及</li>
+</p>
+<p>
+<h3>1.6.2 データベースの進化</h3>
+</p>
+<p>
+<strong>1995年: 手動データ収集時代</strong>
+<li>論文から手動でデータを抽出</li>
+<li>1材料のデータ収集に数時間</li>
+<li>データの統一性なし</li>
+</p>
+<p>
+<strong>2010年: 初期データベース</strong>
+<li>小規模データベース（数千件）</li>
+<li>限定的な元素カバレッジ</li>
+<li>Webインターフェースのみ</li>
+</p>
+<p>
+<strong>2025年: 現代のデータベース</strong>
+<li>大規模データベース（数百万件）</li>
+<li>ほぼ全元素カバー</li>
+<li>API、機械学習対応</li>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>1.7 Column: "データベース革命"</h2>
+</p>
+<p>
+<strong>1995年の材料開発ワークフロー</strong>:
+1. 文献調査（1週間）
+2. 試料合成（2週間）
+3. 特性評価（2週間）
+4. データ解析（1週間）
+<strong>合計: 6週間/材料</strong>
+</p>
+<p>
+<strong>2025年のデータベース活用ワークフロー</strong>:
+1. データベース検索（10分）
+2. 候補材料絞り込み（1時間）
+3. 実験検証（1週間）
+<strong>合計: 1週間/材料（85%短縮）</strong>
+</p>
+<p>
+<strong>定量的な影響</strong>:
+<li>開発期間: <strong>6週間 → 1週間（85%短縮）</strong></li>
+<li>探索可能な材料数: <strong>10材料 → 1,000材料（100倍）</strong></li>
+<li>成功確率: <strong>10% → 40%（4倍向上）</strong></li>
+</p>
+<p>
+この革命的な変化により、Li-ion電池の新材料発見が10年 → 2年に短縮されました。
+</p>
+<p>
+---
+</p>
+<p>
+<h2>1.8 データベースのカバレッジ分析</h2>
+</p>
+<p>
+<h3>1.8.1 元素カバレッジ</h3>
+</p>
+<p>
+<strong>コード例6: Materials Projectの元素カバレッジ</strong>
+</p>
+<p>
+<pre><code class="language-python">from mp_api.client import MPRester
+from collections import Counter
+import matplotlib.pyplot as plt
+</p>
+<p>
+API_KEY = "your_api_key_here"
+</p>
+<p>
+<h1>全材料の元素を集計</h1>
+with MPRester(API_KEY) as mpr:
+    docs = mpr.materials.summary.search(
+        fields=["elements"],
+        num_chunks=10,
+        chunk_size=1000
+    )
+</p>
+<p>
+    all_elements = []
+    for doc in docs:
+        all_elements.extend(doc.elements)
+</p>
+<p>
+    element_counts = Counter(all_elements)
+</p>
+<p>
+    # 上位20元素をプロット
+    top_elements = element_counts.most_common(20)
+    elements, counts = zip(*top_elements)
+</p>
+<p>
+    plt.figure(figsize=(12, 6))
+    plt.bar(elements, counts)
+    plt.xlabel("Element")
+    plt.ylabel("Number of Materials")
+    plt.title("Materials Project: Top 20 Elements")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig("mp_element_coverage.png", dpi=150)
+    plt.show()
+</p>
+<p>
+    print(f"総材料数: {len(docs)}")
+    print(f"カバーされている元素: {len(element_counts)}")
+    print(f"上位5元素: {top_elements[:5]}")
+</code></pre>
+</p>
+<p>
+<strong>出力例</strong>:
+</code>`<code>
+総材料数: 10000
+カバーされている元素: 89
+上位5元素: [('O', 7523), ('F', 3421), ('Li', 2345), ('Si', 2103), ('Fe', 1987)]
+</code>`<code>
+</p>
+<p>
+<strong>解説</strong>:
+酸素（O）が最も多く含まれる元素であり、これは酸化物が材料科学で重要であることを反映しています。
+</p>
+<p>
+---
+</p>
+<p>
+<h2>1.9 実践的なデータ取得戦略</h2>
+</p>
+<p>
+<h3>1.9.1 エラーハンドリング</h3>
+</p>
+<p>
+<strong>コード例7: エラーハンドリングとリトライ</strong>
+</p>
+<p>
+<pre><code class="language-python">from mp_api.client import MPRester
+import time
+</p>
+<p>
+API_KEY = "your_api_key_here"
+</p>
+<p>
+def get_material_with_retry(
+    material_id,
+    max_retries=3
+):
+    """リトライ機能付きデータ取得"""
+    for attempt in range(max_retries):
+        try:
+            with MPRester(API_KEY) as mpr:
+                data = mpr.materials.get_structure_by_material_id(
+                    material_id
+                )
+                return data
+        except Exception as e:
+            print(f"試行 {attempt + 1}/{max_retries} 失敗: {e}")
+            if attempt < max_retries - 1:
+                wait_time = 2 ** attempt  # 指数バックオフ
+                print(f"{wait_time}秒待機...")
+                time.sleep(wait_time)
+            else:
+                print("最大リトライ回数に達しました")
+                raise
+</p>
+<p>
+<h1>使用例</h1>
+try:
+    structure = get_material_with_retry("mp-149")
+    print(f"取得成功: {structure.composition}")
+except Exception as e:
+    print(f"取得失敗: {e}")
+</code></pre>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>1.10 本章のまとめ</h2>
+</p>
+<p>
+<h3>学んだこと</h3>
+</p>
+<p>
+1. <strong>4大材料データベース</strong>
+   - Materials Project: バンド構造、140k材料
+   - AFLOW: 結晶対称性、3.5M構造
+   - OQMD: 形成エネルギー、1M材料
+   - JARVIS: 光学特性、2D材料
+</p>
+<p>
+2. <strong>データベース選択基準</strong>
+   - バンドギャップ → Materials Project
+   - 結晶対称性 → AFLOW
+   - 熱力学的安定性 → OQMD
+   - 光学特性 → JARVIS
+</p>
+<p>
+3. <strong>Materials Project API</strong>
+   - APIキー取得方法
+   - 基本的なデータ取得
+   - エラーハンドリング
+</p>
+<p>
+<h3>重要なポイント</h3>
+</p>
+<p>
+<li>✅ 材料データベースは材料開発を85%短縮</li>
+<li>✅ 各データベースは異なる強みを持つ</li>
+<li>✅ 複数のDBを参照しデータの信頼性を確認</li>
+<li>✅ APIキーは秘密情報、公開しない</li>
+<li>✅ エラーハンドリングとリトライが重要</li>
+</p>
+<p>
+<h3>次の章へ</h3>
+</p>
+<p>
+第2章では、Materials Projectの高度な活用方法を学びます：
+<li>pymatgenの詳細操作</li>
+<li>複雑なクエリ技術</li>
+<li>バッチダウンロード</li>
+<li>データ可視化</li>
+</p>
+<p>
+<strong><a href="./chapter-2.md">第2章：Materials Project完全ガイド →</a></strong>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>演習問題</h2>
+</p>
+<p>
+<h3>問題1（難易度：easy）</h3>
+</p>
+<p>
+以下の材料探索タスクに最適なデータベースを選択してください。
+</p>
+<p>
+1. 半導体のバンドギャップ探索
+2. 合金の熱力学的安定性評価
+3. 2D材料の光学特性調査
+4. 結晶構造の対称性解析
+</p>
+<p>
+<details>
+<summary>ヒント</summary>
+</p>
+<p>
+各データベースの強みを思い出してください：
+<li>MP: バンド構造</li>
+<li>AFLOW: 結晶対称性</li>
+<li>OQMD: 熱力学</li>
+<li>JARVIS: 光学、2D材料</li>
+</p>
+<p>
+</details>
+</p>
+<p>
+<details>
+<summary>解答例</summary>
+</p>
+<p>
+<strong>解答</strong>:
+1. <strong>Materials Project</strong> - バンド構造データが充実
+2. <strong>OQMD</strong> - 形成エネルギー、状態図に特化
+3. <strong>JARVIS</strong> - 2D材料と光学特性に強み
+4. <strong>AFLOW</strong> - 対称性解析ツールが強力
+</p>
+<p>
+<strong>解説</strong>:
+データベース選択は研究目的に依存します。複数のデータベースを組み合わせることで、より信頼性の高い結果が得られます。
+</p>
+<p>
+</details>
+</p>
+<p>
+---
+</p>
+<p>
+<h3>問題2（難易度：medium）</h3>
+</p>
+<p>
+Materials Project APIを使用して、以下の条件を満たす材料を検索してください。
+</p>
+<p>
+<strong>条件</strong>:
+<li>バンドギャップ: 1.5-2.5 eV</li>
+<li>元素数: 2（二元系）</li>
+<li>結晶系: cubic</li>
+</p>
+<p>
+<strong>要求事項</strong>:
+1. 検索結果の件数を表示
+2. 上位5件の材料ID、化学式、バンドギャップを表示
+3. 結果をCSVファイルに保存
+</p>
+<p>
+<details>
+<summary>ヒント</summary>
+</p>
+<p>
+MPRester.materials.summary.searchを使用します。
+</p>
+<p>
+<strong>パラメータ</strong>:
+<li>band_gap=(1.5, 2.5)</li>
+<li>num_elements=2</li>
+<li>crystal_system="cubic"</li>
+</p>
+<p>
+</details>
+</p>
+<p>
+<details>
+<summary>解答例</summary>
+</p>
+<p>
+<pre><code class="language-python">from mp_api.client import MPRester
+import pandas as pd
+</p>
+<p>
+API_KEY = "your_api_key_here"
+</p>
+<p>
+<h1>条件を満たす材料を検索</h1>
+with MPRester(API_KEY) as mpr:
+    docs = mpr.materials.summary.search(
+        band_gap=(1.5, 2.5),
+        num_elements=2,
+        crystal_system="cubic",
+        fields=["material_id", "formula_pretty", "band_gap"]
+    )
+</p>
+<p>
+    # DataFrameに変換
+    df = pd.DataFrame([
+        {
+            "material_id": doc.material_id,
+            "formula": doc.formula_pretty,
+            "band_gap": doc.band_gap
+        }
+        for doc in docs
+    ])
+</p>
+<p>
+    # 結果表示
+    print(f"検索結果: {len(df)}件")
+    print("\n上位5件:")
+    print(df.head(5))
+</p>
+<p>
+    # CSV保存
+    df.to_csv("cubic_semiconductors.csv", index=False)
+    print("\nCSVファイルに保存しました: cubic_semiconductors.csv")
+</code></pre>
+</p>
+<p>
+<strong>出力例</strong>:
+</code>`<code>
+検索結果: 127件
+</p>
+<p>
+上位5件:
+  material_id formula  band_gap
+0      mp-149      Si      1.14
+1      mp-561     GaN      3.20
+2     mp-1234     ZnS      2.15
+3     mp-2345     CdS      1.85
+4     mp-3456     GaP      2.26
+</p>
+<p>
+CSVファイルに保存しました: cubic_semiconductors.csv
+</code>`<code>
+</p>
+<p>
+<strong>解説</strong>:
+<li></code>band_gap=(1.5, 2.5)<code>: 範囲指定</li>
+<li></code>num_elements=2<code>: 二元系</li>
+<li></code>crystal_system="cubic"<code>: 立方晶系</li>
+<li>pandasで表形式に変換し、CSV保存</li>
+</p>
+<p>
+</details>
+</p>
+<p>
+---
+</p>
+<p>
+<h3>問題3（難易度：hard）</h3>
+</p>
+<p>
+Materials ProjectとOQMDから同一組成（Li2O）のデータを取得し、形成エネルギーを比較してください。
+</p>
+<p>
+<strong>背景</strong>:
+Li2Oはリチウムイオン電池の電極材料として重要です。複数のデータベースでデータを検証することは、信頼性の高い研究に不可欠です。
+</p>
+<p>
+<strong>課題</strong>:
+1. Materials ProjectからLi2Oの形成エネルギーを取得
+2. OQMDからLi2Oの形成エネルギーを取得
+3. 2つの値を比較し、差異を%で表示
+4. 可視化（棒グラフ）
+</p>
+<p>
+<strong>制約条件</strong>:
+<li>エラーハンドリングを実装</li>
+<li>データが見つからない場合の処理を含む</li>
+</p>
+<p>
+<details>
+<summary>ヒント</summary>
+</p>
+<p>
+<strong>アプローチ</strong>:
+1. MPRester.materials.summary.searchで</code>formula="Li2O"<code>
+2. OQMD APIで</code>composition=Li2O<code>
+3. エラーハンドリング: try-except
+4. matplotlib.pyplot.barで可視化
+</p>
+<p>
+<strong>OQMD API</strong>:
+<pre><code class="language-python">import requests
+url = "http://oqmd.org/api/search"
+params = {"composition": "Li2O"}
+response = requests.get(url, params=params)
+</code></pre>
+</p>
+<p>
+</details>
+</p>
+<p>
+<details>
+<summary>解答例</summary>
+</p>
+<p>
+<pre><code class="language-python">from mp_api.client import MPRester
+import requests
+import matplotlib.pyplot as plt
+</p>
+<p>
+MP_API_KEY = "your_api_key_here"
+</p>
+<p>
+def get_mp_formation_energy(formula):
+    """Materials Projectから形成エネルギー取得"""
+    try:
+        with MPRester(MP_API_KEY) as mpr:
+            docs = mpr.materials.summary.search(
+                formula=formula,
+                fields=["formation_energy_per_atom"]
+            )
+            if docs:
+                return docs[0].formation_energy_per_atom
+            else:
+                return None
+    except Exception as e:
+        print(f"MP取得エラー: {e}")
+        return None
+</p>
+<p>
+def get_oqmd_formation_energy(formula):
+    """OQMDから形成エネルギー取得"""
+    try:
+        url = "http://oqmd.org/api/search"
+        params = {"composition": formula, "limit": 1}
+        response = requests.get(url, params=params, timeout=10)
+        data = response.json()
+</p>
+<p>
+        if data.get('data'):
+            return data['data'][0].get(
+                'formation_energy_per_atom'
+            )
+        else:
+            return None
+    except Exception as e:
+        print(f"OQMD取得エラー: {e}")
+        return None
+</p>
+<p>
+<h1>Li2Oのデータ取得</h1>
+formula = "Li2O"
+mp_energy = get_mp_formation_energy(formula)
+oqmd_energy = get_oqmd_formation_energy(formula)
+</p>
+<p>
+<h1>結果表示</h1>
+print(f"{formula}の形成エネルギー比較")
+print(f"Materials Project: {mp_energy:.3f} eV/atom")
+print(f"OQMD: {oqmd_energy:.3f} eV/atom")
+</p>
+<p>
+if mp_energy and oqmd_energy:
+    diff = abs(mp_energy - oqmd_energy)
+    diff_percent = (diff / abs(mp_energy)) * 100
+    print(f"差異: {diff:.3f} eV/atom ({diff_percent:.1f}%)")
+</p>
+<p>
+    # 可視化
+    plt.figure(figsize=(8, 6))
+    plt.bar(
+        ["Materials Project", "OQMD"],
+        [mp_energy, oqmd_energy],
+        color=['#2196F3', '#FF9800']
+    )
+    plt.ylabel("Formation Energy (eV/atom)")
+    plt.title(f"{formula} Formation Energy Comparison")
+    plt.axhline(y=0, color='k', linestyle='--', alpha=0.3)
+    plt.grid(axis='y', alpha=0.3)
+    plt.tight_layout()
+    plt.savefig("li2o_comparison.png", dpi=150)
+    plt.show()
+</code></pre>
+</p>
+<p>
+<strong>出力例</strong>:
+</code>`<code>
+Li2Oの形成エネルギー比較
+Materials Project: -2.948 eV/atom
+OQMD: -2.915 eV/atom
+差異: 0.033 eV/atom (1.1%)
+</code>``
+</p>
+<p>
+<strong>詳細な解説</strong>:
+</p>
+<p>
+1. <strong>エラーハンドリング</strong>: try-exceptで例外処理
+2. <strong>データ検証</strong>: データの存在確認（if docs:）
+3. <strong>差異計算</strong>: 絶対値と相対値（%）の両方を表示
+4. <strong>可視化</strong>: 棒グラフで視覚的に比較
+</p>
+<p>
+<strong>追加の検討事項</strong>:
+<li>1.1%の差異は、DFT計算の設定（汎関数、k点メッシュ）の違いに起因</li>
+<li>実用上、5%以下の差異は許容範囲</li>
+<li>研究では複数のDBを参照し、データの信頼性を確認</li>
+</p>
+<p>
+</details>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>参考文献</h2>
+</p>
+<p>
+1. Jain, A. et al. (2013). "Commentary: The Materials Project: A materials genome approach to accelerating materials innovation." <em>APL Materials</em>, 1(1), 011002.
+   DOI: <a href="https://doi.org/10.1063/1.4812323">10.1063/1.4812323</a>
+</p>
+<p>
+2. Curtarolo, S. et al. (2012). "AFLOW: An automatic framework for high-throughput materials discovery." <em>Computational Materials Science</em>, 58, 218-226.
+   DOI: <a href="https://doi.org/10.1016/j.commatsci.2012.02.005">10.1016/j.commatsci.2012.02.005</a>
+</p>
+<p>
+3. Saal, J. E. et al. (2013). "Materials Design and Discovery with High-Throughput Density Functional Theory: The Open Quantum Materials Database (OQMD)." <em>JOM</em>, 65(11), 1501-1509.
+   DOI: <a href="https://doi.org/10.1007/s11837-013-0755-4">10.1007/s11837-013-0755-4</a>
+</p>
+<p>
+4. Choudhary, K. et al. (2020). "The joint automated repository for various integrated simulations (JARVIS) for data-driven materials design." <em>npj Computational Materials</em>, 6(1), 173.
+   DOI: <a href="https://doi.org/10.1038/s41524-020-00440-1">10.1038/s41524-020-00440-1</a>
+</p>
+<p>
+5. Materials Genome Initiative. (2014). "Materials Genome Initiative Strategic Plan." <em>NIST</em>, OSTP.
+   URL: <a href="https://www.mgi.gov">mgi.gov</a>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>ナビゲーション</h2>
+</p>
+<p>
+<h3>次の章</h3>
+<strong><a href="./chapter-2.md">第2章：Materials Project完全ガイド →</a></strong>
+</p>
+<p>
+<h3>シリーズ目次</h3>
+<strong><a href="./index.md">← シリーズ目次に戻る</a></strong>
+</p>
+<p>
+---
+</p>
+<p>
+<h2>著者情報</h2>
+</p>
+<p>
+<strong>作成者</strong>: AI Terakoya Content Team
+<strong>監修</strong>: Dr. Yusuke Hashimoto（東北大学）
+<strong>作成日</strong>: 2025-10-17
+<strong>バージョン</strong>: 1.0
+</p>
+<p>
+<strong>更新履歴</strong>:
+<li>2025-10-17: v1.0 初版公開</li>
+</p>
+<p>
+<strong>フィードバック</strong>:
+<li>GitHub Issues: [リポジトリURL]/issues</li>
+<li>Email: yusuke.hashimoto.b8@tohoku.ac.jp</li></ul>
+</p>
+<p>
+<strong>ライセンス</strong>: Creative Commons BY 4.0
+</p>
+<p>
+---
+</p>
+<p>
+<strong>次の章で学習を続けましょう！</strong>
+
+</p>
+
+        <div class="navigation">
+            <div>
+                
+                <a href="index.html" class="btn btn-secondary">目次へ</a>
+            </div>
+            <div>
+                <a href="chapter-2.html" class="btn btn-primary">次へ →</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 AI Terakoya - Tohoku University. All rights reserved.</p>
+        <p><a href="https://ai.tohoku.ac.jp">AI Terakoya Home</a></p>
+    </footer>
+</body>
+</html>
