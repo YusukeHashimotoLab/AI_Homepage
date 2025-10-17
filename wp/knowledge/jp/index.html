@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="データ駆動型材料開発の学習プラットフォーム">
-    <title>AI寺子屋 - Materials Informatics Knowledge Hub - MI Knowledge Hub</title>
+    <meta name="description" content="データ駆動型材料開発の包括的学習プラットフォーム - 13の専門シリーズを提供する総合学習ハブ">
+    <title>MI寺子屋 - Materials Informatics Knowledge Hub</title>
 
     <!-- CSS Styling -->
     <style>
@@ -268,6 +268,19 @@
             box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
         }
 
+        /* Series cards */
+        .series-card {
+            background: #f8f9fa;
+            border-left: 4px solid var(--secondary-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+        }
+
+        .series-card h3 {
+            margin-top: 0;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .container {
@@ -306,700 +319,720 @@
 <body>
     <header>
         <div class="container">
-            <h1>AI寺子屋 - Materials Informatics Knowledge Hub</h1>
+            <h1>MI寺子屋 - Materials Informatics Knowledge Hub</h1>
             <div class="meta">
-                <span>📖 読了時間: 355-460分</span>
-                <span>📊 レベル: </span>
+                <span>📖 総学習時間: 1,210-1,530分 (約20-25時間)</span>
+                <span>📚 13シリーズ | 55章 | 375+コード例</span>
+                <span>🎓 レベル: 入門〜上級</span>
+                <span>📅 Version 3.0 (2025-10-17)</span>
             </div>
         </div>
     </header>
 
     <main class="container">
-        <h1 id="ai-materials-informatics-knowledge-hub">AI寺子屋 - Materials Informatics Knowledge Hub</h1>
-<p><strong>データ駆動型材料開発の学習プラットフォーム</strong></p>
-<hr />
-<h2 id="ai">🏫 AI寺子屋へようこそ</h2>
-<p>「寺子屋」は江戸時代の日本における庶民のための教育施設でした。現代の「AI寺子屋」は、材料科学とデータサイエンスの融合領域を学ぶための包括的な学習プラットフォームです。</p>
-<p><strong>AI寺子屋の特徴:</strong><br />
-- ✅ <strong>4つの専門シリーズ</strong>: MI、NM、PI、MLPの各分野を網羅<br />
-- ✅ <strong>段階的な学習</strong>: 入門から上級まで体系的に学べる全16章<br />
-- ✅ <strong>実践重視</strong>: 115個の実行可能なコード例<br />
-- ✅ <strong>産業応用</strong>: 20以上の実世界ケーススタディ<br />
-- ✅ <strong>キャリア支援</strong>: 具体的な進路と学習ロードマップ</p>
-<p><strong>総学習時間</strong>: 355-460分（約6-8時間）</p>
-<hr />
-<h2 id="4">📚 4つの入門シリーズ</h2>
-<h3 id="mi">📘 マテリアルズ・インフォマティクス（MI）入門</h3>
-<p><strong>Materials Informatics Introduction Series</strong></p>
-<p>材料科学全般へのAI/機械学習の適用を学ぶ基礎シリーズ</p>
-<p><strong>概要</strong>:<br />
-- 🎯 <strong>対象分野</strong>: 材料探索、特性予測、データベース活用<br />
-- 📊 <strong>難易度</strong>: 入門〜上級<br />
-- ⏱️ <strong>学習時間</strong>: 90-120分（全4章）<br />
-- 💻 <strong>コード例</strong>: 35個（全て実行可能）<br />
-- 🔬 <strong>応用例</strong>: Li-ion電池、触媒、高エントロピー合金、ペロブスカイト太陽電池</p>
-<p><strong>主な学習内容</strong>:<br />
-1. 材料開発の歴史と従来手法の限界<br />
-2. Materials Project等の主要データベース活用<br />
-3. 6つの機械学習モデル実装（Linear Regression、Random Forest、LightGBM、SVR、MLP、API統合）<br />
-4. Matminerによる特徴量エンジニアリング<br />
-5. ハイパーパラメータチューニング（Grid/Random Search）<br />
-6. 5つの産業ケーススタディ</p>
-<p><strong>使用ツール</strong>:<br />
-- Python: scikit-learn, matminer, pandas, numpy<br />
-- データベース: Materials Project API<br />
-- 可視化: matplotlib, seaborn</p>
-<p><strong><a href="./mi-introduction/index.html">📘 MI入門シリーズへ →</a></strong></p>
-<hr />
-<h3 id="nm">📗 ナノ材料（NM）入門</h3>
-<p><strong>Nanomaterials Introduction Series</strong></p>
-<p>Python実践で学ぶナノマテリアルサイエンス</p>
-<p><strong>概要</strong>:<br />
-- 🎯 <strong>対象分野</strong>: ナノ粒子、カーボンナノチューブ、グラフェン、量子ドット<br />
-- 📊 <strong>難易度</strong>: 初級〜中級<br />
-- ⏱️ <strong>学習時間</strong>: 90-120分（全4章）<br />
-- 💻 <strong>コード例</strong>: 30-35個（全て実行可能）<br />
-- 🔬 <strong>応用例</strong>: CNT複合材料、量子ドット発光、金ナノ粒子触媒、ナノ医薬</p>
-<p><strong>主な学習内容</strong>:<br />
-1. ナノスケールの定義とサイズ効果、量子閉じ込め効果<br />
-2. 合成法（ボトムアップ/トップダウン）とキャラクタリゼーション（TEM、SEM、XRD、UV-Vis）<br />
-3. 5つの回帰モデルによる物性予測<br />
-4. ベイズ最適化によるナノ材料設計<br />
-5. 分子動力学（MD）データ解析<br />
-6. SHAP解析による予測解釈</p>
-<p><strong>使用ツール</strong>:<br />
-- Python: scikit-learn, LightGBM, scikit-optimize, SHAP<br />
-- 解析: pandas, numpy, scipy<br />
-- 可視化: matplotlib, seaborn</p>
-<p><strong><a href="./nm-introduction/index.html">📗 NM入門シリーズへ →</a></strong></p>
-<hr />
-<h3 id="pi">📙 プロセス・インフォマティクス（PI）入門</h3>
-<p><strong>Process Informatics Introduction Series</strong></p>
-<p>データで拓く化学プロセス最適化の未来</p>
-<p><strong>概要</strong>:<br />
-- 🎯 <strong>対象分野</strong>: 化学プロセス最適化、デジタルツイン、品質制御<br />
-- 📊 <strong>難易度</strong>: 入門〜上級<br />
-- ⏱️ <strong>学習時間</strong>: 90-120分（全4章）<br />
-- 💻 <strong>コード例</strong>: 35個（全て実行可能）<br />
-- 🔬 <strong>応用例</strong>: 触媒プロセス、重合反応制御、蒸留塔最適化、バイオプロセス</p>
-<p><strong>主な学習内容</strong>:<br />
-1. 化学プロセス開発の歴史と従来手法の限界（スケールアップに1-3年）<br />
-2. プロセスデータの種類（温度、圧力、流量、収率、選択性）<br />
-3. 6つの機械学習モデル（Linear Regression、Random Forest、LightGBM、SVR、時系列解析、ベイズ最適化）<br />
-4. 多目的最適化（収率 vs コスト）<br />
-5. Grid Search/Bayesian Optimization<br />
-6. 5つの産業ケーススタディ（収率70%→85%等）</p>
-<p><strong>使用ツール</strong>:<br />
-- Python: scikit-learn, LightGBM, Prophet, ARIMA<br />
-- 最適化: scipy.optimize, scikit-optimize<br />
-- 可視化: matplotlib, seaborn</p>
-<p><strong><a href="./pi-introduction/index.html">📙 PI入門シリーズへ →</a></strong></p>
-<hr />
-<h3 id="mlp">📕 機械学習ポテンシャル（MLP）入門</h3>
-<p><strong>Machine Learning Potential Introduction Series</strong></p>
-<p>量子精度と古典速度を両立する次世代シミュレーション</p>
-<p><strong>概要</strong>:<br />
-- 🎯 <strong>対象分野</strong>: 分子シミュレーション高速化、反応経路探索、触媒設計<br />
-- 📊 <strong>難易度</strong>: 入門〜上級<br />
-- ⏱️ <strong>学習時間</strong>: 85-100分（全4章）<br />
-- 💻 <strong>コード例</strong>: 15個（全て実行可能）<br />
-- 🔬 <strong>応用例</strong>: Cu触媒CO₂還元、Li-ion電池電解質、タンパク質フォールディング、GaN半導体</p>
-<p><strong>主な学習内容</strong>:<br />
-1. 分子シミュレーションの歴史（DFT vs 古典MD vs MLP）<br />
-2. ポテンシャルエネルギー面の機械学習近似<br />
-3. SchNetPackによるMLP訓練（MD17データセット、MAE &lt; 1 kcal/mol）<br />
-4. MLP-MD実行（DFTの50,000倍高速化）<br />
-5. 振動スペクトル、拡散係数、動径分布関数（RDF）計算<br />
-6. Active Learningによる効率的データ収集</p>
-<p><strong>使用ツール</strong>:<br />
-- Python: PyTorch, SchNetPack, ASE<br />
-- データ: MD17データセット<br />
-- 可視化: matplotlib, TensorBoard</p>
-<p><strong><a href="./mlp-introduction/index.html">📕 MLP入門シリーズへ →</a></strong></p>
-<hr />
-<h2 id="_1">🗺️ 学習パス推奨</h2>
-<h3 id="_2">あなたに最適なシリーズは？</h3>
-<pre class="codehilite"><code class="language-mermaid">graph TD
-    Start[学習開始&lt;br/&gt;あなたの興味は?] --&gt; Q1{材料 or プロセス?}
+        <h1 id="mi-terakoya">MI寺子屋 - Materials Informatics Knowledge Hub</h1>
+        <p><strong>データ駆動型材料開発の包括的学習プラットフォーム</strong></p>
 
-    Q1 --&gt;|材料開発| Q2{サイズスケール?}
-    Q1 --&gt;|化学プロセス最適化| PI[📙 PI入門&lt;br/&gt;プロセス・インフォマティクス]
+        <hr />
 
-    Q2 --&gt;|ナノスケール&lt;br/&gt;1-100 nm| NM[📗 NM入門&lt;br/&gt;ナノ材料]
-    Q2 --&gt;|一般材料&lt;br/&gt;データベース活用| MI[📘 MI入門&lt;br/&gt;マテリアルズ・インフォマティクス]
-    Q2 --&gt;|分子レベル&lt;br/&gt;シミュレーション| MLP[📕 MLP入門&lt;br/&gt;機械学習ポテンシャル]
+        <h2 id="welcome">🏫 MI寺子屋へようこそ</h2>
 
-    MI --&gt; Next[次のステップ]
-    NM --&gt; Next
-    PI --&gt; Next
-    MLP --&gt; Next
+        <p>「寺子屋」は江戸時代の日本における庶民のための教育施設でした。現代の「MI寺子屋」は、材料科学とデータサイエンスの融合領域を学ぶための世界最高水準の日本語学習プラットフォームです。</p>
 
-    Next --&gt; Advanced[さらに深く学ぶ:&lt;br/&gt;他のシリーズも履修]
+        <p><strong>MI寺子屋の特徴:</strong></p>
+        <ul>
+            <li>✅ <strong>13の専門シリーズ</strong>: 基礎から最先端技術まで体系的に網羅</li>
+            <li>✅ <strong>段階的な学習</strong>: 入門から上級まで55章以上の充実したカリキュラム</li>
+            <li>✅ <strong>実践重視</strong>: 375個以上の実行可能なコード例</li>
+            <li>✅ <strong>最新AI技術</strong>: GNN、Transformer、ベイズ最適化、強化学習</li>
+            <li>✅ <strong>産業応用</strong>: 50以上の実世界ケーススタディ</li>
+            <li>✅ <strong>キャリア支援</strong>: 具体的な進路と学習ロードマップ</li>
+        </ul>
 
-    style Start fill:#e3f2fd
-    style Q1 fill:#fff3e0
-    style Q2 fill:#f3e5f5
-    style MI fill:#e3f2fd
-    style NM fill:#fff4e1
-    style PI fill:#f3e5f5
-    style MLP fill:#e8f5e9
-    style Next fill:#ffebee
-    style Advanced fill:#f3e5f5
-</code></pre>
+        <p><strong>総学習時間</strong>: 1,210-1,530分（約20-25時間）</p>
+        <p><strong>対象読者</strong>: 大学生、大学院生、企業研究者、データサイエンティスト</p>
 
-<h3 id="_3">学習ロードマップ</h3>
-<h4 id="2-4">🎓 初学者向け（2-4週間プラン）</h4>
-<p><strong>Week 1-2: 基礎固め</strong><br />
-1. <strong>MI入門</strong>を完走（90-120分）<br />
-   - 材料科学×機械学習の基本を理解<br />
-   - Pythonコーディング環境構築<br />
-   - Materials Project APIの使い方習得</p>
-<p><strong>Week 3: 応用分野選択</strong><br />
-2. 興味に応じて以下から1つ選択:<br />
-   - <strong>NM入門</strong>: ナノテクに興味がある → ナノ粒子・グラフェン<br />
-   - <strong>PI入門</strong>: 化学工学に興味がある → プロセス最適化<br />
-   - <strong>MLP入門</strong>: 計算化学に興味がある → 分子シミュレーション</p>
-<p><strong>Week 4: 横展開</strong><br />
-3. 残りのシリーズから興味のあるものを1-2個選んで学習<br />
-4. 各シリーズのChapter 4（実世界応用）を重点的に学習</p>
-<p><strong>成果物</strong>:<br />
-- 4-6個のPythonプロジェクト（GitHubポートフォリオ）<br />
-- 個人キャリアロードマップ（3ヶ月/1年/3年）</p>
-<hr />
-<h4 id="1-2">🚀 経験者向け（1-2週間プラン）</h4>
-<p><strong>前提知識</strong>: Python、機械学習の基礎、材料科学または化学工学の基礎</p>
-<p><strong>Day 1-2: 速習モード</strong><br />
-- 各シリーズのChapter 2（基礎知識）を斜め読み<br />
-- MI特有の概念（記述子、データベース）を重点学習</p>
-<p><strong>Day 3-5: 実践集中</strong><br />
-- 興味のあるシリーズのChapter 3（ハンズオン）を完全実装<br />
-- 全コード例を実行し、パラメータを変えて挙動確認</p>
-<p><strong>Day 6-7: 応用とキャリア設計</strong><br />
-- 各シリーズのChapter 4（実世界応用）を熟読<br />
-- 自分の研究・業務への適用を具体化<br />
-- 次のステップ（論文、プロジェクト、学会）を計画</p>
-<p><strong>成果物</strong>:<br />
-- 高度な実装プロジェクト（ハイパーパラメータチューニング済み）<br />
-- 実業務への適用計画書</p>
-<hr />
-<h4 id="_4">🎯 ピンポイント学習（柔軟）</h4>
-<p><strong>特定のスキルや知識を強化したい方向け</strong></p>
-<p><strong>データベース活用を極めたい</strong>:<br />
-- MI入門 → Chapter 2（データベース比較）+ Chapter 3（Materials Project API）</p>
-<p><strong>ベイズ最適化を習得したい</strong>:<br />
-- NM入門 → Chapter 3（ベイズ最適化実装）<br />
-- PI入門 → Chapter 3（反応条件最適化）<br />
-- MLP入門 → Chapter 2（Active Learning）</p>
-<p><strong>産業応用事例を知りたい</strong>:<br />
-- 全シリーズのChapter 4を横断的に学習<br />
-- 20以上のケーススタディから自分の業界に近いものを選択</p>
-<p><strong>キャリア設計をしたい</strong>:<br />
-- 全シリーズのChapter 4（キャリアパス）を比較<br />
-- アカデミア vs 産業界 vs スタートアップの違いを理解</p>
-<hr />
-<h2 id="_5">📊 シリーズ比較表</h2>
-<table>
-<thead>
-<tr>
-<th>シリーズ</th>
-<th>対象分野</th>
-<th>難易度</th>
-<th>学習時間</th>
-<th>コード例</th>
-<th>前提知識</th>
-<th>主要ツール</th>
-<th>産業応用例</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>📘 MI</strong></td>
-<td>材料全般</td>
-<td>入門〜上級</td>
-<td>90-120分</td>
-<td>35個</td>
-<td>高校数学、Python基礎</td>
-<td>scikit-learn, matminer, Materials Project</td>
-<td>Li-ion電池、触媒、高エントロピー合金</td>
-</tr>
-<tr>
-<td><strong>📗 NM</strong></td>
-<td>ナノ材料</td>
-<td>初級〜中級</td>
-<td>90-120分</td>
-<td>30-35個</td>
-<td>大学物理・化学</td>
-<td>pandas, LightGBM, scikit-optimize</td>
-<td>CNT複合材料、量子ドット、ナノ医薬</td>
-</tr>
-<tr>
-<td><strong>📙 PI</strong></td>
-<td>化学プロセス</td>
-<td>入門〜上級</td>
-<td>90-120分</td>
-<td>35個</td>
-<td>化学工学基礎</td>
-<td>scikit-learn, Prophet, scipy</td>
-<td>石油化学、製薬、バイオプロセス</td>
-</tr>
-<tr>
-<td><strong>📕 MLP</strong></td>
-<td>分子シミュレーション</td>
-<td>入門〜上級</td>
-<td>85-100分</td>
-<td>15個</td>
-<td>量子化学基礎</td>
-<td>PyTorch, SchNetPack, ASE</td>
-<td>創薬、触媒設計、材料設計</td>
-</tr>
-</tbody>
-</table>
-<h3 id="_6">難易度×応用分野マトリックス</h3>
-<pre class="codehilite"><code class="language-mermaid">graph LR
-    subgraph 入門レベル
-        MI1[MI: Ch1-2&lt;br/&gt;基礎概念]
-        NM1[NM: Ch1-2&lt;br/&gt;サイズ効果]
-        PI1[PI: Ch1-2&lt;br/&gt;プロセス基礎]
-        MLP1[MLP: Ch1-2&lt;br/&gt;DFT vs MLP]
-    end
+        <hr />
 
-    subgraph 中級レベル
-        MI2[MI: Ch3&lt;br/&gt;Python実装]
-        NM2[NM: Ch3&lt;br/&gt;ベイズ最適化]
-        PI2[PI: Ch3&lt;br/&gt;多目的最適化]
-        MLP2[MLP: Ch3&lt;br/&gt;SchNetPack]
-    end
+        <h2 id="benefits">🎯 AI寺子屋の学習メリット</h2>
 
-    subgraph 上級レベル
-        MI3[MI: Ch4&lt;br/&gt;産業応用]
-        NM3[NM: Ch4&lt;br/&gt;ケーススタディ]
-        PI3[PI: Ch4&lt;br/&gt;デジタルツイン]
-        MLP3[MLP: Ch4&lt;br/&gt;Foundation Models]
-    end
+        <h3>材料科学研究者の方へ</h3>
+        <p>データ駆動型材料開発の全体像を体系的に学べます：</p>
+        <ul>
+            <li><strong>開発期間短縮</strong>: 従来手法（15-20年）→ MI活用（2-5年）</li>
+            <li><strong>探索効率化</strong>: ランダム探索から戦略的探索へ（成功率10倍向上）</li>
+            <li><strong>コスト削減</strong>: 実験回数を50-90%削減</li>
+            <li><strong>発見の加速</strong>: 新材料発見速度が5-10倍向上</li>
+        </ul>
 
-    MI1 --&gt; MI2 --&gt; MI3
-    NM1 --&gt; NM2 --&gt; NM3
-    PI1 --&gt; PI2 --&gt; PI3
-    MLP1 --&gt; MLP2 --&gt; MLP3
+        <h3>データサイエンティストの方へ</h3>
+        <p>材料科学という応用分野での実践スキルを習得：</p>
+        <ul>
+            <li><strong>ドメイン知識</strong>: 材料特性、結晶構造、化学プロセスの理解</li>
+            <li><strong>専門ツール</strong>: pymatgen、RDKit、ASE、PyTorch Geometricの使い方</li>
+            <li><strong>最新AI技術</strong>: GNN、Transformer、ベイズ最適化の実装</li>
+            <li><strong>キャリア展開</strong>: 製造業R&D、創薬、エネルギー分野への応用</li>
+        </ul>
 
-    style MI1 fill:#e3f2fd
-    style MI2 fill:#bbdefb
-    style MI3 fill:#90caf9
-    style NM1 fill:#fff4e1
-    style NM2 fill:#ffe0b2
-    style NM3 fill:#ffcc80
-    style PI1 fill:#f3e5f5
-    style PI2 fill:#e1bee7
-    style PI3 fill:#ce93d8
-    style MLP1 fill:#e8f5e9
-    style MLP2 fill:#c8e6c9
-    style MLP3 fill:#a5d6a7
-</code></pre>
+        <h3>企業エンジニアの方へ</h3>
+        <p>実務で即戦力となる知識とスキルを獲得：</p>
+        <ul>
+            <li><strong>業務効率化</strong>: 品質管理、プロセス最適化への即適用可能</li>
+            <li><strong>コスト削減</strong>: データ駆動型意思決定による無駄の削減</li>
+            <li><strong>競争力向上</strong>: 最新AI技術導入による製品開発加速</li>
+            <li><strong>ROI実証</strong>: 投資対効果の明確な事例多数</li>
+        </ul>
 
-<hr />
-<h2 id="_7">🌐 共通学習リソース</h2>
-<h3 id="_8">オンラインコース</h3>
-<ul>
-<li><strong>Coursera</strong>:</li>
-<li>"Materials Data Sciences and Informatics" (Georgia Tech)</li>
-<li>"Machine Learning for Materials Science" (Imperial College London)</li>
-<li><strong>edX</strong>:</li>
-<li>"Introduction to Computational Materials Science" (MIT)</li>
-<li><strong>Udemy</strong>:</li>
-<li>"Python for Materials Science" (各種コース)</li>
-</ul>
-<h3 id="_9">主要教科書</h3>
-<ol>
-<li><strong>Rajan, K.</strong> (2013). <em>Materials Informatics</em>. Materials Today.</li>
-<li><strong>Lookman, T., et al.</strong> (2018). <em>Information Science for Materials Discovery and Design</em>. Springer. <a href="https://doi.org/10.1007/978-3-319-23871-5">DOI: 10.1007/978-3-319-23871-5</a></li>
-<li><strong>Behler, J.</strong> (2016). <em>Perspective: Machine learning potentials for atomistic simulations</em>. J. Chem. Phys. <a href="https://doi.org/10.1063/1.4966192">DOI: 10.1063/1.4966192</a></li>
-<li><strong>Cao, G. &amp; Wang, Y.</strong> (2011). <em>Nanostructures and Nanomaterials</em>. World Scientific.</li>
-<li><strong>Seborg, D. E., et al.</strong> (2016). <em>Process Dynamics and Control</em> (4th ed.). Wiley.</li>
-</ol>
-<h3 id="_10">主要データベース・ツール</h3>
-<p><strong>材料データベース</strong>:<br />
-- <a href="https://materialsproject.org">Materials Project</a> - 140k+ 材料、DFT計算<br />
-- <a href="http://aflowlib.org">AFLOW</a> - 結晶構造特化、3.5M 構造<br />
-- <a href="http://oqmd.org">OQMD</a> - 量子計算、815k 材料<br />
-- <a href="https://nomad-lab.eu">NOMAD</a> - 大規模DFTデータベース</p>
-<p><strong>Pythonライブラリ</strong>:<br />
-- <a href="https://pymatgen.org">pymatgen</a> - 材料解析の基盤ライブラリ<br />
-- <a href="https://hackingmaterials.lbl.gov/matminer/">matminer</a> - 特徴量エンジニアリング<br />
-- <a href="https://github.com/atomistic-machine-learning/schnetpack">SchNetPack</a> - 機械学習ポテンシャル<br />
-- <a href="https://wiki.fysik.dtu.dk/ase/">ASE</a> - 原子シミュレーション環境</p>
-<p><strong>可視化ツール</strong>:<br />
-- matplotlib, seaborn, plotly<br />
-- TensorBoard（学習過程可視化）<br />
-- VESTA（結晶構造可視化）</p>
-<h3 id="_11">コミュニティ</h3>
-<p><strong>日本</strong>:<br />
-- 日本材料学会（JSMS）<br />
-- 日本MRS<br />
-- 化学工学会（SCEJ）<br />
-- 日本計算化学会<br />
-- 分子科学会</p>
-<p><strong>国際</strong>:<br />
-- Materials Research Society (MRS)<br />
-- American Institute of Chemical Engineers (AIChE)<br />
-- American Chemical Society (ACS)<br />
-- European Materials Research Society (E-MRS)<br />
-- CECAM（計算分子科学）<br />
-- MolSSI（分子科学ソフトウェア研究所）</p>
-<h3 id="_12">主要カンファレンス</h3>
-<ul>
-<li><strong>MRS Fall/Spring Meeting</strong> (材料科学総合)</li>
-<li><strong>E-MRS</strong> (ヨーロッパ材料科学)</li>
-<li><strong>SCEJ Annual Meeting</strong> (化学工学会年会)</li>
-<li><strong>ACS National Meeting</strong> (米国化学会)</li>
-<li><strong>PSE (Process Systems Engineering)</strong> (プロセスシステム工学)</li>
-<li><strong>日本計算化学会年会</strong></li>
-</ul>
-<hr />
-<h2 id="faq">❓ FAQ（よくある質問）</h2>
-<h3 id="q1">Q1: どのシリーズから始めるべきですか？</h3>
-<p><strong>A</strong>: <strong>背景と興味に応じて選択</strong>してください：</p>
-<ul>
-<li><strong>材料科学のバックグラウンドがある</strong> → MI入門から開始（最も汎用的）</li>
-<li><strong>ナノテクノロジーに興味</strong> → NM入門から開始</li>
-<li><strong>化学工学/プロセスエンジニア</strong> → PI入門から開始</li>
-<li><strong>計算化学/分子シミュレーション経験者</strong> → MLP入門から開始</li>
-</ul>
-<p><strong>初めての方は MI入門を強く推奨</strong>します。Materials Projectなどのデータベース活用方法を学べ、他のシリーズの基礎にもなります。</p>
-<hr />
-<h3 id="q2">Q2: 複数シリーズを並行学習できますか？</h3>
-<p><strong>A</strong>: <strong>可能ですが、推奨しません</strong>。理由：</p>
-<ul>
-<li>各シリーズは90-120分の集中学習を前提に設計</li>
-<li>概念が混在すると理解が浅くなりがち</li>
-<li>実践（コーディング）に十分な時間が必要</li>
-</ul>
-<p><strong>推奨アプローチ</strong>:<br />
-1. まず1つのシリーズを完全にマスター（1-2週間）<br />
-2. GitHubにポートフォリオとして公開<br />
-3. 次のシリーズに進む<br />
-4. 計2-4週間で全シリーズ制覇を目指す</p>
-<hr />
-<h3 id="q3-python">Q3: Python初心者でも学習できますか？</h3>
-<p><strong>A</strong>: <strong>基本文法を理解していれば可能</strong>です：</p>
-<p><strong>必須スキル</strong>:<br />
-- 変数、データ型（int, float, str, list, dict）<br />
-- 関数定義と呼び出し<br />
-- ループ（for, while）と条件分岐（if/else）<br />
-- ライブラリのインストールとインポート</p>
-<p><strong>推奨事前学習</strong>（Python経験がない場合）:<br />
-1. <a href="https://docs.python.org/ja/3/tutorial/">Python公式チュートリアル</a>（1-4章、5-10時間）<br />
-2. <a href="https://www.codecademy.com/learn/learn-python-3">Codecademy Python Course</a>（無料体験）<br />
-3. 簡単なPythonコードを5-10個書いてみる</p>
-<p><strong>各シリーズのChapter 3では、コード例に詳細なコメントがあり、初心者でも理解できるよう設計されています。</strong></p>
-<hr />
-<h3 id="q4">Q4: 産業界でどう活用されていますか？</h3>
-<p><strong>A</strong>: <strong>各シリーズのChapter 4で詳細なケーススタディを紹介</strong>しています。主な応用例：</p>
-<p><strong>MI応用</strong>:<br />
-- Tesla/Panasonic: Li-ion電池材料最適化（容量+20%、開発期間67%短縮）<br />
-- トヨタ: Pt-free触媒開発（コスト80%削減、活性120%）<br />
-- Boeing/Airbus: 高エントロピー合金（20%軽量化）</p>
-<p><strong>NM応用</strong>:<br />
-- 三菱化学: CNT複合材料（強度35%向上、開発期間60%短縮）<br />
-- Samsung: 量子ドットディスプレイ（色域25%拡大）<br />
-- ファイザー: ナノ医薬ドラッグデリバリー（副作用50%削減）</p>
-<p><strong>PI応用</strong>:<br />
-- 三菱ケミカル: 触媒プロセス最適化（収率70%→85%、年間売上+20億円）<br />
-- 旭化成: 重合反応制御（品質不良率5%→1%、廃棄コスト-5億円/年）<br />
-- 武田薬品: 医薬品バッチプロセス（FDA査察一発合格、市場投入3ヶ月短縮）</p>
-<p><strong>MLP応用</strong>:<br />
-- MIT/SLAC: Cu触媒CO₂還元（反応経路解明、50,000倍高速化）<br />
-- Schrödinger/Pfizer: タンパク質フォールディング（創薬開発50%短縮）<br />
-- NIMS: GaN半導体結晶成長（欠陥密度90%削減、コスト30%削減）</p>
-<p><strong>ROI（投資対効果）の例</strong>:<br />
-- 開発期間短縮: 50-90%削減<br />
-- コスト削減: 30-80%<br />
-- 性能向上: 20-120%<br />
-- 初期投資回収期間: 1-3年</p>
-<hr />
-<h3 id="q5">Q5: 学習後のキャリアパスは？</h3>
-<p><strong>A</strong>: <strong>3つの主要進路</strong>があります：</p>
-<h4 id="path-1">Path 1: アカデミア（研究者）</h4>
-<ul>
-<li><strong>ルート</strong>: 学士 → 修士 → 博士（3-5年）→ ポスドク（2-3年）→ 准教授</li>
-<li><strong>給与</strong>: 年収500-1,200万円（日本）、$60-120K（米国）</li>
-<li><strong>スキル</strong>: Python、機械学習、専門分野（材料/化学/物理）、論文執筆</li>
-<li><strong>機関例</strong>: 東京大学、京都大学、東北大学、MIT、スタンフォード、Cambridge</li>
-</ul>
-<h4 id="path-2-rd">Path 2: 産業界R&amp;D</h4>
-<ul>
-<li><strong>役職</strong>: データサイエンティスト、MIエンジニア、計算化学者、プロセスエンジニア</li>
-<li><strong>給与</strong>: 年収700-1,500万円（日本）、$70-200K（米国）</li>
-<li><strong>企業例</strong>: 三菱ケミカル、パナソニック、トヨタ、旭化成、住友化学、Tesla、IBM Research、Schrödinger</li>
-<li><strong>スキル</strong>: Python、機械学習、ドメイン知識、チームワーク、ビジネス理解</li>
-</ul>
-<h4 id="path-3">Path 3: スタートアップ/コンサルティング</h4>
-<ul>
-<li><strong>例</strong>: Citrine Informatics（資金調達$80M）、Kebotix、Matmerize、Chemify、QuantumBlack</li>
-<li><strong>給与</strong>: 年収500-1,000万円 + ストックオプション</li>
-<li><strong>リスク/リターン</strong>: ハイリスク・ハイリターン、高インパクト</li>
-<li><strong>必要スキル</strong>: 技術 + ビジネス + リーダーシップ + 起業家精神</li>
-</ul>
-<p><strong>各シリーズのChapter 4で、具体的なキャリアパス、給与データ、必要スキル、学習タイムラインを詳述しています。</strong></p>
-<hr />
-<h3 id="q6">Q6: コード実行環境は何が必要ですか？</h3>
-<p><strong>A</strong>: <strong>3つの選択肢</strong>があります：</p>
-<h4 id="option-1-anaconda">Option 1: Anaconda（初心者推奨）</h4>
-<ul>
-<li>GUI付き、環境管理が簡単</li>
-<li>Windows/macOS/Linux対応</li>
-<li>インストール後すぐに使える</li>
-</ul>
-<h4 id="option-2-venvpython">Option 2: venv（Python標準）</h4>
-<ul>
-<li>軽量、Pythonに標準搭載</li>
-<li><code>python -m venv env</code>で環境作成</li>
-<li>シンプルで学習に適している</li>
-</ul>
-<h4 id="option-3-google-colab">Option 3: Google Colab（最も手軽）</h4>
-<ul>
-<li><strong>インストール不要、ブラウザだけで動作</strong></li>
-<li>無料GPU利用可能（T4、学習に十分）</li>
-<li>各シリーズのコード例はColabで動作確認済み</li>
-</ul>
-<p><strong>推奨</strong>: まずGoogle Colabで試し、本格的に学習する場合はAnacondaに移行。</p>
-<p><strong>GPU要否</strong>:<br />
-- MI/NM/PI: CPUで十分（学習時間数分〜数十分）<br />
-- MLP: GPUを強く推奨（訓練時間が10-100倍短縮）</p>
-<hr />
-<h3 id="q7">Q7: 各シリーズはどれくらい独立していますか？</h3>
-<p><strong>A</strong>: <strong>各シリーズは独立して学習可能</strong>ですが、一部共通概念があります：</p>
-<p><strong>共通概念</strong>（すべてのシリーズに登場）:<br />
-- 機械学習の基礎（回帰、分類、最適化）<br />
-- Python基本ライブラリ（numpy, pandas, matplotlib）<br />
-- データ前処理、特徴量エンジニアリング<br />
-- モデル評価（MAE、R²、交差検証）</p>
-<p><strong>シリーズ固有の概念</strong>:<br />
-- <strong>MI</strong>: 材料記述子、Materials Project API、結晶構造<br />
-- <strong>NM</strong>: サイズ効果、量子閉じ込め、ナノ粒子合成<br />
-- <strong>PI</strong>: プロセスパラメータ、時系列解析、多目的最適化<br />
-- <strong>MLP</strong>: ポテンシャルエネルギー面、DFT、対称性関数、グラフニューラルネットワーク</p>
-<p><strong>相互関係</strong>:</p>
-<pre class="codehilite"><code>MI（基礎）→ NM（応用1）
-         → PI（応用2）
-         → MLP（応用3）
-</code></pre>
+        <hr />
 
-<p><strong>MIを最初に学ぶと、他のシリーズの理解が30-40%速くなります。</strong></p>
-<hr />
-<h3 id="q8">Q8: 商業利用は可能ですか？</h3>
-<p><strong>A</strong>: <strong>ライブラリとデータによります</strong>：</p>
-<h4 id="mit">✅ 商業利用可能（MITライセンス）:</h4>
-<ul>
-<li><strong>ライブラリ</strong>: scikit-learn, PyTorch, SchNetPack, NequIP, MACE, pandas, numpy</li>
-<li><strong>自作データ</strong>: 自分で生成したDFT計算データ、実験データ</li>
-<li><strong>オープンソースツール</strong>: matminer, ASE, pymatgen</li>
-</ul>
-<h4 id="_13">⚠️ 要確認（学術専用の可能性）:</h4>
-<ul>
-<li><strong>公開データセット</strong>: MD17（学術専用）、一部のMaterials Projectデータ</li>
-<li><strong>商用ソフトウェア</strong>: Materials Studio、Schrödinger（別途ライセンス）</li>
-</ul>
-<h4 id="_14">📌 企業での使用を検討する場合:</h4>
-<ol>
-<li>使用するデータセットのライセンスを確認</li>
-<li>自社データでモデルを訓練（最も安全）</li>
-<li>オープンソースライブラリの商業利用条項を確認</li>
-<li>法務部門に相談</li>
-</ol>
-<p><strong>各シリーズのFAQで、詳細なライセンス情報を提供しています。</strong></p>
-<hr />
-<h3 id="q9">Q9: シリーズの更新予定は？</h3>
-<p><strong>A</strong>: <strong>継続的に改善・拡張予定</strong>です：</p>
-<p><strong>Short-term（1-3ヶ月）</strong>:<br />
-- バグ修正、誤字脱字訂正<br />
-- コード例の追加（コミュニティからの要望）<br />
-- 新しいケーススタディ追加</p>
-<p><strong>Medium-term（3-6ヶ月）</strong>:<br />
-- 新シリーズ追加の検討:<br />
-  - ケモインフォマティクス（CI）入門<br />
-  - バイオインフォマティクス（BI）入門<br />
-  - データ駆動型材料設計（DDMD）入門<br />
-- インタラクティブJupyter Notebook版<br />
-- 動画チュートリアル</p>
-<p><strong>Long-term（6-12ヶ月）</strong>:<br />
-- 学習プラットフォームの構築（進捗トラッキング機能）<br />
-- コミュニティフォーラム<br />
-- 認定証プログラム</p>
-<p><strong>フィードバック大歓迎</strong>！新しいトピックのリクエストや改善提案は、GitHubリポジトリのIssueまたはメール（yusuke.hashimoto.b8@tohoku.ac.jp）でお寄せください。</p>
-<hr />
-<h2 id="_15">🚀 次のステップ</h2>
-<h3 id="_16">シリーズ完了後の推奨アクション</h3>
-<h4 id="immediate1-2">Immediate（1-2週間以内）</h4>
-<ol>
-<li>
-<p>✅ <strong>GitHub/GitLabでポートフォリオ作成</strong><br />
-   - 各シリーズで実装したコードをREADME付きで公開<br />
-   - データセット、結果の可視化、考察を含める<br />
-   - 例: "MI-battery-optimization", "MLP-catalyst-simulation"</p>
-</li>
-<li>
-<p>✅ <strong>LinkedInプロフィール更新</strong><br />
-   - スキル追加: "Materials Informatics", "Machine Learning", "Python", "PyTorch"<br />
-   - プロジェクト追加: GitHubリンク付き</p>
-</li>
-<li>
-<p>✅ <strong>学習記録をブログ/Qiitaで発信</strong><br />
-   - 学んだことをアウトプット<br />
-   - コミュニティからのフィードバック獲得</p>
-</li>
-</ol>
-<h4 id="short-term1-3">Short-term（1-3ヶ月）</h4>
-<ol>
-<li>
-<p>✅ <strong>Kaggleコンペに参加</strong><br />
-   - 材料科学関連コンペ: "Predicting Molecular Properties", "Materials Discovery"<br />
-   - 実践的なデータサイエンススキル向上</p>
-</li>
-<li>
-<p>✅ <strong>国内学会で発表</strong><br />
-   - 日本材料学会、化学工学会、計算化学会<br />
-   - ポスター発表から始める（ハードル低い）</p>
-</li>
-<li>
-<p>✅ <strong>独自プロジェクトを実行</strong><br />
-   - 自分の研究テーマにMI/NM/PI/MLPを適用<br />
-   - 実験データ + 機械学習の組み合わせ</p>
-</li>
-<li>
-<p>✅ <strong>オープンソースにコントリビュート</strong><br />
-   - pymatgen、matminer、SchNetPackのバグ報告・機能追加<br />
-   - ドキュメント翻訳（日本語化）</p>
-</li>
-</ol>
-<h4 id="medium-term3-6">Medium-term（3-6ヶ月）</h4>
-<ol>
-<li>
-<p>✅ <strong>論文を10本精読</strong><br />
-   - <em>Nature Materials</em>, <em>Advanced Materials</em>, <em>npj Computational Materials</em><br />
-   - <em>J. Chem. Phys.</em>, <em>JCTC</em>, <em>Computers &amp; Chemical Engineering</em></p>
-</li>
-<li>
-<p>✅ <strong>インターンシップ/共同研究</strong><br />
-   - 企業: 三菱ケミカル、トヨタ、パナソニック等<br />
-   - 研究機関: NIMS、産総研</p>
-</li>
-<li>
-<p>✅ <strong>国内学会で口頭発表</strong><br />
-   - ポスターより高度、質疑応答で深い議論</p>
-</li>
-</ol>
-<h4 id="long-term1">Long-term（1年以上）</h4>
-<ol>
-<li>
-<p>✅ <strong>国際学会で発表</strong><br />
-   - MRS Fall/Spring Meeting、E-MRS、ACS、PSE<br />
-   - 英語プレゼンテーション・ネットワーキング</p>
-</li>
-<li>
-<p>✅ <strong>査読付き論文を投稿</strong><br />
-   - <em>npj Computational Materials</em>（オープンアクセス）<br />
-   - <em>J. Chem. Phys.</em>、<em>Ind. Eng. Chem. Res.</em></p>
-</li>
-<li>
-<p>✅ <strong>キャリア移行</strong><br />
-   - アカデミア: 博士課程、ポスドク、助教<br />
-   - 産業界: データサイエンティスト、MIエンジニア<br />
-   - スタートアップ: 創業、参画</p>
-</li>
-<li>
-<p>✅ <strong>次世代育成</strong><br />
-   - 勉強会・ワークショップの主催<br />
-   - 後輩への指導、メンタリング<br />
-   - コミュニティへの貢献</p>
-</li>
-</ol>
-<hr />
-<h2 id="_17">📞 フィードバックとサポート</h2>
-<h3 id="ai_1">AI寺子屋について</h3>
-<p>このプラットフォームは、<strong>東北大学 多元物質科学研究所 Dr. Yusuke Hashimoto</strong> のもと、MI Knowledge Hubプロジェクトの一環として作成されました。</p>
-<p><strong>理念</strong>:<br />
-- データサイエンスと材料科学の融合領域を、誰でもアクセスできる形で提供<br />
-- 理論と実践のバランスを重視した教育コンテンツ<br />
-- オープンな学習コミュニティの形成</p>
-<p><strong>作成日</strong>: 2025年10月17日<br />
-<strong>バージョン</strong>: 1.0<br />
-<strong>総コンテンツ量</strong>: 16章、115コード例、20ケーススタディ</p>
-<h3 id="_18">フィードバックをお待ちしています</h3>
-<p>このプラットフォームを改善するため、皆様のフィードバックをお待ちしています：</p>
-<ul>
-<li><strong>誤字・脱字・技術的誤り</strong>: <a href="https://github.com/YusukeHashimotoPhD/AI-Terakoya">GitHubリポジトリのIssue</a>で報告</li>
-<li><strong>改善提案</strong>: 新しいシリーズ、追加して欲しいトピック、コード例</li>
-<li><strong>質問</strong>: 理解が難しかった部分、追加説明が欲しい箇所</li>
-<li><strong>成功事例</strong>: AI寺子屋で学んだことを使ったプロジェクト、論文、製品</li>
-</ul>
-<p><strong>連絡先</strong>:<br />
-📧 Email: yusuke.hashimoto.b8@tohoku.ac.jp<br />
-🐙 GitHub: <a href="https://github.com/YusukeHashimotoPhD">@YusukeHashimotoPhD</a><br />
-🔗 LinkedIn: <a href="https://www.linkedin.com/in/yusuke-hashimoto-materials">Dr. Yusuke Hashimoto</a></p>
-<h3 id="_19">コミュニティに参加しよう</h3>
-<p><strong>日本語コミュニティ</strong>:<br />
-- <a href="https://jsms.jp">日本材料学会 MIフォーラム</a><br />
-- <a href="https://www.comp-chem.jp">計算化学会 ML部会</a><br />
-- <a href="https://mi-study-group.slack.com">MI勉強会 Slack</a>（参加リンク: メールで申請）</p>
-<p><strong>国際コミュニティ</strong>:<br />
-- <a href="https://matsci.org">Materials Project Forum</a><br />
-- <a href="https://molssi.org">MolSSI Discussion</a><br />
-- <a href="https://www.cecam.org">CECAM Community</a></p>
-<hr />
-<h2 id="_20">📜 ライセンスと利用規約</h2>
-<p>このプラットフォームの全コンテンツは <strong>CC BY 4.0</strong>（Creative Commons Attribution 4.0 International）ライセンスのもとで公開されています。</p>
-<h3 id="_21">可能なこと</h3>
-<p>✅ <strong>自由な閲覧・ダウンロード</strong><br />
-✅ <strong>教育目的での利用</strong>（大学の授業、企業研修、勉強会等）<br />
-✅ <strong>改変・二次創作</strong>（翻訳、要約、スライド作成等）<br />
-✅ <strong>研究・開発での利用</strong>（論文、プロジェクト、製品開発）</p>
-<h3 id="_22">条件</h3>
-<p>📌 <strong>著者のクレジット表示が必要</strong><br />
-📌 <strong>改変した場合はその旨を明記</strong><br />
-📌 <strong>商業利用の場合は事前に連絡</strong>（無償提供の場合は連絡不要）</p>
-<h3 id="_23">引用方法</h3>
-<p><strong>論文での引用</strong>:</p>
-<pre class="codehilite"><code>Hashimoto, Y. (2025). AI Terakoya - Materials Informatics Knowledge Hub.
-Tohoku University. https://yusukehashimotolab.github.io/wp/knowledge/
-</code></pre>
+        <h2 id="learning-path">🗺️ 学習パス診断フローチャート</h2>
 
-<p><strong>BibTeX</strong>:</p>
-<pre class="codehilite"><code class="language-bibtex">@misc{hashimoto2025aiterakoya,
-  author = {Hashimoto, Yusuke},
-  title = {AI Terakoya - Materials Informatics Knowledge Hub},
-  year = {2025},
-  publisher = {Tohoku University},
-  url = {https://yusukehashimotolab.github.io/wp/knowledge/}
-}
-</code></pre>
+        <h3>あなたに最適な学習ルートを見つけましょう</h3>
 
-<p><strong>ウェブサイト/ブログでの言及</strong>:</p>
-<pre class="codehilite"><code>出典: AI寺子屋 - Materials Informatics Knowledge Hub (東北大学 橋本佑介)
-https://yusukehashimotolab.github.io/wp/knowledge/
-</code></pre>
+        <pre class="mermaid">
+flowchart TD
+    Start[🎓 MI寺子屋学習開始<br/>まずは自己診断から] --> Q1{プログラミング<br/>経験は?}
 
-<p>詳細: <a href="https://creativecommons.org/licenses/by/4.0/deed.ja">CC BY 4.0ライセンス全文</a></p>
-<hr />
-<h2 id="_24">🎓 さあ、学習を始めましょう！</h2>
-<p>準備はできましたか？ あなたに最適なシリーズを選んで、データ駆動型材料開発の世界への旅を始めましょう！</p>
-<h3 id="_25">推奨スタート地点</h3>
-<p><strong>🔰 完全な初心者</strong> → <a href="./mi-introduction/index.html">📘 MI入門シリーズ</a>から開始<br />
-<strong>⚗️ ナノテク興味</strong> → <a href="./nm-introduction/index.html">📗 NM入門シリーズ</a>から開始<br />
-<strong>🏭 化学工学バックグラウンド</strong> → <a href="./pi-introduction/index.html">📙 PI入門シリーズ</a>から開始<br />
-<strong>🧪 計算化学経験者</strong> → <a href="./mlp-introduction/index.html">📕 MLP入門シリーズ</a>から開始</p>
-<hr />
-<p><strong>更新履歴</strong></p>
-<ul>
-<li><strong>2025-10-17</strong>: v1.0 AI寺子屋ポータル公開（4シリーズ統合）</li>
-</ul>
-<hr />
-<div style="text-align: center; font-size: 1.2em; margin-top: 3rem;">
-<strong>あなたのMI学習の旅がここから始まります！</strong><br/>
-<em>データで拓く材料開発の未来へ、ようこそ。</em>
-</div>
+    Q1 -->|初心者| PythonFirst[📚 Python基礎から開始<br/>推奨: 20-30時間の事前学習]
+    Q1 -->|経験あり| Q2{材料科学の<br/>バックグラウンドは?}
+
+    PythonFirst --> MI_Start
+
+    Q2 -->|材料科学専攻| MI_Start[📘 MI入門から開始<br/>必修シリーズ]
+    Q2 -->|化学工学専攻| PI_Start[📙 PI入門から開始<br/>プロセス最適化]
+    Q2 -->|計算化学専攻| MLP_Start[📕 MLP入門から開始<br/>分子シミュレーション]
+    Q2 -->|物理・ナノテク専攻| NM_Start[📗 NM入門から開始<br/>ナノ材料]
+    Q2 -->|データサイエンス専攻| MI_Start
+
+    MI_Start --> Level1_Complete[✅ 入門シリーズ完了]
+    PI_Start --> Level1_Complete
+    MLP_Start --> Level1_Complete
+    NM_Start --> Level1_Complete
+
+    Level1_Complete --> Q3{次に興味がある<br/>分野は?}
+
+    Q3 -->|最新AI技術| Advanced_AI[🚀 発展シリーズ<br/>GNN/Transformer/強化学習]
+    Q3 -->|実践的技術| Practical[🛠️ 実践技術シリーズ<br/>データベース/実験解析/自動化]
+    Q3 -->|理論を深めたい| Fundamentals[📐 基礎理論シリーズ<br/>計算材料科学基礎]
+
+    Advanced_AI --> Expert[🎓 エキスパートレベル達成<br/>全13シリーズ完全制覇]
+    Practical --> Expert
+    Fundamentals --> Expert
+
+    Expert --> Career{キャリアパス選択}
+
+    Career -->|研究者| Academia[🔬 アカデミア<br/>博士課程・ポスドク・准教授]
+    Career -->|産業R&D| Industry[🏭 産業界R&D<br/>MI/DSエンジニア]
+    Career -->|起業| Startup[🚀 スタートアップ<br/>MI技術ベンチャー]
+
+    style Start fill:#e3f2fd,stroke:#1976d2,stroke-width:3px
+    style Q1 fill:#fff3e0,stroke:#f57c00
+    style Q2 fill:#f3e5f5,stroke:#7b1fa2
+    style Q3 fill:#e8f5e9,stroke:#388e3c
+    style MI_Start fill:#bbdefb,stroke:#1976d2,stroke-width:2px
+    style Level1_Complete fill:#c8e6c9,stroke:#388e3c,stroke-width:2px
+    style Expert fill:#ffd54f,stroke:#f9a825,stroke-width:3px
+    style Career fill:#fff59d,stroke:#fbc02d
+        </pre>
+
+        <hr />
+
+        <h2 id="beginner-series">📚 入門シリーズ（Beginner Series）</h2>
+        <p>基礎から体系的に学べる4つの必修シリーズ</p>
+
+        <hr />
+
+        <div class="series-card">
+            <h3 id="mi-intro">📘 マテリアルズ・インフォマティクス（MI）入門</h3>
+            <p><strong>Materials Informatics Introduction Series</strong></p>
+            <p>材料科学全般へのAI/機械学習の適用を学ぶ基礎シリーズ（必修推奨）</p>
+
+            <p><strong>概要</strong>:</p>
+            <ul>
+                <li>🎯 <strong>対象分野</strong>: 材料探索、特性予測、データベース活用、記述子設計</li>
+                <li>📊 <strong>難易度</strong>: 入門〜上級</li>
+                <li>⏱️ <strong>学習時間</strong>: 90-120分（全4章）</li>
+                <li>💻 <strong>コード例</strong>: 35個（全て実行可能、Google Colab対応）</li>
+                <li>🔬 <strong>応用例</strong>: Li-ion電池、触媒、高エントロピー合金、ペロブスカイト太陽電池、熱電材料</li>
+            </ul>
+
+            <p><strong>使用ツール</strong>: scikit-learn, matminer, Materials Project API, pandas, numpy</p>
+
+            <p><strong><a href="./mi-introduction/index.html">📘 MI入門シリーズへ →</a></strong></p>
+        </div>
+
+        <div class="series-card">
+            <h3 id="nm-intro">📗 ナノ材料（NM）入門</h3>
+            <p><strong>Nanomaterials Introduction Series</strong></p>
+            <p>Python実践で学ぶナノマテリアルサイエンス</p>
+
+            <p><strong>概要</strong>:</p>
+            <ul>
+                <li>🎯 <strong>対象分野</strong>: ナノ粒子、カーボンナノチューブ、グラフェン、量子ドット</li>
+                <li>📊 <strong>難易度</strong>: 初級〜中級</li>
+                <li>⏱️ <strong>学習時間</strong>: 90-120分（全4章）</li>
+                <li>💻 <strong>コード例</strong>: 30-35個（全て実行可能）</li>
+                <li>🔬 <strong>応用例</strong>: CNT複合材料、量子ドット発光、金ナノ粒子触媒、ナノ医薬</li>
+            </ul>
+
+            <p><strong>使用ツール</strong>: LightGBM, scikit-optimize, OpenCV, SHAP</p>
+
+            <p><strong><a href="./nm-introduction/index.html">📗 NM入門シリーズへ →</a></strong></p>
+        </div>
+
+        <div class="series-card">
+            <h3 id="pi-intro">📙 プロセス・インフォマティクス（PI）入門</h3>
+            <p><strong>Process Informatics Introduction Series</strong></p>
+            <p>データで拓く化学プロセス最適化の未来</p>
+
+            <p><strong>概要</strong>:</p>
+            <ul>
+                <li>🎯 <strong>対象分野</strong>: 化学プロセス最適化、デジタルツイン、品質制御</li>
+                <li>📊 <strong>難易度</strong>: 入門〜上級</li>
+                <li>⏱️ <strong>学習時間</strong>: 90-120分（全4章）</li>
+                <li>💻 <strong>コード例</strong>: 35個（全て実行可能）</li>
+                <li>🔬 <strong>応用例</strong>: 触媒プロセス、重合反応制御、蒸留塔最適化、バイオプロセス</li>
+            </ul>
+
+            <p><strong>使用ツール</strong>: Prophet, ARIMA, scipy.optimize, LightGBM</p>
+
+            <p><strong><a href="./pi-introduction/index.html">📙 PI入門シリーズへ →</a></strong></p>
+        </div>
+
+        <div class="series-card">
+            <h3 id="mlp-intro">📕 機械学習ポテンシャル（MLP）入門</h3>
+            <p><strong>Machine Learning Potential Introduction Series</strong></p>
+            <p>量子精度と古典速度を両立する次世代シミュレーション</p>
+
+            <p><strong>概要</strong>:</p>
+            <ul>
+                <li>🎯 <strong>対象分野</strong>: 分子シミュレーション高速化、反応経路探索、触媒設計</li>
+                <li>📊 <strong>難易度</strong>: 入門〜上級</li>
+                <li>⏱️ <strong>学習時間</strong>: 85-100分（全4章）</li>
+                <li>💻 <strong>コード例</strong>: 15個（全て実行可能、GPU推奨）</li>
+                <li>🔬 <strong>応用例</strong>: Cu触媒CO₂還元、Li-ion電池電解質、タンパク質フォールディング</li>
+            </ul>
+
+            <p><strong>使用ツール</strong>: PyTorch, SchNetPack, ASE, MD17データセット</p>
+
+            <p><strong><a href="./mlp-introduction/index.html">📕 MLP入門シリーズへ →</a></strong></p>
+        </div>
+
+        <hr />
+
+        <h2 id="advanced-series">🚀 発展シリーズ（Advanced AI Series）</h2>
+        <p>最新AI技術を学ぶ5つの高度なシリーズ</p>
+
+        <hr />
+
+        <div class="series-card">
+            <h3 id="gnn-intro">📕 グラフニューラルネットワーク（GNN）入門</h3>
+            <p><strong>Graph Neural Networks for Materials and Molecules</strong></p>
+            <p>グラフ表現学習で切り拓く分子・材料設計の新時代</p>
+
+            <p><strong>概要</strong>:</p>
+            <ul>
+                <li>🎯 <strong>対象分野</strong>: 分子特性予測、結晶構造予測、触媒設計、反応予測</li>
+                <li>📊 <strong>難易度</strong>: 中級〜上級</li>
+                <li>⏱️ <strong>学習時間</strong>: 120-150分（全5章）</li>
+                <li>💻 <strong>コード例</strong>: 35-40個（GPU推奨）</li>
+                <li>🔬 <strong>応用例</strong>: OC20触媒、QM9分子特性、創薬（結合親和性）</li>
+                <li>✅ <strong>ステータス</strong>: 2025年10月17日リリース（全5章公開済み）</li>
+            </ul>
+
+            <p><strong>使用ツール</strong>: PyTorch Geometric, RDKit, SchNet, NequIP, Graphormer</p>
+
+            <p><strong><a href="./gnn-introduction/index.html">📕 GNN入門シリーズへ →</a></strong></p>
+        </div>
+
+        <div class="series-card">
+            <h3 id="bayesian-intro">📕 ベイズ最適化・アクティブラーニング入門</h3>
+            <p><strong>Bayesian Optimization & Active Learning</strong></p>
+            <p>少ない実験で最適解を見つける効率的探索戦略</p>
+
+            <p><strong>概要</strong>:</p>
+            <ul>
+                <li>🎯 <strong>対象分野</strong>: 材料探索、プロセス最適化、ハイパーパラメータ調整</li>
+                <li>📊 <strong>難易度</strong>: 中級〜上級</li>
+                <li>⏱️ <strong>学習時間</strong>: 100-120分（全4章）</li>
+                <li>💻 <strong>コード例</strong>: 30個（全て実行可能）</li>
+                <li>🔬 <strong>応用例</strong>: 触媒活性最大化、電池性能最適化、合成条件探索</li>
+            </ul>
+
+            <p><strong>使用ツール</strong>: scikit-optimize, GPyOpt, BoTorch, Ax Platform</p>
+
+            <p><strong><a href="./bayesian-optimization-introduction/index.html">📕 ベイズ最適化入門シリーズへ →</a></strong></p>
+        </div>
+
+        <div class="series-card">
+            <h3 id="transformer-intro">📕 Transformer・Foundation Models入門</h3>
+            <p><strong>Transformer & Foundation Models for Materials</strong></p>
+            <p>大規模事前学習モデルで加速する材料設計</p>
+
+            <p><strong>概要</strong>:</p>
+            <ul>
+                <li>🎯 <strong>対象分野</strong>: 分子生成、材料特性予測、逆設計、自然言語処理</li>
+                <li>📊 <strong>難易度</strong>: 上級</li>
+                <li>⏱️ <strong>学習時間</strong>: 120-140分（全4章）</li>
+                <li>💻 <strong>コード例</strong>: 25-30個（GPU必須）</li>
+                <li>🔬 <strong>応用例</strong>: MatBERT、MolGPT、Graphormer、Uni-Mol</li>
+            </ul>
+
+            <p><strong>使用ツール</strong>: HuggingFace Transformers, MolBERT, ChemBERTa</p>
+
+            <p><strong><a href="./transformer-introduction/index.html">📕 Transformer入門シリーズへ →</a></strong></p>
+        </div>
+
+        <div class="series-card">
+            <h3 id="rl-intro">📕 強化学習入門（材料科学特化版）</h3>
+            <p><strong>Reinforcement Learning for Materials Science</strong></p>
+            <p>試行錯誤から学ぶ自律的材料設計エージェント</p>
+
+            <p><strong>概要</strong>:</p>
+            <ul>
+                <li>🎯 <strong>対象分野</strong>: 材料探索、合成経路最適化、自動実験、プロセス制御</li>
+                <li>📊 <strong>難易度</strong>: 上級</li>
+                <li>⏱️ <strong>学習時間</strong>: 110-130分（全4章）</li>
+                <li>💻 <strong>コード例</strong>: 25個（全て実行可能）</li>
+                <li>🔬 <strong>応用例</strong>: 分子生成RL、結晶構造探索、自律実験ロボット</li>
+            </ul>
+
+            <p><strong>使用ツール</strong>: Stable-Baselines3, RLlib, Gym, MolGym</p>
+
+            <p><strong><a href="./reinforcement-learning-introduction/index.html">📕 強化学習入門シリーズへ →</a></strong></p>
+        </div>
+
+        <hr />
+
+        <h2 id="practical-series">🛠️ 実践技術シリーズ（Practical Technology Series）</h2>
+        <p>実務で即活用できる4つの実践的シリーズ</p>
+
+        <hr />
+
+        <div class="series-card">
+            <h3 id="database-intro">📗 材料データベース活用入門</h3>
+            <p><strong>Materials Database Mastery</strong></p>
+            <p>Materials Project完全ガイド - データ取得から高度な解析まで</p>
+
+            <p><strong>概要</strong>:</p>
+            <ul>
+                <li>🎯 <strong>対象分野</strong>: データベース検索、API活用、大規模データ解析</li>
+                <li>📊 <strong>難易度</strong>: 初級〜中級</li>
+                <li>⏱️ <strong>学習時間</strong>: 90-110分（全4章）</li>
+                <li>💻 <strong>コード例</strong>: 30-35個（全て実行可能）</li>
+                <li>🔬 <strong>主要DB</strong>: Materials Project, AFLOW, OQMD, Citrine, NOMAD</li>
+            </ul>
+
+            <p><strong>使用ツール</strong>: pymatgen, Materials Project API, mp-api, pandas</p>
+
+            <p><strong><a href="./database-introduction/index.html">📗 データベース活用入門シリーズへ →</a></strong></p>
+        </div>
+
+        <div class="series-card">
+            <h3 id="experiment-intro">📗 実験データ解析入門</h3>
+            <p><strong>Experimental Data Analysis with Machine Learning</strong></p>
+            <p>XRD・SEM・TEM画像解析から物性測定データまで</p>
+
+            <p><strong>概要</strong>:</p>
+            <ul>
+                <li>🎯 <strong>対象分野</strong>: XRD解析、SEM/TEM画像処理、スペクトル解析</li>
+                <li>📊 <strong>難易度</strong>: 中級</li>
+                <li>⏱️ <strong>学習時間</strong>: 100-120分（全4章）</li>
+                <li>💻 <strong>コード例</strong>: 30個（全て実行可能）</li>
+                <li>🔬 <strong>応用例</strong>: 自動ピーク同定、粒子検出、スペクトル分類</li>
+            </ul>
+
+            <p><strong>使用ツール</strong>: OpenCV, scikit-image, scipy.signal, pymatgen</p>
+
+            <p><strong><a href="./experimental-data-analysis-introduction/index.html">📗 実験データ解析入門シリーズへ →</a></strong></p>
+        </div>
+
+        <div class="series-card">
+            <h3 id="htc-intro">📗 ハイスループット計算入門</h3>
+            <p><strong>High-Throughput Computing for Materials</strong></p>
+            <p>DFT計算の自動化とワークフロー管理</p>
+
+            <p><strong>概要</strong>:</p>
+            <ul>
+                <li>🎯 <strong>対象分野</strong>: DFT計算自動化、ワークフロー管理、データ管理</li>
+                <li>📊 <strong>難易度</strong>: 中級〜上級</li>
+                <li>⏱️ <strong>学習時間</strong>: 110-130分（全5章）</li>
+                <li>💻 <strong>コード例</strong>: 30-35個（スパコン環境推奨）</li>
+                <li>🔬 <strong>応用例</strong>: 結晶構造スクリーニング、相図計算、欠陥解析</li>
+            </ul>
+
+            <p><strong>使用ツール</strong>: ASE, Pymatgen, FireWorks, AiiDA, Atomate</p>
+
+            <p><strong><a href="./high-throughput-computing-introduction/index.html">📗 ハイスループット計算入門シリーズへ →</a></strong></p>
+        </div>
+
+        <div class="series-card">
+            <h3 id="robotics-intro">📗 ロボティクス実験自動化入門</h3>
+            <p><strong>Robotic Lab Automation & Closed-Loop Optimization</strong></p>
+            <p>自律実験ロボットで実現するクローズドループ材料開発</p>
+
+            <p><strong>概要</strong>:</p>
+            <ul>
+                <li>🎯 <strong>対象分野</strong>: 自動合成、クローズドループ最適化、自律実験</li>
+                <li>📊 <strong>難易度</strong>: 上級</li>
+                <li>⏱️ <strong>学習時間</strong>: 120-150分（全5章）</li>
+                <li>💻 <strong>コード例</strong>: 30-35個（ハードウェア連携あり）</li>
+                <li>🔬 <strong>応用例</strong>: 自動合成ロボット、クローズドループ探索、Chemputer</li>
+            </ul>
+
+            <p><strong>使用ツール</strong>: Python-Arduino連携, OpenTrons, Chemputer, Summit</p>
+
+            <p><strong><a href="./robotic-lab-automation-introduction/index.html">📗 ロボティクス実験自動化入門シリーズへ →</a></strong></p>
+        </div>
+
+        <hr />
+
+        <h2 id="fundamentals-series">📐 基礎理論シリーズ（Fundamentals Series）</h2>
+        <p>理論的基礎を固める専門シリーズ</p>
+
+        <hr />
+
+        <div class="series-card">
+            <h3 id="cms-intro">📙 計算材料科学基礎入門</h3>
+            <p><strong>Computational Materials Science Fundamentals</strong></p>
+            <p>DFT・分子動力学・フォノン計算の基礎から実践まで</p>
+
+            <p><strong>概要</strong>:</p>
+            <ul>
+                <li>🎯 <strong>対象分野</strong>: DFT計算、分子動力学、フォノン計算、バンド構造</li>
+                <li>📊 <strong>難易度</strong>: 中級〜上級</li>
+                <li>⏱️ <strong>学習時間</strong>: 130-160分（全5章）</li>
+                <li>💻 <strong>コード例</strong>: 30個（スパコン環境推奨）</li>
+                <li>🔬 <strong>応用例</strong>: バンド構造計算、格子振動解析、熱力学特性予測</li>
+            </ul>
+
+            <p><strong>使用ツール</strong>: VASP, Quantum ESPRESSO, LAMMPS, Phonopy</p>
+
+            <p><strong><a href="./computational-materials-science-fundamentals/index.html">📙 計算材料科学基礎入門シリーズへ →</a></strong></p>
+        </div>
+
+        <hr />
+
+        <h2 id="comparison">📊 シリーズ比較表</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>シリーズ</th>
+                    <th>カテゴリ</th>
+                    <th>難易度</th>
+                    <th>学習時間</th>
+                    <th>章数</th>
+                    <th>コード例</th>
+                    <th>主要ツール</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>📘 MI入門</strong></td>
+                    <td>入門</td>
+                    <td>入門〜上級</td>
+                    <td>90-120分</td>
+                    <td>4章</td>
+                    <td>35個</td>
+                    <td>scikit-learn, matminer</td>
+                </tr>
+                <tr>
+                    <td><strong>📗 NM入門</strong></td>
+                    <td>入門</td>
+                    <td>初級〜中級</td>
+                    <td>90-120分</td>
+                    <td>4章</td>
+                    <td>30-35個</td>
+                    <td>LightGBM, OpenCV</td>
+                </tr>
+                <tr>
+                    <td><strong>📙 PI入門</strong></td>
+                    <td>入門</td>
+                    <td>入門〜上級</td>
+                    <td>90-120分</td>
+                    <td>4章</td>
+                    <td>35個</td>
+                    <td>Prophet, ARIMA</td>
+                </tr>
+                <tr>
+                    <td><strong>📕 MLP入門</strong></td>
+                    <td>入門</td>
+                    <td>入門〜上級</td>
+                    <td>85-100分</td>
+                    <td>4章</td>
+                    <td>15個</td>
+                    <td>PyTorch, SchNetPack</td>
+                </tr>
+                <tr>
+                    <td><strong>📕 GNN入門</strong></td>
+                    <td>発展</td>
+                    <td>中級〜上級</td>
+                    <td>120-150分</td>
+                    <td>5章</td>
+                    <td>35-40個</td>
+                    <td>PyTorch Geometric</td>
+                </tr>
+                <tr>
+                    <td><strong>📕 ベイズ最適化</strong></td>
+                    <td>発展</td>
+                    <td>中級〜上級</td>
+                    <td>100-120分</td>
+                    <td>4章</td>
+                    <td>30個</td>
+                    <td>scikit-optimize, BoTorch</td>
+                </tr>
+                <tr>
+                    <td><strong>📕 Transformer</strong></td>
+                    <td>発展</td>
+                    <td>上級</td>
+                    <td>120-140分</td>
+                    <td>4章</td>
+                    <td>25-30個</td>
+                    <td>HuggingFace, MolBERT</td>
+                </tr>
+                <tr>
+                    <td><strong>📕 強化学習</strong></td>
+                    <td>発展</td>
+                    <td>上級</td>
+                    <td>110-130分</td>
+                    <td>4章</td>
+                    <td>25個</td>
+                    <td>Stable-Baselines3</td>
+                </tr>
+                <tr>
+                    <td><strong>📗 データベース活用</strong></td>
+                    <td>実践</td>
+                    <td>初級〜中級</td>
+                    <td>90-110分</td>
+                    <td>4章</td>
+                    <td>30-35個</td>
+                    <td>pymatgen, MP API</td>
+                </tr>
+                <tr>
+                    <td><strong>📗 実験データ解析</strong></td>
+                    <td>実践</td>
+                    <td>中級</td>
+                    <td>100-120分</td>
+                    <td>4章</td>
+                    <td>30個</td>
+                    <td>OpenCV, scipy</td>
+                </tr>
+                <tr>
+                    <td><strong>📗 HTC</strong></td>
+                    <td>実践</td>
+                    <td>中級〜上級</td>
+                    <td>110-130分</td>
+                    <td>5章</td>
+                    <td>30-35個</td>
+                    <td>ASE, FireWorks</td>
+                </tr>
+                <tr>
+                    <td><strong>📗 ロボティクス</strong></td>
+                    <td>実践</td>
+                    <td>上級</td>
+                    <td>120-150分</td>
+                    <td>5章</td>
+                    <td>30-35個</td>
+                    <td>OpenTrons, Summit</td>
+                </tr>
+                <tr>
+                    <td><strong>📙 計算材料科学基礎</strong></td>
+                    <td>基礎理論</td>
+                    <td>中級〜上級</td>
+                    <td>130-160分</td>
+                    <td>5章</td>
+                    <td>30個</td>
+                    <td>VASP, LAMMPS</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <hr />
+
+        <h2 id="resources">🌐 共通学習リソース</h2>
+
+        <h3>主要データベース・ツール</h3>
+        <p><strong>材料データベース</strong>:</p>
+        <ul>
+            <li><a href="https://materialsproject.org">Materials Project</a> - 140k+ 材料、DFT計算</li>
+            <li><a href="http://aflowlib.org">AFLOW</a> - 結晶構造特化、3.5M 構造</li>
+            <li><a href="http://oqmd.org">OQMD</a> - 量子計算、815k 材料</li>
+            <li><a href="https://nomad-lab.eu">NOMAD</a> - 大規模DFTデータベース</li>
+        </ul>
+
+        <p><strong>Pythonライブラリ</strong>:</p>
+        <ul>
+            <li><a href="https://pymatgen.org">pymatgen</a> - 材料解析の基盤ライブラリ</li>
+            <li><a href="https://hackingmaterials.lbl.gov/matminer/">matminer</a> - 特徴量エンジニアリング</li>
+            <li><a href="https://github.com/atomistic-machine-learning/schnetpack">SchNetPack</a> - 機械学習ポテンシャル</li>
+            <li><a href="https://wiki.fysik.dtu.dk/ase/">ASE</a> - 原子シミュレーション環境</li>
+            <li><a href="https://pytorch-geometric.readthedocs.io/">PyTorch Geometric</a> - グラフニューラルネットワーク</li>
+        </ul>
+
+        <h3>主要カンファレンス</h3>
+        <ul>
+            <li><strong>MRS Fall/Spring Meeting</strong> (材料科学総合)</li>
+            <li><strong>E-MRS</strong> (ヨーロッパ材料科学)</li>
+            <li><strong>SCEJ Annual Meeting</strong> (化学工学会年会)</li>
+            <li><strong>ACS National Meeting</strong> (米国化学会)</li>
+            <li><strong>日本計算化学会年会</strong></li>
+        </ul>
+
+        <hr />
+
+        <h2 id="faq">❓ FAQ（よくある質問）</h2>
+
+        <h3>Q1: どのシリーズから始めるべきですか？</h3>
+        <p><strong>A</strong>: <strong>背景と興味に応じて選択</strong>してください：</p>
+        <ul>
+            <li><strong>材料科学のバックグラウンドがある</strong> → MI入門から開始（最も汎用的）</li>
+            <li><strong>ナノテクノロジーに興味</strong> → NM入門から開始</li>
+            <li><strong>化学工学/プロセスエンジニア</strong> → PI入門から開始</li>
+            <li><strong>計算化学/分子シミュレーション経験者</strong> → MLP入門から開始</li>
+        </ul>
+        <p><strong>初めての方は MI入門を強く推奨</strong>します。</p>
+
+        <h3>Q2: Python初心者でも学習できますか？</h3>
+        <p><strong>A</strong>: <strong>基本文法を理解していれば可能</strong>です。必須スキル：</p>
+        <ul>
+            <li>変数、データ型（int, float, str, list, dict）</li>
+            <li>関数定義と呼び出し</li>
+            <li>ループ（for, while）と条件分岐（if/else）</li>
+            <li>ライブラリのインストールとインポート</li>
+        </ul>
+
+        <h3>Q3: 学習後のキャリアパスは？</h3>
+        <p><strong>A</strong>: <strong>3つの主要進路</strong>があります：</p>
+        <ul>
+            <li><strong>アカデミア（研究者）</strong>: 年収500-1,200万円（日本）</li>
+            <li><strong>産業界R&D</strong>: 年収700-1,500万円（日本）</li>
+            <li><strong>スタートアップ/コンサルティング</strong>: 年収500-1,000万円 + ストックオプション</li>
+        </ul>
+
+        <h3>Q4: コード実行環境は何が必要ですか？</h3>
+        <p><strong>A</strong>: <strong>3つの選択肢</strong>があります：</p>
+        <ol>
+            <li><strong>Google Colab（推奨）</strong>: インストール不要、無料GPU、ブラウザだけで動作</li>
+            <li><strong>Anaconda</strong>: GUI付き、環境管理が簡単</li>
+            <li><strong>venv（Python標準）</strong>: 軽量、シンプル</li>
+        </ol>
+
+        <hr />
+
+        <h2 id="next-steps">🚀 次のステップ</h2>
+
+        <h3>シリーズ完了後の推奨アクション</h3>
+
+        <h4>Immediate（1-2週間以内）</h4>
+        <ol>
+            <li>✅ <strong>GitHub/GitLabでポートフォリオ作成</strong>
+                <ul><li>各シリーズで実装したコードをREADME付きで公開</li></ul>
+            </li>
+            <li>✅ <strong>LinkedInプロフィール更新</strong>
+                <ul><li>スキル追加: "Materials Informatics", "Machine Learning", "Python"</li></ul>
+            </li>
+            <li>✅ <strong>学習記録をブログ/Qiitaで発信</strong></li>
+        </ol>
+
+        <h4>Short-term（1-3ヶ月）</h4>
+        <ol>
+            <li>✅ <strong>Kaggleコンペに参加</strong>
+                <ul><li>材料科学関連: "Predicting Molecular Properties", "Materials Discovery"</li></ul>
+            </li>
+            <li>✅ <strong>国内学会で発表</strong>
+                <ul><li>日本材料学会、化学工学会、計算化学会</li></ul>
+            </li>
+            <li>✅ <strong>独自プロジェクトを実行</strong>
+                <ul><li>自分の研究テーマにMI技術を適用</li></ul>
+            </li>
+        </ol>
+
+        <h4>Long-term（1年以上）</h4>
+        <ol>
+            <li>✅ <strong>国際学会で発表</strong>
+                <ul><li>MRS Fall/Spring Meeting、E-MRS、ACS</li></ul>
+            </li>
+            <li>✅ <strong>査読付き論文を投稿</strong>
+                <ul><li><em>npj Computational Materials</em>、<em>J. Chem. Phys.</em></li></ul>
+            </li>
+            <li>✅ <strong>キャリア移行</strong>
+                <ul><li>アカデミア、産業界、スタートアップへ</li></ul>
+            </li>
+        </ol>
+
+        <hr />
+
+        <h2 id="feedback">📞 フィードバックとサポート</h2>
+
+        <h3>MI寺子屋について</h3>
+        <p>このプラットフォームは、<strong>東北大学 多元物質科学研究所 Dr. Yusuke Hashimoto</strong> のもと、MI Knowledge Hubプロジェクトの一環として作成されました。</p>
+
+        <p><strong>理念</strong>:</p>
+        <ul>
+            <li>データサイエンスと材料科学の融合領域を、誰でもアクセスできる形で提供</li>
+            <li>理論と実践のバランスを重視した教育コンテンツ</li>
+            <li>オープンな学習コミュニティの形成</li>
+        </ul>
+
+        <p><strong>作成日</strong>: 2025年10月17日<br>
+        <strong>バージョン</strong>: 3.0<br>
+        <strong>総コンテンツ量</strong>: 13シリーズ、55章、375+コード例、50+ケーススタディ</p>
+
+        <h3>フィードバックをお待ちしています</h3>
+        <p><strong>連絡先</strong>:<br>
+        📧 Email: yusuke.hashimoto.b8@tohoku.ac.jp<br>
+        🐙 GitHub: <a href="https://github.com/YusukeHashimotoPhD">@YusukeHashimotoPhD</a></p>
+
+        <hr />
+
+        <h2 id="license">📜 ライセンスと利用規約</h2>
+        <p>このプラットフォームの全コンテンツは <strong>CC BY 4.0</strong>（Creative Commons Attribution 4.0 International）ライセンスのもとで公開されています。</p>
+
+        <h3>可能なこと</h3>
+        <ul>
+            <li>✅ <strong>自由な閲覧・ダウンロード</strong></li>
+            <li>✅ <strong>教育目的での利用</strong>（大学の授業、企業研修、勉強会等）</li>
+            <li>✅ <strong>改変・二次創作</strong>（翻訳、要約、スライド作成等）</li>
+            <li>✅ <strong>研究・開発での利用</strong>（論文、プロジェクト、製品開発）</li>
+        </ul>
+
+        <h3>引用方法</h3>
+        <pre><code>Hashimoto, Y. (2025). MI Terakoya - Materials Informatics Knowledge Hub.
+Tohoku University. https://yusukehashimotolab.github.io/wp/knowledge/</code></pre>
+
+        <hr />
+
+        <h2 id="start">🎓 さあ、学習を始めましょう！</h2>
+
+        <p>準備はできましたか？ あなたに最適なシリーズを選んで、データ駆動型材料開発の世界への旅を始めましょう！</p>
+
+        <h3>推奨スタート地点</h3>
+        <ul>
+            <li><strong>🔰 完全な初心者</strong> → <a href="./mi-introduction/index.html">📘 MI入門シリーズ</a>から開始</li>
+            <li><strong>⚗️ ナノテク興味</strong> → <a href="./nm-introduction/index.html">📗 NM入門シリーズ</a>から開始</li>
+            <li><strong>🏭 化学工学バックグラウンド</strong> → <a href="./pi-introduction/index.html">📙 PI入門シリーズ</a>から開始</li>
+            <li><strong>🧪 計算化学経験者</strong> → <a href="./mlp-introduction/index.html">📕 MLP入門シリーズ</a>から開始</li>
+            <li><strong>🤖 最新AI技術に興味</strong> → <a href="./gnn-introduction/index.html">📕 GNN入門シリーズ</a>から開始</li>
+        </ul>
+
+        <hr />
+
+        <p><strong>更新履歴</strong></p>
+        <ul>
+            <li><strong>2025-10-17</strong>: v3.0 リリース - 全13シリーズ完成（4シリーズ→13シリーズへ大幅拡張）</li>
+            <li><strong>2025-10-17</strong>: v1.0 AI寺子屋ポータル公開（4シリーズ統合）</li>
+        </ul>
+
+        <hr />
+
+        <div style="text-align: center; font-size: 1.2em; margin-top: 3rem;">
+            <strong>あなたのMI学習の旅がここから始まります！</strong><br/>
+            <em>データで拓く材料開発の未来へ、ようこそ。</em>
+        </div>
 
         <div class="nav-buttons">
-            <a href="index.html" class="nav-button">← シリーズ目次に戻る</a>
+            <a href="../en/index.html" class="nav-button">English Version →</a>
         </div>
     </main>
 
