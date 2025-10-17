@@ -1,0 +1,671 @@
+# ============================================
+# MI寺子屋メタデータスキーマ v2.0
+# ============================================
+# このスキーマは、シリーズとチャプターのYAMLフロントマターの
+# 標準形式を定義します。すべてのコンテンツはこのスキーマに従います。
+
+# ============================================
+# シリーズメタデータスキーマ
+# ============================================
+
+series_metadata:
+
+  # --- 基本情報（必須）---
+  title:
+    type: string
+    required: true
+    description: "シリーズの完全タイトル（日本語）"
+    example: "グラフニューラルネットワーク入門シリーズ v1.0"
+    max_length: 100
+
+  subtitle:
+    type: string
+    required: true
+    description: "1行のサブタイトル（40-60文字）"
+    example: "データで拓く分子・材料設計の未来"
+    min_length: 30
+    max_length: 70
+
+  series:
+    type: string
+    required: true
+    description: "シリーズ名（titleと同じ）"
+    example: "グラフニューラルネットワーク入門シリーズ v1.0"
+
+  series_id:
+    type: string
+    required: true
+    description: "シリーズの一意識別子（ケバブケース）"
+    example: "gnn-introduction"
+    pattern: "^[a-z0-9-]+$"
+    max_length: 50
+
+  version:
+    type: string
+    required: true
+    description: "コンテンツバージョン（セマンティックバージョニング）"
+    example: "1.0"
+    pattern: "^\\d+\\.\\d+(\\.\\d+)?$"
+
+  # --- 分類・難易度（必須）---
+  category:
+    type: string
+    required: true
+    description: "シリーズカテゴリ"
+    enum:
+      - "beginner"        # 入門シリーズ（MI、NM、PI、MLPなど）
+      - "advanced"        # 発展シリーズ（GNN、Transformerなど）
+      - "practical"       # 実践技術シリーズ（データベース活用、実験データ解析など）
+      - "fundamentals"    # 基礎理論シリーズ（計算材料科学基礎など）
+
+  level:
+    type: string
+    required: true
+    description: "全体的な難易度レベル（英語）"
+    enum:
+      - "beginner"                    # 入門レベル
+      - "intermediate"                # 中級レベル
+      - "advanced"                    # 上級レベル
+      - "beginner-to-intermediate"    # 入門〜中級
+      - "intermediate-to-advanced"    # 中級〜上級
+      - "beginner-to-advanced"        # 入門〜上級
+
+  difficulty:
+    type: string
+    required: true
+    description: "全体的な難易度レベル（日本語）"
+    example: "中級〜上級"
+    enum:
+      - "入門"
+      - "初級"
+      - "中級"
+      - "上級"
+      - "入門〜初級"
+      - "入門〜中級"
+      - "中級〜上級"
+
+  target_audience:
+    type: string
+    required: true
+    description: "対象読者層"
+    enum:
+      - "undergraduate"                        # 学部生
+      - "graduate"                              # 大学院生
+      - "professionals"                         # 実務者
+      - "researchers"                           # 研究者
+      - "undergraduate-graduate"                # 学部生・大学院生
+      - "graduate-professionals"                # 大学院生・実務者
+      - "undergraduate-graduate-professionals"  # 学部生・大学院生・実務者
+
+  # --- 学習メタデータ（必須）---
+  total_reading_time:
+    type: string
+    required: true
+    description: "全章の合計読了時間（分）"
+    example: "120-150分"
+    pattern: "^\\d+-\\d+分$"
+
+  total_chapters:
+    type: integer
+    required: true
+    description: "章の総数"
+    example: 5
+    minimum: 1
+    maximum: 20
+
+  total_code_examples:
+    type: integer
+    required: true
+    description: "全章のコード例総数"
+    example: 35
+    minimum: 0
+
+  total_exercises:
+    type: integer
+    required: true
+    description: "全章の演習問題総数"
+    example: 15
+    minimum: 0
+
+  case_studies:
+    type: integer
+    required: false
+    description: "ケーススタディの総数"
+    example: 5
+    minimum: 0
+    default: 0
+
+  # --- 日付情報（必須）---
+  created_at:
+    type: string
+    required: true
+    description: "作成日（ISO 8601形式）"
+    example: "2025-10-17"
+    format: "date"
+    pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+
+  updated_at:
+    type: string
+    required: true
+    description: "最終更新日（ISO 8601形式）"
+    example: "2025-10-20"
+    format: "date"
+    pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+
+  # --- 前提知識（必須）---
+  prerequisites:
+    type: array
+    required: true
+    description: "前提知識・前提シリーズのリスト"
+    items:
+      type: string
+    example:
+      - "mi-introduction"
+      - "python-basics"
+    min_items: 0
+    max_items: 10
+
+  # --- 関連シリーズ（任意）---
+  related_series:
+    type: array
+    required: false
+    description: "関連シリーズIDのリスト"
+    items:
+      type: string
+    example:
+      - "mi-introduction"
+      - "mlp-introduction"
+    max_items: 10
+    default: []
+
+  # --- 応用分野（必須）---
+  applications:
+    type: array
+    required: true
+    description: "主要な応用分野のリスト"
+    items:
+      type: string
+    example:
+      - "molecular-property-prediction"
+      - "crystal-structure-prediction"
+      - "catalyst-design"
+    min_items: 1
+    max_items: 10
+
+  # --- 主要ツール（必須）---
+  tools:
+    type: array
+    required: true
+    description: "シリーズで使用する主要ツール・ライブラリ"
+    items:
+      type: string
+    example:
+      - "PyTorch Geometric"
+      - "RDKit"
+      - "ASE"
+    min_items: 1
+    max_items: 15
+
+  # --- 著者情報（必須）---
+  authors:
+    type: array
+    required: true
+    description: "著者情報のリスト"
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+          required: true
+          description: "著者名"
+          example: "Dr. Yusuke Hashimoto"
+        affiliation:
+          type: string
+          required: true
+          description: "所属機関"
+          example: "Tohoku University"
+        email:
+          type: string
+          required: true
+          description: "連絡先メールアドレス"
+          example: "yusuke.hashimoto.b8@tohoku.ac.jp"
+          format: "email"
+    min_items: 1
+    max_items: 5
+
+  # --- ライセンス（必須）---
+  license:
+    type: string
+    required: true
+    description: "コンテンツライセンス"
+    example: "CC BY 4.0"
+    enum:
+      - "CC BY 4.0"
+      - "CC BY-SA 4.0"
+      - "CC BY-NC 4.0"
+      - "CC BY-NC-SA 4.0"
+
+  language:
+    type: string
+    required: true
+    description: "コンテンツ言語（ISO 639-1）"
+    example: "ja"
+    enum:
+      - "ja"  # 日本語
+      - "en"  # 英語
+
+# ============================================
+# チャプターメタデータスキーマ
+# ============================================
+
+chapter_metadata:
+
+  # --- 基本情報（必須）---
+  title:
+    type: string
+    required: true
+    description: "章タイトル（日本語、「第N章：」を含む）"
+    example: "第1章：なぜ材料科学にGNNが必要か"
+    max_length: 100
+
+  subtitle:
+    type: string
+    required: true
+    description: "章のサブタイトル（30-50文字）"
+    example: "グラフ表現学習が切り拓く材料設計の新時代"
+    min_length: 20
+    max_length: 70
+
+  series:
+    type: string
+    required: true
+    description: "所属シリーズ名"
+    example: "グラフニューラルネットワーク入門シリーズ v1.0"
+
+  series_id:
+    type: string
+    required: true
+    description: "所属シリーズID"
+    example: "gnn-introduction"
+    pattern: "^[a-z0-9-]+$"
+
+  chapter_number:
+    type: integer
+    required: true
+    description: "章番号（1から開始）"
+    example: 1
+    minimum: 1
+    maximum: 20
+
+  chapter_id:
+    type: string
+    required: true
+    description: "章の一意識別子（ケバブケース）"
+    example: "chapter1-introduction"
+    pattern: "^chapter\\d+-[a-z0-9-]+$"
+    max_length: 50
+
+  # --- 分類・難易度（必須）---
+  level:
+    type: string
+    required: true
+    description: "章の難易度レベル（英語）"
+    enum:
+      - "beginner"
+      - "intermediate"
+      - "advanced"
+
+  difficulty:
+    type: string
+    required: true
+    description: "章の難易度レベル（日本語）"
+    example: "中級"
+    enum:
+      - "入門"
+      - "初級"
+      - "中級"
+      - "上級"
+
+  # --- 学習メタデータ（必須）---
+  reading_time:
+    type: string
+    required: true
+    description: "この章の読了時間（分）"
+    example: "25-35分"
+    pattern: "^\\d+-\\d+分$"
+
+  code_examples:
+    type: integer
+    required: true
+    description: "この章のコード例数"
+    example: 8
+    minimum: 0
+
+  exercises:
+    type: integer
+    required: true
+    description: "この章の演習問題数"
+    example: 3
+    minimum: 0
+
+  mermaid_diagrams:
+    type: integer
+    required: false
+    description: "この章のMermaid図表数"
+    example: 2
+    minimum: 0
+    default: 0
+
+  # --- 日付情報（必須）---
+  created_at:
+    type: string
+    required: true
+    description: "作成日（ISO 8601形式）"
+    example: "2025-10-17"
+    format: "date"
+    pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+
+  updated_at:
+    type: string
+    required: true
+    description: "最終更新日（ISO 8601形式）"
+    example: "2025-10-20"
+    format: "date"
+    pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+
+  version:
+    type: string
+    required: true
+    description: "章のバージョン（セマンティックバージョニング）"
+    example: "1.0"
+    pattern: "^\\d+\\.\\d+(\\.\\d+)?$"
+
+  # --- 前提知識（必須）---
+  prerequisites:
+    type: array
+    required: true
+    description: "この章の前提知識・前提章"
+    items:
+      type: string
+    example:
+      - "Python基礎"
+      - "chapter1-introduction"
+    min_items: 0
+    max_items: 10
+
+  # --- 学習目標（必須、3-5個）---
+  learning_objectives:
+    type: array
+    required: true
+    description: "この章の学習目標（3-5個）"
+    items:
+      type: string
+    example:
+      - "GNNの歴史的背景を説明できる"
+      - "従来手法の3つの限界を具体例とともに挙げられる"
+      - "MPNNの基本概念を理解している"
+    min_items: 3
+    max_items: 7
+
+  # --- 主要キーワード（必須、5-10個）---
+  keywords:
+    type: array
+    required: true
+    description: "この章の主要キーワード（5-10個）"
+    items:
+      type: string
+    example:
+      - "グラフニューラルネットワーク"
+      - "メッセージパッシング"
+      - "分子表現学習"
+      - "結晶構造予測"
+    min_items: 3
+    max_items: 15
+
+  # --- 著者情報（必須）---
+  authors:
+    type: array
+    required: true
+    description: "著者情報のリスト"
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+          required: true
+        affiliation:
+          type: string
+          required: true
+        email:
+          type: string
+          required: true
+          format: "email"
+    min_items: 1
+
+  # --- ライセンス（必須）---
+  license:
+    type: string
+    required: true
+    description: "コンテンツライセンス"
+    example: "CC BY 4.0"
+    enum:
+      - "CC BY 4.0"
+      - "CC BY-SA 4.0"
+      - "CC BY-NC 4.0"
+      - "CC BY-NC-SA 4.0"
+
+  language:
+    type: string
+    required: true
+    description: "コンテンツ言語（ISO 639-1）"
+    example: "ja"
+    enum:
+      - "ja"
+      - "en"
+
+# ============================================
+# バリデーションルール
+# ============================================
+
+validation_rules:
+
+  # --- シリーズレベル ---
+  series:
+    - rule: "total_reading_timeは全章のreading_timeの合計と一致すべき"
+      severity: "warning"
+
+    - rule: "total_chaptersは実際の章数と一致しなければならない"
+      severity: "error"
+
+    - rule: "total_code_examplesは全章のcode_examplesの合計と一致すべき"
+      severity: "warning"
+
+    - rule: "total_exercisesは全章のexercisesの合計と一致すべき"
+      severity: "warning"
+
+    - rule: "updated_atはcreated_at以降でなければならない"
+      severity: "error"
+
+    - rule: "prerequisitesに存在しないseries_idを含めてはならない"
+      severity: "error"
+
+    - rule: "related_seriesに存在しないseries_idを含めてはならない"
+      severity: "error"
+
+  # --- チャプターレベル ---
+  chapter:
+    - rule: "chapter_numberは1から連番でなければならない"
+      severity: "error"
+
+    - rule: "chapter_idは「chapter{N}-{id}」の形式でなければならない"
+      severity: "error"
+
+    - rule: "series_idは存在するシリーズを参照しなければならない"
+      severity: "error"
+
+    - rule: "updated_atはcreated_at以降でなければならない"
+      severity: "error"
+
+    - rule: "learning_objectivesは3-5個が推奨される"
+      severity: "warning"
+
+    - rule: "keywordsは5-10個が推奨される"
+      severity: "warning"
+
+    - rule: "code_examplesが0の場合、理論章であることを明示すべき"
+      severity: "info"
+
+    - rule: "exercisesは最低3問（easy, medium, hard）推奨"
+      severity: "warning"
+
+# ============================================
+# データ型の詳細定義
+# ============================================
+
+data_types:
+
+  string:
+    description: "文字列型"
+    encoding: "UTF-8"
+
+  integer:
+    description: "整数型"
+    range: "0 to 2^31-1"
+
+  array:
+    description: "配列型（リスト）"
+    format: "YAML sequence"
+
+  object:
+    description: "オブジェクト型（辞書）"
+    format: "YAML mapping"
+
+  date:
+    description: "日付型"
+    format: "YYYY-MM-DD"
+    example: "2025-10-17"
+
+  email:
+    description: "メールアドレス型"
+    format: "name@domain.com"
+    validation: "RFC 5322準拠"
+
+# ============================================
+# 使用例
+# ============================================
+
+examples:
+
+  # --- シリーズindex.mdのYAMLフロントマター例 ---
+  series_frontmatter_example: |
+    ---
+    title: "グラフニューラルネットワーク入門シリーズ v1.0"
+    subtitle: "データで拓く分子・材料設計の未来"
+    series: "グラフニューラルネットワーク入門シリーズ v1.0"
+    series_id: "gnn-introduction"
+    version: "1.0"
+
+    category: "advanced"
+    level: "intermediate-to-advanced"
+    difficulty: "中級〜上級"
+    target_audience: "graduate-professionals"
+
+    total_reading_time: "120-150分"
+    total_chapters: 5
+    total_code_examples: 35
+    total_exercises: 15
+    case_studies: 5
+
+    created_at: "2025-10-17"
+    updated_at: "2025-10-20"
+
+    prerequisites:
+      - "mi-introduction"
+      - "python-basics"
+      - "deep-learning-basics"
+
+    related_series:
+      - "mi-introduction"
+      - "mlp-introduction"
+      - "transformer-materials"
+
+    applications:
+      - "molecular-property-prediction"
+      - "crystal-structure-prediction"
+      - "catalyst-design"
+
+    tools:
+      - "PyTorch Geometric"
+      - "RDKit"
+      - "ASE"
+      - "matminer"
+
+    authors:
+      - name: "Dr. Yusuke Hashimoto"
+        affiliation: "Tohoku University"
+        email: "yusuke.hashimoto.b8@tohoku.ac.jp"
+
+    license: "CC BY 4.0"
+    language: "ja"
+    ---
+
+  # --- チャプターのYAMLフロントマター例 ---
+  chapter_frontmatter_example: |
+    ---
+    title: "第1章：なぜ材料科学にGNNが必要か"
+    subtitle: "グラフ表現学習が切り拓く材料設計の新時代"
+    series: "グラフニューラルネットワーク入門シリーズ v1.0"
+    series_id: "gnn-introduction"
+    chapter_number: 1
+    chapter_id: "chapter1-introduction"
+
+    level: "beginner"
+    difficulty: "入門"
+
+    reading_time: "25-35分"
+    code_examples: 8
+    exercises: 3
+    mermaid_diagrams: 2
+
+    created_at: "2025-10-17"
+    updated_at: "2025-10-20"
+    version: "1.0"
+
+    prerequisites:
+      - "Python基礎"
+      - "機械学習基礎"
+
+    learning_objectives:
+      - "GNNの歴史的背景を説明できる"
+      - "従来手法の3つの限界を具体例とともに挙げられる"
+      - "分子・材料のグラフ表現を理解している"
+      - "GNNの成功事例を5つ以上挙げられる"
+      - "材料科学におけるGNNの必要性を説明できる"
+
+    keywords:
+      - "グラフニューラルネットワーク"
+      - "メッセージパッシング"
+      - "分子表現学習"
+      - "結晶構造予測"
+      - "触媒設計"
+      - "PyTorch Geometric"
+
+    authors:
+      - name: "Dr. Yusuke Hashimoto"
+        affiliation: "Tohoku University"
+        email: "yusuke.hashimoto.b8@tohoku.ac.jp"
+
+    license: "CC BY 4.0"
+    language: "ja"
+    ---
+
+# ============================================
+# スキーマバージョン
+# ============================================
+
+schema_version: "2.0"
+schema_created_at: "2025-10-17"
+schema_updated_at: "2025-10-17"
+schema_authors:
+  - "Dr. Yusuke Hashimoto"
+schema_license: "CC BY 4.0"
