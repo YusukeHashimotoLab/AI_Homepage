@@ -401,7 +401,7 @@ def convert_markdown_to_html(md_file: Path, output_dir: Path) -> None:
 
 
 def main():
-    """Convert all Japanese markdown files in all four series."""
+    """Convert all Japanese markdown files in all four series plus top-level index."""
 
     # Base paths
     base_dir = Path("/Users/yusukehashimoto/Documents/pycharm/AI_Homepage")
@@ -415,6 +415,18 @@ def main():
     print("🔄 Converting Japanese Markdown files to HTML...")
     print(f"📁 Base directory: {jp_dir}\n")
 
+    # Convert top-level index first
+    top_index = jp_dir / "index.md"
+    if top_index.exists():
+        print("📚 Processing top-level index:")
+        try:
+            convert_markdown_to_html(top_index, jp_dir)
+            total_converted += 1
+            print(f"✅ Converted: index.md → index.html")
+        except Exception as e:
+            print(f"❌ Error converting top-level index: {e}")
+
+    # Convert series files
     for series_name in series:
         series_dir = jp_dir / series_name
 
@@ -442,6 +454,7 @@ def main():
 
     print(f"\n\n✅ Conversion complete! {total_converted} file(s) processed.")
     print(f"\n🌐 HTML files are now ready for GitHub Pages:")
+    print(f"   https://yusukehashimotolab.github.io/wp/knowledge/jp/index.html (Portal)")
     for series_name in series:
         print(f"   https://yusukehashimotolab.github.io/wp/knowledge/jp/{series_name}/index.html")
 
