@@ -1,18 +1,18 @@
 ---
 title: "MI寺子屋 - Materials Informatics Knowledge Hub"
 subtitle: "データ駆動型材料開発の包括的学習プラットフォーム"
-description: "マテリアルズ・インフォマティクス(MI)、ナノ材料(NM)、プロセス・インフォマティクス(PI)、機械学習ポテンシャル(MLP)、グラフニューラルネットワーク(GNN)など、13の専門シリーズを提供する総合学習ハブ"
-version: "3.0"
-total_series: 13
-completed_series: 13
-total_chapters: 55
-total_reading_time: "1210-1530分"
-total_code_examples: 375
+description: "マテリアルズ・インフォマティクス(MI)からケモインフォマティクス、バイオインフォマティクスまで、17の専門シリーズを提供する世界最高水準の日本語学習ハブ"
+version: "4.0"
+total_series: 17
+completed_series: 17
+total_chapters: 71
+total_reading_time: "1610-2010分"
+total_code_examples: 544
 created_at: "2025-10-17"
-updated_at: "2025-10-17"
+updated_at: "2025-10-18"
 author: "Dr. Yusuke Hashimoto, Tohoku University"
 license: "CC BY 4.0"
-keywords: ["Materials Informatics", "マテリアルズインフォマティクス", "機械学習", "材料科学", "ナノ材料", "プロセス最適化", "分子シミュレーション", "グラフニューラルネットワーク", "ベイズ最適化", "Python", "教育"]
+keywords: ["Materials Informatics", "マテリアルズインフォマティクス", "ケモインフォマティクス", "バイオインフォマティクス", "Active Learning", "機械学習", "材料科学", "ナノ材料", "プロセス最適化", "分子シミュレーション", "グラフニューラルネットワーク", "ベイズ最適化", "Python", "教育"]
 ---
 
 # MI寺子屋 - Materials Informatics Knowledge Hub
@@ -1733,6 +1733,98 @@ flowchart LR
 
 ---
 
+### 📕 Active Learning入門
+
+**Active Learning for Efficient Materials Discovery**
+
+Query Strategies・不確実性推定・獲得関数で実現する効率的材料探索
+
+**概要**:
+- 🎯 **対象分野**: 効率的材料探索、Query Strategies、不確実性推定、ベイズ最適化統合
+- 📊 **難易度**: 中級〜上級
+- ⏱️ **学習時間**: 100-120分（全4章）
+- 💻 **コード例**: 28個（全て実行可能）
+- 🔬 **応用例**: Uncertainty Sampling、Query-by-Committee、Expected Model Change、Diversity Sampling
+
+**主な学習内容**:
+
+1. **第1章: Active Learningの基礎（20-30分）**
+   - Active Learningとは（教師あり学習との違い、ラベリングコストの課題）
+   - Query Strategies概要（Uncertainty、Diversity、Hybrid）
+   - 材料探索への応用可能性（実験コスト削減、データ効率向上）
+   - 成功事例（触媒探索、合金設計、有機半導体）
+
+2. **第2章: 不確実性推定（25-35分）**
+   - Ensemble法（Bootstrap Aggregating、予測分散）
+   - MC Dropout（Dropout as Bayesian Approximation）
+   - ガウス過程（GP）による不確実性（予測分散の活用）
+   - Bayesian Neural Networks（変分推論、事後分布サンプリング）
+   - 不確実性の定量化と可視化
+
+3. **第3章: Query Strategies実践（25-35分）**
+   - **Uncertainty Sampling**: 予測不確実性が最大のサンプルを選択
+   - **Query-by-Committee (QbC)**: 複数モデルの予測の不一致を利用
+   - **Expected Model Change**: モデルパラメータへの影響が大きいサンプル
+   - **Diversity Sampling**: 既存データとの多様性を重視
+   - **Hybrid Strategies**: UncertaintyとDiversityの統合
+   - Python実装（modAL、scikit-learn）
+
+4. **第4章: ベイズ最適化との統合（20-30分）**
+   - BO vs AL vs BO+AL（探索戦略の比較）
+   - 探索と学習の同時最適化（二重目的）
+   - クローズドループ最適化（実験→測定→学習→次実験）
+   - 実データでの比較（ランダム vs BO vs AL vs BO+AL）
+   - 産業応用（材料探索の効率化、実験回数削減率）
+
+**使用ツール**:
+- **Python**: modAL, scikit-learn, GPyTorch, BoTorch
+- **不確実性推定**: MC Dropout, Ensemble, Gaussian Process
+- **可視化**: matplotlib, seaborn, plotly
+- **最適化**: scikit-optimize, BoTorch
+
+**前提知識**:
+- MI入門または統計学基礎
+- ベイズ最適化入門（推奨）
+- Python、機械学習基礎
+
+**関連シリーズ**: ベイズ最適化入門、ロボティクス実験自動化入門、データ駆動材料科学入門
+
+**章構成と学習フロー**:
+
+```mermaid
+flowchart LR
+    Ch1[第1章<br/>AL基礎<br/>20-30分] --> Ch2[第2章<br/>不確実性推定<br/>25-35分]
+    Ch2 --> Ch3[第3章<br/>Query Strategies<br/>25-35分]
+    Ch3 --> Ch4[第4章<br/>BO統合<br/>20-30分]
+
+    Ch1 -.-> Output1[成果物:<br/>AL理解レポート]
+    Ch2 -.-> Output2[成果物:<br/>不確実性実装]
+    Ch3 -.-> Output3[成果物:<br/>Query実装]
+    Ch4 -.-> Output4[成果物:<br/>統合最適化]
+
+    style Ch1 fill:#e8f5e9
+    style Ch2 fill:#c8e6c9
+    style Ch3 fill:#a5d6a7
+    style Ch4 fill:#81c784
+    style Output1 fill:#fff9c4
+    style Output2 fill:#fff9c4
+    style Output3 fill:#fff9c4
+    style Output4 fill:#fff9c4
+```
+
+**学習成果チェックリスト**:
+- [ ] Active Learningの基本概念を説明できる
+- [ ] Uncertainty SamplingとQuery-by-Committeeの違いを理解している
+- [ ] MC DropoutとEnsemble法で不確実性推定ができる
+- [ ] modALでActive Learningを実装できる
+- [ ] ベイズ最適化とActive Learningを統合できる
+- [ ] クローズドループ最適化の設計ができる
+- [ ] 自分の研究テーマへの適用計画を立てられる
+
+**[📕 Active Learning入門シリーズへ →](./active-learning-introduction/index.html)**
+
+---
+
 ## 📊 シリーズ統計と比較
 
 ### 入門シリーズ vs 発展シリーズ
@@ -1740,8 +1832,9 @@ flowchart LR
 | カテゴリ | シリーズ数 | 総章数 | 総学習時間 | コード例 | 難易度 |
 |---------|----------|--------|-----------|---------|--------|
 | **入門シリーズ** | 4 | 16章 | 355-460分 | 115個 | 入門〜上級 |
-| **発展シリーズ** | 4 | 18章 | 450-520分 | 115-130個 | 中級〜上級 |
-| **合計** | 8 | 34章 | 805-980分 | 230-245個 | - |
+| **発展シリーズ** | 5 | 22章 | 550-640分 | 143-158個 | 中級〜上級 |
+| **実践技術シリーズ** | 7 | 29章 | 700-840分 | 209個 | 入門〜上級 |
+| **合計** | 16 | 67章 | 1605-1940分 | 467個 | - |
 
 ### シリーズ別詳細比較
 
@@ -1759,6 +1852,7 @@ graph TD
         B2[ベイズ最適化<br/>100-120分<br/>30-35コード]
         B3[Transformer<br/>110-130分<br/>25-30コード]
         B4[強化学習<br/>100-120分<br/>25-30コード]
+        B5[Active Learning<br/>100-120分<br/>28コード]
     end
 
     A1 --> B1
@@ -1768,6 +1862,8 @@ graph TD
     A2 --> B2
     A3 --> B2
     A1 --> B4
+    B2 --> B5
+    A1 --> B5
 
     style A1 fill:#e3f2fd
     style A2 fill:#fff4e1
@@ -1777,6 +1873,7 @@ graph TD
     style B2 fill:#81c784
     style B3 fill:#64b5f6
     style B4 fill:#ba68c8
+    style B5 fill:#ffb74d
 ```
 
 ---
@@ -1809,21 +1906,29 @@ graph TD
 
 ```mermaid
 graph TB
-    subgraph "実践技術シリーズ（4シリーズ）"
+    subgraph "実践技術シリーズ（7シリーズ）"
         DB[📗 材料データベース活用入門<br/>4章・40-45例・90-110分<br/>難易度: 入門-初級]
         EXP[📗 実験データ解析入門<br/>4章・35-40例・100-120分<br/>難易度: 初級-中級]
         HT[📗 ハイスループット計算入門<br/>5章・25-30例・110-140分<br/>難易度: 中級-上級]
         ROB[📗 ロボティクス実験自動化入門<br/>5章・20-25例・110-130分<br/>難易度: 中級-上級]
+        CHEM[📕 ケモインフォマティクス入門<br/>4章・43例・100-120分<br/>難易度: 初級-中級]
+        BIO[📗 バイオインフォマティクス入門<br/>4章・33例・100-120分<br/>難易度: 初級-中級]
+        DD[📗 データ駆動材料科学入門<br/>4章・93例・100-120分<br/>難易度: 初級-中級]
     end
 
     DB --> EXP
     EXP --> ROB
     HT --> ROB
+    CHEM --> DD
+    DD --> EXP
 
     style DB fill:#e8f5e9
     style EXP fill:#fff9c4
     style HT fill:#ffccbc
     style ROB fill:#f8bbd0
+    style CHEM fill:#ffe0b2
+    style BIO fill:#c8e6c9
+    style DD fill:#e1bee7
 ```
 
 ### 学習フロー推奨（実践技術）
@@ -2485,6 +2590,99 @@ print("Liquid handling completed")
 ```
 
 **[📗 ロボティクス実験自動化入門へ →](./robotic-lab-automation-introduction/index.html)**
+
+---
+
+### 📕 ケモインフォマティクス入門
+
+**Chemoinformatics for Materials Scientists**
+
+分子表現・記述子・RDKitで切り拓く有機材料・創薬インフォマティクス
+
+**概要**:
+- 🎯 **対象分野**: 有機材料、創薬、高分子化学、分子設計、QSAR/QSPR、反応予測
+- 📊 **難易度**: 初級〜中級
+- ⏱️ **学習時間**: 100-120分（全4章）
+- 💻 **コード例**: 43個（全て実行可能）
+- 🔬 **応用例**: 分子特性予測、化学空間探索、逆合成、反応予測、有機半導体設計
+
+**主な学習内容**:
+1. ケモインフォマティクス基礎（SMILES、InChI、分子表現、化学空間）
+2. RDKitによる分子処理（分子読み込み、構造編集、2D/3D可視化、部分構造検索）
+3. 分子記述子と機械学習（mordred、QSAR/QSPR、特性予測、SHAP解釈）
+4. 反応予測と逆合成（反応テンプレート、Retrosynthesis、合成経路設計）
+
+**使用ツール**:
+- Python: RDKit, mordred, scikit-learn, SHAP
+- 可視化: matplotlib, py3Dmol
+- データベース: ChEMBL, PubChem, ZINC
+
+**前提知識**: Python基礎、有機化学の基礎
+**関連シリーズ**: MI入門、GNN入門
+
+**[📕 ケモインフォマティクス入門へ →](./chemoinformatics-introduction/index.html)**
+
+---
+
+### 📗 バイオインフォマティクス入門
+
+**Bioinformatics for Biomaterials Scientists**
+
+タンパク質構造・配列解析・分子ドッキングでバイオマテリアル設計をマスター
+
+**概要**:
+- 🎯 **対象分野**: バイオマテリアル、ナノメディシン、バイオセンサー、DDS、タンパク質工学
+- 📊 **難易度**: 初級〜中級
+- ⏱️ **学習時間**: 100-120分（全4章）
+- 💻 **コード例**: 33個（全て実行可能）
+- 🔬 **応用例**: タンパク質構造予測、配列アライメント、分子ドッキング、バイオセンサー設計
+
+**主な学習内容**:
+1. バイオインフォマティクス基礎（タンパク質構造、PDB、AlphaFold、配列データベース）
+2. タンパク質構造解析（Biopython、PyMOL、構造可視化、二次構造予測）
+3. 配列解析と進化（アライメント、BLAST、系統樹、保存領域）
+4. 分子ドッキングとDDS設計（AutoDock Vina、結合親和性、ナノ粒子設計）
+
+**使用ツール**:
+- Python: Biopython, PyMOL, MDAnalysis
+- ドッキング: AutoDock Vina, Open Babel
+- データベース: PDB, UniProt, AlphaFold DB
+
+**前提知識**: Python基礎、生化学の基礎
+**関連シリーズ**: NM入門、PI入門
+
+**[📗 バイオインフォマティクス入門へ →](./bioinformatics-introduction/index.html)**
+
+---
+
+### 📗 データ駆動材料科学入門
+
+**Data-Driven Materials Science: Practical Skills**
+
+データ収集・前処理・特徴量エンジニアリング・解釈可能AIの実務スキル
+
+**概要**:
+- 🎯 **対象分野**: データ収集戦略、欠損値処理、外れ値検出、特徴量エンジニアリング、解釈可能AI
+- 📊 **難易度**: 初級〜中級
+- ⏱️ **学習時間**: 100-120分（全4章）
+- 💻 **コード例**: 93個（全て実行可能）
+- 🔬 **応用例**: ハイパーパラメータ最適化（Optuna）、SHAP解釈、LIME、matminer特徴量
+
+**主な学習内容**:
+1. データ収集と品質管理（データソース、API、スクレイピング、FAIR原則、メタデータ管理）
+2. データ前処理（欠損値処理、外れ値検出、正規化、データバランシング、時系列分割）
+3. 特徴量エンジニアリング（matminer、ドメイン知識統合、特徴選択、PCA、t-SNE）
+4. 解釈可能AI（SHAP、LIME、Partial Dependence、特徴量重要度、ハイパーパラメータ最適化Optuna）
+
+**使用ツール**:
+- Python: pandas, scikit-learn, Optuna, SHAP, LIME
+- 特徴量: matminer, mordred
+- 可視化: matplotlib, seaborn, plotly
+
+**前提知識**: Python基礎、MI入門
+**関連シリーズ**: MI入門、実験データ解析入門
+
+**[📗 データ駆動材料科学入門へ →](./data-driven-materials-introduction/index.html)**
 
 ---
 
@@ -5111,7 +5309,7 @@ MI寺子屋は以下の第三者コンテンツを利用しています:
 
 **作成日**: 2025-10-17
 
-**現在のバージョン**: 2.0
+**現在のバージョン**: 4.0
 
 **ライセンス**: CC BY 4.0（コンテンツ）, MIT（コード）
 
@@ -5123,6 +5321,8 @@ MI寺子屋は以下の第三者コンテンツを利用しています:
 
 | バージョン | 日付 | 主な変更内容 |
 |----------|------|------------|
+| **4.0** | 2025-10-18 | 実践技術シリーズ4件追加（ケモ、バイオ、AL、データ駆動）、16シリーズ体制へ拡大 |
+| **3.0** | 2025-10-17 | 発展シリーズ4件追加（GNN、ベイズ最適化、Transformer、強化学習） |
 | **2.0** | 2025-10-17 | 大規模拡張: 13シリーズ体制、index.md刷新、ロボティクス実験自動化追加 |
 | **1.2** | 2025-08-10 | MLP入門公開、産業ケーススタディ拡充 |
 | **1.1** | 2025-06-15 | PI入門公開、学習ロードマップ追加 |
