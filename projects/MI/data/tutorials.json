@@ -1,0 +1,41 @@
+[
+  {
+    "id": "tutorial_001",
+    "title": "Materials Informatics入門：データ取得から可視化まで",
+    "description": "Materials Projectからデータを取得し、Pythonでの基本的なデータ処理と可視化を学びます。初心者向けの実践的なチュートリアルです。",
+    "level": "入門",
+    "difficulty": "beginner",
+    "estimated_time": "30分",
+    "notebook_url": "/notebooks/tutorial_001_introduction.ipynb",
+    "topics": ["data-acquisition", "visualization", "pandas", "matplotlib"],
+    "prerequisites": ["Python基礎"],
+    "created_at": "2025-10-01",
+    "updated_at": "2025-10-10"
+  },
+  {
+    "id": "tutorial_002",
+    "title": "機械学習で材料物性を予測する",
+    "description": "Scikit-learnを使って材料の物性値を予測する機械学習モデルを構築します。特徴量エンジニアリングとモデル評価の基本を習得します。",
+    "level": "中級",
+    "difficulty": "intermediate",
+    "estimated_time": "60分",
+    "notebook_url": "/notebooks/tutorial_002_ml_prediction.ipynb",
+    "topics": ["machine-learning", "scikit-learn", "regression", "feature-engineering"],
+    "prerequisites": ["Python基礎", "機械学習の基礎知識"],
+    "created_at": "2025-09-15",
+    "updated_at": "2025-10-05"
+  },
+  {
+    "id": "tutorial_003",
+    "title": "ベイズ最適化による材料探索",
+    "description": "ベイズ最適化を用いた効率的な材料探索手法を実装します。獲得関数の選択と実験計画の最適化を学びます。",
+    "level": "応用",
+    "difficulty": "advanced",
+    "estimated_time": "90分",
+    "notebook_url": "/notebooks/tutorial_003_bayesian_optimization.ipynb",
+    "topics": ["bayesian-optimization", "materials-discovery", "active-learning"],
+    "prerequisites": ["機械学習の経験", "統計学の基礎"],
+    "created_at": "2025-09-01",
+    "updated_at": "2025-09-28"
+  }
+]
