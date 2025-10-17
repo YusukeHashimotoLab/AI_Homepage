@@ -2,8 +2,9 @@
 title: "MI寺子屋 - Materials Informatics Knowledge Hub"
 subtitle: "データ駆動型材料開発の包括的学習プラットフォーム"
 description: "マテリアルズ・インフォマティクス(MI)、ナノ材料(NM)、プロセス・インフォマティクス(PI)、機械学習ポテンシャル(MLP)、グラフニューラルネットワーク(GNN)など、13の専門シリーズを提供する総合学習ハブ"
-version: "2.0"
+version: "2.1"
 total_series: 13
+completed_series: 5
 total_chapters: 55
 total_reading_time: "1210-1530分"
 total_code_examples: 375
@@ -818,7 +819,7 @@ flowchart LR
 - 💻 **コード例**: 35-40個（全て実行可能、Google Colab GPU対応）
 - 🔬 **応用例**: OC20触媒チャレンジ、QM9分子特性予測、Materials Project結晶特性、創薬（結合親和性）、反応予測
 - 📊 **ケーススタディ**: 5件以上（最新研究事例）
-- 🌟 **新規シリーズ**: 2025年10月リリース（準備中）
+- ✅ **シリーズステータス**: 2025年10月17日リリース（全5章公開済み）
 
 **主な学習内容**:
 
@@ -1083,7 +1084,7 @@ flowchart LR
 - [ ] 事前学習モデルを転移学習に活用できる
 - [ ] 自分の研究テーマへの適用計画を立てられる
 
-**[📕 GNN入門シリーズへ（準備中） →](#)**
+**[📕 GNN入門シリーズへ →](./gnn-introduction/index.html)**
 
 ---
 
