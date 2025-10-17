@@ -24,7 +24,8 @@ SERIES = [
     "robotic-lab-automation-introduction",
     "experimental-data-analysis-introduction",
     "high-throughput-computing-introduction",
-    "materials-databases-introduction"
+    "materials-databases-introduction",
+    "materials-applications-introduction"
 ]
 
 BASE_PATH = Path("/Users/yusukehashimoto/Documents/pycharm/AI_Homepage/wp/knowledge/jp")
