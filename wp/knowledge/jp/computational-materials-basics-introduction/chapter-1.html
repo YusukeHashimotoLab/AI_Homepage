@@ -198,6 +198,55 @@
             border-radius: var(--border-radius);
         }
 
+        .mermaid {
+            text-align: center;
+            margin: var(--spacing-lg) 0;
+            background-color: var(--color-bg-alt);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        details {
+            background-color: var(--color-bg-alt);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--color-primary);
+            user-select: none;
+            padding: var(--spacing-xs);
+            margin: calc(-1 * var(--spacing-md));
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        summary:hover {
+            background-color: rgba(123, 44, 191, 0.1);
+        }
+
+        details[open] summary {
+            margin-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .learning-objectives {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--color-accent);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .learning-objectives h2 {
+            margin-top: 0;
+            border-bottom: none;
+        }
+
         .navigation {
             display: flex;
             justify-content: space-between;
@@ -270,6 +319,22 @@
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         mermaid.initialize({ startOnLoad: true, theme: 'default' });
     </script>
+
+    <!-- MathJax for LaTeX equation rendering -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\(', '\)']],
+                displayMath: [['$$', '$$'], ['\[', '\]']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
 </head>
 <body>
     <header>
@@ -277,885 +342,805 @@
             <h1>第1章：量子力学と固体物理の基礎</h1>
             <p class="subtitle">シュレーディンガー方程式から結晶のバンド構造まで</p>
             <div class="meta">
-                <span class="meta-item">📖 読了時間: 25-30分</span>
+                <span class="meta-item">📖 読了時間: 20-25分</span>
                 <span class="meta-item">📊 難易度: 中級</span>
                 <span class="meta-item">💻 コード例: 7個</span>
+                <span class="meta-item">📝 演習問題: 0問</span>
             </div>
         </div>
     </header>
 
     <main class="container">
-        
-<p><h1>第1章：量子力学と固体物理の基礎</h1></p>
 
-<p><h2>学習目標</h2></p>
+<h1>第1章：量子力学と固体物理の基礎</h1>
 
-<p>この章を読むことで、以下を習得できます：</p>
-<ul>
-<li>シュレーディンガー方程式の物理的意味と数値解法を理解する</li>
-<li>ボルン・オッペンハイマー近似が計算材料科学の基礎となる理由を説明できる</li>
-<li>固体の周期性とブロッホの定理の関係を理解する</li>
-<li>Pythonで水素原子や量子井戸の波動関数を計算できる</li>
-</ul>
+<h2>学習目標</h2>
 
-<p>---</p>
+この章を読むことで、以下を習得できます：
+- シュレーディンガー方程式の物理的意味と数値解法を理解する
+- ボルン・オッペンハイマー近似が計算材料科学の基礎となる理由を説明できる
+- 固体の周期性とブロッホの定理の関係を理解する
+- Pythonで水素原子や量子井戸の波動関数を計算できる
 
-<p><h2>1.1 シュレーディンガー方程式：量子力学の基礎方程式</h2></p>
+---
 
-<p>計算材料科学のすべては、<strong>シュレーディンガー方程式</strong>から始まります。これは原子・分子・固体の電子状態を記述する基本方程式です。</p>
+<h2>1.1 シュレーディンガー方程式：量子力学の基礎方程式</h2>
 
-<p><h3>時間依存シュレーディンガー方程式</h3></p>
+計算材料科学のすべては、<strong>シュレーディンガー方程式</strong>から始まります。これは原子・分子・固体の電子状態を記述する基本方程式です。
 
-<p>$$</p>
-<p>i\hbar \frac{\partial \Psi(\mathbf{r}, t)}{\partial t} = \hat{H} \Psi(\mathbf{r}, t)</p>
-<p>$$</p>
+<h3>時間依存シュレーディンガー方程式</h3>
 
-<p>ここで：</p>
-<ul>
-<li>$\Psi(\mathbf{r}, t)$: 波動関数（確率振幅）</li>
-<li>$\hat{H}$: ハミルトニアン演算子（エネルギー演算子）</li>
-<li>$\hbar = h/(2\pi)$: 換算プランク定数</li>
-<li>$i$: 虚数単位</li>
-</ul>
+$$
+i\hbar \frac{\partial \Psi(\mathbf{r}, t)}{\partial t} = \hat{H} \Psi(\mathbf{r}, t)
+$$
 
-<p><h3>時間独立シュレーディンガー方程式</h3></p>
+ここで：
+- $\Psi(\mathbf{r}, t)$: 波動関数（確率振幅）
+- $\hat{H}$: ハミルトニアン演算子（エネルギー演算子）
+- $\hbar = h/(2\pi)$: 換算プランク定数
+- $i$: 虚数単位
 
-<p>定常状態（エネルギー固有状態）を扱う場合、時間依存性を分離できます：</p>
+<h3>時間独立シュレーディンガー方程式</h3>
 
-<p>$$</p>
-<p>\hat{H} \psi(\mathbf{r}) = E \psi(\mathbf{r})</p>
-<p>$$</p>
+定常状態（エネルギー固有状態）を扱う場合、時間依存性を分離できます：
 
-<p>これは<strong>固有値問題</strong>です：</p>
-<ul>
-<li>$\psi(\mathbf{r})$: エネルギー固有状態（固有関数）</li>
-<li>$E$: エネルギー固有値</li>
-</ul>
+$$
+\hat{H} \psi(\mathbf{r}) = E \psi(\mathbf{r})
+$$
 
-<p><h3>ハミルトニアンの構成</h3></p>
+これは<strong>固有値問題</strong>です：
+- $\psi(\mathbf{r})$: エネルギー固有状態（固有関数）
+- $E$: エネルギー固有値
 
-<p>多電子系のハミルトニアンは以下のように書けます：</p>
+<h3>ハミルトニアンの構成</h3>
 
-<p>$$</p>
-<p>\hat{H} = \underbrace{-\frac{\hbar^2}{2m_e}\sum_i \nabla_i^2}_{\text{電子の運動エネルギー}} \underbrace{-\frac{\hbar^2}{2}\sum_I \frac{\nabla_I^2}{M_I}}_{\text{原子核の運動エネルギー}} + \underbrace{\frac{1}{2}\sum_{i \neq j} \frac{e^2}{|\mathbf{r}_i - \mathbf{r}_j|}}_{\text{電子間相互作用}} + \underbrace{\sum_{i,I} \frac{-Z_I e^2}{|\mathbf{r}_i - \mathbf{R}_I|}}_{\text{電子-核間相互作用}} + \underbrace{\frac{1}{2}\sum_{I \neq J} \frac{Z_I Z_J e^2}{|\mathbf{R}_I - \mathbf{R}_J|}}_{\text{核間相互作用}}</p>
-<p>$$</p>
+多電子系のハミルトニアンは以下のように書けます：
 
-<p>ここで：</p>
-<ul>
-<li>$m_e$: 電子の質量</li>
-<li>$M_I$: 原子核$I$の質量</li>
-<li>$\mathbf{r}_i$: 電子$i$の位置</li>
-<li>$\mathbf{R}_I$: 原子核$I$の位置</li>
-<li>$Z_I$: 原子核$I$の電荷（原子番号）</li>
-<li>$e$: 電気素量</li>
-</ul>
+$$
+\hat{H} = \underbrace{-\frac{\hbar^2}{2m_e}\sum_i \nabla_i^2}_{\text{電子の運動エネルギー}} \underbrace{-\frac{\hbar^2}{2}\sum_I \frac{\nabla_I^2}{M_I}}_{\text{原子核の運動エネルギー}} + \underbrace{\frac{1}{2}\sum_{i \neq j} \frac{e^2}{|\mathbf{r}_i - \mathbf{r}_j|}}_{\text{電子間相互作用}} + \underbrace{\sum_{i,I} \frac{-Z_I e^2}{|\mathbf{r}_i - \mathbf{R}_I|}}_{\text{電子-核間相互作用}} + \underbrace{\frac{1}{2}\sum_{I \neq J} \frac{Z_I Z_J e^2}{|\mathbf{R}_I - \mathbf{R}_J|}}_{\text{核間相互作用}}
+$$
 
-<p><strong>問題の複雑さ</strong>: このハミルトニアンは解析的に解けません（水素原子以外）。そこで近似が必要になります。</p>
+ここで：
+- $m_e$: 電子の質量
+- $M_I$: 原子核$I$の質量
+- $\mathbf{r}_i$: 電子$i$の位置
+- $\mathbf{R}_I$: 原子核$I$の位置
+- $Z_I$: 原子核$I$の電荷（原子番号）
+- $e$: 電気素量
 
-<p>---</p>
+<strong>問題の複雑さ</strong>: このハミルトニアンは解析的に解けません（水素原子以外）。そこで近似が必要になります。
 
-<p><h2>1.2 ボルン・オッペンハイマー近似</h2></p>
+---
 
-<p>計算材料科学で最も重要な近似の1つが<strong>ボルン・オッペンハイマー近似</strong>（Born-Oppenheimer approximation, BOA）です。</p>
+<h2>1.2 ボルン・オッペンハイマー近似</h2>
 
-<p><h3>基本的な考え方</h3></p>
+計算材料科学で最も重要な近似の1つが<strong>ボルン・オッペンハイマー近似</strong>（Born-Oppenheimer approximation, BOA）です。
 
-<p>原子核の質量は電子の約2000-400000倍です（H: 1836倍、Fe: 102000倍）。このため：</p>
+<h3>基本的な考え方</h3>
 
-<ol>
-<li><strong>電子は原子核よりはるかに速く動く</strong></li>
-<li>電子から見ると、原子核は「ほぼ止まっている」</li>
-<li><strong>原子核と電子の運動を分離できる</strong></li>
-</ol>
+原子核の質量は電子の約2000-400000倍です（H: 1836倍、Fe: 102000倍）。このため：
 
-<p><h3>数学的定式化</h3></p>
+1. <strong>電子は原子核よりはるかに速く動く</strong>
+2. 電子から見ると、原子核は「ほぼ止まっている」
+3. <strong>原子核と電子の運動を分離できる</strong>
 
-<p>全波動関数を以下のように分離します：</p>
+<h3>数学的定式化</h3>
 
-<p>$$</p>
-<p>\Psi(\mathbf{r}, \mathbf{R}) \approx \psi_{\text{elec}}(\mathbf{r}; \mathbf{R}) \cdot \chi_{\text{nuc}}(\mathbf{R})</p>
-<p>$$</p>
+全波動関数を以下のように分離します：
 
-<ul>
-<li>$\psi_{\text{elec}}(\mathbf{r}; \mathbf{R})$: 電子の波動関数（原子核位置$\mathbf{R}$をパラメータとして含む）</li>
-<li>$\chi_{\text{nuc}}(\mathbf{R})$: 原子核の波動関数</li>
-</ul>
+$$
+\Psi(\mathbf{r}, \mathbf{R}) \approx \psi_{\text{elec}}(\mathbf{r}; \mathbf{R}) \cdot \chi_{\text{nuc}}(\mathbf{R})
+$$
 
-<p>これにより、2段階で問題を解きます：</p>
+- $\psi_{\text{elec}}(\mathbf{r}; \mathbf{R})$: 電子の波動関数（原子核位置$\mathbf{R}$をパラメータとして含む）
+- $\chi_{\text{nuc}}(\mathbf{R})$: 原子核の波動関数
 
-<p><strong>Step 1: 電子状態の計算（原子核を固定）</strong></p>
+これにより、2段階で問題を解きます：
 
-<p>$$</p>
-<p>\hat{H}_{\text{elec}} \psi_{\text{elec}}(\mathbf{r}; \mathbf{R}) = E_{\text{elec}}(\mathbf{R}) \psi_{\text{elec}}(\mathbf{r}; \mathbf{R})</p>
-<p>$$</p>
+<strong>Step 1: 電子状態の計算（原子核を固定）</strong>
 
-<p>ここで、電子ハミルトニアンは：</p>
+$$
+\hat{H}_{\text{elec}} \psi_{\text{elec}}(\mathbf{r}; \mathbf{R}) = E_{\text{elec}}(\mathbf{R}) \psi_{\text{elec}}(\mathbf{r}; \mathbf{R})
+$$
 
-<p>$$</p>
-<p>\hat{H}_{\text{elec}} = -\frac{\hbar^2}{2m_e}\sum_i \nabla_i^2 + \frac{1}{2}\sum_{i \neq j} \frac{e^2}{|\mathbf{r}_i - \mathbf{r}_j|} + \sum_{i,I} \frac{-Z_I e^2}{|\mathbf{r}_i - \mathbf{R}_I|}</p>
-<p>$$</p>
+ここで、電子ハミルトニアンは：
 
-<p><strong>Step 2: 原子核の運動（ポテンシャルエネルギー面上）</strong></p>
+$$
+\hat{H}_{\text{elec}} = -\frac{\hbar^2}{2m_e}\sum_i \nabla_i^2 + \frac{1}{2}\sum_{i \neq j} \frac{e^2}{|\mathbf{r}_i - \mathbf{r}_j|} + \sum_{i,I} \frac{-Z_I e^2}{|\mathbf{r}_i - \mathbf{R}_I|}
+$$
 
-<p>$$</p>
-<p>\left[-\frac{\hbar^2}{2}\sum_I \frac{\nabla_I^2}{M_I} + E_{\text{elec}}(\mathbf{R}) + \frac{1}{2}\sum_{I \neq J} \frac{Z_I Z_J e^2}{|\mathbf{R}_I - \mathbf{R}_J|}\right] \chi_{\text{nuc}}(\mathbf{R}) = E_{\text{total}} \chi_{\text{nuc}}(\mathbf{R})</p>
-<p>$$</p>
+<strong>Step 2: 原子核の運動（ポテンシャルエネルギー面上）</strong>
 
-<p>$E_{\text{elec}}(\mathbf{R})$は原子核位置の関数として<strong>ポテンシャルエネルギー面（PES）</strong>を形成します。</p>
+$$
+\left[-\frac{\hbar^2}{2}\sum_I \frac{\nabla_I^2}{M_I} + E_{\text{elec}}(\mathbf{R}) + \frac{1}{2}\sum_{I \neq J} \frac{Z_I Z_J e^2}{|\mathbf{R}_I - \mathbf{R}_J|}\right] \chi_{\text{nuc}}(\mathbf{R}) = E_{\text{total}} \chi_{\text{nuc}}(\mathbf{R})
+$$
 
-<p><h3>BOAの物理的意味</h3></p>
+$E_{\text{elec}}(\mathbf{R})$は原子核位置の関数として<strong>ポテンシャルエネルギー面（PES）</strong>を形成します。
 
-<ul>
-<li><strong>電子は常に原子核の瞬間的な位置に対して基底状態にある</strong>（断熱近似）</li>
-<li>原子核はこのPES上を古典的または量子的に運動する</li>
-<li>これにより、DFT計算（電子状態）とMD計算（原子核の運動）が分離可能になる</li>
-</ul>
+<h3>BOAの物理的意味</h3>
 
-<p><h3>BOAが破綻する場合</h3></p>
+- <strong>電子は常に原子核の瞬間的な位置に対して基底状態にある</strong>（断熱近似）
+- 原子核はこのPES上を古典的または量子的に運動する
+- これにより、DFT計算（電子状態）とMD計算（原子核の運動）が分離可能になる
 
-<p>以下の場合、BOAは不正確になります：</p>
-<ol>
-<li><strong>励起状態間の遷移</strong>: 光吸収、化学反応の非断熱過程</li>
-<li><strong>電子-フォノン相関が強い系</strong>: 超伝導、Jahn-Teller効果</li>
-<li><strong>軽い原子</strong>: 水素原子の零点振動</li>
-</ol>
+<h3>BOAが破綻する場合</h3>
 
-<p>---</p>
+以下の場合、BOAは不正確になります：
+1. <strong>励起状態間の遷移</strong>: 光吸収、化学反応の非断熱過程
+2. <strong>電子-フォノン相関が強い系</strong>: 超伝導、Jahn-Teller効果
+3. <strong>軽い原子</strong>: 水素原子の零点振動
 
-<p><h2>1.3 水素原子の解：量子力学の原型</h2></p>
+---
 
-<p>水素原子は<strong>唯一解析的に解けるクーロン多体系</strong>です。ここから多電子系への理解が始まります。</p>
+<h2>1.3 水素原子の解：量子力学の原型</h2>
 
-<p><h3>シュレーディンガー方程式（水素原子）</h3></p>
+水素原子は<strong>唯一解析的に解けるクーロン多体系</strong>です。ここから多電子系への理解が始まります。
 
-<p>$$</p>
-<p>\left[-\frac{\hbar^2}{2m_e}\nabla^2 - \frac{e^2}{r}\right] \psi(\mathbf{r}) = E \psi(\mathbf{r})</p>
-<p>$$</p>
+<h3>シュレーディンガー方程式（水素原子）</h3>
 
-<p>極座標$(r, \theta, \phi)$で変数分離すると：</p>
+$$
+\left[-\frac{\hbar^2}{2m_e}\nabla^2 - \frac{e^2}{r}\right] \psi(\mathbf{r}) = E \psi(\mathbf{r})
+$$
 
-<p>$$</p>
-<p>\psi_{nlm}(r, \theta, \phi) = R_{nl}(r) Y_l^m(\theta, \phi)</p>
-<p>$$</p>
+極座標$(r, \theta, \phi)$で変数分離すると：
 
-<ul>
-<li>$R_{nl}(r)$: 動径波動関数（主量子数$n$、方位量子数$l$）</li>
-<li>$Y_l^m(\theta, \phi)$: 球面調和関数（磁気量子数$m$）</li>
-</ul>
+$$
+\psi_{nlm}(r, \theta, \phi) = R_{nl}(r) Y_l^m(\theta, \phi)
+$$
 
-<p><h3>エネルギー固有値</h3></p>
+- $R_{nl}(r)$: 動径波動関数（主量子数$n$、方位量子数$l$）
+- $Y_l^m(\theta, \phi)$: 球面調和関数（磁気量子数$m$）
 
-<p>$$</p>
-<p>E_n = -\frac{m_e e^4}{2\hbar^2 n^2} = -\frac{13.6 \text{ eV}}{n^2}</p>
-<p>$$</p>
+<h3>エネルギー固有値</h3>
 
-<p>$n = 1, 2, 3, \ldots$</p>
+$$
+E_n = -\frac{m_e e^4}{2\hbar^2 n^2} = -\frac{13.6 \text{ eV}}{n^2}
+$$
 
-<p><h3>動径波動関数の例</h3></p>
+$n = 1, 2, 3, \ldots$
 
-<p><strong>基底状態（1s軌道、$n=1, l=0$）</strong>:</p>
+<h3>動径波動関数の例</h3>
 
-<p>$$</p>
-<p>R_{10}(r) = 2\left(\frac{1}{a_0}\right)^{3/2} e^{-r/a_0}</p>
-<p>$$</p>
+<strong>基底状態（1s軌道、$n=1, l=0$）</strong>:
 
-<p>ここで$a_0 = \hbar^2/(m_e e^2) = 0.529$ Åはボーア半径です。</p>
+$$
+R_{10}(r) = 2\left(\frac{1}{a_0}\right)^{3/2} e^{-r/a_0}
+$$
 
-<p><strong>励起状態（2p軌道、$n=2, l=1$）</strong>:</p>
+ここで$a_0 = \hbar^2/(m_e e^2) = 0.529$ Åはボーア半径です。
 
-<p>$$</p>
-<p>R_{21}(r) = \frac{1}{\sqrt{3}}\left(\frac{1}{2a_0}\right)^{3/2} \frac{r}{a_0} e^{-r/(2a_0)}</p>
-<p>$$</p>
+<strong>励起状態（2p軌道、$n=2, l=1$）</strong>:
 
-<p><h3>Pythonで波動関数を計算・可視化</h3></p>
+$$
+R_{21}(r) = \frac{1}{\sqrt{3}}\left(\frac{1}{2a_0}\right)^{3/2} \frac{r}{a_0} e^{-r/(2a_0)}
+$$
 
-<p><pre><code class="language-python">import numpy as np</p>
-<p>import matplotlib.pyplot as plt</p>
-<p>from scipy.special import genlaguerre, sph_harm</p>
+<h3>Pythonで波動関数を計算・可視化</h3>
 
-<p><h1>定数</h1></p>
-<p>a0 = 0.529  <h1>ボーア半径 [Å]</h1></p>
+<pre><code class="language-python">import numpy as np
+import matplotlib.pyplot as plt
+from scipy.special import genlaguerre, sph_harm
 
-<p>def radial_wavefunction(r, n, l):</p>
-<p>    """</p>
-<p>    水素原子の動径波動関数 R_nl(r)</p>
+<h1>定数</h1>
+a0 = 0.529  # ボーア半径 [Å]
 
-<p>    Args:</p>
-<p>        r: 動径座標 [Å]</p>
-<p>        n: 主量子数 (1, 2, 3, ...)</p>
-<p>        l: 方位量子数 (0, 1, ..., n-1)</p>
+def radial_wavefunction(r, n, l):
+    """
+    水素原子の動径波動関数 R_nl(r)
 
-<p>    Returns:</p>
-<p>        R_nl(r)</p>
-<p>    """</p>
-<p>    rho = 2 <em> r / (n </em> a0)</p>
-<p>    L = genlaguerre(n - l - 1, 2*l + 1)  <h1>一般化ラゲール多項式</h1></p>
+    Args:
+        r: 動径座標 [Å]
+        n: 主量子数 (1, 2, 3, ...)
+        l: 方位量子数 (0, 1, ..., n-1)
 
-<p>    <h1>正規化定数</h1></p>
-<p>    N = np.sqrt((2/(n<em>a0))</em><em>3 </em> np.math.factorial(n-l-1) /</p>
-<p>                (2<em>n</em>np.math.factorial(n+l)))</p>
+    Returns:
+        R_nl(r)
+    """
+    rho = 2 * r / (n * a0)
+    L = genlaguerre(n - l - 1, 2*l + 1)  # 一般化ラゲール多項式
 
-<p>    R_nl = N <em> rho</em><em>l </em> np.exp(-rho/2) * L(rho)</p>
-<p>    return R_nl</p>
+    # 正規化定数
+    N = np.sqrt((2/(n*a0))**3 * np.math.factorial(n-l-1) /
+                (2*n*np.math.factorial(n+l)))
 
-<p><h1>動径座標の範囲</h1></p>
-<p>r = np.linspace(0, 20, 1000)</p>
+    R_nl = N * rho**l * np.exp(-rho/2) * L(rho)
+    return R_nl
 
-<p><h1>プロット</h1></p>
-<p>fig, axes = plt.subplots(1, 2, figsize=(12, 5))</p>
+<h1>動径座標の範囲</h1>
+r = np.linspace(0, 20, 1000)
 
-<p><h1>左: 波動関数 R_nl(r)</h1></p>
-<p>axes[0].plot(r, radial_wavefunction(r, 1, 0), label='1s (n=1, l=0)')</p>
-<p>axes[0].plot(r, radial_wavefunction(r, 2, 0), label='2s (n=2, l=0)')</p>
-<p>axes[0].plot(r, radial_wavefunction(r, 2, 1), label='2p (n=2, l=1)')</p>
-<p>axes[0].plot(r, radial_wavefunction(r, 3, 0), label='3s (n=3, l=0)')</p>
-<p>axes[0].axhline(0, color='black', linewidth=0.5, linestyle='--')</p>
-<p>axes[0].set_xlabel('r [Å]', fontsize=12)</p>
-<p>axes[0].set_ylabel('$R_{nl}(r)$ [Å$^{-3/2}$]', fontsize=12)</p>
-<p>axes[0].set_title('水素原子の動径波動関数', fontsize=14)</p>
-<p>axes[0].legend()</p>
-<p>axes[0].grid(alpha=0.3)</p>
+<h1>プロット</h1>
+fig, axes = plt.subplots(1, 2, figsize=(12, 5))
 
-<p><h1>右: 動径確率密度 r^2 |R_nl(r)|^2</h1></p>
-<p>axes[1].plot(r, r<strong>2 * radial_wavefunction(r, 1, 0)</strong>2, label='1s')</p>
-<p>axes[1].plot(r, r<strong>2 * radial_wavefunction(r, 2, 0)</strong>2, label='2s')</p>
-<p>axes[1].plot(r, r<strong>2 * radial_wavefunction(r, 2, 1)</strong>2, label='2p')</p>
-<p>axes[1].plot(r, r<strong>2 * radial_wavefunction(r, 3, 0)</strong>2, label='3s')</p>
-<p>axes[1].set_xlabel('r [Å]', fontsize=12)</p>
-<p>axes[1].set_ylabel('$r^2 |R_{nl}(r)|^2$ [Å$^{-1}$]', fontsize=12)</p>
-<p>axes[1].set_title('動径確率密度', fontsize=14)</p>
-<p>axes[1].legend()</p>
-<p>axes[1].grid(alpha=0.3)</p>
+<h1>左: 波動関数 R_nl(r)</h1>
+axes[0].plot(r, radial_wavefunction(r, 1, 0), label='1s (n=1, l=0)')
+axes[0].plot(r, radial_wavefunction(r, 2, 0), label='2s (n=2, l=0)')
+axes[0].plot(r, radial_wavefunction(r, 2, 1), label='2p (n=2, l=1)')
+axes[0].plot(r, radial_wavefunction(r, 3, 0), label='3s (n=3, l=0)')
+axes[0].axhline(0, color='black', linewidth=0.5, linestyle='--')
+axes[0].set_xlabel('r [Å]', fontsize=12)
+axes[0].set_ylabel('$R_{nl}(r)$ [Å$^{-3/2}$]', fontsize=12)
+axes[0].set_title('水素原子の動径波動関数', fontsize=14)
+axes[0].legend()
+axes[0].grid(alpha=0.3)
 
-<p>plt.tight_layout()</p>
-<p>plt.savefig('hydrogen_wavefunctions.png', dpi=150)</p>
-<p>plt.show()</p>
+<h1>右: 動径確率密度 r^2 |R_nl(r)|^2</h1>
+axes[1].plot(r, r<strong>2 * radial_wavefunction(r, 1, 0)</strong>2, label='1s')
+axes[1].plot(r, r<strong>2 * radial_wavefunction(r, 2, 0)</strong>2, label='2s')
+axes[1].plot(r, r<strong>2 * radial_wavefunction(r, 2, 1)</strong>2, label='2p')
+axes[1].plot(r, r<strong>2 * radial_wavefunction(r, 3, 0)</strong>2, label='3s')
+axes[1].set_xlabel('r [Å]', fontsize=12)
+axes[1].set_ylabel('$r^2 |R_{nl}(r)|^2$ [Å$^{-1}$]', fontsize=12)
+axes[1].set_title('動径確率密度', fontsize=14)
+axes[1].legend()
+axes[1].grid(alpha=0.3)
 
-<p><h1>エネルギー準位の計算</h1></p>
-<p>print("水素原子のエネルギー準位:")</p>
-<p>for n in range(1, 5):</p>
-<p>    E_n = -13.6 / n**2</p>
-<p>    print(f"n={n}: E = {E_n:.3f} eV")</p>
-<p></code></pre></p>
+plt.tight_layout()
+plt.savefig('hydrogen_wavefunctions.png', dpi=150)
+plt.show()
 
-<p><strong>実行結果</strong>:</p>
-<p><pre><code class="language-">水素原子のエネルギー準位:</p>
-<p>n=1: E = -13.600 eV</p>
-<p>n=2: E = -3.400 eV</p>
-<p>n=3: E = -1.511 eV</p>
-<p>n=4: E = -0.850 eV</p>
-<p></code></pre></p>
+<h1>エネルギー準位の計算</h1>
+print("水素原子のエネルギー準位:")
+for n in range(1, 5):
+    E_n = -13.6 / n**2
+    print(f"n={n}: E = {E_n:.3f} eV")</code></pre>
 
-<p><strong>重要なポイント</strong>:</p>
-<ul>
-<li>1s軌道は節（ゼロ点）を持たない</li>
-<li>2s軌道は1つの節を持つ（動径方向）</li>
-<li>2p軌道は原点で0（$r=0$で$R_{21}(0)=0$）</li>
-<li>動径確率密度のピークがボーアの軌道半径に対応</li>
-</ul>
+<strong>実行結果</strong>:
+<pre><code>水素原子のエネルギー準位:
+n=1: E = -13.600 eV
+n=2: E = -3.400 eV
+n=3: E = -1.511 eV
+n=4: E = -0.850 eV</code></pre>
 
-<p>---</p>
+<strong>重要なポイント</strong>:
+- 1s軌道は節（ゼロ点）を持たない
+- 2s軌道は1つの節を持つ（動径方向）
+- 2p軌道は原点で0（$r=0$で$R_{21}(0)=0$）
+- 動径確率密度のピークがボーアの軌道半径に対応
 
-<p><h2>1.4 固体の周期性とブロッホの定理</h2></p>
+---
 
-<p>固体（結晶）は原子が<strong>周期的</strong>に配列した構造です。この周期性が固体の電子状態に決定的な影響を与えます。</p>
+<h2>1.4 固体の周期性とブロッホの定理</h2>
 
-<p><h3>結晶の周期性</h3></p>
+固体（結晶）は原子が<strong>周期的</strong>に配列した構造です。この周期性が固体の電子状態に決定的な影響を与えます。
 
-<p>結晶格子は<strong>格子ベクトル</strong>$\mathbf{R}$で記述されます：</p>
+<h3>結晶の周期性</h3>
 
-<p>$$</p>
-<p>\mathbf{R} = n_1 \mathbf{a}_1 + n_2 \mathbf{a}_2 + n_3 \mathbf{a}_3</p>
-<p>$$</p>
+結晶格子は<strong>格子ベクトル</strong>$\mathbf{R}$で記述されます：
 
-<ul>
-<li>$\mathbf{a}_1, \mathbf{a}_2, \mathbf{a}_3$: 基本格子ベクトル（単位胞を張るベクトル）</li>
-<li>$n_1, n_2, n_3$: 整数</li>
-</ul>
+$$
+\mathbf{R} = n_1 \mathbf{a}_1 + n_2 \mathbf{a}_2 + n_3 \mathbf{a}_3
+$$
 
-<p>結晶のポテンシャルは周期性を持ちます：</p>
+- $\mathbf{a}_1, \mathbf{a}_2, \mathbf{a}_3$: 基本格子ベクトル（単位胞を張るベクトル）
+- $n_1, n_2, n_3$: 整数
 
-<p>$$</p>
-<p>V(\mathbf{r} + \mathbf{R}) = V(\mathbf{r}) \quad \text{for all } \mathbf{R}</p>
-<p>$$</p>
+結晶のポテンシャルは周期性を持ちます：
 
-<p><h3>ブロッホの定理</h3></p>
+$$
+V(\mathbf{r} + \mathbf{R}) = V(\mathbf{r}) \quad \text{for all } \mathbf{R}
+$$
 
-<p>結晶のシュレーディンガー方程式：</p>
+<h3>ブロッホの定理</h3>
 
-<p>$$</p>
-<p>\left[-\frac{\hbar^2}{2m_e}\nabla^2 + V(\mathbf{r})\right] \psi(\mathbf{r}) = E \psi(\mathbf{r})</p>
-<p>$$</p>
+結晶のシュレーディンガー方程式：
 
-<p>ここで$V(\mathbf{r})$が周期的なら、解（ブロッホ関数）は以下の形を取ります：</p>
+$$
+\left[-\frac{\hbar^2}{2m_e}\nabla^2 + V(\mathbf{r})\right] \psi(\mathbf{r}) = E \psi(\mathbf{r})
+$$
 
-<p>$$</p>
-<p>\psi_{n\mathbf{k}}(\mathbf{r}) = e^{i\mathbf{k}\cdot\mathbf{r}} u_{n\mathbf{k}}(\mathbf{r})</p>
-<p>$$</p>
+ここで$V(\mathbf{r})$が周期的なら、解（ブロッホ関数）は以下の形を取ります：
 
-<ul>
-<li>$\mathbf{k}$: <strong>波数ベクトル</strong>（逆格子空間の座標）</li>
-<li>$u_{n\mathbf{k}}(\mathbf{r})$: <strong>周期的関数</strong>（$u_{n\mathbf{k}}(\mathbf{r}+\mathbf{R}) = u_{n\mathbf{k}}(\mathbf{r})$）</li>
-<li>$n$: バンドインデックス</li>
-</ul>
+$$
+\psi_{n\mathbf{k}}(\mathbf{r}) = e^{i\mathbf{k}\cdot\mathbf{r}} u_{n\mathbf{k}}(\mathbf{r})
+$$
 
-<p><strong>物理的意味</strong>:</p>
-<ul>
-<li>$e^{i\mathbf{k}\cdot\mathbf{r}}$: 平面波（伝播する波）</li>
-<li>$u_{n\mathbf{k}}(\mathbf{r})$: 結晶格子の周期性を反映した変調</li>
-</ul>
+- $\mathbf{k}$: <strong>波数ベクトル</strong>（逆格子空間の座標）
+- $u_{n\mathbf{k}}(\mathbf{r})$: <strong>周期的関数</strong>（$u_{n\mathbf{k}}(\mathbf{r}+\mathbf{R}) = u_{n\mathbf{k}}(\mathbf{r})$）
+- $n$: バンドインデックス
 
-<p><h3>第一ブリルアンゾーン</h3></p>
+<strong>物理的意味</strong>:
+- $e^{i\mathbf{k}\cdot\mathbf{r}}$: 平面波（伝播する波）
+- $u_{n\mathbf{k}}(\mathbf{r})$: 結晶格子の周期性を反映した変調
 
-<p>すべての情報は<strong>第一ブリルアンゾーン</strong>（First Brillouin Zone, FBZ）に含まれます。これは逆格子空間の単位胞です。</p>
+<h3>第一ブリルアンゾーン</h3>
 
-<p><strong>簡単な立方格子（格子定数$a$）</strong>:</p>
-<ul>
-<li>格子ベクトル: $\mathbf{a}_1 = a\hat{\mathbf{x}}, \mathbf{a}_2 = a\hat{\mathbf{y}}, \mathbf{a}_3 = a\hat{\mathbf{z}}$</li>
-<li>逆格子ベクトル: $\mathbf{b}_1 = \frac{2\pi}{a}\hat{\mathbf{x}}, \mathbf{b}_2 = \frac{2\pi}{a}\hat{\mathbf{y}}, \mathbf{b}_3 = \frac{2\pi}{a}\hat{\mathbf{z}}$</li>
-<li>FBZ: $-\frac{\pi}{a} \leq k_x, k_y, k_z \leq \frac{\pi}{a}$</li>
-</ul>
+すべての情報は<strong>第一ブリルアンゾーン</strong>（First Brillouin Zone, FBZ）に含まれます。これは逆格子空間の単位胞です。
 
-<p><h3>バンド構造</h3></p>
+<strong>簡単な立方格子（格子定数$a$）</strong>:
+- 格子ベクトル: $\mathbf{a}_1 = a\hat{\mathbf{x}}, \mathbf{a}_2 = a\hat{\mathbf{y}}, \mathbf{a}_3 = a\hat{\mathbf{z}}$
+- 逆格子ベクトル: $\mathbf{b}_1 = \frac{2\pi}{a}\hat{\mathbf{x}}, \mathbf{b}_2 = \frac{2\pi}{a}\hat{\mathbf{y}}, \mathbf{b}_3 = \frac{2\pi}{a}\hat{\mathbf{z}}$
+- FBZ: $-\frac{\pi}{a} \leq k_x, k_y, k_z \leq \frac{\pi}{a}$
 
-<p>各バンド$n$に対して、エネルギーは$\mathbf{k}$の関数です：</p>
+<h3>バンド構造</h3>
 
-<p>$$</p>
-<p>E_n(\mathbf{k})</p>
-<p>$$</p>
+各バンド$n$に対して、エネルギーは$\mathbf{k}$の関数です：
 
-<p>これを<strong>バンド構造</strong>（band structure）または<strong>分散関係</strong>（dispersion relation）と呼びます。</p>
+$$
+E_n(\mathbf{k})
+$$
 
-<p><strong>金属 vs 絶縁体</strong>:</p>
-<ul>
-<li><strong>金属</strong>: フェルミ準位$E_F$がバンド内に存在（部分的に占有されたバンド）</li>
-<li><strong>絶縁体/半導体</strong>: フェルミ準位がバンドギャップ内に存在（完全に占有されたバンドと完全に空のバンドの間）</li>
-</ul>
+これを<strong>バンド構造</strong>（band structure）または<strong>分散関係</strong>（dispersion relation）と呼びます。
 
-<p>---</p>
+<strong>金属 vs 絶縁体</strong>:
+- <strong>金属</strong>: フェルミ準位$E_F$がバンド内に存在（部分的に占有されたバンド）
+- <strong>絶縁体/半導体</strong>: フェルミ準位がバンドギャップ内に存在（完全に占有されたバンドと完全に空のバンドの間）
 
-<p><h2>1.5 Pythonで1次元結晶のバンド構造を計算</h2></p>
+---
 
-<p>実際に1次元の周期ポテンシャル中の電子のバンド構造を計算してみましょう。</p>
+<h2>1.5 Pythonで1次元結晶のバンド構造を計算</h2>
 
-<p><h3>クローニッヒ・ペニーモデル</h3></p>
+実際に1次元の周期ポテンシャル中の電子のバンド構造を計算してみましょう。
 
-<p>1次元の周期的な矩形ポテンシャル：</p>
+<h3>クローニッヒ・ペニーモデル</h3>
 
-<p>$$</p>
-<p>V(x) = \begin{cases}</p>
-<p>0 & 0 < x < a \\</p>
-<p>V_0 & a < x < a+b</p>
-<p>\end{cases}</p>
-<p>$$</p>
+1次元の周期的な矩形ポテンシャル：
 
-<p>周期$d = a + b$で繰り返されます。</p>
+$$
+V(x) = \begin{cases}
+0 & 0 < x < a \\
+V_0 & a < x < a+b
+\end{cases}
+$$
 
-<p><pre><code class="language-python">import numpy as np</p>
-<p>import matplotlib.pyplot as plt</p>
-<p>from scipy.linalg import eigh</p>
+周期$d = a + b$で繰り返されます。
 
-<p>def kronig_penney_band(N=100, a=1.0, b=0.2, V0=5.0, n_bands=5):</p>
-<p>    """</p>
-<p>    クローニッヒ・ペニーモデルのバンド構造を計算</p>
+<pre><code class="language-python">import numpy as np
+import matplotlib.pyplot as plt
+from scipy.linalg import eigh
 
-<p>    Args:</p>
-<p>        N: 平面波基底の数</p>
-<p>        a: ポテンシャルの幅（井戸） [Å]</p>
-<p>        b: ポテンシャルの幅（障壁） [Å]</p>
-<p>        V0: 障壁の高さ [eV]</p>
-<p>        n_bands: 表示するバンド数</p>
+def kronig_penney_band(N=100, a=1.0, b=0.2, V0=5.0, n_bands=5):
+    """
+    クローニッヒ・ペニーモデルのバンド構造を計算
 
-<p>    Returns:</p>
-<p>        k_points: 波数ベクトル</p>
-<p>        energies: エネルギーバンド</p>
-<p>    """</p>
-<p>    d = a + b  <h1>周期</h1></p>
-<p>    G = 2 * np.pi / d  <h1>逆格子ベクトル</h1></p>
+    Args:
+        N: 平面波基底の数
+        a: ポテンシャルの幅（井戸） [Å]
+        b: ポテンシャルの幅（障壁） [Å]
+        V0: 障壁の高さ [eV]
+        n_bands: 表示するバンド数
 
-<p>    <h1>第一ブリルアンゾーン内のk点</h1></p>
-<p>    k_points = np.linspace(-np.pi/d, np.pi/d, 200)</p>
-<p>    energies = np.zeros((len(k_points), n_bands))</p>
+    Returns:
+        k_points: 波数ベクトル
+        energies: エネルギーバンド
+    """
+    d = a + b  # 周期
+    G = 2 * np.pi / d  # 逆格子ベクトル
 
-<p>    <h1>ポテンシャルのフーリエ係数（矩形ポテンシャル）</h1></p>
-<p>    def V_G(n):</p>
-<p>        if n == 0:</p>
-<p>            return V0 * b / d</p>
-<p>        else:</p>
-<p>            return V0 <em> np.sin(n </em> G <em> b / 2) / (n </em> np.pi) <em> np.exp(-1j </em> n <em> G </em> (a + b/2))</p>
+    # 第一ブリルアンゾーン内のk点
+    k_points = np.linspace(-np.pi/d, np.pi/d, 200)
+    energies = np.zeros((len(k_points), n_bands))
 
-<p>    for ik, k in enumerate(k_points):</p>
-<p>        <h1>ハミルトニアン行列の構築（平面波基底）</h1></p>
-<p>        H = np.zeros((2<em>N+1, 2</em>N+1), dtype=complex)</p>
+    # ポテンシャルのフーリエ係数（矩形ポテンシャル）
+    def V_G(n):
+        if n == 0:
+            return V0 * b / d
+        else:
+            return V0 * np.sin(n * G * b / 2) / (n * np.pi) * np.exp(-1j * n * G * (a + b/2))
 
-<p>        for i in range(-N, N+1):</p>
-<p>            for j in range(-N, N+1):</p>
-<p>                if i == j:</p>
-<p>                    <h1>対角成分: 運動エネルギー</h1></p>
-<p>                    H[i+N, j+N] = 0.5 <em> (k + i</em>G)**2  <h1>原子単位系</h1></p>
-<p>                else:</p>
-<p>                    <h1>非対角成分: ポテンシャル</h1></p>
-<p>                    H[i+N, j+N] = V_G(i - j)</p>
+    for ik, k in enumerate(k_points):
+        # ハミルトニアン行列の構築（平面波基底）
+        H = np.zeros((2*N+1, 2*N+1), dtype=complex)
 
-<p>        <h1>固有値問題を解く</h1></p>
-<p>        eigvals, eigvecs = eigh(H)</p>
-<p>        energies[ik, :] = eigvals[:n_bands]</p>
+        for i in range(-N, N+1):
+            for j in range(-N, N+1):
+                if i == j:
+                    # 対角成分: 運動エネルギー
+                    H[i+N, j+N] = 0.5 * (k + i*G)**2  # 原子単位系
+                else:
+                    # 非対角成分: ポテンシャル
+                    H[i+N, j+N] = V_G(i - j)
 
-<p>    return k_points, energies</p>
+        # 固有値問題を解く
+        eigvals, eigvecs = eigh(H)
+        energies[ik, :] = eigvals[:n_bands]
 
-<p><h1>バンド構造の計算</h1></p>
-<p>k_points, energies = kronig_penney_band(N=50, a=1.0, b=0.2, V0=5.0, n_bands=6)</p>
+    return k_points, energies
 
-<p><h1>プロット</h1></p>
-<p>plt.figure(figsize=(10, 6))</p>
-<p>for n in range(energies.shape[1]):</p>
-<p>    plt.plot(k_points, energies[:, n], linewidth=2)</p>
+<h1>バンド構造の計算</h1>
+k_points, energies = kronig_penney_band(N=50, a=1.0, b=0.2, V0=5.0, n_bands=6)
 
-<p>plt.xlabel('波数 k [Å$^{-1}$]', fontsize=12)</p>
-<p>plt.ylabel('エネルギー [eV]', fontsize=12)</p>
-<p>plt.title('1次元周期ポテンシャルのバンド構造（クローニッヒ・ペニーモデル）', fontsize=14)</p>
-<p>plt.grid(alpha=0.3)</p>
-<p>plt.axhline(0, color='black', linewidth=0.5)</p>
-<p>plt.xlim([k_points[0], k_points[-1]])</p>
-<p>plt.ylim([0, 20])</p>
+<h1>プロット</h1>
+plt.figure(figsize=(10, 6))
+for n in range(energies.shape[1]):
+    plt.plot(k_points, energies[:, n], linewidth=2)
 
-<p><h1>高対称点のラベル</h1></p>
-<p>d = 1.2</p>
-<p>plt.axvline(-np.pi/d, color='gray', linestyle='--', alpha=0.5)</p>
-<p>plt.axvline(0, color='gray', linestyle='--', alpha=0.5)</p>
-<p>plt.axvline(np.pi/d, color='gray', linestyle='--', alpha=0.5)</p>
-<p>plt.xticks([-np.pi/d, 0, np.pi/d], ['-π/d', 'Γ', 'π/d'])</p>
+plt.xlabel('波数 k [Å$^{-1}$]', fontsize=12)
+plt.ylabel('エネルギー [eV]', fontsize=12)
+plt.title('1次元周期ポテンシャルのバンド構造（クローニッヒ・ペニーモデル）', fontsize=14)
+plt.grid(alpha=0.3)
+plt.axhline(0, color='black', linewidth=0.5)
+plt.xlim([k_points[0], k_points[-1]])
+plt.ylim([0, 20])
 
-<p>plt.tight_layout()</p>
-<p>plt.savefig('1d_band_structure.png', dpi=150)</p>
-<p>plt.show()</p>
+<h1>高対称点のラベル</h1>
+d = 1.2
+plt.axvline(-np.pi/d, color='gray', linestyle='--', alpha=0.5)
+plt.axvline(0, color='gray', linestyle='--', alpha=0.5)
+plt.axvline(np.pi/d, color='gray', linestyle='--', alpha=0.5)
+plt.xticks([-np.pi/d, 0, np.pi/d], ['-π/d', 'Γ', 'π/d'])
 
-<p><h1>バンドギャップの計算</h1></p>
-<p>print("\nバンドギャップの解析:")</p>
-<p>k_gamma = np.argmin(np.abs(k_points))  <h1>Γ点（k=0）</h1></p>
-<p>for n in range(energies.shape[1] - 1):</p>
-<p>    E_top = energies[k_gamma, n]</p>
-<p>    E_bottom = energies[k_gamma, n+1]</p>
-<p>    gap = E_bottom - E_top</p>
-<p>    print(f"バンド{n}と{n+1}の間のギャップ: {gap:.3f} eV")</p>
-<p></code></pre></p>
+plt.tight_layout()
+plt.savefig('1d_band_structure.png', dpi=150)
+plt.show()
 
-<p><strong>実行結果の解釈</strong>:</p>
-<ul>
-<li>周期ポテンシャルにより、エネルギーが離散的な<strong>バンド</strong>に分かれる</li>
-<li>バンド間には<strong>バンドギャップ</strong>が存在（電子が存在できないエネルギー領域）</li>
-<li>k=0（Γ点）でバンドの極値が現れる</li>
-<li>ポテンシャルが強いほど、バンドギャップが大きくなる</li>
-</ul>
+<h1>バンドギャップの計算</h1>
+print("\nバンドギャップの解析:")
+k_gamma = np.argmin(np.abs(k_points))  # Γ点（k=0）
+for n in range(energies.shape[1] - 1):
+    E_top = energies[k_gamma, n]
+    E_bottom = energies[k_gamma, n+1]
+    gap = E_bottom - E_top
+    print(f"バンド{n}と{n+1}の間のギャップ: {gap:.3f} eV")</code></pre>
 
-<p>---</p>
+<strong>実行結果の解釈</strong>:
+- 周期ポテンシャルにより、エネルギーが離散的な<strong>バンド</strong>に分かれる
+- バンド間には<strong>バンドギャップ</strong>が存在（電子が存在できないエネルギー領域）
+- k=0（Γ点）でバンドの極値が現れる
+- ポテンシャルが強いほど、バンドギャップが大きくなる
 
-<p><h2>1.6 量子井戸のエネルギー準位</h2></p>
+---
 
-<p>もう1つの重要な例として、<strong>無限井戸型ポテンシャル</strong>（量子井戸）を見てみましょう。</p>
+<h2>1.6 量子井戸のエネルギー準位</h2>
 
-<p><h3>問題設定</h3></p>
-
-<p>$$</p>
-<p>V(x) = \begin{cases}</p>
-<p>0 & 0 \leq x \leq L \\</p>
-<p>\infty & \text{otherwise}</p>
-<p>\end{cases}</p>
-<p>$$</p>
+もう1つの重要な例として、<strong>無限井戸型ポテンシャル</strong>（量子井戸）を見てみましょう。
 
-<p><h3>解析解</h3></p>
+<h3>問題設定</h3>
 
-<p>波動関数とエネルギー固有値は：</p>
+$$
+V(x) = \begin{cases}
+0 & 0 \leq x \leq L \\
+\infty & \text{otherwise}
+\end{cases}
+$$
 
-<p>$$</p>
-<p>\psi_n(x) = \sqrt{\frac{2}{L}} \sin\left(\frac{n\pi x}{L}\right), \quad E_n = \frac{n^2 \pi^2 \hbar^2}{2 m_e L^2}</p>
-<p>$$</p>
+<h3>解析解</h3>
 
-<p>$n = 1, 2, 3, \ldots$</p>
+波動関数とエネルギー固有値は：
 
-<p><h3>Pythonでの数値計算</h3></p>
-
-<p><pre><code class="language-python">import numpy as np</p>
-<p>import matplotlib.pyplot as plt</p>
+$$
+\psi_n(x) = \sqrt{\frac{2}{L}} \sin\left(\frac{n\pi x}{L}\right), \quad E_n = \frac{n^2 \pi^2 \hbar^2}{2 m_e L^2}
+$$
 
-<p>def quantum_well(L=10.0, n_states=5):</p>
-<p>    """</p>
-<p>    無限井戸型ポテンシャルの波動関数とエネルギー準位</p>
-
-<p>    Args:</p>
-<p>        L: 井戸の幅 [Å]</p>
-<p>        n_states: 表示する状態数</p>
-
-<p>    Returns:</p>
-<p>        x: 位置座標</p>
-<p>        psi: 波動関数</p>
-<p>        E: エネルギー準位</p>
-<p>    """</p>
-<p>    x = np.linspace(0, L, 500)</p>
-
-<p>    <h1>エネルギー準位（eV単位に変換）</h1></p>
-<p>    <h1>hbar^2 / (2*m_e) = 3.81 eV Å^2（原子単位系）</h1></p>
-<p>    coeff = 3.81</p>
-<p>    E = np.array([coeff <em> (n</em>np.pi/L)**2 for n in range(1, n_states+1)])</p>
-
-<p>    <h1>波動関数</h1></p>
-<p>    psi = np.zeros((n_states, len(x)))</p>
-<p>    for n in range(1, n_states+1):</p>
-<p>        psi[n-1, :] = np.sqrt(2/L) <em> np.sin(n </em> np.pi * x / L)</p>
-
-<p>    return x, psi, E</p>
-
-<p><h1>計算</h1></p>
-<p>L = 10.0  <h1>井戸の幅 [Å]</h1></p>
-<p>x, psi, E = quantum_well(L, n_states=5)</p>
-
-<p><h1>プロット</h1></p>
-<p>fig, axes = plt.subplots(1, 2, figsize=(12, 5))</p>
-
-<p><h1>左: 波動関数</h1></p>
-<p>for n in range(5):</p>
-<p>    axes[0].plot(x, psi[n, :] + E[n]/2, label=f'n={n+1}, E={E[n]:.2f} eV')</p>
-<p>    axes[0].axhline(E[n]/2, color='gray', linestyle='--', alpha=0.3)</p>
-
-<p>axes[0].set_xlabel('位置 x [Å]', fontsize=12)</p>
-<p>axes[0].set_ylabel('波動関数 + エネルギー準位', fontsize=12)</p>
-<p>axes[0].set_title('量子井戸の波動関数', fontsize=14)</p>
-<p>axes[0].legend()</p>
-<p>axes[0].grid(alpha=0.3)</p>
-
-<p><h1>右: 確率密度</h1></p>
-<p>for n in range(5):</p>
-<p>    axes[1].plot(x, psi[n, :]**2, label=f'n={n+1}')</p>
+$n = 1, 2, 3, \ldots$
 
-<p>axes[1].set_xlabel('位置 x [Å]', fontsize=12)</p>
-<p>axes[1].set_ylabel('確率密度 |ψ(x)|$^2$ [Å$^{-1}$]', fontsize=12)</p>
-<p>axes[1].set_title('確率密度', fontsize=14)</p>
-<p>axes[1].legend()</p>
-<p>axes[1].grid(alpha=0.3)</p>
+<h3>Pythonでの数値計算</h3>
 
-<p>plt.tight_layout()</p>
-<p>plt.savefig('quantum_well.png', dpi=150)</p>
-<p>plt.show()</p>
+<pre><code class="language-python">import numpy as np
+import matplotlib.pyplot as plt
 
-<p><h1>エネルギー準位の表示</h1></p>
-<p>print("量子井戸のエネルギー準位:")</p>
-<p>for n in range(1, 6):</p>
-<p>    print(f"n={n}: E = {E[n-1]:.3f} eV")</p>
+def quantum_well(L=10.0, n_states=5):
+    """
+    無限井戸型ポテンシャルの波動関数とエネルギー準位
 
-<p><h1>エネルギー間隔の解析</h1></p>
-<p>print("\nエネルギー間隔:")</p>
-<p>for n in range(1, 5):</p>
-<p>    delta_E = E[n] - E[n-1]</p>
-<p>    print(f"ΔE({n}→{n+1}) = {delta_E:.3f} eV")</p>
-<p></code></pre></p>
+    Args:
+        L: 井戸の幅 [Å]
+        n_states: 表示する状態数
 
-<p><strong>物理的洞察</strong>:</p>
-<ul>
-<li>エネルギーは$n^2$に比例（$E_n \propto n^2$）</li>
-<li>量子数$n$が増えると、波動関数の節の数が増える（$n-1$個の節）</li>
-<li>井戸の幅$L$が小さいほど、エネルギー準位が高くなる（量子閉じ込め効果）</li>
-<li>これは量子ドットやナノワイヤーの電子状態の基礎</li>
-</ul>
-
-<p>---</p>
-
-<p><h2>1.7 本章のまとめ</h2></p>
-
-<p><h3>学んだこと</h3></p>
-
-<ol>
-<li><strong>シュレーディンガー方程式</strong></li>
-</ol>
-<p>   - 量子力学の基礎方程式</p>
-<p>   - 時間依存/時間独立の2つの形式</p>
-<p>   - ハミルトニアンの構成（運動エネルギー + ポテンシャルエネルギー）</p>
-
-<ol>
-<li><strong>ボルン・オッペンハイマー近似</strong></li>
-</ol>
-<p>   - 原子核と電子の運動の分離</p>
-<p>   - 計算材料科学の基礎となる近似</p>
-<p>   - ポテンシャルエネルギー面（PES）の概念</p>
-
-<ol>
-<li><strong>水素原子</strong></li>
-</ol>
-<p>   - 解析的に解ける唯一のクーロン多体系</p>
-<p>   - 動径波動関数と球面調和関数</p>
-<p>   - エネルギー準位：$E_n = -13.6/n^2$ eV</p>
+    Returns:
+        x: 位置座標
+        psi: 波動関数
+        E: エネルギー準位
+    """
+    x = np.linspace(0, L, 500)
 
-<ol>
-<li><strong>固体の周期性とブロッホの定理</strong></li>
-</ol>
-<p>   - 結晶格子の周期性</p>
-<p>   - ブロッホ関数：$\psi_{n\mathbf{k}}(\mathbf{r}) = e^{i\mathbf{k}\cdot\mathbf{r}} u_{n\mathbf{k}}(\mathbf{r})$</p>
-<p>   - バンド構造：$E_n(\mathbf{k})$</p>
-<p>   - バンドギャップと金属・絶縁体の違い</p>
+    # エネルギー準位（eV単位に変換）
+    # hbar^2 / (2*m_e) = 3.81 eV Å^2（原子単位系）
+    coeff = 3.81
+    E = np.array([coeff * (n*np.pi/L)**2 for n in range(1, n_states+1)])
 
-<ol>
-<li><strong>実践的な計算</strong></li>
-</ol>
-<p>   - Pythonで水素原子の波動関数を計算</p>
-<p>   - 1次元周期ポテンシャルのバンド構造</p>
-<p>   - 量子井戸のエネルギー準位</p>
+    # 波動関数
+    psi = np.zeros((n_states, len(x)))
+    for n in range(1, n_states+1):
+        psi[n-1, :] = np.sqrt(2/L) * np.sin(n * np.pi * x / L)
 
-<p><h3>重要なポイント</h3></p>
+    return x, psi, E
 
-<ul>
-<li>量子力学は原子・分子・固体の電子状態を記述する唯一の正確な理論</li>
-<li>BOAにより電子と原子核の運動を分離できる → DFTとMDが可能に</li>
-<li>固体の周期性がバンド構造を生み出す</li>
-<li>数値計算により、複雑な系の電子状態を近似的に解ける</li>
-</ul>
+<h1>計算</h1>
+L = 10.0  # 井戸の幅 [Å]
+x, psi, E = quantum_well(L, n_states=5)
 
-<p><h3>次の章へ</h3></p>
+<h1>プロット</h1>
+fig, axes = plt.subplots(1, 2, figsize=(12, 5))
 
-<p>第2章では、多電子系の電子状態を実際に計算する手法である<strong>密度汎関数理論（DFT）</strong>を学びます。DFTはシュレーディンガー方程式を実用的に解くための最も重要な近似手法です。</p>
+<h1>左: 波動関数</h1>
+for n in range(5):
+    axes[0].plot(x, psi[n, :] + E[n]/2, label=f'n={n+1}, E={E[n]:.2f} eV')
+    axes[0].axhline(E[n]/2, color='gray', linestyle='--', alpha=0.3)
 
-<p>---</p>
+axes[0].set_xlabel('位置 x [Å]', fontsize=12)
+axes[0].set_ylabel('波動関数 + エネルギー準位', fontsize=12)
+axes[0].set_title('量子井戸の波動関数', fontsize=14)
+axes[0].legend()
+axes[0].grid(alpha=0.3)
 
-<p><h2>演習問題</h2></p>
+<h1>右: 確率密度</h1>
+for n in range(5):
+    axes[1].plot(x, psi[n, :]**2, label=f'n={n+1}')
 
-<p><h3>問題1（難易度：easy）</h3></p>
+axes[1].set_xlabel('位置 x [Å]', fontsize=12)
+axes[1].set_ylabel('確率密度 |ψ(x)|$^2$ [Å$^{-1}$]', fontsize=12)
+axes[1].set_title('確率密度', fontsize=14)
+axes[1].legend()
+axes[1].grid(alpha=0.3)
 
-<p>ボルン・オッペンハイマー近似が成り立つ理由を、原子核と電子の質量の違いから説明してください。</p>
+plt.tight_layout()
+plt.savefig('quantum_well.png', dpi=150)
+plt.show()
 
-<p><details></p>
-<p><summary>ヒント</summary></p>
+<h1>エネルギー準位の表示</h1>
+print("量子井戸のエネルギー準位:")
+for n in range(1, 6):
+    print(f"n={n}: E = {E[n-1]:.3f} eV")
 
-<p>電子の質量$m_e$と陽子の質量$m_p$の比を考えてみましょう。$m_p / m_e \approx 1836$です。</p>
+<h1>エネルギー間隔の解析</h1>
+print("\nエネルギー間隔:")
+for n in range(1, 5):
+    delta_E = E[n] - E[n-1]
+    print(f"ΔE({n}→{n+1}) = {delta_E:.3f} eV")</code></pre>
 
-<p></details></p>
+<strong>物理的洞察</strong>:
+- エネルギーは$n^2$に比例（$E_n \propto n^2$）
+- 量子数$n$が増えると、波動関数の節の数が増える（$n-1$個の節）
+- 井戸の幅$L$が小さいほど、エネルギー準位が高くなる（量子閉じ込め効果）
+- これは量子ドットやナノワイヤーの電子状態の基礎
 
-<p><details></p>
-<p><summary>解答例</summary></p>
+---
 
-<p><strong>ボルン・オッペンハイマー近似が成り立つ理由</strong>:</p>
+<h2>1.7 本章のまとめ</h2>
 
-<ol>
-<li><strong>質量の違い</strong>:</li>
-</ol>
-<p>   - 電子の質量: $m_e = 9.109 \times 10^{-31}$ kg</p>
-<p>   - 陽子（水素原子核）の質量: $m_p = 1.673 \times 10^{-27}$ kg</p>
-<p>   - 質量比: $m_p / m_e = 1836$</p>
-<p>   - 鉄原子核（Fe, 質量数56）: $M_{\text{Fe}} / m_e \approx 102,000$</p>
+<h3>学んだこと</h3>
 
-<ol>
-<li><strong>運動速度の違い</strong>:</li>
-</ol>
-<p>   - 運動エネルギー$E = p^2/(2m)$が同じなら、運動量$p = \sqrt{2mE}$</p>
-<p>   - 質量が大きいほど、同じエネルギーでの速度$v = p/m$は小さい</p>
-<p>   - 電子は原子核の約40倍以上速く動く（$v_e / v_p \sim \sqrt{m_p/m_e} \approx 43$）</p>
+1. <strong>シュレーディンガー方程式</strong>
+   - 量子力学の基礎方程式
+   - 時間依存/時間独立の2つの形式
+   - ハミルトニアンの構成（運動エネルギー + ポテンシャルエネルギー）
 
-<ol>
-<li><strong>時間スケールの分離</strong>:</li>
-</ol>
-<p>   - 電子の運動: $\sim 10^{-16}$ 秒（フェムト秒スケール）</p>
-<p>   - 原子核の運動（振動）: $\sim 10^{-13}$ 秒（ピコ秒スケール）</p>
-<p>   - 約1000倍の時間スケールの差</p>
+2. <strong>ボルン・オッペンハイマー近似</strong>
+   - 原子核と電子の運動の分離
+   - 計算材料科学の基礎となる近似
+   - ポテンシャルエネルギー面（PES）の概念
 
-<ol>
-<li><strong>物理的描像</strong>:</li>
-</ol>
-<p>   - 電子から見ると、原子核は「ほぼ止まっている」</p>
-<p>   - 電子は原子核の瞬間的な配置に対して即座に応答し、基底状態に緩和する</p>
-<p>   - この近似により、電子状態計算（DFT）と原子核の運動（MD）を分離可能</p>
+3. <strong>水素原子</strong>
+   - 解析的に解ける唯一のクーロン多体系
+   - 動径波動関数と球面調和関数
+   - エネルギー準位：$E_n = -13.6/n^2$ eV
 
-<p><strong>例外（BOAが破綻する場合）</strong>:</p>
-<ul>
-<li>軽い原子（H, He）: 零点振動の効果が大きい</li>
-<li>励起状態: 電子状態間の遷移時間と原子核の運動が同程度</li>
-<li>強相関系: 電子-格子相互作用が非常に強い系</li>
-</ul>
+4. <strong>固体の周期性とブロッホの定理</strong>
+   - 結晶格子の周期性
+   - ブロッホ関数：$\psi_{n\mathbf{k}}(\mathbf{r}) = e^{i\mathbf{k}\cdot\mathbf{r}} u_{n\mathbf{k}}(\mathbf{r})$
+   - バンド構造：$E_n(\mathbf{k})$
+   - バンドギャップと金属・絶縁体の違い
 
-<p></details></p>
+5. <strong>実践的な計算</strong>
+   - Pythonで水素原子の波動関数を計算
+   - 1次元周期ポテンシャルのバンド構造
+   - 量子井戸のエネルギー準位
 
-<p><h3>問題2（難易度：medium）</h3></p>
+<h3>重要なポイント</h3>
 
-<p>水素原子の基底状態（1s軌道）のエネルギーは-13.6 eVです。電子が基底状態から第一励起状態（2s or 2p）に遷移するために必要な光子のエネルギー（eV）と波長（nm）を計算してください。</p>
+- 量子力学は原子・分子・固体の電子状態を記述する唯一の正確な理論
+- BOAにより電子と原子核の運動を分離できる → DFTとMDが可能に
+- 固体の周期性がバンド構造を生み出す
+- 数値計算により、複雑な系の電子状態を近似的に解ける
 
-<p><details></p>
-<p><summary>ヒント</summary></p>
+<h3>次の章へ</h3>
 
-<p>エネルギー準位: $E_n = -13.6/n^2$ eV</p>
-<p>光子のエネルギー: $E_{\text{photon}} = h\nu = hc/\lambda$</p>
-<p>プランク定数: $h = 4.136 \times 10^{-15}$ eV·s、光速: $c = 3 \times 10^8$ m/s</p>
+第2章では、多電子系の電子状態を実際に計算する手法である<strong>密度汎関数理論（DFT）</strong>を学びます。DFTはシュレーディンガー方程式を実用的に解くための最も重要な近似手法です。
 
-<p></details></p>
+---
 
-<p><details></p>
-<p><summary>解答例</summary></p>
+<h2>演習問題</h2>
 
-<p><strong>Step 1: エネルギー準位の計算</strong></p>
+<h3>問題1（難易度：easy）</h3>
 
-<p>基底状態（$n=1$）:</p>
-<p>$$E_1 = -\frac{13.6}{1^2} = -13.6 \text{ eV}$$</p>
+ボルン・オッペンハイマー近似が成り立つ理由を、原子核と電子の質量の違いから説明してください。
 
-<p>第一励起状態（$n=2$）:</p>
-<p>$$E_2 = -\frac{13.6}{2^2} = -3.4 \text{ eV}$$</p>
+<details>
+<summary>ヒント</summary>
 
-<p><strong>Step 2: 遷移エネルギー</strong></p>
+電子の質量$m_e$と陽子の質量$m_p$の比を考えてみましょう。$m_p / m_e \approx 1836$です。
 
-<p>$$\Delta E = E_2 - E_1 = -3.4 - (-13.6) = 10.2 \text{ eV}$$</p>
+</details>
 
-<p><strong>Step 3: 光子の波長</strong></p>
+<details>
+<summary>解答例</summary>
 
-<p>$$E_{\text{photon}} = \frac{hc}{\lambda}$$</p>
+<strong>ボルン・オッペンハイマー近似が成り立つ理由</strong>:
 
-<p>$$\lambda = \frac{hc}{E_{\text{photon}}} = \frac{(4.136 \times 10^{-15} \text{ eV·s}) \cdot (3 \times 10^8 \text{ m/s})}{10.2 \text{ eV}}$$</p>
+1. <strong>質量の違い</strong>:
+   - 電子の質量: $m_e = 9.109 \times 10^{-31}$ kg
+   - 陽子（水素原子核）の質量: $m_p = 1.673 \times 10^{-27}$ kg
+   - 質量比: $m_p / m_e = 1836$
+   - 鉄原子核（Fe, 質量数56）: $M_{\text{Fe}} / m_e \approx 102,000$
 
-<p>$$\lambda = \frac{1.241 \times 10^{-6} \text{ eV·m}}{10.2 \text{ eV}} = 1.217 \times 10^{-7} \text{ m} = 121.7 \text{ nm}$$</p>
+2. <strong>運動速度の違い</strong>:
+   - 運動エネルギー$E = p^2/(2m)$が同じなら、運動量$p = \sqrt{2mE}$
+   - 質量が大きいほど、同じエネルギーでの速度$v = p/m$は小さい
+   - 電子は原子核の約40倍以上速く動く（$v_e / v_p \sim \sqrt{m_p/m_e} \approx 43$）
 
-<p><strong>答え</strong>:</p>
-<ul>
-<li>遷移エネルギー: <strong>10.2 eV</strong></li>
-<li>光子の波長: <strong>121.7 nm</strong>（紫外線領域、ライマンα線）</li>
-</ul>
+3. <strong>時間スケールの分離</strong>:
+   - 電子の運動: $\sim 10^{-16}$ 秒（フェムト秒スケール）
+   - 原子核の運動（振動）: $\sim 10^{-13}$ 秒（ピコ秒スケール）
+   - 約1000倍の時間スケールの差
 
-<p><strong>物理的意味</strong>:</p>
-<ul>
-<li>この遷移は<strong>ライマン系列</strong>の最初の線（ライマンα線）</li>
-<li>紫外線領域なので、地上では観測されない（大気に吸収される）</li>
-<li>宇宙からの観測では重要な輝線</li>
-</ul>
+4. <strong>物理的描像</strong>:
+   - 電子から見ると、原子核は「ほぼ止まっている」
+   - 電子は原子核の瞬間的な配置に対して即座に応答し、基底状態に緩和する
+   - この近似により、電子状態計算（DFT）と原子核の運動（MD）を分離可能
 
-<p></details></p>
+<strong>例外（BOAが破綻する場合）</strong>:
+- 軽い原子（H, He）: 零点振動の効果が大きい
+- 励起状態: 電子状態間の遷移時間と原子核の運動が同程度
+- 強相関系: 電子-格子相互作用が非常に強い系
 
-<p><h3>問題3（難易度：hard）</h3></p>
+</details>
 
-<p>1次元の周期ポテンシャル中の電子を考えます。ポテンシャルが弱い極限で、自由電子（$V=0$）からのずれを摂動論で考えると、バンドギャップが生じることを示してください。</p>
+<h3>問題2（難易度：medium）</h3>
 
-<p><details></p>
-<p><summary>ヒント</summary></p>
+水素原子の基底状態（1s軌道）のエネルギーは-13.6 eVです。電子が基底状態から第一励起状態（2s or 2p）に遷移するために必要な光子のエネルギー（eV）と波長（nm）を計算してください。
 
-<p>自由電子のエネルギー: $E_k = \hbar^2 k^2 / (2m_e)$</p>
-<p>ブリルアンゾーン境界: $k = \pm \pi/a$</p>
-<p>縮退した状態: $E_k = E_{-k}$で縮退</p>
-<p>摂動論により縮退が解ける</p>
+<details>
+<summary>ヒント</summary>
 
-<p></details></p>
+エネルギー準位: $E_n = -13.6/n^2$ eV
+光子のエネルギー: $E_{\text{photon}} = h\nu = hc/\lambda$
+プランク定数: $h = 4.136 \times 10^{-15}$ eV·s、光速: $c = 3 \times 10^8$ m/s
 
-<p><details></p>
-<p><summary>解答例</summary></p>
+</details>
 
-<p><strong>自由電子の場合（$V=0$）</strong>:</p>
+<details>
+<summary>解答例</summary>
 
-<p>エネルギー:</p>
-<p>$$E_k = \frac{\hbar^2 k^2}{2m_e}$$</p>
+<strong>Step 1: エネルギー準位の計算</strong>
 
-<p>波動関数:</p>
-<p>$$\psi_k(x) = \frac{1}{\sqrt{L}} e^{ikx}$$</p>
+基底状態（$n=1$）:
+$$E_1 = -\frac{13.6}{1^2} = -13.6 \text{ eV}$$
 
-<p><strong>ブリルアンゾーン境界での縮退</strong>:</p>
+第一励起状態（$n=2$）:
+$$E_2 = -\frac{13.6}{2^2} = -3.4 \text{ eV}$$
 
-<p>$k = \pm \pi/a$（第一ブリルアンゾーン境界）で：</p>
-<p>$$E_{\pi/a} = E_{-\pi/a} = \frac{\hbar^2 \pi^2}{2m_e a^2}$$</p>
+<strong>Step 2: 遷移エネルギー</strong>
 
-<p>この2つの状態は縮退している（エネルギーが等しい）。</p>
+$$\Delta E = E_2 - E_1 = -3.4 - (-13.6) = 10.2 \text{ eV}$$
 
-<p><strong>弱い周期ポテンシャルの導入</strong>:</p>
+<strong>Step 3: 光子の波長</strong>
 
-<p>$$V(x) = V(x + a) = V_0 \cos\left(\frac{2\pi x}{a}\right)$$</p>
+$$E_{\text{photon}} = \frac{hc}{\lambda}$$
 
-<p>フーリエ展開:</p>
-<p>$$V(x) = \sum_G V_G e^{iGx}, \quad G = \frac{2\pi n}{a}$$</p>
+$$\lambda = \frac{hc}{E_{\text{photon}}} = \frac{(4.136 \times 10^{-15} \text{ eV·s}) \cdot (3 \times 10^8 \text{ m/s})}{10.2 \text{ eV}}$$
 
-<p>第一項: $V_G = V_0 / 2$（$G = \pm 2\pi/a$）</p>
+$$\lambda = \frac{1.241 \times 10^{-6} \text{ eV·m}}{10.2 \text{ eV}} = 1.217 \times 10^{-7} \text{ m} = 121.7 \text{ nm}$$
 
-<p><strong>摂動論（1次）</strong>:</p>
+<strong>答え</strong>:
+- 遷移エネルギー: <strong>10.2 eV</strong>
+- 光子の波長: <strong>121.7 nm</strong>（紫外線領域、ライマンα線）
 
-<p>縮退した状態の線形結合:</p>
-<p>$$\psi = c_1 e^{i\pi x/a} + c_2 e^{-i\pi x/a}$$</p>
+<strong>物理的意味</strong>:
+- この遷移は<strong>ライマン系列</strong>の最初の線（ライマンα線）
+- 紫外線領域なので、地上では観測されない（大気に吸収される）
+- 宇宙からの観測では重要な輝線
 
-<p>摂動ハミルトニアン行列:</p>
-<p>$$H' = \begin{pmatrix}</p>
-<p>\langle \pi/a | V | \pi/a \rangle & \langle \pi/a | V | -\pi/a \rangle \\</p>
-<p>\langle -\pi/a | V | \pi/a \rangle & \langle -\pi/a | V | -\pi/a \rangle</p>
-<p>\end{pmatrix}$$</p>
+</details>
 
-<p>対角成分: $\langle \pi/a | V | \pi/a \rangle = 0$（平均ポテンシャル）</p>
+<h3>問題3（難易度：hard）</h3>
 
-<p>非対角成分:</p>
-<p>$$\langle \pi/a | V | -\pi/a \rangle = \frac{1}{L} \int_0^L e^{-i\pi x/a} V_0 \cos\left(\frac{2\pi x}{a}\right) e^{i\pi x/a} dx = \frac{V_0}{2}$$</p>
+1次元の周期ポテンシャル中の電子を考えます。ポテンシャルが弱い極限で、自由電子（$V=0$）からのずれを摂動論で考えると、バンドギャップが生じることを示してください。
 
-<p>行列:</p>
-<p>$$H' = \frac{V_0}{2} \begin{pmatrix}</p>
-<p>0 & 1 \\</p>
-<p>1 & 0</p>
-<p>\end{pmatrix}$$</p>
+<details>
+<summary>ヒント</summary>
 
-<p>固有値:</p>
-<p>$$E_{\pm} = E_0 \pm \frac{V_0}{2}$$</p>
+自由電子のエネルギー: $E_k = \hbar^2 k^2 / (2m_e)$
+ブリルアンゾーン境界: $k = \pm \pi/a$
+縮退した状態: $E_k = E_{-k}$で縮退
+摂動論により縮退が解ける
 
-<p>ここで$E_0 = \hbar^2 \pi^2 / (2m_e a^2)$</p>
+</details>
 
-<p><strong>バンドギャップの発生</strong>:</p>
+<details>
+<summary>解答例</summary>
 
-<p>$$\Delta E = E_+ - E_- = V_0$$</p>
+<strong>自由電子の場合（$V=0$）</strong>:
 
-<p><strong>結論</strong>:</p>
-<ul>
-<li>周期ポテンシャルによりブリルアンゾーン境界で縮退が解ける</li>
-<li>エネルギーギャップ（バンドギャップ）が$\Delta E = V_0$だけ生じる</li>
-<li>これが金属と絶縁体の違いを生む物理的起源</li>
-</ul>
+エネルギー:
+$$E_k = \frac{\hbar^2 k^2}{2m_e}$$
 
-<p></details></p>
+波動関数:
+$$\psi_k(x) = \frac{1}{\sqrt{L}} e^{ikx}$$
 
-<p>---</p>
+<strong>ブリルアンゾーン境界での縮退</strong>:
 
-<p><h2>参考文献</h2></p>
+$k = \pm \pi/a$（第一ブリルアンゾーン境界）で：
+$$E_{\pi/a} = E_{-\pi/a} = \frac{\hbar^2 \pi^2}{2m_e a^2}$$
 
-<ol>
-<li>Griffiths, D. J. (2018). <em>Introduction to Quantum Mechanics</em> (3rd ed.). Cambridge University Press.</li>
-</ol>
-<p>   - 量子力学の標準教科書</p>
+この2つの状態は縮退している（エネルギーが等しい）。
 
-<ol>
-<li>Ashcroft, N. W., & Mermin, N. D. (1976). <em>Solid State Physics</em>. Saunders College Publishing.</li>
-</ol>
-<p>   - 固体物理の古典的名著</p>
+<strong>弱い周期ポテンシャルの導入</strong>:
 
-<ol>
-<li>Kittel, C. (2004). <em>Introduction to Solid State Physics</em> (8th ed.). Wiley.</li>
-</ol>
-<p>   - 固体物理の入門教科書</p>
+$$V(x) = V(x + a) = V_0 \cos\left(\frac{2\pi x}{a}\right)$$
 
-<ol>
-<li>Martin, R. M. (2004). <em>Electronic Structure: Basic Theory and Practical Methods</em>. Cambridge University Press.</li>
-</ol>
-<p>   - 計算材料科学の理論的基礎</p>
+フーリエ展開:
+$$V(x) = \sum_G V_G e^{iGx}, \quad G = \frac{2\pi n}{a}$$
 
-<ol>
-<li>常行真司 (2005). 『計算物理学』岩波書店.</li>
-</ol>
-<p>   - 日本語で読める計算物理の良書</p>
+第一項: $V_G = V_0 / 2$（$G = \pm 2\pi/a$）
 
-<p>---</p>
+<strong>摂動論（1次）</strong>:
 
-<p><h2>著者情報</h2></p>
+縮退した状態の線形結合:
+$$\psi = c_1 e^{i\pi x/a} + c_2 e^{-i\pi x/a}$$
 
-<p><strong>作成者</strong>: MI Knowledge Hub Content Team</p>
-<p><strong>監修</strong>: Dr. Yusuke Hashimoto（東北大学）</p>
-<p><strong>作成日</strong>: 2025-10-17</p>
-<p><strong>バージョン</strong>: 1.0</p>
-<p><strong>シリーズ</strong>: 計算材料科学基礎入門 v1.0</p>
+摂動ハミルトニアン行列:
+$$H' = \begin{pmatrix}
+\langle \pi/a | V | \pi/a \rangle & \langle \pi/a | V | -\pi/a \rangle \\
+\langle -\pi/a | V | \pi/a \rangle & \langle -\pi/a | V | -\pi/a \rangle
+\end{pmatrix}$$
 
-<p><strong>ライセンス</strong>: Creative Commons BY-NC-SA 4.0</p>
+対角成分: $\langle \pi/a | V | \pi/a \rangle = 0$（平均ポテンシャル）
 
+非対角成分:
+$$\langle \pi/a | V | -\pi/a \rangle = \frac{1}{L} \int_0^L e^{-i\pi x/a} V_0 \cos\left(\frac{2\pi x}{a}\right) e^{i\pi x/a} dx = \frac{V_0}{2}$$
 
-        
-        <div class="navigation">
-            <a href="chapter-2.html" class="nav-button">次章: 第2章 →</a>
-            <a href="index.html" class="nav-button">← シリーズ目次に戻る</a>
-            
-        </div>
-    
+行列:
+$$H' = \frac{V_0}{2} \begin{pmatrix}
+0 & 1 \\
+1 & 0
+\end{pmatrix}$$
+
+固有値:
+$$E_{\pm} = E_0 \pm \frac{V_0}{2}$$
+
+ここで$E_0 = \hbar^2 \pi^2 / (2m_e a^2)$
+
+<strong>バンドギャップの発生</strong>:
+
+$$\Delta E = E_+ - E_- = V_0$$
+
+<strong>結論</strong>:
+- 周期ポテンシャルによりブリルアンゾーン境界で縮退が解ける
+- エネルギーギャップ（バンドギャップ）が$\Delta E = V_0$だけ生じる
+- これが金属と絶縁体の違いを生む物理的起源
+
+</details>
+
+---
+
+<h2>参考文献</h2>
+
+1. Griffiths, D. J. (2018). *Introduction to Quantum Mechanics* (3rd ed.). Cambridge University Press.
+   - 量子力学の標準教科書
+
+2. Ashcroft, N. W., & Mermin, N. D. (1976). *Solid State Physics*. Saunders College Publishing.
+   - 固体物理の古典的名著
+
+3. Kittel, C. (2004). *Introduction to Solid State Physics* (8th ed.). Wiley.
+   - 固体物理の入門教科書
+
+4. Martin, R. M. (2004). *Electronic Structure: Basic Theory and Practical Methods*. Cambridge University Press.
+   - 計算材料科学の理論的基礎
+
+5. 常行真司 (2005). 『計算物理学』岩波書店.
+   - 日本語で読める計算物理の良書
+
+---
+
+<h2>著者情報</h2>
+
+<strong>作成者</strong>: MI Knowledge Hub Content Team
+<strong>監修</strong>: Dr. Yusuke Hashimoto（東北大学）
+<strong>作成日</strong>: 2025-10-17
+<strong>バージョン</strong>: 1.0
+<strong>シリーズ</strong>: 計算材料科学基礎入門 v1.0
+
+<strong>ライセンス</strong>: Creative Commons BY-NC-SA 4.0
+<div class="navigation">
+    <a href="index.html" class="nav-button">シリーズ目次に戻る</a>
+    <a href="chapter-2.html" class="nav-button">第2章 →</a>
+</div>
     </main>
 
     <footer>
         <p><strong>作成者</strong>: AI Terakoya Content Team</p>
-        <p><strong>監修</strong>: Dr. Yusuke Hashimoto(東北大学)</p>
+        <p><strong>監修</strong>: Dr. Yusuke Hashimoto（東北大学）</p>
         <p><strong>バージョン</strong>: 1.0 | <strong>作成日</strong>: 2025-10-17</p>
         <p><strong>ライセンス</strong>: Creative Commons BY 4.0</p>
         <p>© 2025 AI Terakoya. All rights reserved.</p>

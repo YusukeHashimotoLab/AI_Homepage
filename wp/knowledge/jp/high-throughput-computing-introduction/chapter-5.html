@@ -319,165 +319,178 @@
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         mermaid.initialize({ startOnLoad: true, theme: 'default' });
     </script>
+
+    <!-- MathJax for LaTeX equation rendering -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\(', '\)']],
+                displayMath: [['$$', '$$'], ['\[', '\]']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
 </head>
 <body>
     <header>
         <div class="header-content">
             <h1>第5章：クラウドHPC活用と最適化</h1>
-            
+            <p class="subtitle"></p>
             <div class="meta">
                 <span class="meta-item">📖 読了時間: 15-20分</span>
-<span class="meta-item">📊 難易度: 中級〜上級</span>
+                <span class="meta-item">📊 難易度: 中級〜上級</span>
+                <span class="meta-item">💻 コード例: 5個</span>
+                <span class="meta-item">📝 演習問題: 0問</span>
             </div>
         </div>
     </header>
 
     <main class="container">
-        <h1>第5章：クラウドHPC活用と最適化</h1>
+
+<h1>第5章：クラウドHPC活用と最適化</h1>
 
 <h2>学習目標</h2>
 
-<p>この章を読むことで、以下を習得できます：</p>
+この章を読むことで、以下を習得できます：
 
-<ul>
-<li>✅ AWS Parallel Clusterを構築できる</li>
-<li>✅ スポットインスタンスでコストを50%削減できる</li>
-<li>✅ Dockerで計算環境を完全再現できる</li>
-<li>✅ 10,000材料規模のプロジェクトを設計・実行できる</li>
-<li>✅ セキュリティとコンプライアンスを理解している</li>
-</ul>
+- ✅ AWS Parallel Clusterを構築できる
+- ✅ スポットインスタンスでコストを50%削減できる
+- ✅ Dockerで計算環境を完全再現できる
+- ✅ 10,000材料規模のプロジェクトを設計・実行できる
+- ✅ セキュリティとコンプライアンスを理解している
 
-<p>---</p>
+---
 
 <h2>5.1 クラウドHPCの選択肢</h2>
 
 <h3>主要クラウドプロバイダー比較</h3>
 
-<p>| サービス | プロバイダー | 特徴 | 初期費用 | 推奨用途 |</p>
-<p>|---------|-----------|------|---------|---------|</p>
-<p>| <strong>AWS Parallel Cluster</strong> | Amazon | 最大規模、豊富な実績 | $0 | 大規模HPC |</p>
-<p>| <strong>Google Cloud HPC Toolkit</strong> | Google | AI/ML統合が強力 | $0 | 機械学習連携 |</p>
-<p>| <strong>Azure CycleCloud</strong> | Microsoft | Windows統合 | $0 | エンタープライズ |</p>
-<p>| <strong>TSUBAME</strong> | 東工大 | 国内トップ、学術利用 | 申請制 | 学術研究 |</p>
-<p>| <strong>富岳</strong> | 理研 | 世界トップ500 | 申請制 | 超大規模計算 |</p>
+| サービス | プロバイダー | 特徴 | 初期費用 | 推奨用途 |
+|---------|-----------|------|---------|---------|
+| <strong>AWS Parallel Cluster</strong> | Amazon | 最大規模、豊富な実績 | $0 | 大規模HPC |
+| <strong>Google Cloud HPC Toolkit</strong> | Google | AI/ML統合が強力 | $0 | 機械学習連携 |
+| <strong>Azure CycleCloud</strong> | Microsoft | Windows統合 | $0 | エンタープライズ |
+| <strong>TSUBAME</strong> | 東工大 | 国内トップ、学術利用 | 申請制 | 学術研究 |
+| <strong>富岳</strong> | 理研 | 世界トップ500 | 申請制 | 超大規模計算 |
 
 <h3>コスト比較（10,000材料、1材料=12 CPU時間、48コア）</h3>
 
-<p>| オプション | 計算時間 | コスト | メリット | デメリット |</p>
-<p>|----------|---------|-------|---------|---------|</p>
-<p>| オンプレHPC | 5,760,000 CPU時間 | $0（既存設備） | 無料（利用枠内） | 待ち時間、制限 |</p>
-<p>| AWS オンデマンド | 同上 | $4,000-6,000 | 即時利用可能 | 高コスト |</p>
-<p>| AWS スポット | 同上 | $800-1,500 | 70%コスト削減 | 中断リスク |</p>
-<p>| Google Cloud Preemptible | 同上 | $900-1,600 | 安価 | 24時間制限 |</p>
+| オプション | 計算時間 | コスト | メリット | デメリット |
+|----------|---------|-------|---------|---------|
+| オンプレHPC | 5,760,000 CPU時間 | $0（既存設備） | 無料（利用枠内） | 待ち時間、制限 |
+| AWS オンデマンド | 同上 | $4,000-6,000 | 即時利用可能 | 高コスト |
+| AWS スポット | 同上 | $800-1,500 | 70%コスト削減 | 中断リスク |
+| Google Cloud Preemptible | 同上 | $900-1,600 | 安価 | 24時間制限 |
 
-<p>---</p>
+---
 
 <h2>5.2 AWS Parallel Clusterセットアップ</h2>
 
 <h3>前提条件</h3>
 
 <pre><code class="language-bash"><h1>AWS CLIインストール</h1>
-<p>pip install awscli</p>
+pip install awscli
 
 <h1>AWS設定</h1>
-<p>aws configure</p>
+aws configure
 <h1>AWS Access Key ID: [YOUR_KEY]</h1>
 <h1>AWS Secret Access Key: [YOUR_SECRET]</h1>
 <h1>Default region: us-east-1</h1>
 <h1>Default output format: json</h1>
 
 <h1>Parallel Cluster CLIインストール</h1>
-<p>pip install aws-parallelcluster</p>
-</code></pre>
+pip install aws-parallelcluster</code></pre>
 
 <h3>クラスタ設定ファイル</h3>
 
 <strong>config.yaml</strong>:
 
 <pre><code class="language-yaml">Region: us-east-1
-<p>Image:</p>
-<p>Os: alinux2</p>
+Image:
+  Os: alinux2
 
-<p>HeadNode:</p>
-<p>InstanceType: c5.2xlarge  # 8 vCPU, 16 GB RAM</p>
-<p>Networking:</p>
-<p>SubnetId: subnet-12345678</p>
-<p>Ssh:</p>
-<p>KeyName: my-key-pair</p>
+HeadNode:
+  InstanceType: c5.2xlarge  # 8 vCPU, 16 GB RAM
+  Networking:
+    SubnetId: subnet-12345678
+  Ssh:
+    KeyName: my-key-pair
 
-<p>Scheduling:</p>
-<p>Scheduler: slurm</p>
-<p>SlurmQueues:</p>
-<p>- Name: compute</p>
-<p>ComputeResources:</p>
-<p>- Name: c5-48xlarge</p>
-<p>InstanceType: c5.24xlarge  # 96 vCPU</p>
-<p>MinCount: 0</p>
-<p>MaxCount: 100  # 最大100ノード</p>
-<p>DisableSimultaneousMultithreading: true</p>
-<p>Efa:</p>
-<p>Enabled: true  # 高速ネットワーク</p>
-<p>Networking:</p>
-<p>SubnetIds:</p>
-<p>- subnet-12345678</p>
-<p>PlacementGroup:</p>
-<p>Enabled: true  # 低レイテンシ配置</p>
+Scheduling:
+  Scheduler: slurm
+  SlurmQueues:
+    - Name: compute
+      ComputeResources:
+        - Name: c5-48xlarge
+          InstanceType: c5.24xlarge  # 96 vCPU
+          MinCount: 0
+          MaxCount: 100  # 最大100ノード
+          DisableSimultaneousMultithreading: true
+          Efa:
+            Enabled: true  # 高速ネットワーク
+      Networking:
+        SubnetIds:
+          - subnet-12345678
+        PlacementGroup:
+          Enabled: true  # 低レイテンシ配置
 
-<p>SharedStorage:</p>
-<p>- MountDir: /shared</p>
-<p>Name: ebs-shared</p>
-<p>StorageType: Ebs</p>
-<p>EbsSettings:</p>
-<p>VolumeType: gp3</p>
-<p>Size: 1000  # 1 TB</p>
-<p>Encrypted: true</p>
+SharedStorage:
+  - MountDir: /shared
+    Name: ebs-shared
+    StorageType: Ebs
+    EbsSettings:
+      VolumeType: gp3
+      Size: 1000  # 1 TB
+      Encrypted: true
 
-<p>- MountDir: /fsx</p>
-<p>Name: lustre-fs</p>
-<p>StorageType: FsxLustre</p>
-<p>FsxLustreSettings:</p>
-<p>StorageCapacity: 1200  # 1.2 TB</p>
-<p>DeploymentType: SCRATCH_2</p>
-</code></pre>
+  - MountDir: /fsx
+    Name: lustre-fs
+    StorageType: FsxLustre
+    FsxLustreSettings:
+      StorageCapacity: 1200  # 1.2 TB
+      DeploymentType: SCRATCH_2</code></pre>
 
 <h3>クラスタ作成</h3>
 
 <pre><code class="language-bash"><h1>クラスタ作成</h1>
-<p>pcluster create-cluster \</p>
-<p>--cluster-name vasp-cluster \</p>
-<p>--cluster-configuration config.yaml</p>
+pcluster create-cluster \
+  --cluster-name vasp-cluster \
+  --cluster-configuration config.yaml
 
 <h1>作成状態確認</h1>
-<p>pcluster describe-cluster --cluster-name vasp-cluster</p>
+pcluster describe-cluster --cluster-name vasp-cluster
 
 <h1>SSH接続</h1>
-<p>pcluster ssh --cluster-name vasp-cluster -i ~/.ssh/my-key-pair.pem</p>
-</code></pre>
+pcluster ssh --cluster-name vasp-cluster -i ~/.ssh/my-key-pair.pem</code></pre>
 
 <h3>VASP環境セットアップ</h3>
 
 <pre><code class="language-bash"><h1>クラスタにSSH接続後</h1>
 
 <h1>Intel OneAPI Toolkit（VASPコンパイルに必要）</h1>
-<p>wget https://registrationcenter-download.intel.com/...</p>
-<p>bash l_BaseKit_p_2023.0.0.25537_offline.sh</p>
+wget https://registrationcenter-download.intel.com/...
+bash l_BaseKit_p_2023.0.0.25537_offline.sh
 
 <h1>VASPコンパイル（ライセンスが必要）</h1>
-<p>cd /shared</p>
-<p>tar -xzf vasp.6.3.0.tar.gz</p>
-<p>cd vasp.6.3.0</p>
+cd /shared
+tar -xzf vasp.6.3.0.tar.gz
+cd vasp.6.3.0
 
 <h1>makefile.include編集（Intel compiler用）</h1>
-<p>cp arch/makefile.include.intel makefile.include</p>
+cp arch/makefile.include.intel makefile.include
 
 <h1>コンパイル</h1>
-<p>make all</p>
+make all
 
 <h1>実行ファイルを共有ディレクトリに配置</h1>
-<p>cp bin/vasp_std /shared/bin/</p>
-</code></pre>
+cp bin/vasp_std /shared/bin/</code></pre>
 
-<p>---</p>
+---
 
 <h2>5.3 コスト最適化</h2>
 
@@ -488,99 +501,94 @@
 <strong>config.yaml（スポット設定）</strong>:
 
 <pre><code class="language-yaml">Scheduling:
-<p>Scheduler: slurm</p>
-<p>SlurmQueues:</p>
-<p>- Name: spot-queue</p>
-<p>CapacityType: SPOT  # スポットインスタンス</p>
-<p>ComputeResources:</p>
-<p>- Name: c5-spot</p>
-<p>InstanceType: c5.24xlarge</p>
-<p>MinCount: 0</p>
-<p>MaxCount: 200</p>
-<p>SpotPrice: 2.50  # 最大入札価格（$/時）</p>
-<p>Networking:</p>
-<p>SubnetIds:</p>
-<p>- subnet-12345678</p>
-</code></pre>
+  Scheduler: slurm
+  SlurmQueues:
+    - Name: spot-queue
+      CapacityType: SPOT  # スポットインスタンス
+      ComputeResources:
+        - Name: c5-spot
+          InstanceType: c5.24xlarge
+          MinCount: 0
+          MaxCount: 200
+          SpotPrice: 2.50  # 最大入札価格（$/時）
+      Networking:
+        SubnetIds:
+          - subnet-12345678</code></pre>
 
 <strong>スポットインスタンスのベストプラクティス</strong>:
 
-<ol>
-<li><strong>チェックポイント</strong>: 計算を定期的に保存</li>
-<li><strong>複数インスタンスタイプ</strong>: 代替タイプを指定</li>
-<li><strong>リトライ設定</strong>: 中断時の自動リスタート</li>
-</ol>
+1. <strong>チェックポイント</strong>: 計算を定期的に保存
+2. <strong>複数インスタンスタイプ</strong>: 代替タイプを指定
+3. <strong>リトライ設定</strong>: 中断時の自動リスタート
 
 <h3>自動スケーリング</h3>
 
 <pre><code class="language-yaml">Scheduling:
-<p>SlurmSettings:</p>
-<p>ScaledownIdletime: 5  # 5分アイドルで終了</p>
-<p>SlurmQueues:</p>
-<p>- Name: compute</p>
-<p>ComputeResources:</p>
-<p>- Name: c5-instances</p>
-<p>MinCount: 0      # アイドル時は0ノード</p>
-<p>MaxCount: 100    # 最大100ノード</p>
-</code></pre>
+  SlurmSettings:
+    ScaledownIdletime: 5  # 5分アイドルで終了
+  SlurmQueues:
+    - Name: compute
+      ComputeResources:
+        - Name: c5-instances
+          MinCount: 0      # アイドル時は0ノード
+          MaxCount: 100    # 最大100ノード</code></pre>
 
 <h3>コスト監視</h3>
 
 <pre><code class="language-python">import boto3
-<p>from datetime import datetime, timedelta</p>
+from datetime import datetime, timedelta
 
-<p>def get_cluster_cost(cluster_name, days=7):</p>
-<p>"""</p>
-<p>クラスタのコストを取得</p>
+def get_cluster_cost(cluster_name, days=7):
+    """
+    クラスタのコストを取得
 
-<p>Parameters:</p>
-<p>-----------</p>
-<p>cluster_name : str</p>
-<p>クラスタ名</p>
-<p>days : int</p>
-<p>過去何日分</p>
+    Parameters:
+    -----------
+    cluster_name : str
+        クラスタ名
+    days : int
+        過去何日分
 
-<p>Returns:</p>
-<p>--------</p>
-<p>cost : float</p>
-<p>総コスト（USD）</p>
-<p>"""</p>
-<p>ce_client = boto3.client('ce', region_name='us-east-1')</p>
+    Returns:
+    --------
+    cost : float
+        総コスト（USD）
+    """
+    ce_client = boto3.client('ce', region_name='us-east-1')
 
-<p># 期間設定</p>
-<p>end_date = datetime.now().date()</p>
-<p>start_date = end_date - timedelta(days=days)</p>
+    # 期間設定
+    end_date = datetime.now().date()
+    start_date = end_date - timedelta(days=days)
 
-<p># Cost Explorer API</p>
-<p>response = ce_client.get_cost_and_usage(</p>
-<p>TimePeriod={</p>
-<p>'Start': start_date.strftime('%Y-%m-%d'),</p>
-<p>'End': end_date.strftime('%Y-%m-%d')</p>
-<p>},</p>
-<p>Granularity='DAILY',</p>
-<p>Metrics=['UnblendedCost'],</p>
-<p>Filter={</p>
-<p>'Tags': {</p>
-<p>'Key': 'parallelcluster:cluster-name',</p>
-<p>'Values': [cluster_name]</p>
-<p>}</p>
-<p>}</p>
-<p>)</p>
+    # Cost Explorer API
+    response = ce_client.get_cost_and_usage(
+        TimePeriod={
+            'Start': start_date.strftime('%Y-%m-%d'),
+            'End': end_date.strftime('%Y-%m-%d')
+        },
+        Granularity='DAILY',
+        Metrics=['UnblendedCost'],
+        Filter={
+            'Tags': {
+                'Key': 'parallelcluster:cluster-name',
+                'Values': [cluster_name]
+            }
+        }
+    )
 
-<p>total_cost = 0</p>
-<p>for result in response['ResultsByTime']:</p>
-<p>cost = float(result['Total']['UnblendedCost']['Amount'])</p>
-<p>total_cost += cost</p>
-<p>print(f"{result['TimePeriod']['Start']}: ${cost:.2f}")</p>
+    total_cost = 0
+    for result in response['ResultsByTime']:
+        cost = float(result['Total']['UnblendedCost']['Amount'])
+        total_cost += cost
+        print(f"{result['TimePeriod']['Start']}: ${cost:.2f}")
 
-<p>print(f"\n総コスト（{days}日間）: ${total_cost:.2f}")</p>
-<p>return total_cost</p>
+    print(f"\n総コスト（{days}日間）: ${total_cost:.2f}")
+    return total_cost
 
 <h1>使用例</h1>
-<p>get_cluster_cost('vasp-cluster', days=7)</p>
-</code></pre>
+get_cluster_cost('vasp-cluster', days=7)</code></pre>
 
-<p>---</p>
+---
 
 <h2>5.4 Docker/Singularityによるコンテナ化</h2>
 
@@ -591,27 +599,27 @@
 <pre><code class="language-dockerfile">FROM ubuntu:20.04
 
 <h1>基本パッケージ</h1>
-<p>RUN apt-get update && apt-get install -y \</p>
-<p>build-essential \</p>
-<p>gfortran \</p>
-<p>openmpi-bin \</p>
-<p>libopenmpi-dev \</p>
-<p>python3 \</p>
-<p>python3-pip \</p>
-<p>wget \</p>
-<p>&& rm -rf /var/lib/apt/lists/*</p>
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gfortran \
+    openmpi-bin \
+    libopenmpi-dev \
+    python3 \
+    python3-pip \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
 
 <h1>Python環境</h1>
-<p>RUN pip3 install --upgrade pip && \</p>
-<p>pip3 install numpy scipy matplotlib \</p>
-<p>ase pymatgen fireworks</p>
+RUN pip3 install --upgrade pip && \
+    pip3 install numpy scipy matplotlib \
+    ase pymatgen fireworks
 
 <h1>Intel MKL（数値計算ライブラリ）</h1>
-<p>RUN wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB && \</p>
-<p>apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB && \</p>
-<p>echo "deb https://apt.repos.intel.com/oneapi all main" > /etc/apt/sources.list.d/oneAPI.list && \</p>
-<p>apt-get update && \</p>
-<p>apt-get install -y intel-oneapi-mkl</p>
+RUN wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB && \
+    apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB && \
+    echo "deb https://apt.repos.intel.com/oneapi all main" > /etc/apt/sources.list.d/oneAPI.list && \
+    apt-get update && \
+    apt-get install -y intel-oneapi-mkl
 
 <h1>VASP（ライセンス保持者のみ）</h1>
 <h1>COPY vasp.6.3.0.tar.gz /tmp/</h1>
@@ -620,55 +628,51 @@
 <h1>    cp bin/vasp_std /usr/local/bin/</h1>
 
 <h1>作業ディレクトリ</h1>
-<p>WORKDIR /calculations</p>
+WORKDIR /calculations
 
 <h1>デフォルトコマンド</h1>
-<p>CMD ["/bin/bash"]</p>
-</code></pre>
+CMD ["/bin/bash"]</code></pre>
 
 <h3>Docker イメージのビルドとプッシュ</h3>
 
 <pre><code class="language-bash"><h1>イメージビルド</h1>
-<p>docker build -t my-vasp-env:latest .</p>
+docker build -t my-vasp-env:latest .
 
 <h1>Docker Hubにプッシュ（共有用）</h1>
-<p>docker tag my-vasp-env:latest username/my-vasp-env:latest</p>
-<p>docker push username/my-vasp-env:latest</p>
+docker tag my-vasp-env:latest username/my-vasp-env:latest
+docker push username/my-vasp-env:latest
 
 <h1>Amazon ECRにプッシュ（AWS用）</h1>
-<p>aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 123456789012.dkr.ecr.us-east-1.amazonaws.com</p>
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 123456789012.dkr.ecr.us-east-1.amazonaws.com
 
-<p>docker tag my-vasp-env:latest 123456789012.dkr.ecr.us-east-1.amazonaws.com/my-vasp-env:latest</p>
-<p>docker push 123456789012.dkr.ecr.us-east-1.amazonaws.com/my-vasp-env:latest</p>
-</code></pre>
+docker tag my-vasp-env:latest 123456789012.dkr.ecr.us-east-1.amazonaws.com/my-vasp-env:latest
+docker push 123456789012.dkr.ecr.us-east-1.amazonaws.com/my-vasp-env:latest</code></pre>
 
 <h3>SingularityでHPC実行</h3>
 
-<p>HPCシステムではDockerの代わりにSingularityを使用します。</p>
+HPCシステムではDockerの代わりにSingularityを使用します。
 
 <pre><code class="language-bash"><h1>DockerイメージからSingularityイメージを作成</h1>
-<p>singularity build vasp-env.sif docker://username/my-vasp-env:latest</p>
+singularity build vasp-env.sif docker://username/my-vasp-env:latest
 
 <h1>Singularityコンテナで実行</h1>
-<p>singularity exec vasp-env.sif mpirun -np 48 vasp_std</p>
-</code></pre>
+singularity exec vasp-env.sif mpirun -np 48 vasp_std</code></pre>
 
 <strong>SLURMスクリプト（Singularity使用）</strong>:
 
 <pre><code class="language-bash">#!/bin/bash
-<p>#SBATCH --job-name=vasp-singularity</p>
-<p>#SBATCH --nodes=1</p>
-<p>#SBATCH --ntasks-per-node=48</p>
-<p>#SBATCH --time=24:00:00</p>
+#SBATCH --job-name=vasp-singularity
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=48
+#SBATCH --time=24:00:00
 
 <h1>Singularityイメージ</h1>
-<p>IMAGE=/shared/containers/vasp-env.sif</p>
+IMAGE=/shared/containers/vasp-env.sif
 
 <h1>コンテナ内でVASP実行</h1>
-<p>singularity exec $IMAGE mpirun -np 48 vasp_std</p>
-</code></pre>
+singularity exec $IMAGE mpirun -np 48 vasp_std</code></pre>
 
-<p>---</p>
+---
 
 <h2>5.5 セキュリティとコンプライアンス</h2>
 
@@ -677,61 +681,57 @@
 <strong>最小権限の原則</strong>:
 
 <pre><code class="language-json">{
-<p>"Version": "2012-10-17",</p>
-<p>"Statement": [</p>
-<p>{</p>
-<p>"Effect": "Allow",</p>
-<p>"Action": [</p>
-<p>"ec2:DescribeInstances",</p>
-<p>"ec2:DescribeVolumes",</p>
-<p>"ec2:RunInstances",</p>
-<p>"ec2:TerminateInstances"</p>
-<p>],</p>
-<p>"Resource": "*",</p>
-<p>"Condition": {</p>
-<p>"StringEquals": {</p>
-<p>"aws:RequestedRegion": "us-east-1"</p>
-<p>}</p>
-<p>}</p>
-<p>},</p>
-<p>{</p>
-<p>"Effect": "Allow",</p>
-<p>"Action": [</p>
-<p>"s3:GetObject",</p>
-<p>"s3:PutObject"</p>
-<p>],</p>
-<p>"Resource": "arn:aws:s3:::my-vasp-bucket/*"</p>
-<p>}</p>
-<p>]</p>
-<p>}</p>
-</code></pre>
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeInstances",
+        "ec2:DescribeVolumes",
+        "ec2:RunInstances",
+        "ec2:TerminateInstances"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "us-east-1"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject"
+      ],
+      "Resource": "arn:aws:s3:::my-vasp-bucket/*"
+    }
+  ]
+}</code></pre>
 
 <h3>データ暗号化</h3>
 
 <pre><code class="language-yaml"><h1>config.yaml（暗号化設定）</h1>
-<p>SharedStorage:</p>
-<p>- MountDir: /shared</p>
-<p>Name: ebs-encrypted</p>
-<p>StorageType: Ebs</p>
-<p>EbsSettings:</p>
-<p>VolumeType: gp3</p>
-<p>Size: 1000</p>
-<p>Encrypted: true  # 暗号化有効</p>
-<p>KmsKeyId: arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012</p>
-</code></pre>
+SharedStorage:
+  - MountDir: /shared
+    Name: ebs-encrypted
+    StorageType: Ebs
+    EbsSettings:
+      VolumeType: gp3
+      Size: 1000
+      Encrypted: true  # 暗号化有効
+      KmsKeyId: arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012</code></pre>
 
 <h3>学術ライセンス遵守</h3>
 
 <strong>VASP</strong>等の商用ソフトウェアをクラウドで使用する場合の注意点：
 
-<ol>
-<li><strong>ライセンス確認</strong>: クラウド使用が許可されているか</li>
-<li><strong>ノードロック</strong>: 特定ノードでの実行制限</li>
-<li><strong>同時実行数</strong>: ライセンス数の制限</li>
-<li><strong>監査ログ</strong>: 使用履歴の記録</li>
-</ol>
+1. <strong>ライセンス確認</strong>: クラウド使用が許可されているか
+2. <strong>ノードロック</strong>: 特定ノードでの実行制限
+3. <strong>同時実行数</strong>: ライセンス数の制限
+4. <strong>監査ログ</strong>: 使用履歴の記録
 
-<p>---</p>
+---
 
 <h2>5.6 ケーススタディ: 10,000材料スクリーニング</h2>
 
@@ -740,131 +740,124 @@
 <strong>目標</strong>: 10,000個の酸化物材料のバンドギャップを6ヶ月以内に計算
 
 <strong>制約</strong>:
-<ul>
-<li>予算: $5,000</li>
-<li>1材料あたり計算時間: 12時間（48コア）</li>
-<li>総CPU時間: 5,760,000 CPU時間</li>
-</ul>
+- 予算: $5,000
+- 1材料あたり計算時間: 12時間（48コア）
+- 総CPU時間: 5,760,000 CPU時間
 
 <h3>アーキテクチャ設計</h3>
 
-<pre><code class="language-mermaid">graph TD
-<p>A[材料リスト<br/>10,000個] --> B[バッチ分割<br/>100バッチ × 100材料]</p>
-<p>B --> C[AWS Parallel Cluster<br/>スポットインスタンス]</p>
-<p>C --> D[SLURM アレイジョブ<br/>同時20ノード]</p>
-<p>D --> E[FireWorks<br/>ワークフロー管理]</p>
-<p>E --> F[MongoDB<br/>結果保存]</p>
-<p>F --> G[S3<br/>長期保存]</p>
-<p>G --> H[分析・可視化]</p>
-</code></pre>
+<div class="mermaid">graph TD
+    A[材料リスト<br/>10,000個] --> B[バッチ分割<br/>100バッチ × 100材料]
+    B --> C[AWS Parallel Cluster<br/>スポットインスタンス]
+    C --> D[SLURM アレイジョブ<br/>同時20ノード]
+    D --> E[FireWorks<br/>ワークフロー管理]
+    E --> F[MongoDB<br/>結果保存]
+    F --> G[S3<br/>長期保存]
+    G --> H[分析・可視化]</div>
 
 <h3>実装</h3>
 
 <strong>1. クラスタ設定</strong>
 
 <pre><code class="language-yaml"><h1>config-10k-materials.yaml</h1>
-<p>Scheduling:</p>
-<p>Scheduler: slurm</p>
-<p>SlurmQueues:</p>
-<p>- Name: spot-compute</p>
-<p>CapacityType: SPOT</p>
-<p>ComputeResources:</p>
-<p>- Name: c5-24xlarge-spot</p>
-<p>InstanceType: c5.24xlarge  # 96 vCPU</p>
-<p>MinCount: 0</p>
-<p>MaxCount: 50  # 同時50ノード = 4,800コア</p>
-<p>SpotPrice: 2.00</p>
-</code></pre>
+Scheduling:
+  Scheduler: slurm
+  SlurmQueues:
+    - Name: spot-compute
+      CapacityType: SPOT
+      ComputeResources:
+        - Name: c5-24xlarge-spot
+          InstanceType: c5.24xlarge  # 96 vCPU
+          MinCount: 0
+          MaxCount: 50  # 同時50ノード = 4,800コア
+          SpotPrice: 2.00</code></pre>
 
 <strong>2. ジョブ投入スクリプト</strong>
 
 <pre><code class="language-python">def run_10k_project():
-<p>"""10,000材料プロジェクト実行"""</p>
+    """10,000材料プロジェクト実行"""
 
-<p># 材料リスト読み込み</p>
-<p>with open('oxide_materials_10k.txt', 'r') as f:</p>
-<p>materials = [line.strip() for line in f]</p>
+    # 材料リスト読み込み
+    with open('oxide_materials_10k.txt', 'r') as f:
+        materials = [line.strip() for line in f]
 
-<p>print(f"総材料数: {len(materials)}")</p>
+    print(f"総材料数: {len(materials)}")
 
-<p># 100バッチに分割</p>
-<p>batch_size = 100</p>
-<p>n_batches = len(materials) // batch_size</p>
+    # 100バッチに分割
+    batch_size = 100
+    n_batches = len(materials) // batch_size
 
-<p>manager = SLURMJobManager()</p>
+    manager = SLURMJobManager()
 
-<p>for batch_id in range(n_batches):</p>
-<p>start = batch_id * batch_size</p>
-<p>end = (batch_id + 1) * batch_size</p>
-<p>batch_materials = materials[start:end]</p>
+    for batch_id in range(n_batches):
+        start = batch_id * batch_size
+        end = (batch_id + 1) * batch_size
+        batch_materials = materials[start:end]
 
-<p># バッチ用材料リスト</p>
-<p>list_file = f'batch_{batch_id:03d}.txt'</p>
-<p>with open(list_file, 'w') as f:</p>
-<p>for mat in batch_materials:</p>
-<p>f.write(f"{mat}\n")</p>
+        # バッチ用材料リスト
+        list_file = f'batch_{batch_id:03d}.txt'
+        with open(list_file, 'w') as f:
+            for mat in batch_materials:
+                f.write(f"{mat}\n")
 
-<p># アレイジョブ投入（100材料、同時20ノード）</p>
-<p>job_id = manager.submit_array_job(</p>
-<p>'vasp_bandgap.sh',</p>
-<p>n_tasks=100,</p>
-<p>max_concurrent=20</p>
-<p>)</p>
+        # アレイジョブ投入（100材料、同時20ノード）
+        job_id = manager.submit_array_job(
+            'vasp_bandgap.sh',
+            n_tasks=100,
+            max_concurrent=20
+        )
 
-<p>print(f"バッチ {batch_id+1}/{n_batches} 投入: ジョブID {job_id}")</p>
+        print(f"バッチ {batch_id+1}/{n_batches} 投入: ジョブID {job_id}")
 
-<p># レート制限（AWS API制限対策）</p>
-<p>time.sleep(1)</p>
+        # レート制限（AWS API制限対策）
+        time.sleep(1)
 
-<p>run_10k_project()</p>
-</code></pre>
+run_10k_project()</code></pre>
 
 <strong>3. コスト分析</strong>
 
 <pre><code class="language-python">def estimate_project_cost():
-<p>"""プロジェクトコスト見積もり"""</p>
+    """プロジェクトコスト見積もり"""
 
-<p># パラメータ</p>
-<p>n_materials = 10000</p>
-<p>cpu_hours_per_material = 12</p>
-<p>cores_per_job = 48</p>
+    # パラメータ
+    n_materials = 10000
+    cpu_hours_per_material = 12
+    cores_per_job = 48
 
-<p>total_cpu_hours = n_materials * cpu_hours_per_material</p>
+    total_cpu_hours = n_materials * cpu_hours_per_material
 
-<p># c5.24xlarge: 96 vCPU, $4.08/時（オンデマンド）</p>
-<p>ondemand_cost = total_cpu_hours * (4.08 / 96)</p>
-<p>print(f"オンデマンド: ${ondemand_cost:,.0f}")</p>
+    # c5.24xlarge: 96 vCPU, $4.08/時（オンデマンド）
+    ondemand_cost = total_cpu_hours * (4.08 / 96)
+    print(f"オンデマンド: ${ondemand_cost:,.0f}")
 
-<p># スポット: 70%割引</p>
-<p>spot_cost = ondemand_cost * 0.3</p>
-<p>print(f"スポット: ${spot_cost:,.0f}")</p>
+    # スポット: 70%割引
+    spot_cost = ondemand_cost * 0.3
+    print(f"スポット: ${spot_cost:,.0f}")
 
-<p># ストレージ: EBS 1TB × 6ヶ月</p>
-<p>storage_cost = 0.10 <em> 1000 </em> 6  # $0.10/GB/月</p>
-<p>print(f"ストレージ: ${storage_cost:,.0f}")</p>
+    # ストレージ: EBS 1TB × 6ヶ月
+    storage_cost = 0.10 * 1000 * 6  # $0.10/GB/月
+    print(f"ストレージ: ${storage_cost:,.0f}")
 
-<p># データ転送: 500GB</p>
-<p>transfer_cost = 500 * 0.09</p>
-<p>print(f"データ転送: ${transfer_cost:,.0f}")</p>
+    # データ転送: 500GB
+    transfer_cost = 500 * 0.09
+    print(f"データ転送: ${transfer_cost:,.0f}")
 
-<p>total_cost = spot_cost + storage_cost + transfer_cost</p>
-<p>print(f"\n総コスト: ${total_cost:,.0f}")</p>
+    total_cost = spot_cost + storage_cost + transfer_cost
+    print(f"\n総コスト: ${total_cost:,.0f}")
 
-<p>return total_cost</p>
+    return total_cost
 
-<p>estimate_project_cost()</p>
-</code></pre>
+estimate_project_cost()</code></pre>
 
 <strong>出力</strong>:
-<pre><code class="language-">オンデマンド: $5,100
-<p>スポット: $1,530</p>
-<p>ストレージ: $600</p>
-<p>データ転送: $45</p>
+<pre><code>オンデマンド: $5,100
+スポット: $1,530
+ストレージ: $600
+データ転送: $45
 
-<p>総コスト: $2,175</p>
-</code></pre>
+総コスト: $2,175</code></pre>
 
-<p>---</p>
+---
 
 <h2>5.7 演習問題</h2>
 
@@ -876,22 +869,16 @@
 <summary>解答例</summary>
 
 <strong>1. スポットインスタンス使用</strong>
-<ul>
-<li>削減率: 70%</li>
-<li>リスク: 中断の可能性</li>
-</ul>
+- 削減率: 70%
+- リスク: 中断の可能性
 
 <strong>2. 自動スケールダウン（5分アイドル）</strong>
-<ul>
-<li>削減率: 20-30%（アイドル時間による）</li>
-<li>リスク: なし</li>
-</ul>
+- 削減率: 20-30%（アイドル時間による）
+- リスク: なし
 
 <strong>3. リザーブドインスタンス（1年契約）</strong>
-<ul>
-<li>削減率: 40%</li>
-<li>リスク: 長期コミットメント</li>
-</ul>
+- 削減率: 40%
+- リスク: 長期コミットメント
 
 <strong>総合削減率</strong>: 最大85%（スポット + 自動スケール）
 
@@ -905,115 +892,91 @@
 <summary>解答例</summary>
 
 <strong>パラメータ</strong>:
-<ul>
-<li>材料数: 5,000</li>
-<li>CPU時間: 5,000 × 12時間 = 60,000時間</li>
-<li>予算: $1,000</li>
-<li>期間: 3ヶ月 = 90日</li>
-</ul>
+- 材料数: 5,000
+- CPU時間: 5,000 × 12時間 = 60,000時間
+- 予算: $1,000
+- 期間: 3ヶ月 = 90日
 
 <strong>制約から逆算</strong>:
 
-<p>コスト制約:</p>
-<pre><code class="language-">$1,000 = 計算コスト + ストレージコスト + 転送コスト
-<p>$1,000 ≈ $800（計算） + $150（ストレージ） + $50（転送）</p>
-</code></pre>
+コスト制約:
+<pre><code>$1,000 = 計算コスト + ストレージコスト + 転送コスト
+$1,000 ≈ $800（計算） + $150（ストレージ） + $50（転送）</code></pre>
 
-<p>c5.24xlarge スポット: $1.22/時</p>
-<pre><code class="language-">使用可能時間 = $800 / $1.22 = 656時間
-<p>同時ノード数 = 60,000 / 656 / 24 = 3.8 ≈ 4ノード</p>
-</code></pre>
+c5.24xlarge スポット: $1.22/時
+<pre><code>使用可能時間 = $800 / $1.22 = 656時間
+同時ノード数 = 60,000 / 656 / 24 = 3.8 ≈ 4ノード</code></pre>
 
 <strong>実行計画</strong>:
-<ol>
-<li>スポットインスタンス: c5.24xlarge × 4ノード</li>
-<li>同時実行: 16材料（各48コア）</li>
-<li>1日あたり: 16材料 × 2バッチ = 32材料</li>
-<li>完了期間: 5,000 / 32 = 156日</li>
-</ol>
+1. スポットインスタンス: c5.24xlarge × 4ノード
+2. 同時実行: 16材料（各48コア）
+3. 1日あたり: 16材料 × 2バッチ = 32材料
+4. 完了期間: 5,000 / 32 = 156日
 
 <strong>問題</strong>: 期間が3ヶ月（90日）を超過
 
 <strong>解決策</strong>:
-<ul>
-<li>同時ノード数を8に増加 → コスト$1,600（予算超過）</li>
-<li>または、1材料あたりCPU時間を8時間に削減（精度とトレードオフ）</li>
-</ul>
+- 同時ノード数を8に増加 → コスト$1,600（予算超過）
+- または、1材料あたりCPU時間を8時間に削減（精度とトレードオフ）
 
 </details>
 
-<p>---</p>
+---
 
 <h2>5.8 まとめ</h2>
 
-<p>この章では、クラウドHPCの活用とコスト最適化を学びました。</p>
+この章では、クラウドHPCの活用とコスト最適化を学びました。
 
 <strong>キーポイント</strong>:
 
-<ol>
-<li><strong>AWS Parallel Cluster</strong>: 大規模HPC環境を簡単に構築</li>
-<li><strong>スポットインスタンス</strong>: 70%のコスト削減</li>
-<li><strong>Docker/Singularity</strong>: 環境の完全再現</li>
-<li><strong>コスト管理</strong>: 見積もりと監視</li>
-<li><strong>セキュリティ</strong>: 暗号化とアクセス制御</li>
-</ol>
+1. <strong>AWS Parallel Cluster</strong>: 大規模HPC環境を簡単に構築
+2. <strong>スポットインスタンス</strong>: 70%のコスト削減
+3. <strong>Docker/Singularity</strong>: 環境の完全再現
+4. <strong>コスト管理</strong>: 見積もりと監視
+5. <strong>セキュリティ</strong>: 暗号化とアクセス制御
 
 <strong>シリーズ完了おめでとうございます！</strong>
 
-<p>これで、ハイスループット計算の全5章を完了しました。第1章の基礎概念から第5章のクラウド実装まで、実践的なスキルを習得できたはずです。</p>
+これで、ハイスループット計算の全5章を完了しました。第1章の基礎概念から第5章のクラウド実装まで、実践的なスキルを習得できたはずです。
 
 <strong>次のステップ</strong>:
 
-<ol>
-<li>小規模プロジェクト（100-1000材料）を実行</li>
-<li>コストを測定・最適化</li>
-<li>結果をNOMADに公開</li>
-<li>論文執筆・学会発表</li>
-</ol>
+1. 小規模プロジェクト（100-1000材料）を実行
+2. コストを測定・最適化
+3. 結果をNOMADに公開
+4. 論文執筆・学会発表
 
-<strong><a href="./index.md">シリーズトップに戻る</a></strong>
+<strong>[シリーズトップに戻る](./index.md)</strong>
 
-<p>---</p>
+---
 
 <h2>参考文献</h2>
 
-<ol>
-<li>Amazon Web Services (2023). "AWS Parallel Cluster User Guide." https://docs.aws.amazon.com/parallelcluster/</li>
-</ol>
+1. Amazon Web Services (2023). "AWS Parallel Cluster User Guide." https://docs.aws.amazon.com/parallelcluster/
 
-<ol>
-<li>Kurtzer, G. M., et al. (2017). "Singularity: Scientific containers for mobility of compute." <em>PLOS ONE</em>, 12(5), e0177459.</li>
-</ol>
+2. Kurtzer, G. M., et al. (2017). "Singularity: Scientific containers for mobility of compute." *PLOS ONE*, 12(5), e0177459.
 
-<ol>
-<li>Merkel, D. (2014). "Docker: lightweight Linux containers for consistent development and deployment." <em>Linux Journal</em>, 2014(239), 2.</li>
-</ol>
+3. Merkel, D. (2014). "Docker: lightweight Linux containers for consistent development and deployment." *Linux Journal*, 2014(239), 2.
 
-<ol>
-<li>NOMAD Laboratory (2023). "NOMAD Repository - FAIR Data Sharing." https://nomad-lab.eu/</li>
-</ol>
+4. NOMAD Laboratory (2023). "NOMAD Repository - FAIR Data Sharing." https://nomad-lab.eu/
 
-<ol>
-<li>Jain, A., et al. (2015). "FireWorks: a dynamic workflow system designed for high-throughput applications." <em>Concurrency and Computation: Practice and Experience</em>, 27(17), 5037-5059.</li>
-</ol>
+5. Jain, A., et al. (2015). "FireWorks: a dynamic workflow system designed for high-throughput applications." *Concurrency and Computation: Practice and Experience*, 27(17), 5037-5059.
 
-<p>---</p>
+---
 
 <strong>ライセンス</strong>: CC BY 4.0
 <strong>作成日</strong>: 2025-10-17
 <strong>作成者</strong>: Dr. Yusuke Hashimoto, Tohoku University
 
-<p>---</p>
+---
 
 <strong>ハイスループット計算入門シリーズを完了しました！</strong>
 
-<p>材料探索の加速化を実現し、世界に貢献する研究を期待しています。</p>
-
-
-        <div class="navigation">
-            <a href="chapter-4.html" class="nav-button">← 前章: 第4章</a>
-<a href="index.html" class="nav-button">シリーズ目次に戻る →</a>
-        </div>
+材料探索の加速化を実現し、世界に貢献する研究を期待しています。
+<div class="navigation">
+    <a href="chapter-4.html" class="nav-button">← 第4章</a>
+    <a href="index.html" class="nav-button">シリーズ目次に戻る</a>
+</div>
     </main>
 
     <footer>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>chapter-4 - AI Terakoya</title>
+    <title>Chapter - AI Terakoya</title>
 
     <style>
         :root {
@@ -319,823 +319,810 @@
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         mermaid.initialize({ startOnLoad: true, theme: 'default' });
     </script>
+
+    <!-- MathJax for LaTeX equation rendering -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\(', '\)']],
+                displayMath: [['$$', '$$'], ['\[', '\]']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
 </head>
 <body>
     <header>
         <div class="header-content">
-            <h1>chapter-4</h1>
-            
+            <h1>Chapter</h1>
+            <p class="subtitle"></p>
             <div class="meta">
-                
+                <span class="meta-item">📖 読了時間: 20-25分</span>
+                <span class="meta-item">📊 難易度: 初級</span>
+                <span class="meta-item">💻 コード例: 0個</span>
+                <span class="meta-item">📝 演習問題: 0問</span>
             </div>
         </div>
     </header>
 
     <main class="container">
-        <h1>第4章: クラウドラボと遠隔実験</h1>
+<h1>第4章: クラウドラボと遠隔実験</h1>
 
 <strong>学習時間: 20-25分</strong>
 
-<p>---</p>
+---
 
 <h2>導入</h2>
 
-<p>実験装置を購入・維持するには、数百万円から数億円のコストと専門知識が必要です。しかし、<strong>クラウドラボ（Cloud Laboratory）</strong>を使えば、初期投資ゼロで世界最先端の装置を使った実験が可能になります。</p>
+実験装置を購入・維持するには、数百万円から数億円のコストと専門知識が必要です。しかし、<strong>クラウドラボ（Cloud Laboratory）</strong>を使えば、初期投資ゼロで世界最先端の装置を使った実験が可能になります。
 
-<p>本章では、Emerald Cloud Lab（ECL）を中心に、クラウドラボの仕組み、APIを使った実験依頼、データ自動取得、コスト効率分析を学びます。プログラムコードで実験を記述し、遠隔で実行する新しい研究スタイルを体験します。</p>
+本章では、Emerald Cloud Lab（ECL）を中心に、クラウドラボの仕組み、APIを使った実験依頼、データ自動取得、コスト効率分析を学びます。プログラムコードで実験を記述し、遠隔で実行する新しい研究スタイルを体験します。
 
-<p>---</p>
+---
 
 <h2>学習目標</h2>
 
-<p>本章を学習することで、以下を習得できます：</p>
+本章を学習することで、以下を習得できます：
 
-<ol>
-<li><strong>クラウドラボの概念</strong>: プラットフォームの仕組みとビジネスモデル</li>
-<li><strong>Emerald Cloud Labの使い方</strong>: アカウント作成、実験依頼、データ取得</li>
-<li><strong>APIプログラミング</strong>: REST API、Python SDKによる実験自動化</li>
-<li><strong>プロトコル記述</strong>: 実験手順のコード化</li>
-<li><strong>コスト効率評価</strong>: 従来研究室 vs クラウドラボの定量比較</li>
-<li><strong>リモート実験の利点</strong>: 装置共有、専門技術者サポート、スケーラビリティ</li>
-</ol>
+1. <strong>クラウドラボの概念</strong>: プラットフォームの仕組みとビジネスモデル
+2. <strong>Emerald Cloud Labの使い方</strong>: アカウント作成、実験依頼、データ取得
+3. <strong>APIプログラミング</strong>: REST API、Python SDKによる実験自動化
+4. <strong>プロトコル記述</strong>: 実験手順のコード化
+5. <strong>コスト効率評価</strong>: 従来研究室 vs クラウドラボの定量比較
+6. <strong>リモート実験の利点</strong>: 装置共有、専門技術者サポート、スケーラビリティ
 
-<p>---</p>
+---
 
 <h2>4.1 クラウドラボとは</h2>
 
 <h3>4.1.1 クラウドラボの基本概念</h3>
 
-<p>クラウドラボは、<strong>実験装置とロボティクスをクラウドサービス化</strong>したプラットフォームです。</p>
+クラウドラボは、<strong>実験装置とロボティクスをクラウドサービス化</strong>したプラットフォームです。
 
-<pre><code class="language-mermaid">graph TD
-<p>A[研究者] -->|APIで実験依頼| B[クラウドラボプラットフォーム]</p>
-<p>B -->|プロトコル実行| C[ロボット実験システム]</p>
-<p>C -->|HPLC, GC-MS, FTIR等| D[分析装置群]</p>
-<p>D -->|データ自動取得| E[クラウドストレージ]</p>
-<p>E -->|結果ダウンロード| A</p>
+<div class="mermaid">graph TD
+    A[研究者] -->|APIで実験依頼| B[クラウドラボプラットフォーム]
+    B -->|プロトコル実行| C[ロボット実験システム]
+    C -->|HPLC, GC-MS, FTIR等| D[分析装置群]
+    D -->|データ自動取得| E[クラウドストレージ]
+    E -->|結果ダウンロード| A
 
-<p>style A fill:#e1f5ff</p>
-<p>style B fill:#fff4e1</p>
-<p>style C fill:#ffe1e1</p>
-<p>style D fill:#f0e1ff</p>
-<p>style E fill:#e1ffe1</p>
-</code></pre>
+    style A fill:#e1f5ff
+    style B fill:#fff4e1
+    style C fill:#ffe1e1
+    style D fill:#f0e1ff
+    style E fill:#e1ffe1</div>
 
 <strong>主な特徴</strong>:
-<ul>
-<li><strong>初期投資ゼロ</strong>: 装置購入不要、従量課金制</li>
-<li><strong>専門技術者</strong>: 装置メンテナンス・品質管理はプロバイダーが担当</li>
-<li><strong>装置共有</strong>: 1台の装置を複数の研究者で共有</li>
-<li><strong>スケーラビリティ</strong>: 必要に応じて実験規模を拡大</li>
-<li><strong>リモートアクセス</strong>: 世界中どこからでも実験可能</li>
-</ul>
+- <strong>初期投資ゼロ</strong>: 装置購入不要、従量課金制
+- <strong>専門技術者</strong>: 装置メンテナンス・品質管理はプロバイダーが担当
+- <strong>装置共有</strong>: 1台の装置を複数の研究者で共有
+- <strong>スケーラビリティ</strong>: 必要に応じて実験規模を拡大
+- <strong>リモートアクセス</strong>: 世界中どこからでも実験可能
 
-<p>---</p>
+---
 
 <h3>4.1.2 主要なクラウドラボプラットフォーム</h3>
 
-<p>| プラットフォーム | 特徴 | 対象分野 | 価格帯 |</p>
-<p>|--------------|------|---------|-------|</p>
-<p>| <strong>Emerald Cloud Lab</strong> | 200種類以上の装置、Python SDK | 生命科学、化学、材料 | 従量課金 |</p>
-<p>| <strong>Strateos</strong> | ライフサイエンス特化、自動化度高 | 創薬、バイオ | 高価格帯 |</p>
-<p>| <strong>Synthace（Antha）</strong> | バイオプロセス設計プラットフォーム | 合成生物学 | サブスクリプション |</p>
-<p>| <strong>Transcriptic</strong> | Strateosに統合 | バイオ | - |</p>
+| プラットフォーム | 特徴 | 対象分野 | 価格帯 |
+|--------------|------|---------|-------|
+| <strong>Emerald Cloud Lab</strong> | 200種類以上の装置、Python SDK | 生命科学、化学、材料 | 従量課金 |
+| <strong>Strateos</strong> | ライフサイエンス特化、自動化度高 | 創薬、バイオ | 高価格帯 |
+| <strong>Synthace（Antha）</strong> | バイオプロセス設計プラットフォーム | 合成生物学 | サブスクリプション |
+| <strong>Transcriptic</strong> | Strateosに統合 | バイオ | - |
 
-<p>本章では、<strong>Emerald Cloud Lab（ECL）</strong>を中心に解説します。</p>
+本章では、<strong>Emerald Cloud Lab（ECL）</strong>を中心に解説します。
 
-<p>---</p>
+---
 
 <h2>4.2 Emerald Cloud Labの概要</h2>
 
 <h3>4.2.1 利用可能な装置</h3>
 
-<p>ECLで使用できる主な装置:</p>
+ECLで使用できる主な装置:
 
 <strong>液体ハンドリング</strong>:
-<ul>
-<li>Hamilton STAR: 高精度自動分注</li>
-<li>Beckman Biomek: マイクロプレート処理</li>
-<li>OpenTrons OT-2: 汎用液体ハンドリング</li>
-</ul>
+- Hamilton STAR: 高精度自動分注
+- Beckman Biomek: マイクロプレート処理
+- OpenTrons OT-2: 汎用液体ハンドリング
 
 <strong>分析装置</strong>:
-<ul>
-<li>HPLC（高速液体クロマトグラフィー）</li>
-<li>GC-MS（ガスクロマトグラフィー質量分析）</li>
-<li>LC-MS（液体クロマトグラフィー質量分析）</li>
-<li>FTIR（フーリエ変換赤外分光）</li>
-<li>UV-Vis分光光度計</li>
-<li>蛍光分光計</li>
-<li>NMR（核磁気共鳴分光）</li>
-</ul>
+- HPLC（高速液体クロマトグラフィー）
+- GC-MS（ガスクロマトグラフィー質量分析）
+- LC-MS（液体クロマトグラフィー質量分析）
+- FTIR（フーリエ変換赤外分光）
+- UV-Vis分光光度計
+- 蛍光分光計
+- NMR（核磁気共鳴分光）
 
 <strong>その他</strong>:
-<ul>
-<li>フローサイトメーター</li>
-<li>プレートリーダー</li>
-<li>遠心分離機</li>
-<li>サーマルサイクラー（PCR）</li>
-<li>インキュベーター</li>
-</ul>
+- フローサイトメーター
+- プレートリーダー
+- 遠心分離機
+- サーマルサイクラー（PCR）
+- インキュベーター
 
 <pre><code class="language-python"><h1>Emerald Cloud Labで利用可能な装置の例示</h1>
-<p>import pandas as pd</p>
+import pandas as pd
 
-<p>ecl_instruments = [</p>
-<p>{'カテゴリ': '液体ハンドリング', '装置名': 'Hamilton STAR', '用途': '自動分注、段階希釈'},</p>
-<p>{'カテゴリ': '液体ハンドリング', '装置名': 'OpenTrons OT-2', '用途': '汎用ピペッティング'},</p>
-<p>{'カテゴリ': 'クロマトグラフィー', '装置名': 'Agilent HPLC', '用途': '化合物分離・定量'},</p>
-<p>{'カテゴリ': '質量分析', '装置名': 'Thermo GC-MS', '用途': '揮発性化合物分析'},</p>
-<p>{'カテゴリ': '質量分析', '装置名': 'Agilent LC-MS', '用途': '生体分子分析'},</p>
-<p>{'カテゴリ': '分光', '装置名': 'Agilent UV-Vis', '用途': '吸収スペクトル測定'},</p>
-<p>{'カテゴリ': '分光', '装置名': 'Molecular Devices', '用途': '蛍光・発光測定'},</p>
-<p>{'カテゴリ': 'NMR', '装置名': 'Bruker 400MHz', '用途': '構造解析'},</p>
-<p>]</p>
+ecl_instruments = [
+    {'カテゴリ': '液体ハンドリング', '装置名': 'Hamilton STAR', '用途': '自動分注、段階希釈'},
+    {'カテゴリ': '液体ハンドリング', '装置名': 'OpenTrons OT-2', '用途': '汎用ピペッティング'},
+    {'カテゴリ': 'クロマトグラフィー', '装置名': 'Agilent HPLC', '用途': '化合物分離・定量'},
+    {'カテゴリ': '質量分析', '装置名': 'Thermo GC-MS', '用途': '揮発性化合物分析'},
+    {'カテゴリ': '質量分析', '装置名': 'Agilent LC-MS', '用途': '生体分子分析'},
+    {'カテゴリ': '分光', '装置名': 'Agilent UV-Vis', '用途': '吸収スペクトル測定'},
+    {'カテゴリ': '分光', '装置名': 'Molecular Devices', '用途': '蛍光・発光測定'},
+    {'カテゴリ': 'NMR', '装置名': 'Bruker 400MHz', '用途': '構造解析'},
+]
 
-<p>df_instruments = pd.DataFrame(ecl_instruments)</p>
-<p>print("Emerald Cloud Lab 利用可能装置の例:")</p>
-<p>print(df_instruments.to_string(index=False))</p>
+df_instruments = pd.DataFrame(ecl_instruments)
+print("Emerald Cloud Lab 利用可能装置の例:")
+print(df_instruments.to_string(index=False))
 
 <h1>装置カテゴリ別の集計</h1>
-<p>print(f"\n装置カテゴリ別の数:")</p>
-<p>print(df_instruments['カテゴリ'].value_counts())</p>
-</code></pre>
+print(f"\n装置カテゴリ別の数:")
+print(df_instruments['カテゴリ'].value_counts())</code></pre>
 
-<p>---</p>
+---
 
 <h3>4.2.2 アカウント作成とアクセス</h3>
 
 <strong>ステップ1: アカウント登録</strong>
-<pre><code class="language-">1. https://www.emeraldcloudlab.com/ にアクセス
-<ol>
-<li>"Request Access" から申請フォーム記入</li>
-<li>所属機関、研究目的を記載</li>
-<li>承認（通常1-2営業日）</li>
-</ol>
-</code></pre>
+<pre><code>1. https://www.emeraldcloudlab.com/ にアクセス
+2. "Request Access" から申請フォーム記入
+3. 所属機関、研究目的を記載
+4. 承認（通常1-2営業日）</code></pre>
 
 <strong>ステップ2: APIキーの取得</strong>
 <pre><code class="language-python"><h1>ECL Python SDKのインストール（実際の手順）</h1>
 <h1>pip install emerald-cloud-lab</h1>
 
 <h1>APIキーの設定（環境変数）</h1>
-<p>import os</p>
+import os
 
 <h1>実際のAPIキーは環境変数または設定ファイルで管理</h1>
-<p>ECL_API_KEY = os.environ.get('ECL_API_KEY', 'your_api_key_here')</p>
-<p>ECL_PROJECT_ID = os.environ.get('ECL_PROJECT_ID', 'your_project_id')</p>
+ECL_API_KEY = os.environ.get('ECL_API_KEY', 'your_api_key_here')
+ECL_PROJECT_ID = os.environ.get('ECL_PROJECT_ID', 'your_project_id')
 
-<p>print("ECL接続設定:")</p>
-<p>print(f"  APIキー: {'<em>' </em> 20}{ECL_API_KEY[-5:]}")</p>
-<p>print(f"  プロジェクトID: {ECL_PROJECT_ID}")</p>
-</code></pre>
+print("ECL接続設定:")
+print(f"  APIキー: {'*' * 20}{ECL_API_KEY[-5:]}")
+print(f"  プロジェクトID: {ECL_PROJECT_ID}")</code></pre>
 
-<p>---</p>
+---
 
 <h2>4.3 APIによる実験依頼</h2>
 
 <h3>4.3.1 基本的な実験プロトコル</h3>
 
-<p>ECLでは、Pythonコードで実験プロトコルを記述します。</p>
+ECLでは、Pythonコードで実験プロトコルを記述します。
 
 <pre><code class="language-python"><h1>Emerald Cloud Lab Python SDK（疑似コード、実際のAPIに近い形式）</h1>
 
-<p>class ECLExperiment:</p>
-<p>"""</p>
-<p>ECL実験プロトコルのシミュレーター</p>
-<p>実際のECL SDKのインターフェースを模擬</p>
-<p>"""</p>
+class ECLExperiment:
+    """
+    ECL実験プロトコルのシミュレーター
+    実際のECL SDKのインターフェースを模擬
+    """
 
-<p>def __init__(self, experiment_name, project_id):</p>
-<p>self.experiment_name = experiment_name</p>
-<p>self.project_id = project_id</p>
-<p>self.protocol = []</p>
+    def __init__(self, experiment_name, project_id):
+        self.experiment_name = experiment_name
+        self.project_id = project_id
+        self.protocol = []
 
-<p>def add_reagent(self, name, volume, concentration):</p>
-<p>"""試薬を追加"""</p>
-<p>self.protocol.append({</p>
-<p>'action': 'add_reagent',</p>
-<p>'name': name,</p>
-<p>'volume': volume,</p>
-<p>'concentration': concentration</p>
-<p>})</p>
-<p>print(f"試薬追加: {name} {volume} µL ({concentration} M)")</p>
+    def add_reagent(self, name, volume, concentration):
+        """試薬を追加"""
+        self.protocol.append({
+            'action': 'add_reagent',
+            'name': name,
+            'volume': volume,
+            'concentration': concentration
+        })
+        print(f"試薬追加: {name} {volume} µL ({concentration} M)")
 
-<p>def mix(self, duration, speed):</p>
-<p>"""混合"""</p>
-<p>self.protocol.append({</p>
-<p>'action': 'mix',</p>
-<p>'duration': duration,</p>
-<p>'speed': speed</p>
-<p>})</p>
-<p>print(f"混合: {duration}秒, {speed} rpm")</p>
+    def mix(self, duration, speed):
+        """混合"""
+        self.protocol.append({
+            'action': 'mix',
+            'duration': duration,
+            'speed': speed
+        })
+        print(f"混合: {duration}秒, {speed} rpm")
 
-<p>def incubate(self, temperature, duration):</p>
-<p>"""インキュベーション"""</p>
-<p>self.protocol.append({</p>
-<p>'action': 'incubate',</p>
-<p>'temperature': temperature,</p>
-<p>'duration': duration</p>
-<p>})</p>
-<p>print(f"インキュベーション: {temperature}℃, {duration}分")</p>
+    def incubate(self, temperature, duration):
+        """インキュベーション"""
+        self.protocol.append({
+            'action': 'incubate',
+            'temperature': temperature,
+            'duration': duration
+        })
+        print(f"インキュベーション: {temperature}℃, {duration}分")
 
-<p>def measure_absorbance(self, wavelength):</p>
-<p>"""吸光度測定"""</p>
-<p>self.protocol.append({</p>
-<p>'action': 'measure_absorbance',</p>
-<p>'wavelength': wavelength</p>
-<p>})</p>
-<p>print(f"吸光度測定: {wavelength} nm")</p>
+    def measure_absorbance(self, wavelength):
+        """吸光度測定"""
+        self.protocol.append({
+            'action': 'measure_absorbance',
+            'wavelength': wavelength
+        })
+        print(f"吸光度測定: {wavelength} nm")
 
-<p>def submit(self):</p>
-<p>"""実験を送信"""</p>
-<p>print(f"\n実験プロトコル送信: {self.experiment_name}")</p>
-<p>print(f"  プロジェクトID: {self.project_id}")</p>
-<p>print(f"  ステップ数: {len(self.protocol)}")</p>
-<p>print("  状態: 送信完了、実行待ち...")</p>
+    def submit(self):
+        """実験を送信"""
+        print(f"\n実験プロトコル送信: {self.experiment_name}")
+        print(f"  プロジェクトID: {self.project_id}")
+        print(f"  ステップ数: {len(self.protocol)}")
+        print("  状態: 送信完了、実行待ち...")
 
-<p># 実際のECLではAPIリクエストを送信</p>
-<p>return {'experiment_id': 'exp_12345', 'status': 'queued'}</p>
+        # 実際のECLではAPIリクエストを送信
+        return {'experiment_id': 'exp_12345', 'status': 'queued'}
 
 
 <h1>使用例: 簡単な酵素反応アッセイ</h1>
-<p>experiment = ECLExperiment(</p>
-<p>experiment_name='Enzyme Activity Assay',</p>
-<p>project_id='project_001'</p>
-<p>)</p>
+experiment = ECLExperiment(
+    experiment_name='Enzyme Activity Assay',
+    project_id='project_001'
+)
 
 <h1>プロトコルの記述</h1>
-<p>print("=== 実験プロトコル作成 ===\n")</p>
+print("=== 実験プロトコル作成 ===\n")
 
 <h1>基質を添加</h1>
-<p>experiment.add_reagent('Substrate A', volume=100, concentration=0.1)</p>
+experiment.add_reagent('Substrate A', volume=100, concentration=0.1)
 
 <h1>酵素を添加</h1>
-<p>experiment.add_reagent('Enzyme', volume=10, concentration=0.01)</p>
+experiment.add_reagent('Enzyme', volume=10, concentration=0.01)
 
 <h1>混合</h1>
-<p>experiment.mix(duration=10, speed=300)</p>
+experiment.mix(duration=10, speed=300)
 
 <h1>室温でインキュベーション</h1>
-<p>experiment.incubate(temperature=25, duration=30)</p>
+experiment.incubate(temperature=25, duration=30)
 
 <h1>吸光度測定</h1>
-<p>experiment.measure_absorbance(wavelength=450)</p>
+experiment.measure_absorbance(wavelength=450)
 
 <h1>実験を送信</h1>
-<p>result = experiment.submit()</p>
+result = experiment.submit()
 
-<p>print(f"\n実験ID: {result['experiment_id']}")</p>
-<p>print(f"状態: {result['status']}")</p>
-</code></pre>
+print(f"\n実験ID: {result['experiment_id']}")
+print(f"状態: {result['status']}")</code></pre>
 
-<p>---</p>
+---
 
 <h3>4.3.2 高度なプロトコル: 96ウェルプレートスクリーニング</h3>
 
 <pre><code class="language-python">def create_96well_screening_protocol(compound_list, concentrations):
-<p>"""</p>
-<p>96ウェルプレートでの化合物スクリーニングプロトコル</p>
+    """
+    96ウェルプレートでの化合物スクリーニングプロトコル
 
-<p>Args:</p>
-<p>compound_list: 化合物リスト</p>
-<p>concentrations: 各化合物の濃度リスト</p>
+    Args:
+        compound_list: 化合物リスト
+        concentrations: 各化合物の濃度リスト
 
-<p>Returns:</p>
-<p>プロトコル辞書</p>
-<p>"""</p>
-<p>protocol = {</p>
-<p>'experiment_name': '96ウェル化合物スクリーニング',</p>
-<p>'plate_type': 'corning_96_wellplate_360ul_flat',</p>
-<p>'steps': []</p>
-<p>}</p>
+    Returns:
+        プロトコル辞書
+    """
+    protocol = {
+        'experiment_name': '96ウェル化合物スクリーニング',
+        'plate_type': 'corning_96_wellplate_360ul_flat',
+        'steps': []
+    }
 
-<p># ステップ1: 基質を全ウェルに分注</p>
-<p>protocol['steps'].append({</p>
-<p>'action': 'dispense',</p>
-<p>'reagent': 'substrate_buffer',</p>
-<p>'destination': 'all_wells',</p>
-<p>'volume': 100  # µL</p>
-<p>})</p>
+    # ステップ1: 基質を全ウェルに分注
+    protocol['steps'].append({
+        'action': 'dispense',
+        'reagent': 'substrate_buffer',
+        'destination': 'all_wells',
+        'volume': 100  # µL
+    })
 
-<p># ステップ2: 化合物を各ウェルに分注</p>
-<p>for i, (compound, conc) in enumerate(zip(compound_list, concentrations)):</p>
-<p>row = i // 12  # A-H (0-7)</p>
-<p>col = i % 12 + 1  # 1-12</p>
+    # ステップ2: 化合物を各ウェルに分注
+    for i, (compound, conc) in enumerate(zip(compound_list, concentrations)):
+        row = i // 12  # A-H (0-7)
+        col = i % 12 + 1  # 1-12
 
-<p>well = f"{chr(65 + row)}{col}"  # A1, A2, ..., H12</p>
+        well = f"{chr(65 + row)}{col}"  # A1, A2, ..., H12
 
-<p>protocol['steps'].append({</p>
-<p>'action': 'dispense',</p>
-<p>'reagent': compound,</p>
-<p>'destination': well,</p>
-<p>'volume': 10,  # µL</p>
-<p>'concentration': conc</p>
-<p>})</p>
+        protocol['steps'].append({
+            'action': 'dispense',
+            'reagent': compound,
+            'destination': well,
+            'volume': 10,  # µL
+            'concentration': conc
+        })
 
-<p># ステップ3: インキュベーション</p>
-<p>protocol['steps'].append({</p>
-<p>'action': 'incubate',</p>
-<p>'temperature': 37,  # ℃</p>
-<p>'duration': 60  # 分</p>
-<p>})</p>
+    # ステップ3: インキュベーション
+    protocol['steps'].append({
+        'action': 'incubate',
+        'temperature': 37,  # ℃
+        'duration': 60  # 分
+    })
 
-<p># ステップ4: プレートリーダーで測定</p>
-<p>protocol['steps'].append({</p>
-<p>'action': 'plate_reader',</p>
-<p>'measurement_type': 'absorbance',</p>
-<p>'wavelength': 450,  # nm</p>
-<p>'read_all_wells': True</p>
-<p>})</p>
+    # ステップ4: プレートリーダーで測定
+    protocol['steps'].append({
+        'action': 'plate_reader',
+        'measurement_type': 'absorbance',
+        'wavelength': 450,  # nm
+        'read_all_wells': True
+    })
 
-<p>return protocol</p>
+    return protocol
 
 
 <h1>プロトコル作成例</h1>
-<p>compounds = [f'Compound_{i:02d}' for i in range(1, 97)]  # 96化合物</p>
-<p>concentrations = [10<em></em>(-i/12) for i in range(96)]  # 濃度勾配（10^0 → 10^-8 M）</p>
+compounds = [f'Compound_{i:02d}' for i in range(1, 97)]  # 96化合物
+concentrations = [10**(-i/12) for i in range(96)]  # 濃度勾配（10^0 → 10^-8 M）
 
-<p>protocol_96well = create_96well_screening_protocol(compounds, concentrations)</p>
+protocol_96well = create_96well_screening_protocol(compounds, concentrations)
 
-<p>print("96ウェルスクリーニングプロトコル:")</p>
-<p>print(f"  実験名: {protocol_96well['experiment_name']}")</p>
-<p>print(f"  プレートタイプ: {protocol_96well['plate_type']}")</p>
-<p>print(f"  ステップ数: {len(protocol_96well['steps'])}")</p>
-<p>print(f"\n主要ステップ:")</p>
-<p>for i, step in enumerate(protocol_96well['steps'][:5], 1):  # 最初の5ステップを表示</p>
-<p>print(f"  {i}. {step['action']}: {step.get('reagent', step.get('measurement_type', ''))}")</p>
-</code></pre>
+print("96ウェルスクリーニングプロトコル:")
+print(f"  実験名: {protocol_96well['experiment_name']}")
+print(f"  プレートタイプ: {protocol_96well['plate_type']}")
+print(f"  ステップ数: {len(protocol_96well['steps'])}")
+print(f"\n主要ステップ:")
+for i, step in enumerate(protocol_96well['steps'][:5], 1):  # 最初の5ステップを表示
+    print(f"  {i}. {step['action']}: {step.get('reagent', step.get('measurement_type', ''))}")</code></pre>
 
-<p>---</p>
+---
 
 <h2>4.4 データ自動取得とクラウドストレージ</h2>
 
 <h3>4.4.1 実験結果のダウンロード</h3>
 
 <pre><code class="language-python">import requests
-<p>import json</p>
-<p>import time</p>
+import json
+import time
 
-<p>class ECLDataManager:</p>
-<p>"""</p>
-<p>ECLデータ管理のシミュレーター</p>
-<p>"""</p>
+class ECLDataManager:
+    """
+    ECLデータ管理のシミュレーター
+    """
 
-<p>def __init__(self, api_key, base_url='https://api.emeraldcloudlab.com'):</p>
-<p>self.api_key = api_key</p>
-<p>self.base_url = base_url</p>
-<p>self.headers = {</p>
-<p>'Authorization': f'Bearer {api_key}',</p>
-<p>'Content-Type': 'application/json'</p>
-<p>}</p>
+    def __init__(self, api_key, base_url='https://api.emeraldcloudlab.com'):
+        self.api_key = api_key
+        self.base_url = base_url
+        self.headers = {
+            'Authorization': f'Bearer {api_key}',
+            'Content-Type': 'application/json'
+        }
 
-<p>def check_experiment_status(self, experiment_id):</p>
-<p>"""</p>
-<p>実験の状態を確認</p>
+    def check_experiment_status(self, experiment_id):
+        """
+        実験の状態を確認
 
-<p>Args:</p>
-<p>experiment_id: 実験ID</p>
+        Args:
+            experiment_id: 実験ID
 
-<p>Returns:</p>
-<p>状態情報</p>
-<p>"""</p>
-<p># 実際のAPIコール（シミュレーション）</p>
-<p># response = requests.get(f'{self.base_url}/experiments/{experiment_id}', headers=self.headers)</p>
+        Returns:
+            状態情報
+        """
+        # 実際のAPIコール（シミュレーション）
+        # response = requests.get(f'{self.base_url}/experiments/{experiment_id}', headers=self.headers)
 
-<p># シミュレーション</p>
-<p>statuses = ['queued', 'running', 'running', 'completed']</p>
-<p>status = np.random.choice(statuses)</p>
+        # シミュレーション
+        statuses = ['queued', 'running', 'running', 'completed']
+        status = np.random.choice(statuses)
 
-<p>return {</p>
-<p>'experiment_id': experiment_id,</p>
-<p>'status': status,</p>
-<p>'progress': 75 if status == 'running' else (100 if status == 'completed' else 0),</p>
-<p>'estimated_completion': '2025-10-20 14:30:00' if status != 'completed' else '2025-10-20 13:45:00'</p>
-<p>}</p>
+        return {
+            'experiment_id': experiment_id,
+            'status': status,
+            'progress': 75 if status == 'running' else (100 if status == 'completed' else 0),
+            'estimated_completion': '2025-10-20 14:30:00' if status != 'completed' else '2025-10-20 13:45:00'
+        }
 
-<p>def download_results(self, experiment_id, output_file):</p>
-<p>"""</p>
-<p>実験結果をダウンロード</p>
+    def download_results(self, experiment_id, output_file):
+        """
+        実験結果をダウンロード
 
-<p>Args:</p>
-<p>experiment_id: 実験ID</p>
-<p>output_file: 保存先ファイル名</p>
+        Args:
+            experiment_id: 実験ID
+            output_file: 保存先ファイル名
 
-<p>Returns:</p>
-<p>ダウンロードされたデータ</p>
-<p>"""</p>
-<p>print(f"実験結果をダウンロード中: {experiment_id}")</p>
+        Returns:
+            ダウンロードされたデータ
+        """
+        print(f"実験結果をダウンロード中: {experiment_id}")
 
-<p># 実際のAPIコール（シミュレーション）</p>
-<p># response = requests.get(f'{self.base_url}/experiments/{experiment_id}/results', headers=self.headers)</p>
-<p># data = response.json()</p>
+        # 実際のAPIコール（シミュレーション）
+        # response = requests.get(f'{self.base_url}/experiments/{experiment_id}/results', headers=self.headers)
+        # data = response.json()
 
-<p># シミュレーションデータ</p>
-<p>data = {</p>
-<p>'experiment_id': experiment_id,</p>
-<p>'measurements': [</p>
-<p>{'well': f'{chr(65+i//12)}{i%12+1}', 'absorbance': np.random.uniform(0.1, 2.0)}</p>
-<p>for i in range(96)</p>
-<p>],</p>
-<p>'metadata': {</p>
-<p>'plate_type': 'corning_96_wellplate_360ul_flat',</p>
-<p>'wavelength': 450,</p>
-<p>'temperature': 25</p>
-<p>}</p>
-<p>}</p>
+        # シミュレーションデータ
+        data = {
+            'experiment_id': experiment_id,
+            'measurements': [
+                {'well': f'{chr(65+i//12)}{i%12+1}', 'absorbance': np.random.uniform(0.1, 2.0)}
+                for i in range(96)
+            ],
+            'metadata': {
+                'plate_type': 'corning_96_wellplate_360ul_flat',
+                'wavelength': 450,
+                'temperature': 25
+            }
+        }
 
-<p># ローカルファイルに保存</p>
-<p>with open(output_file, 'w') as f:</p>
-<p>json.dump(data, f, indent=2)</p>
+        # ローカルファイルに保存
+        with open(output_file, 'w') as f:
+            json.dump(data, f, indent=2)
 
-<p>print(f"  保存完了: {output_file}")</p>
-<p>return data</p>
+        print(f"  保存完了: {output_file}")
+        return data
 
-<p>def wait_for_completion(self, experiment_id, check_interval=60):</p>
-<p>"""</p>
-<p>実験完了を待機</p>
+    def wait_for_completion(self, experiment_id, check_interval=60):
+        """
+        実験完了を待機
 
-<p>Args:</p>
-<p>experiment_id: 実験ID</p>
-<p>check_interval: チェック間隔（秒）</p>
+        Args:
+            experiment_id: 実験ID
+            check_interval: チェック間隔（秒）
 
-<p>Returns:</p>
-<p>最終状態</p>
-<p>"""</p>
-<p>print(f"実験完了を待機中: {experiment_id}")</p>
-<p>print(f"  チェック間隔: {check_interval}秒\n")</p>
+        Returns:
+            最終状態
+        """
+        print(f"実験完了を待機中: {experiment_id}")
+        print(f"  チェック間隔: {check_interval}秒\n")
 
-<p>while True:</p>
-<p>status_info = self.check_experiment_status(experiment_id)</p>
-<p>status = status_info['status']</p>
-<p>progress = status_info['progress']</p>
+        while True:
+            status_info = self.check_experiment_status(experiment_id)
+            status = status_info['status']
+            progress = status_info['progress']
 
-<p>print(f"  状態: {status}, 進捗: {progress}%")</p>
+            print(f"  状態: {status}, 進捗: {progress}%")
 
-<p>if status == 'completed':</p>
-<p>print("  実験完了！")</p>
-<p>break</p>
-<p>elif status == 'failed':</p>
-<p>print("  実験失敗")</p>
-<p>break</p>
+            if status == 'completed':
+                print("  実験完了！")
+                break
+            elif status == 'failed':
+                print("  実験失敗")
+                break
 
-<p>time.sleep(check_interval)</p>
+            time.sleep(check_interval)
 
-<p>return status_info</p>
+        return status_info
 
 
 <h1>使用例</h1>
-<p>data_manager = ECLDataManager(api_key='demo_key')</p>
+data_manager = ECLDataManager(api_key='demo_key')
 
 <h1>実験状態のチェック</h1>
-<p>experiment_id = 'exp_12345'</p>
-<p>status = data_manager.check_experiment_status(experiment_id)</p>
-<p>print(f"実験状態: {status['status']}, 進捗: {status['progress']}%")</p>
+experiment_id = 'exp_12345'
+status = data_manager.check_experiment_status(experiment_id)
+print(f"実験状態: {status['status']}, 進捗: {status['progress']}%")
 
 <h1>実験完了を待機（シミュレーション）</h1>
 <h1>final_status = data_manager.wait_for_completion(experiment_id, check_interval=5)</h1>
 
 <h1>結果のダウンロード</h1>
-<p>print("\n結果ダウンロード:")</p>
-<p>results = data_manager.download_results(experiment_id, 'ecl_results.json')</p>
+print("\n結果ダウンロード:")
+results = data_manager.download_results(experiment_id, 'ecl_results.json')
 
 <h1>データ解析</h1>
-<p>df_results = pd.DataFrame(results['measurements'])</p>
-<p>print(f"\n測定データ: {len(df_results)}ウェル")</p>
-<p>print(df_results.head(10))</p>
+df_results = pd.DataFrame(results['measurements'])
+print(f"\n測定データ: {len(df_results)}ウェル")
+print(df_results.head(10))
 
 <h1>可視化</h1>
-<p>absorbance_values = np.array([m['absorbance'] for m in results['measurements']]).reshape(8, 12)</p>
+absorbance_values = np.array([m['absorbance'] for m in results['measurements']]).reshape(8, 12)
 
-<p>plt.figure(figsize=(12, 6))</p>
-<p>plt.imshow(absorbance_values, cmap='YlOrRd', interpolation='nearest')</p>
-<p>plt.colorbar(label='吸光度')</p>
-<p>plt.xlabel('列', fontsize=12)</p>
-<p>plt.ylabel('行', fontsize=12)</p>
-<p>plt.title('96ウェルプレート測定結果', fontsize=14, fontweight='bold')</p>
-<p>plt.xticks(range(12), [f'{i+1}' for i in range(12)])</p>
-<p>plt.yticks(range(8), ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])</p>
-<p>plt.tight_layout()</p>
-<p>plt.savefig('ecl_96well_results.png', dpi=300, bbox_inches='tight')</p>
-<p>plt.show()</p>
-</code></pre>
+plt.figure(figsize=(12, 6))
+plt.imshow(absorbance_values, cmap='YlOrRd', interpolation='nearest')
+plt.colorbar(label='吸光度')
+plt.xlabel('列', fontsize=12)
+plt.ylabel('行', fontsize=12)
+plt.title('96ウェルプレート測定結果', fontsize=14, fontweight='bold')
+plt.xticks(range(12), [f'{i+1}' for i in range(12)])
+plt.yticks(range(8), ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
+plt.tight_layout()
+plt.savefig('ecl_96well_results.png', dpi=300, bbox_inches='tight')
+plt.show()</code></pre>
 
-<p>---</p>
+---
 
 <h2>4.5 コスト比較: 従来研究室 vs クラウドラボ</h2>
 
 <h3>4.5.1 総所有コスト（TCO）分析</h3>
 
 <pre><code class="language-python">def calculate_tco(scenario, years=5):
-<p>"""</p>
-<p>総所有コスト（Total Cost of Ownership）を計算</p>
+    """
+    総所有コスト（Total Cost of Ownership）を計算
 
-<p>Args:</p>
-<p>scenario: 'traditional'（従来研究室）または 'cloud'（クラウドラボ）</p>
-<p>years: 評価期間（年）</p>
+    Args:
+        scenario: 'traditional'（従来研究室）または 'cloud'（クラウドラボ）
+        years: 評価期間（年）
 
-<p>Returns:</p>
-<p>コスト内訳</p>
-<p>"""</p>
-<p>if scenario == 'traditional':</p>
-<p># 従来の研究室</p>
-<p>costs = {</p>
-<p>'初期投資': {</p>
-<p>'HPLC': 5_000_000,  # 円</p>
-<p>'GC-MS': 8_000_000,</p>
-<p>'UV-Vis分光光度計': 1_000_000,</p>
-<p>'液体ハンドリングロボット': 10_000_000,</p>
-<p>'その他機器': 5_000_000,</p>
-<p>'合計': 29_000_000</p>
-<p>},</p>
-<p>'年間運用コスト': {</p>
-<p>'メンテナンス': 2_000_000,  # 円/年</p>
-<p>'消耗品': 1_500_000,</p>
-<p>'試薬': 3_000_000,</p>
-<p>'人件費（技術員）': 5_000_000,</p>
-<p>'光熱費': 500_000,</p>
-<p>'合計': 12_000_000</p>
-<p>}</p>
-<p>}</p>
+    Returns:
+        コスト内訳
+    """
+    if scenario == 'traditional':
+        # 従来の研究室
+        costs = {
+            '初期投資': {
+                'HPLC': 5_000_000,  # 円
+                'GC-MS': 8_000_000,
+                'UV-Vis分光光度計': 1_000_000,
+                '液体ハンドリングロボット': 10_000_000,
+                'その他機器': 5_000_000,
+                '合計': 29_000_000
+            },
+            '年間運用コスト': {
+                'メンテナンス': 2_000_000,  # 円/年
+                '消耗品': 1_500_000,
+                '試薬': 3_000_000,
+                '人件費（技術員）': 5_000_000,
+                '光熱費': 500_000,
+                '合計': 12_000_000
+            }
+        }
 
-<p>total_cost = costs['初期投資']['合計'] + costs['年間運用コスト']['合計'] * years</p>
+        total_cost = costs['初期投資']['合計'] + costs['年間運用コスト']['合計'] * years
 
-<p>else:  # scenario == 'cloud'</p>
-<p># クラウドラボ</p>
-<p>costs = {</p>
-<p>'初期投資': {</p>
-<p>'装置購入': 0,</p>
-<p>'アカウント登録': 0,</p>
-<p>'合計': 0</p>
-<p>},</p>
-<p>'年間運用コスト': {</p>
-<p>'実験費用（従量課金）': 8_000_000,  # 円/年（実験回数による）</p>
-<p>'試薬（一部）': 1_000_000,</p>
-<p>'データストレージ': 200_000,</p>
-<p>'合計': 9_200_000</p>
-<p>}</p>
-<p>}</p>
+    else:  # scenario == 'cloud'
+        # クラウドラボ
+        costs = {
+            '初期投資': {
+                '装置購入': 0,
+                'アカウント登録': 0,
+                '合計': 0
+            },
+            '年間運用コスト': {
+                '実験費用（従量課金）': 8_000_000,  # 円/年（実験回数による）
+                '試薬（一部）': 1_000_000,
+                'データストレージ': 200_000,
+                '合計': 9_200_000
+            }
+        }
 
-<p>total_cost = costs['初期投資']['合計'] + costs['年間運用コスト']['合計'] * years</p>
+        total_cost = costs['初期投資']['合計'] + costs['年間運用コスト']['合計'] * years
 
-<p>costs['総コスト（{years}年）'] = total_cost</p>
-<p>costs['年平均コスト'] = total_cost / years</p>
+    costs['総コスト（{years}年）'] = total_cost
+    costs['年平均コスト'] = total_cost / years
 
-<p>return costs</p>
+    return costs
 
 
 <h1>TCO比較</h1>
-<p>years = 5</p>
-<p>tco_traditional = calculate_tco('traditional', years)</p>
-<p>tco_cloud = calculate_tco('cloud', years)</p>
+years = 5
+tco_traditional = calculate_tco('traditional', years)
+tco_cloud = calculate_tco('cloud', years)
 
-<p>print("=" * 60)</p>
-<p>print(f"総所有コスト（TCO）比較（{years}年間）")</p>
-<p>print("=" * 60)</p>
+print("=" * 60)
+print(f"総所有コスト（TCO）比較（{years}年間）")
+print("=" * 60)
 
-<p>print("\n【従来の研究室】")</p>
-<p>print(f"  初期投資: ¥{tco_traditional['初期投資']['合計']:,}")</p>
-<p>print(f"  年間運用コスト: ¥{tco_traditional['年間運用コスト']['合計']:,}")</p>
-<p>print(f"  総コスト（{years}年）: ¥{tco_traditional['総コスト（{years}年）']:,}")</p>
-<p>print(f"  年平均コスト: ¥{tco_traditional['年平均コスト']:,}")</p>
+print("\n【従来の研究室】")
+print(f"  初期投資: ¥{tco_traditional['初期投資']['合計']:,}")
+print(f"  年間運用コスト: ¥{tco_traditional['年間運用コスト']['合計']:,}")
+print(f"  総コスト（{years}年）: ¥{tco_traditional['総コスト（{years}年）']:,}")
+print(f"  年平均コスト: ¥{tco_traditional['年平均コスト']:,}")
 
-<p>print("\n【クラウドラボ】")</p>
-<p>print(f"  初期投資: ¥{tco_cloud['初期投資']['合計']:,}")</p>
-<p>print(f"  年間運用コスト: ¥{tco_cloud['年間運用コスト']['合計']:,}")</p>
-<p>print(f"  総コスト（{years}年）: ¥{tco_cloud['総コスト（{years}年）']:,}")</p>
-<p>print(f"  年平均コスト: ¥{tco_cloud['年平均コスト']:,}")</p>
+print("\n【クラウドラボ】")
+print(f"  初期投資: ¥{tco_cloud['初期投資']['合計']:,}")
+print(f"  年間運用コスト: ¥{tco_cloud['年間運用コスト']['合計']:,}")
+print(f"  総コスト（{years}年）: ¥{tco_cloud['総コスト（{years}年）']:,}")
+print(f"  年平均コスト: ¥{tco_cloud['年平均コスト']:,}")
 
-<p>cost_savings = tco_traditional['総コスト（{years}年）'] - tco_cloud['総コスト（{years}年）']</p>
-<p>savings_percent = (cost_savings / tco_traditional['総コスト（{years}年）']) * 100</p>
+cost_savings = tco_traditional['総コスト（{years}年）'] - tco_cloud['総コスト（{years}年）']
+savings_percent = (cost_savings / tco_traditional['総コスト（{years}年）']) * 100
 
-<p>print(f"\nコスト削減: ¥{cost_savings:,} ({savings_percent:.1f}%)")</p>
+print(f"\nコスト削減: ¥{cost_savings:,} ({savings_percent:.1f}%)")
 
 <h1>可視化</h1>
-<p>fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))</p>
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
 
 <h1>(1) 総コスト比較</h1>
-<p>scenarios = ['従来の研究室', 'クラウドラボ']</p>
-<p>total_costs = [tco_traditional['総コスト（{years}年）'], tco_cloud['総コスト（{years}年）']]</p>
-<p>colors = ['coral', 'limegreen']</p>
+scenarios = ['従来の研究室', 'クラウドラボ']
+total_costs = [tco_traditional['総コスト（{years}年）'], tco_cloud['総コスト（{years}年）']]
+colors = ['coral', 'limegreen']
 
-<p>bars = ax1.bar(scenarios, [c/1_000_000 for c in total_costs], color=colors, alpha=0.8, edgecolor='black', linewidth=1.5)</p>
-<p>ax1.set_ylabel('総コスト（百万円）', fontsize=12)</p>
-<p>ax1.set_title(f'{years}年間の総コスト比較', fontsize=14, fontweight='bold')</p>
+bars = ax1.bar(scenarios, [c/1_000_000 for c in total_costs], color=colors, alpha=0.8, edgecolor='black', linewidth=1.5)
+ax1.set_ylabel('総コスト（百万円）', fontsize=12)
+ax1.set_title(f'{years}年間の総コスト比較', fontsize=14, fontweight='bold')
 
-<p>for i, bar in enumerate(bars):</p>
-<p>height = bar.get_height()</p>
-<p>ax1.text(bar.get_x() + bar.get_width()/2., height,</p>
-<p>f'¥{total_costs[i]/1_000_000:.1f}M\n({savings_percent:.1f}%削減)' if i == 1 else f'¥{total_costs[i]/1_000_000:.1f}M',</p>
-<p>ha='center', va='bottom', fontsize=11, fontweight='bold')</p>
+for i, bar in enumerate(bars):
+    height = bar.get_height()
+    ax1.text(bar.get_x() + bar.get_width()/2., height,
+             f'¥{total_costs[i]/1_000_000:.1f}M\n({savings_percent:.1f}%削減)' if i == 1 else f'¥{total_costs[i]/1_000_000:.1f}M',
+             ha='center', va='bottom', fontsize=11, fontweight='bold')
 
-<p>ax1.grid(axis='y', alpha=0.3)</p>
+ax1.grid(axis='y', alpha=0.3)
 
 <h1>(2) 年次累積コスト</h1>
-<p>years_range = np.arange(1, years + 1)</p>
-<p>cumulative_traditional = tco_traditional['初期投資']['合計'] + tco_traditional['年間運用コスト']['合計'] * years_range</p>
-<p>cumulative_cloud = tco_cloud['初期投資']['合計'] + tco_cloud['年間運用コスト']['合計'] * years_range</p>
+years_range = np.arange(1, years + 1)
+cumulative_traditional = tco_traditional['初期投資']['合計'] + tco_traditional['年間運用コスト']['合計'] * years_range
+cumulative_cloud = tco_cloud['初期投資']['合計'] + tco_cloud['年間運用コスト']['合計'] * years_range
 
-<p>ax2.plot(years_range, cumulative_traditional / 1_000_000, marker='o', linewidth=2, markersize=8, label='従来の研究室', color='coral')</p>
-<p>ax2.plot(years_range, cumulative_cloud / 1_000_000, marker='s', linewidth=2, markersize=8, label='クラウドラボ', color='limegreen')</p>
-<p>ax2.set_xlabel('経過年数', fontsize=12)</p>
-<p>ax2.set_ylabel('累積コスト（百万円）', fontsize=12)</p>
-<p>ax2.set_title('累積コストの推移', fontsize=14, fontweight='bold')</p>
-<p>ax2.legend()</p>
-<p>ax2.grid(alpha=0.3)</p>
+ax2.plot(years_range, cumulative_traditional / 1_000_000, marker='o', linewidth=2, markersize=8, label='従来の研究室', color='coral')
+ax2.plot(years_range, cumulative_cloud / 1_000_000, marker='s', linewidth=2, markersize=8, label='クラウドラボ', color='limegreen')
+ax2.set_xlabel('経過年数', fontsize=12)
+ax2.set_ylabel('累積コスト（百万円）', fontsize=12)
+ax2.set_title('累積コストの推移', fontsize=14, fontweight='bold')
+ax2.legend()
+ax2.grid(alpha=0.3)
 
-<p>plt.tight_layout()</p>
-<p>plt.savefig('cost_comparison_traditional_vs_cloud.png', dpi=300, bbox_inches='tight')</p>
-<p>plt.show()</p>
-</code></pre>
+plt.tight_layout()
+plt.savefig('cost_comparison_traditional_vs_cloud.png', dpi=300, bbox_inches='tight')
+plt.show()</code></pre>
 
 <strong>結果の解釈</strong>:
-<ul>
-<li><strong>初期投資</strong>: 従来研究室は2900万円、クラウドラボは0円</li>
-<li><strong>5年間の総コスト</strong>: 従来研究室は8900万円、クラウドラボは4600万円</li>
-<li><strong>コスト削減</strong>: 約48%（4300万円）</li>
-</ul>
+- <strong>初期投資</strong>: 従来研究室は2900万円、クラウドラボは0円
+- <strong>5年間の総コスト</strong>: 従来研究室は8900万円、クラウドラボは4600万円
+- <strong>コスト削減</strong>: 約48%（4300万円）
 
-<p>---</p>
+---
 
 <h3>4.5.2 スケーラビリティとコスト効率</h3>
 
 <pre><code class="language-python">def cost_per_experiment(scenario, num_experiments):
-<p>"""</p>
-<p>実験数に応じた1実験あたりのコスト</p>
+    """
+    実験数に応じた1実験あたりのコスト
 
-<p>Args:</p>
-<p>scenario: 'traditional' or 'cloud'</p>
-<p>num_experiments: 年間実験数</p>
+    Args:
+        scenario: 'traditional' or 'cloud'
+        num_experiments: 年間実験数
 
-<p>Returns:</p>
-<p>1実験あたりのコスト（円）</p>
-<p>"""</p>
-<p>if scenario == 'traditional':</p>
-<p># 固定費（装置減価償却 + メンテナンス）</p>
-<p>fixed_cost = (29_000_000 / 5) + 2_000_000  # 円/年</p>
-<p># 変動費（試薬、消耗品）</p>
-<p>variable_cost_per_exp = 15_000  # 円/実験</p>
+    Returns:
+        1実験あたりのコスト（円）
+    """
+    if scenario == 'traditional':
+        # 固定費（装置減価償却 + メンテナンス）
+        fixed_cost = (29_000_000 / 5) + 2_000_000  # 円/年
+        # 変動費（試薬、消耗品）
+        variable_cost_per_exp = 15_000  # 円/実験
 
-<p>total_cost = fixed_cost + variable_cost_per_exp * num_experiments</p>
-<p>cost_per_exp = total_cost / num_experiments</p>
+        total_cost = fixed_cost + variable_cost_per_exp * num_experiments
+        cost_per_exp = total_cost / num_experiments
 
-<p>else:  # cloud</p>
-<p># 従量課金</p>
-<p>cost_per_exp = 30_000  # 円/実験（平均）</p>
+    else:  # cloud
+        # 従量課金
+        cost_per_exp = 30_000  # 円/実験（平均）
 
-<p>return cost_per_exp</p>
+    return cost_per_exp
 
 
 <h1>実験数を変化させてコスト効率を比較</h1>
-<p>experiment_counts = np.array([10, 50, 100, 200, 500, 1000])</p>
-<p>cost_traditional = [cost_per_experiment('traditional', n) for n in experiment_counts]</p>
-<p>cost_cloud = [cost_per_experiment('cloud', n) for n in experiment_counts]</p>
+experiment_counts = np.array([10, 50, 100, 200, 500, 1000])
+cost_traditional = [cost_per_experiment('traditional', n) for n in experiment_counts]
+cost_cloud = [cost_per_experiment('cloud', n) for n in experiment_counts]
 
-<p>plt.figure(figsize=(10, 6))</p>
-<p>plt.plot(experiment_counts, [c/1000 for c in cost_traditional], 'o-', linewidth=2, markersize=10, label='従来の研究室', color='coral')</p>
-<p>plt.axhline(y=cost_cloud[0]/1000, color='limegreen', linestyle='--', linewidth=2, label='クラウドラボ（一定）')</p>
-<p>plt.xlabel('年間実験数', fontsize=12)</p>
-<p>plt.ylabel('1実験あたりのコスト（千円）', fontsize=12)</p>
-<p>plt.title('実験数とコスト効率', fontsize=14, fontweight='bold')</p>
-<p>plt.legend()</p>
-<p>plt.grid(alpha=0.3)</p>
-<p>plt.xscale('log')</p>
-<p>plt.tight_layout()</p>
-<p>plt.savefig('cost_efficiency_scalability.png', dpi=300, bbox_inches='tight')</p>
-<p>plt.show()</p>
+plt.figure(figsize=(10, 6))
+plt.plot(experiment_counts, [c/1000 for c in cost_traditional], 'o-', linewidth=2, markersize=10, label='従来の研究室', color='coral')
+plt.axhline(y=cost_cloud[0]/1000, color='limegreen', linestyle='--', linewidth=2, label='クラウドラボ（一定）')
+plt.xlabel('年間実験数', fontsize=12)
+plt.ylabel('1実験あたりのコスト（千円）', fontsize=12)
+plt.title('実験数とコスト効率', fontsize=14, fontweight='bold')
+plt.legend()
+plt.grid(alpha=0.3)
+plt.xscale('log')
+plt.tight_layout()
+plt.savefig('cost_efficiency_scalability.png', dpi=300, bbox_inches='tight')
+plt.show()
 
 <h1>損益分岐点</h1>
-<p>breakeven = None</p>
-<p>for n in range(10, 1001):</p>
-<p>if cost_per_experiment('traditional', n) <= cost_per_experiment('cloud', n):</p>
-<p>breakeven = n</p>
-<p>break</p>
+breakeven = None
+for n in range(10, 1001):
+    if cost_per_experiment('traditional', n) <= cost_per_experiment('cloud', n):
+        breakeven = n
+        break
 
-<p>if breakeven:</p>
-<p>print(f"損益分岐点: 年間{breakeven}実験以上で従来研究室が有利")</p>
-<p>else:</p>
-<p>print("評価範囲内では常にクラウドラボが有利")</p>
-</code></pre>
+if breakeven:
+    print(f"損益分岐点: 年間{breakeven}実験以上で従来研究室が有利")
+else:
+    print("評価範囲内では常にクラウドラボが有利")</code></pre>
 
 <strong>結論</strong>:
-<ul>
-<li><strong>少数実験（<200回/年）</strong>: クラウドラボが圧倒的に有利</li>
-<li><strong>大量実験（>500回/年）</strong>: 従来研究室も選択肢（ただし初期投資とメンテナンス負担）</li>
-<li><strong>スタートアップ・小規模ラボ</strong>: クラウドラボが最適</li>
-</ul>
+- <strong>少数実験（<200回/年）</strong>: クラウドラボが圧倒的に有利
+- <strong>大量実験（>500回/年）</strong>: 従来研究室も選択肢（ただし初期投資とメンテナンス負担）
+- <strong>スタートアップ・小規模ラボ</strong>: クラウドラボが最適
 
-<p>---</p>
+---
 
 <h2>4.6 リモート実験の利点</h2>
 
 <h3>4.6.1 装置共有とアクセス</h3>
 
 <pre><code class="language-python"><h1>クラウドラボでの装置アクセスシミュレーション</h1>
-<p>import datetime</p>
+import datetime
 
-<p>class InstrumentScheduler:</p>
-<p>"""</p>
-<p>クラウドラボの装置スケジューラー</p>
-<p>"""</p>
+class InstrumentScheduler:
+    """
+    クラウドラボの装置スケジューラー
+    """
 
-<p>def __init__(self):</p>
-<p>self.instruments = {</p>
-<p>'HPLC_1': {'status': 'available', 'queue': []},</p>
-<p>'GC-MS_1': {'status': 'busy', 'queue': []},</p>
-<p>'UV-Vis_1': {'status': 'available', 'queue': []},</p>
-<p>}</p>
+    def __init__(self):
+        self.instruments = {
+            'HPLC_1': {'status': 'available', 'queue': []},
+            'GC-MS_1': {'status': 'busy', 'queue': []},
+            'UV-Vis_1': {'status': 'available', 'queue': []},
+        }
 
-<p>def book_instrument(self, instrument_name, user, duration_hours):</p>
-<p>"""</p>
-<p>装置を予約</p>
+    def book_instrument(self, instrument_name, user, duration_hours):
+        """
+        装置を予約
 
-<p>Args:</p>
-<p>instrument_name: 装置名</p>
-<p>user: ユーザー名</p>
-<p>duration_hours: 使用時間（時間）</p>
+        Args:
+            instrument_name: 装置名
+            user: ユーザー名
+            duration_hours: 使用時間（時間）
 
-<p>Returns:</p>
-<p>予約情報</p>
-<p>"""</p>
-<p>if instrument_name not in self.instruments:</p>
-<p>return {'success': False, 'message': '装置が見つかりません'}</p>
+        Returns:
+            予約情報
+        """
+        if instrument_name not in self.instruments:
+            return {'success': False, 'message': '装置が見つかりません'}
 
-<p>instrument = self.instruments[instrument_name]</p>
+        instrument = self.instruments[instrument_name]
 
-<p>if instrument['status'] == 'available':</p>
-<p>instrument['status'] = 'busy'</p>
-<p>start_time = datetime.datetime.now()</p>
-<p>end_time = start_time + datetime.timedelta(hours=duration_hours)</p>
+        if instrument['status'] == 'available':
+            instrument['status'] = 'busy'
+            start_time = datetime.datetime.now()
+            end_time = start_time + datetime.timedelta(hours=duration_hours)
 
-<p>booking = {</p>
-<p>'user': user,</p>
-<p>'start_time': start_time.strftime('%Y-%m-%d %H:%M'),</p>
-<p>'end_time': end_time.strftime('%Y-%m-%d %H:%M'),</p>
-<p>'duration': duration_hours</p>
-<p>}</p>
+            booking = {
+                'user': user,
+                'start_time': start_time.strftime('%Y-%m-%d %H:%M'),
+                'end_time': end_time.strftime('%Y-%m-%d %H:%M'),
+                'duration': duration_hours
+            }
 
-<p>instrument['queue'].append(booking)</p>
+            instrument['queue'].append(booking)
 
-<p>print(f"予約成功: {instrument_name}")</p>
-<p>print(f"  ユーザー: {user}")</p>
-<p>print(f"  開始: {booking['start_time']}")</p>
-<p>print(f"  終了: {booking['end_time']}")</p>
+            print(f"予約成功: {instrument_name}")
+            print(f"  ユーザー: {user}")
+            print(f"  開始: {booking['start_time']}")
+            print(f"  終了: {booking['end_time']}")
 
-<p>return {'success': True, 'booking': booking}</p>
+            return {'success': True, 'booking': booking}
 
-<p>else:</p>
-<p># キューに追加</p>
-<p>print(f"{instrument_name}は使用中です。キューに追加します。")</p>
-<p>return {'success': False, 'message': 'キューに追加されました'}</p>
+        else:
+            # キューに追加
+            print(f"{instrument_name}は使用中です。キューに追加します。")
+            return {'success': False, 'message': 'キューに追加されました'}
 
 
 <h1>使用例</h1>
-<p>scheduler = InstrumentScheduler()</p>
+scheduler = InstrumentScheduler()
 
 <h1>装置予約</h1>
-<p>booking1 = scheduler.book_instrument('HPLC_1', user='researcher_A', duration_hours=2)</p>
-<p>booking2 = scheduler.book_instrument('UV-Vis_1', user='researcher_B', duration_hours=1)</p>
+booking1 = scheduler.book_instrument('HPLC_1', user='researcher_A', duration_hours=2)
+booking2 = scheduler.book_instrument('UV-Vis_1', user='researcher_B', duration_hours=1)
 
-<p>print("\n利点:")</p>
-<p>print("  - 装置稼働率の向上（24時間利用可能）")</p>
-<p>print("  - 複数研究者での共有")</p>
-<p>print("  - 予約システムによる効率的な利用")</p>
-</code></pre>
+print("\n利点:")
+print("  - 装置稼働率の向上（24時間利用可能）")
+print("  - 複数研究者での共有")
+print("  - 予約システムによる効率的な利用")</code></pre>
 
-<p>---</p>
+---
 
 <h3>4.6.2 専門技術者サポート</h3>
 
 <strong>クラウドラボの専門スタッフ</strong>:
-<ul>
-<li><strong>装置オペレーター</strong>: 実験実行、トラブルシューティング</li>
-<li><strong>データサイエンティスト</strong>: 解析支援</li>
-<li><strong>品質管理担当</strong>: 装置キャリブレーション、精度管理</li>
-</ul>
+- <strong>装置オペレーター</strong>: 実験実行、トラブルシューティング
+- <strong>データサイエンティスト</strong>: 解析支援
+- <strong>品質管理担当</strong>: 装置キャリブレーション、精度管理
 
 <strong>利点</strong>:
-<ul>
-<li>研究者は研究に集中（装置メンテナンスから解放）</li>
-<li>専門知識不要（プロトコルを記述するだけ）</li>
-<li>高品質なデータ（専門家が品質管理）</li>
-</ul>
+- 研究者は研究に集中（装置メンテナンスから解放）
+- 専門知識不要（プロトコルを記述するだけ）
+- 高品質なデータ（専門家が品質管理）
 
-<p>---</p>
+---
 
 <h2>4.7 演習問題</h2>
 
 <h3>演習1: プロトコルの作成（難易度: Easy）</h3>
 
-<p>以下の実験をECLプロトコル形式で記述してください。</p>
+以下の実験をECLプロトコル形式で記述してください。
 
 <strong>実験</strong>: 酵素阻害剤のIC50測定
-<ol>
-<li>基質を96ウェルに50 µL分注</li>
-<li>阻害剤を段階希釈（10^-4 → 10^-10 M）で添加</li>
-<li>酵素を10 µL添加</li>
-<li>37℃で30分インキュベーション</li>
-<li>吸光度測定（450 nm）</li>
-</ol>
+1. 基質を96ウェルに50 µL分注
+2. 阻害剤を段階希釈（10^-4 → 10^-10 M）で添加
+3. 酵素を10 µL添加
+4. 37℃で30分インキュベーション
+5. 吸光度測定（450 nm）
 
 <details>
 <summary>解答例</summary>
@@ -1143,145 +1130,129 @@
 <pre><code class="language-python">experiment = ECLExperiment('IC50 Measurement', 'project_enzyme')
 
 <h1>基質分注</h1>
-<p>for well in range(96):</p>
-<p>row = well // 12</p>
-<p>col = well % 12 + 1</p>
-<p>well_id = f"{chr(65 + row)}{col}"</p>
-<p>experiment.add_reagent('Substrate', volume=50, concentration=0.1)</p>
+for well in range(96):
+    row = well // 12
+    col = well % 12 + 1
+    well_id = f"{chr(65 + row)}{col}"
+    experiment.add_reagent('Substrate', volume=50, concentration=0.1)
 
 <h1>阻害剤段階希釈（A列）</h1>
-<p>concentrations = [10<em></em>(-4 - i) for i in range(8)]  # 10^-4 → 10^-11 M</p>
-<p>for i, conc in enumerate(concentrations):</p>
-<p>well_id = f"A{i+1}"</p>
-<p>experiment.add_reagent(f'Inhibitor_{conc}M', volume=10, concentration=conc)</p>
+concentrations = [10**(-4 - i) for i in range(8)]  # 10^-4 → 10^-11 M
+for i, conc in enumerate(concentrations):
+    well_id = f"A{i+1}"
+    experiment.add_reagent(f'Inhibitor_{conc}M', volume=10, concentration=conc)
 
 <h1>酵素添加</h1>
-<p>for well in range(96):</p>
-<p>experiment.add_reagent('Enzyme', volume=10, concentration=0.001)</p>
+for well in range(96):
+    experiment.add_reagent('Enzyme', volume=10, concentration=0.001)
 
 <h1>インキュベーション</h1>
-<p>experiment.incubate(temperature=37, duration=30)</p>
+experiment.incubate(temperature=37, duration=30)
 
 <h1>測定</h1>
-<p>experiment.measure_absorbance(wavelength=450)</p>
+experiment.measure_absorbance(wavelength=450)
 
-<p>experiment.submit()</p>
-</code></pre>
+experiment.submit()</code></pre>
 
 </details>
 
-<p>---</p>
+---
 
 <h3>演習2: コスト最適化（難易度: Medium）</h3>
 
-<p>あなたの研究室では年間150回の実験を行います。クラウドラボ（30,000円/実験）と従来研究室（初期投資2900万円、年間維持費1200万円、変動費15,000円/実験）のどちらが経済的か、5年間のTCOで比較してください。</p>
+あなたの研究室では年間150回の実験を行います。クラウドラボ（30,000円/実験）と従来研究室（初期投資2900万円、年間維持費1200万円、変動費15,000円/実験）のどちらが経済的か、5年間のTCOで比較してください。
 
 <details>
 <summary>解答例</summary>
 
 <pre><code class="language-python">years = 5
-<p>experiments_per_year = 150</p>
+experiments_per_year = 150
 
 <h1>従来研究室</h1>
-<p>initial_investment_traditional = 29_000_000</p>
-<p>annual_fixed_cost_traditional = 12_000_000</p>
-<p>variable_cost_per_exp_traditional = 15_000</p>
+initial_investment_traditional = 29_000_000
+annual_fixed_cost_traditional = 12_000_000
+variable_cost_per_exp_traditional = 15_000
 
-<p>total_traditional = initial_investment_traditional + (annual_fixed_cost_traditional + variable_cost_per_exp_traditional <em> experiments_per_year) </em> years</p>
+total_traditional = initial_investment_traditional + (annual_fixed_cost_traditional + variable_cost_per_exp_traditional * experiments_per_year) * years
 
 <h1>クラウドラボ</h1>
-<p>cost_per_exp_cloud = 30_000</p>
-<p>total_cloud = cost_per_exp_cloud <em> experiments_per_year </em> years</p>
+cost_per_exp_cloud = 30_000
+total_cloud = cost_per_exp_cloud * experiments_per_year * years
 
-<p>print(f"5年間のTCO比較（年間{experiments_per_year}実験）:")</p>
-<p>print(f"  従来研究室: ¥{total_traditional:,}")</p>
-<p>print(f"  クラウドラボ: ¥{total_cloud:,}")</p>
-<p>print(f"  差額: ¥{abs(total_traditional - total_cloud):,}")</p>
+print(f"5年間のTCO比較（年間{experiments_per_year}実験）:")
+print(f"  従来研究室: ¥{total_traditional:,}")
+print(f"  クラウドラボ: ¥{total_cloud:,}")
+print(f"  差額: ¥{abs(total_traditional - total_cloud):,}")
 
-<p>if total_cloud < total_traditional:</p>
-<p>savings = (1 - total_cloud / total_traditional) * 100</p>
-<p>print(f"  結論: クラウドラボが{savings:.1f}%有利")</p>
-<p>else:</p>
-<p>print(f"  結論: 従来研究室が有利")</p>
-</code></pre>
+if total_cloud < total_traditional:
+    savings = (1 - total_cloud / total_traditional) * 100
+    print(f"  結論: クラウドラボが{savings:.1f}%有利")
+else:
+    print(f"  結論: 従来研究室が有利")</code></pre>
 
 <strong>出力例</strong>:
-<pre><code class="language-">5年間のTCO比較（年間150実験）:
-<p>従来研究室: ¥102,250,000</p>
-<p>クラウドラボ: ¥22,500,000</p>
-<p>差額: ¥79,750,000</p>
-<p>結論: クラウドラボが78.0%有利</p>
-</code></pre>
+<pre><code>5年間のTCO比較（年間150実験）:
+  従来研究室: ¥102,250,000
+  クラウドラボ: ¥22,500,000
+  差額: ¥79,750,000
+  結論: クラウドラボが78.0%有利</code></pre>
 
 </details>
 
-<p>---</p>
+---
 
 <h2>本章のまとめ</h2>
 
-<p>本章では、クラウドラボと遠隔実験について学びました。</p>
+本章では、クラウドラボと遠隔実験について学びました。
 
 <h3>キーポイント</h3>
 
-<ol>
-<li><strong>クラウドラボの概念</strong>:</li>
-</ol>
-<p>- 装置とロボティクスのクラウドサービス化</p>
-<p>- 初期投資ゼロ、従量課金制</p>
+1. <strong>クラウドラボの概念</strong>:
+   - 装置とロボティクスのクラウドサービス化
+   - 初期投資ゼロ、従量課金制
 
-<ol>
-<li><strong>Emerald Cloud Lab</strong>:</li>
-</ol>
-<p>- 200種類以上の装置</p>
-<p>- Python SDKによるプログラマブルな実験</p>
+2. <strong>Emerald Cloud Lab</strong>:
+   - 200種類以上の装置
+   - Python SDKによるプログラマブルな実験
 
-<ol>
-<li><strong>APIプログラミング</strong>:</li>
-</ol>
-<p>- 実験プロトコルをコードで記述</p>
-<p>- REST APIでの実験依頼</p>
-<p>- データ自動取得</p>
+3. <strong>APIプログラミング</strong>:
+   - 実験プロトコルをコードで記述
+   - REST APIでの実験依頼
+   - データ自動取得
 
-<ol>
-<li><strong>コスト効率</strong>:</li>
-</ol>
-<p>- 5年間で約48%のコスト削減</p>
-<p>- 少数実験ではクラウドラボが圧倒的に有利</p>
-<p>- スタートアップ・小規模ラボに最適</p>
+4. <strong>コスト効率</strong>:
+   - 5年間で約48%のコスト削減
+   - 少数実験ではクラウドラボが圧倒的に有利
+   - スタートアップ・小規模ラボに最適
 
-<ol>
-<li><strong>リモート実験の利点</strong>:</li>
-</ol>
-<p>- 世界中どこからでもアクセス</p>
-<p>- 専門技術者サポート</p>
-<p>- 装置共有による高稼働率</p>
+5. <strong>リモート実験の利点</strong>:
+   - 世界中どこからでもアクセス
+   - 専門技術者サポート
+   - 装置共有による高稼働率
 
 <h3>次章予告</h3>
 
-<p>第5章では、実世界応用とキャリアについて学びます。触媒スクリーニング、量子ドット合成、電池材料探索などの具体的な事例と、Berkeley A-Labのケーススタディを通じて、ロボティクス実験分野のキャリアパスを探ります。</p>
+第5章では、実世界応用とキャリアについて学びます。触媒スクリーニング、量子ドット合成、電池材料探索などの具体的な事例と、Berkeley A-Labのケーススタディを通じて、ロボティクス実験分野のキャリアパスを探ります。
 
-<p>---</p>
+---
 
 <h2>参考文献</h2>
 
-<ol>
-<li>Emerald Cloud Lab. "ECL Documentation." https://www.emeraldcloudlab.com/documentation/</li>
-<li>Linshiz, G. et al. (2014). "PaR-PaR laboratory automation platform." <em>ACS Synthetic Biology</em>, 3(2), 97-106.</li>
-<li>King, R. D. et al. (2009). "The Automation of Science." <em>Science</em>, 324(5923), 85-89.</li>
-<li>Roch, L. M. et al. (2020). "ChemOS: An orchestration software to democratize autonomous discovery." <em>PLoS ONE</em>, 15(4), e0229862.</li>
-</ol>
+1. Emerald Cloud Lab. "ECL Documentation." https://www.emeraldcloudlab.com/documentation/
+2. Linshiz, G. et al. (2014). "PaR-PaR laboratory automation platform." *ACS Synthetic Biology*, 3(2), 97-106.
+3. King, R. D. et al. (2009). "The Automation of Science." *Science*, 324(5923), 85-89.
+4. Roch, L. M. et al. (2020). "ChemOS: An orchestration software to democratize autonomous discovery." *PLoS ONE*, 15(4), e0229862.
 
-<p>---</p>
+---
 
-<strong>次の章へ</strong>: <a href="chapter-5.html">第5章: 実世界応用とキャリア</a>
+<strong>次の章へ</strong>: [第5章: 実世界応用とキャリア](chapter-5.html)
 
-<a href="index.html">目次に戻る</a>
-
-
-        <div class="navigation">
-            <a href="index.html" class="nav-button">← シリーズ目次に戻る</a>
-<a href="chapter-2.html" class="nav-button">次章: 第2章 →</a>
-        </div>
+[目次に戻る](index.html)
+<div class="navigation">
+    <a href="chapter-3.html" class="nav-button">← 第3章</a>
+    <a href="index.html" class="nav-button">シリーズ目次に戻る</a>
+    <a href="chapter-5.html" class="nav-button">第5章 →</a>
+</div>
     </main>
 
     <footer>

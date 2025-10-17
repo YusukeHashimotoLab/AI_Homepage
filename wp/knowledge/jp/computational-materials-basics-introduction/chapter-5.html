@@ -198,6 +198,55 @@
             border-radius: var(--border-radius);
         }
 
+        .mermaid {
+            text-align: center;
+            margin: var(--spacing-lg) 0;
+            background-color: var(--color-bg-alt);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        details {
+            background-color: var(--color-bg-alt);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--color-primary);
+            user-select: none;
+            padding: var(--spacing-xs);
+            margin: calc(-1 * var(--spacing-md));
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        summary:hover {
+            background-color: rgba(123, 44, 191, 0.1);
+        }
+
+        details[open] summary {
+            margin-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .learning-objectives {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--color-accent);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .learning-objectives h2 {
+            margin-top: 0;
+            border-bottom: none;
+        }
+
         .navigation {
             display: flex;
             justify-content: space-between;
@@ -270,6 +319,22 @@
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         mermaid.initialize({ startOnLoad: true, theme: 'default' });
     </script>
+
+    <!-- MathJax for LaTeX equation rendering -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\(', '\)']],
+                displayMath: [['$$', '$$'], ['\[', '\]']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
 </head>
 <body>
     <header>
@@ -277,928 +342,789 @@
             <h1>第5章：第一原理計算と機械学習の統合</h1>
             <p class="subtitle">Machine Learning Potential と Active Learning</p>
             <div class="meta">
-                <span class="meta-item">📖 読了時間: 15-20分</span>
+                <span class="meta-item">📖 読了時間: 20-25分</span>
                 <span class="meta-item">📊 難易度: 上級</span>
                 <span class="meta-item">💻 コード例: 6個</span>
+                <span class="meta-item">📝 演習問題: 0問</span>
             </div>
         </div>
     </header>
 
     <main class="container">
-        
-<p><h1>第5章：第一原理計算と機械学習の統合</h1></p>
 
-<p><h2>学習目標</h2></p>
+<h1>第5章：第一原理計算と機械学習の統合</h1>
 
-<p>この章を読むことで、以下を習得できます：</p>
-<ul>
-<li>機械学習ポテンシャル（MLP）の基本概念を理解する</li>
-<li>Classical MD、AIMD、MLPの違いと使い分けを説明できる</li>
-<li>DFT計算データからニューラルネットワークポテンシャルを訓練できる</li>
-<li>Active Learningによる効率的データ生成戦略を理解する</li>
-<li>最新のUniversal MLPやFoundation Modelsのトレンドを把握する</li>
-</ul>
-
-<p>---</p>
+<h2>学習目標</h2>
 
-<p><h2>5.1 なぜMachine Learning Potentialが必要か</h2></p>
+この章を読むことで、以下を習得できます：
+- 機械学習ポテンシャル（MLP）の基本概念を理解する
+- Classical MD、AIMD、MLPの違いと使い分けを説明できる
+- DFT計算データからニューラルネットワークポテンシャルを訓練できる
+- Active Learningによる効率的データ生成戦略を理解する
+- 最新のUniversal MLPやFoundation Modelsのトレンドを把握する
 
-<p><h3>3つの計算手法の比較</h3></p>
+---
 
-<p><pre><code class="language-mermaid">graph LR</p>
-<p>    A[Classical MD] -->|精度 vs 速度| B[AIMD]</p>
-<p>    B -->|精度 vs 速度| C[Machine Learning Potential]</p>
-<p>    C -.データ駆動.-> B</p>
+<h2>5.1 なぜMachine Learning Potentialが必要か</h2>
 
-<p>    style A fill:#ffcccc</p>
-<p>    style B fill:#ccffcc</p>
-<p>    style C fill:#ccccff</p>
-<p></code></pre></p>
+<h3>3つの計算手法の比較</h3>
 
-<p>| 項目 | Classical MD | AIMD（DFT-MD） | MLP-MD |</p>
-<p>|------|-------------|--------------|--------|</p>
-<p>| <strong>力の計算</strong> | 経験的力場 | DFT（第一原理） | 機械学習モデル |</p>
-<p>| <strong>精度</strong> | 中（力場に依存） | 高（量子力学的） | 高（DFT同等） |</p>
-<p>| <strong>計算速度</strong> | 超高速（ns/日） | 極めて遅い（ps/日） | 高速（ns/日） |</p>
-<p>| <strong>系のサイズ</strong> | 数百万原子 | 数百原子 | 数千〜数万原子 |</p>
-<p>| <strong>適用範囲</strong> | 訓練済み系のみ | 汎用的 | 訓練データ範囲内 |</p>
-<p>| <strong>開発コスト</strong> | 低（既存力場使用） | なし | 高（訓練データ生成） |</p>
+<div class="mermaid">graph LR
+    A[Classical MD] -->|精度 vs 速度| B[AIMD]
+    B -->|精度 vs 速度| C[Machine Learning Potential]
+    C -.データ駆動.-> B
 
-<p><h3>MLPの利点</h3></p>
+    style A fill:#ffcccc
+    style B fill:#ccffcc
+    style C fill:#ccccff</div>
 
-<p><strong>「DFT級の精度でClassical MD級の速度」</strong></p>
+| 項目 | Classical MD | AIMD（DFT-MD） | MLP-MD |
+|------|-------------|--------------|--------|
+| <strong>力の計算</strong> | 経験的力場 | DFT（第一原理） | 機械学習モデル |
+| <strong>精度</strong> | 中（力場に依存） | 高（量子力学的） | 高（DFT同等） |
+| <strong>計算速度</strong> | 超高速（ns/日） | 極めて遅い（ps/日） | 高速（ns/日） |
+| <strong>系のサイズ</strong> | 数百万原子 | 数百原子 | 数千〜数万原子 |
+| <strong>適用範囲</strong> | 訓練済み系のみ | 汎用的 | 訓練データ範囲内 |
+| <strong>開発コスト</strong> | 低（既存力場使用） | なし | 高（訓練データ生成） |
 
-<ul>
-<li>✅ 化学反応を正確に記述（結合の切断・生成）</li>
-<li>✅ 長時間シミュレーション（ns〜μsスケール）</li>
-<li>✅ 大規模系（数千〜数万原子）</li>
-<li>✅ 力場が存在しない新規材料にも適用可能</li>
-</ul>
+<h3>MLPの利点</h3>
 
-<p><strong>課題</strong>:</p>
-<ul>
-<li>❌ 訓練データ（DFT計算）の生成コスト</li>
-<li>❌ 訓練データの範囲外では精度低下</li>
-<li>❌ モデルの訓練に計算資源とノウハウが必要</li>
-</ul>
+<strong>「DFT級の精度でClassical MD級の速度」</strong>
 
-<p>---</p>
+- ✅ 化学反応を正確に記述（結合の切断・生成）
+- ✅ 長時間シミュレーション（ns〜μsスケール）
+- ✅ 大規模系（数千〜数万原子）
+- ✅ 力場が存在しない新規材料にも適用可能
 
-<p><h2>5.2 機械学習ポテンシャルの種類</h2></p>
+<strong>課題</strong>:
+- ❌ 訓練データ（DFT計算）の生成コスト
+- ❌ 訓練データの範囲外では精度低下
+- ❌ モデルの訓練に計算資源とノウハウが必要
 
-<p><h3>1. Gaussian Approximation Potential (GAP)</h3></p>
+---
 
-<p><strong>原理</strong>: カーネル法（Gaussian Process）</p>
+<h2>5.2 機械学習ポテンシャルの種類</h2>
 
-<p>$$</p>
-<p>E_{\text{GAP}}(\mathbf{R}) = \sum_{i=1}^N \alpha_i K(\mathbf{R}, \mathbf{R}_i)</p>
-<p>$$</p>
+<h3>1. Gaussian Approximation Potential (GAP)</h3>
 
-<ul>
-<li>$K$: カーネル関数（類似度を測る）</li>
-<li>$\mathbf{R}_i$: 訓練データの原子配置</li>
-<li>$\alpha_i$: 訓練パラメータ</li>
-</ul>
-
-<p><strong>特徴</strong>:</p>
-<ul>
-<li>✅ 不確実性推定が可能（Active Learningに有利）</li>
-<li>✅ 少ないデータで学習可能</li>
-<li>❌ 訓練データ数に比例して計算コスト増加</li>
-</ul>
-
-<p><h3>2. Neural Network Potential (NNP)</h3></p>
-
-<p><strong>Behler-Parrinello型</strong>: 各原子のローカル環境を記述子化</p>
-
-<p>$$</p>
-<p>E_{\text{NNP}} = \sum_{i=1}^{N_{\text{atoms}}} E_i^{\text{NN}}(\{\mathbf{G}_i\})</p>
-<p>$$</p>
-
-<ul>
-<li>$E_i^{\text{NN}}$: 原子$i$のニューラルネットワークエネルギー</li>
-<li>$\mathbf{G}_i$: 対称関数（Symmetry Functions）、原子$i$の周囲環境を記述</li>
-</ul>
-
-<p><strong>対称関数の例</strong>（動径成分）:</p>
-
-<p>$$</p>
-<p>G_i^{\text{rad}} = \sum_{j \neq i} e^{-\eta(r_{ij} - R_s)^2} f_c(r_{ij})</p>
-<p>$$</p>
-
-<ul>
-<li>$r_{ij}$: 原子間距離</li>
-<li>$f_c(r)$: カットオフ関数（一定距離以遠を無視）</li>
-</ul>
-
-<p><strong>特徴</strong>:</p>
-<ul>
-<li>✅ 大規模系でも高速</li>
-<li>✅ 訓練データ数が増えても計算コスト一定</li>
-<li>❌ 不確実性推定が困難</li>
-</ul>
+<strong>原理</strong>: カーネル法（Gaussian Process）
 
-<p><h3>3. Message Passing Neural Network (MPNN)</h3></p>
+$$
+E_{\text{GAP}}(\mathbf{R}) = \sum_{i=1}^N \alpha_i K(\mathbf{R}, \mathbf{R}_i)
+$$
 
-<p>グラフニューラルネットワーク（GNN）の一種：</p>
+- $K$: カーネル関数（類似度を測る）
+- $\mathbf{R}_i$: 訓練データの原子配置
+- $\alpha_i$: 訓練パラメータ
 
-<p>$$</p>
-<p>\mathbf{h}_i^{(k+1)} = \text{Update}\left(\mathbf{h}_i^{(k)}, \sum_{j \in \mathcal{N}(i)} \text{Message}(\mathbf{h}_i^{(k)}, \mathbf{h}_j^{(k)}, \mathbf{e}_{ij})\right)</p>
-<p>$$</p>
+<strong>特徴</strong>:
+- ✅ 不確実性推定が可能（Active Learningに有利）
+- ✅ 少ないデータで学習可能
+- ❌ 訓練データ数に比例して計算コスト増加
 
-<ul>
-<li>$\mathbf{h}_i^{(k)}$: 原子$i$の$k$層目の隠れ状態</li>
-<li>$\mathcal{N}(i)$: 原子$i$の近傍原子</li>
-<li>$\mathbf{e}_{ij}$: 結合情報（距離、角度）</li>
-</ul>
-
-<p><strong>代表的モデル</strong>: SchNet、DimeNet、GemNet、MACE</p>
+<h3>2. Neural Network Potential (NNP)</h3>
 
-<p><strong>特徴</strong>:</p>
-<ul>
-<li>✅ 回転・並進不変性を自然に実現</li>
-<li>✅ 長距離相互作用を効率的に学習</li>
-<li>✅ 最新の高精度モデル</li>
-</ul>
-
-<p><h3>4. Moment Tensor Potential (MTP)</h3></p>
-
-<p><strong>原理</strong>: 原子環境を多体展開で記述</p>
-
-<p>$$</p>
-<p>E_{\text{MTP}} = \sum_i \sum_{\alpha} c_{\alpha} B_{\alpha}(\mathbf{R}_i)</p>
-<p>$$</p>
-
-<p>$B_{\alpha}$はモーメントテンソル基底関数。</p>
-
-<p><strong>特徴</strong>:</p>
-<ul>
-<li>✅ 高速（線形モデル）</li>
-<li>✅ 訓練が容易</li>
-<li>❌ 表現力がNNPより低い</li>
-</ul>
-
-<p>---</p>
-
-<p><h2>5.3 Neural Network Potentialの訓練（実践）</h2></p>
-
-<p><h3>Example 1: AMPを使ったNNP訓練（水分子）</h3></p>
-
-<p><pre><code class="language-python">import numpy as np</p>
-<p>from ase.build import molecule</p>
-<p>from ase.calculators.emt import EMT</p>
-<p>from gpaw import GPAW, PW</p>
-<p>from amp import Amp</p>
-<p>from amp.descriptor.gaussian import Gaussian</p>
-<p>from amp.model.neuralnetwork import NeuralNetwork</p>
-<p>import matplotlib.pyplot as plt</p>
-
-<p><h1>Step 1: 訓練データ生成（MDシミュレーション + DFT）</h1></p>
-<p>def generate_training_data(n_samples=50):</p>
-<p>    """</p>
-<p>    水分子の様々な配置でDFT計算</p>
-<p>    """</p>
-<p>    from ase.md.velocitydistribution import MaxwellBoltzmannDistribution</p>
-<p>    from ase.md.verlet import VelocityVerlet</p>
-<p>    from ase import units</p>
-
-<p>    h2o = molecule('H2O')</p>
-<p>    h2o.center(vacuum=5.0)</p>
-
-<p>    <h1>DFT計算機</h1></p>
-<p>    calc = GPAW(mode=PW(300), xc='PBE', txt=None)</p>
-<p>    h2o.calc = calc</p>
-
-<p>    <h1>初期速度</h1></p>
-<p>    MaxwellBoltzmannDistribution(h2o, temperature_K=500)</p>
-
-<p>    <h1>MDシミュレーション</h1></p>
-<p>    dyn = VelocityVerlet(h2o, timestep=1.0*units.fs)</p>
-
-<p>    images = []</p>
-<p>    for i in range(n_samples):</p>
-<p>        dyn.run(10)  <h1>10ステップごとにサンプリング</h1></p>
-<p>        atoms_copy = h2o.copy()</p>
-<p>        atoms_copy.calc = calc</p>
-<p>        atoms_copy.get_potential_energy()  <h1>DFT計算実行</h1></p>
-<p>        atoms_copy.get_forces()</p>
-<p>        images.append(atoms_copy)</p>
-<p>        print(f"Sample {i+1}/{n_samples} collected")</p>
-
-<p>    return images</p>
-
-<p>print("Generating training data...")</p>
-<p>train_images = generate_training_data(n_samples=50)</p>
-
-<p><h1>Step 2: NNPの訓練</h1></p>
-<p>print("Training Neural Network Potential...")</p>
-
-<p><h1>記述子: Gaussian対称関数</h1></p>
-<p>descriptor = Gaussian()</p>
-
-<p><h1>モデル: ニューラルネットワーク</h1></p>
-<p>model = NeuralNetwork(hiddenlayers=(10, 10, 10))  <h1>3層、各10ノード</h1></p>
-
-<p><h1>AMPポテンシャル</h1></p>
-<p>calc_nnp = Amp(descriptor=descriptor,</p>
-<p>               model=model,</p>
-<p>               label='h2o_nnp',</p>
-<p>               dblabel='h2o_nnp')</p>
-
-<p><h1>訓練</h1></p>
-<p>calc_nnp.train(images=train_images,</p>
-<p>               energy_coefficient=1.0,</p>
-<p>               force_coefficient=0.04)</p>
-
-<p>print("Training complete!")</p>
-
-<p><h1>Step 3: テストデータで精度評価</h1></p>
-<p>print("\nGenerating test data...")</p>
-<p>test_images = generate_training_data(n_samples=10)</p>
-
-<p>E_dft = []</p>
-<p>E_nnp = []</p>
-<p>F_dft = []</p>
-<p>F_nnp = []</p>
-
-<p>for atoms in test_images:</p>
-<p>    <h1>DFT</h1></p>
-<p>    atoms.calc = GPAW(mode=PW(300), xc='PBE', txt=None)</p>
-<p>    e_dft = atoms.get_potential_energy()</p>
-<p>    f_dft = atoms.get_forces().flatten()</p>
-
-<p>    <h1>NNP</h1></p>
-<p>    atoms.calc = calc_nnp</p>
-<p>    e_nnp = atoms.get_potential_energy()</p>
-<p>    f_nnp = atoms.get_forces().flatten()</p>
-
-<p>    E_dft.append(e_dft)</p>
-<p>    E_nnp.append(e_nnp)</p>
-<p>    F_dft.extend(f_dft)</p>
-<p>    F_nnp.extend(f_nnp)</p>
-
-<p>E_dft = np.array(E_dft)</p>
-<p>E_nnp = np.array(E_nnp)</p>
-<p>F_dft = np.array(F_dft)</p>
-<p>F_nnp = np.array(F_nnp)</p>
-
-<p><h1>プロット</h1></p>
-<p>fig, axes = plt.subplots(1, 2, figsize=(12, 5))</p>
-
-<p><h1>エネルギー</h1></p>
-<p>axes[0].scatter(E_dft, E_nnp, alpha=0.6)</p>
-<p>axes[0].plot([E_dft.min(), E_dft.max()],</p>
-<p>             [E_dft.min(), E_dft.max()], 'r--', label='Perfect')</p>
-<p>axes[0].set_xlabel('DFT Energy (eV)', fontsize=12)</p>
-<p>axes[0].set_ylabel('NNP Energy (eV)', fontsize=12)</p>
-<p>axes[0].set_title('Energy Prediction', fontsize=14)</p>
-<p>mae_e = np.mean(np.abs(E_dft - E_nnp))</p>
-<p>axes[0].text(0.05, 0.95, f'MAE = {mae_e:.3f} eV',</p>
-<p>            transform=axes[0].transAxes, va='top')</p>
-<p>axes[0].legend()</p>
-<p>axes[0].grid(alpha=0.3)</p>
-
-<p><h1>力</h1></p>
-<p>axes[1].scatter(F_dft, F_nnp, alpha=0.3, s=10)</p>
-<p>axes[1].plot([F_dft.min(), F_dft.max()],</p>
-<p>             [F_dft.min(), F_dft.max()], 'r--', label='Perfect')</p>
-<p>axes[1].set_xlabel('DFT Force (eV/Å)', fontsize=12)</p>
-<p>axes[1].set_ylabel('NNP Force (eV/Å)', fontsize=12)</p>
-<p>axes[1].set_title('Force Prediction', fontsize=14)</p>
-<p>mae_f = np.mean(np.abs(F_dft - F_nnp))</p>
-<p>axes[1].text(0.05, 0.95, f'MAE = {mae_f:.3f} eV/Å',</p>
-<p>            transform=axes[1].transAxes, va='top')</p>
-<p>axes[1].legend()</p>
-<p>axes[1].grid(alpha=0.3)</p>
-
-<p>plt.tight_layout()</p>
-<p>plt.savefig('nnp_accuracy.png', dpi=150)</p>
-<p>plt.show()</p>
-
-<p>print(f"\nNNP Accuracy:")</p>
-<p>print(f"Energy MAE: {mae_e:.4f} eV")</p>
-<p>print(f"Force MAE: {mae_f:.4f} eV/Å")</p>
-<p></code></pre></p>
-
-<p><strong>目標精度</strong>:</p>
-<ul>
-<li>エネルギー: MAE < 1 meV/atom</li>
-<li>力: MAE < 0.1 eV/Å</li>
-</ul>
-
-<p>---</p>
-
-<p><h2>5.4 Active Learning</h2></p>
-
-<p><h3>基本的な考え方</h3></p>
-
-<p><strong>問題</strong>: すべての配置でDFT計算を行うのは非現実的（計算コスト大）</p>
-
-<p><strong>解決策</strong>: <strong>最も情報量の多い配置を優先的にサンプリング</strong></p>
-
-<p><pre><code class="language-mermaid">graph TD</p>
-<p>    A[初期データセット少数] --> B[NNP訓練]</p>
-<p>    B --> C[MDシミュレーション with NNP]</p>
-<p>    C --> D[不確実性の高い配置を検出]</p>
-<p>    D --> E{追加データ必要?}</p>
-<p>    E -->|Yes| F[DFT計算追加データ]</p>
-<p>    F --> G[データセットに追加]</p>
-<p>    G --> B</p>
-<p>    E -->|No| H[訓練完了]</p>
-
-<p>    style A fill:#e3f2fd</p>
-<p>    style H fill:#c8e6c9</p>
-<p></code></pre></p>
-
-<p><h3>不確実性推定の方法</h3></p>
-
-<p><strong>1. Ensemble法</strong>:</p>
-<ul>
-<li>複数のNNPを訓練（異なる初期値、データ分割）</li>
-<li>予測のばらつき（分散）を不確実性とする</li>
-</ul>
-
-<p>$$</p>
-<p>\sigma_E^2 = \frac{1}{M}\sum_{m=1}^M (E_m - \bar{E})^2</p>
-<p>$$</p>
-
-<p><strong>2. Dropout法</strong>:</p>
-<ul>
-<li>訓練時にランダムにノードを無効化</li>
-<li>推論時にもDropoutを適用し、複数回予測</li>
-<li>予測のばらつきを不確実性とする</li>
-</ul>
-
-<p><strong>3. Query-by-Committee</strong>:</p>
-<ul>
-<li>異なるアルゴリズムのモデルを複数使用</li>
-<li>予測の一致度が低い配置をサンプリング</li>
-</ul>
-
-<p><h3>Active Learning実装例</h3></p>
-
-<p><pre><code class="language-python">import numpy as np</p>
-<p>from ase.md.langevin import Langevin</p>
-<p>from ase import units</p>
-
-<p>def active_learning_loop(initial_images, n_iterations=5, n_md_steps=1000):</p>
-<p>    """</p>
-<p>    Active Learningによる効率的訓練データ生成</p>
-<p>    """</p>
-<p>    dataset = initial_images.copy()</p>
-
-<p>    for iteration in range(n_iterations):</p>
-<p>        print(f"\n--- Iteration {iteration+1}/{n_iterations} ---")</p>
-
-<p>        <h1>Step 1: NNPを訓練</h1></p>
-<p>        print("Training NNP...")</p>
-<p>        nnp = train_nnp(dataset)  <h1>前述のAmp訓練</h1></p>
-
-<p>        <h1>Step 2: NNPでMDシミュレーション</h1></p>
-<p>        print("Running MD with NNP...")</p>
-<p>        h2o = dataset[0].copy()</p>
-<p>        h2o.calc = nnp</p>
-
-<p>        <h1>Langevin MD（熱浴付き）</h1></p>
-<p>        dyn = Langevin(h2o, timestep=1.0*units.fs,</p>
-<p>                       temperature_K=500, friction=0.01)</p>
-
-<p>        <h1>不確実性の高い配置を収集</h1></p>
-<p>        uncertain_images = []</p>
-<p>        uncertainties = []</p>
-
-<p>        for step in range(n_md_steps):</p>
-<p>            dyn.run(1)</p>
-
-<p>            <h1>Ensembleで不確実性推定（簡略化）</h1></p>
-<p>            <h1>実際には複数のNNPで予測してばらつきを計算</h1></p>
-<p>            uncertainty = estimate_uncertainty(h2o, nnp)  <h1>仮想関数</h1></p>
-
-<p>            if uncertainty > threshold:  <h1>閾値以上なら追加</h1></p>
-<p>                atoms_copy = h2o.copy()</p>
-<p>                uncertain_images.append(atoms_copy)</p>
-<p>                uncertainties.append(uncertainty)</p>
-
-<p>        print(f"Found {len(uncertain_images)} uncertain configurations")</p>
-
-<p>        <h1>Step 3: 不確実性の高い配置でDFT計算</h1></p>
-<p>        print("Running DFT for uncertain configurations...")</p>
-<p>        for atoms in uncertain_images[:10]:  <h1>上位10個</h1></p>
-<p>            atoms.calc = GPAW(mode=PW(300), xc='PBE', txt=None)</p>
-<p>            atoms.get_potential_energy()</p>
-<p>            atoms.get_forces()</p>
-<p>            dataset.append(atoms)</p>
-
-<p>        print(f"Dataset size: {len(dataset)}")</p>
-
-<p>    return dataset, nnp</p>
-
-<p><h1>実行</h1></p>
-<p>initial_data = generate_training_data(n_samples=20)</p>
-<p>final_dataset, final_nnp = active_learning_loop(initial_data, n_iterations=5)</p>
-
-<p>print(f"\nFinal dataset size: {len(final_dataset)}")</p>
-<p>print(f"vs. random sampling: 50-100 samples would be needed")</p>
-<p>print(f"Efficiency gain: {100/len(final_dataset):.1f}x")</p>
-<p></code></pre></p>
-
-<p><strong>Active Learningの利点</strong>:</p>
-<ul>
-<li>訓練データ数を50-90%削減可能</li>
-<li>重要な配置（相転移、反応経路）を優先的にサンプリング</li>
-<li>計算資源の効率的利用</li>
-</ul>
-
-<p>---</p>
-
-<p><h2>5.5 最新トレンド</h2></p>
-
-<p><h3>1. Universal Machine Learning Potential</h3></p>
-
-<p><strong>目標</strong>: 1つのモデルで多様な材料系をカバー</p>
-
-<p><strong>代表例</strong>:</p>
-<ul>
-<li><strong>CHGNet</strong>（2023年）: 140万材料のMaterials Projectデータで訓練</li>
-</ul>
-<p>  - 89元素をカバー</p>
-<p>  - 磁性も考慮</p>
-<p>  - オープンソース</p>
-
-<ul>
-<li><strong>M3GNet</strong>（2022年）: 多体グラフネットワーク</li>
-</ul>
-<p>  - 結晶、表面、分子に適用可能</p>
-<p>  - 力、応力、磁気モーメントを予測</p>
-
-<ul>
-<li><strong>MACE</strong>（2023年）: 等変メッセージパッシング</li>
-</ul>
-<p>  - 高精度（DFT誤差の約2倍程度の誤差）</p>
-<p>  - 小規模データで訓練可能</p>
-
-<p><strong>使い方</strong>:</p>
-<p><pre><code class="language-python">from chgnet.model import CHGNet</p>
-<p>from pymatgen.core import Structure</p>
-
-<p><h1>事前訓練モデルのロード</h1></p>
-<p>model = CHGNet.load()</p>
-
-<p><h1>任意の結晶構造で予測</h1></p>
-<p>structure = Structure.from_file('POSCAR')</p>
-<p>energy = model.predict_structure(structure)</p>
-
-<p>print(f"Predicted energy: {energy} eV")</p>
-<p></code></pre></p>
-
-<p><h3>2. Foundation Models for Materials</h3></p>
-
-<p><strong>大規模言語モデル（LLM）の材料科学版</strong>:</p>
-
-<ul>
-<li><strong>MatGPT</strong>: 材料データベースで事前学習</li>
-<li><strong>LLaMat</strong>: 結晶構造→特性予測</li>
-</ul>
-
-<p><strong>転移学習</strong>:</p>
-<ul>
-<li>大規模データで事前学習</li>
-<li>少数データでファインチューニング</li>
-<li>10-100サンプルで実用精度</li>
-</ul>
-
-<p><h3>3. 自律実験への応用</h3></p>
-
-<p><strong>クローズドループ最適化</strong>:</p>
-
-<p><pre><code class="language-">ML予測 → 最適候補提案 → ロボット実験 → 測定 → データ蓄積 → ML再訓練</p>
-<p></code></pre></p>
-
-<p><strong>実例</strong>:</p>
-<ul>
-<li><strong>A-Lab</strong>（Berkeley, 2023年）: 41材料を17日で合成・評価</li>
-<li><strong>自律材料探索</strong>: 触媒、電池材料、量子ドット</li>
-</ul>
-
-<p>---</p>
-
-<p><h2>5.6 MLPの実用ガイドライン</h2></p>
-
-<p><h3>いつMLPを使うべきか</h3></p>
-
-<p><strong>適している場合</strong>:</p>
-<ul>
-<li>✅ 長時間MD（ns-μs）が必要</li>
-<li>✅ 大規模系（数千原子以上）</li>
-<li>✅ 化学反応を含む</li>
-<li>✅ 力場が存在しない新規材料</li>
-<li>✅ 訓練データ生成の計算資源がある</li>
-</ul>
-
-<p><strong>適さない場合</strong>:</p>
-<ul>
-<li>❌ 1回限りの短時間MD（直接AIMDが簡単）</li>
-<li>❌ 訓練データの代表性を確保できない</li>
-<li>❌ 訓練データ範囲外の外挿が必要</li>
-<li>❌ 既存の高精度力場がある（ReaxFF、COMB等）</li>
-</ul>
-
-<p><h3>実装の流れ</h3></p>
-
-<p><pre><code class="language-mermaid">graph TD</p>
-<p>    A[問題設定] --> B[初期データ生成 20-100サンプル]</p>
-<p>    B --> C[NNP訓練]</p>
-<p>    C --> D[検証セットで精度評価]</p>
-<p>    D --> E{精度OK?}</p>
-<p>    E -->|No| F[Active Learning]</p>
-<p>    F --> G[追加DFT計算]</p>
-<p>    G --> C</p>
-<p>    E -->|Yes| H[本番MDシミュレーション]</p>
-<p>    H --> I[物性計算]</p>
-
-<p>    style A fill:#e3f2fd</p>
-<p>    style I fill:#c8e6c9</p>
-<p></code></pre></p>
-
-<p><h3>推奨ツール</h3></p>
-
-<p>| ツール | 手法 | 特徴 |</p>
-<p>|--------|------|------|</p>
-<p>| <strong>AMP</strong> | NNP | Pythonネイティブ、ASE統合 |</p>
-<p>| <strong>DeePMD</strong> | NNP | 高速、並列化、TensorFlow |</p>
-<p>| <strong>SchNetPack</strong> | GNN | SchNet、研究向け |</p>
-<p>| <strong>MACE</strong> | Equivariant GNN | 最新、高精度 |</p>
-<p>| <strong>GAP</strong> | Gaussian Process | 不確実性推定 |</p>
-<p>| <strong>MTP</strong> | Moment Tensor | 高速訓練 |</p>
-<p>| <strong>CHGNet</strong> | Universal | 事前訓練済み |</p>
-
-<p>---</p>
-
-<p><h2>5.7 本章のまとめ</h2></p>
-
-<p><h3>学んだこと</h3></p>
-
-<ol>
-<li><strong>MLPの必要性</strong></li>
-</ol>
-<p>   - DFT級精度 + Classical MD級速度</p>
-<p>   - 長時間・大規模系のシミュレーション</p>
-
-<ol>
-<li><strong>MLPの種類</strong></li>
-</ol>
-<p>   - GAP（Gaussian Process）</p>
-<p>   - NNP（Neural Network）</p>
-<p>   - MPNN（Graph Neural Network）</p>
-<p>   - MTP（Moment Tensor）</p>
-
-<ol>
-<li><strong>NNPの訓練</strong></li>
-</ol>
-<p>   - DFTデータ生成</p>
-<p>   - AMPでの実装</p>
-<p>   - 精度評価</p>
-
-<ol>
-<li><strong>Active Learning</strong></li>
-</ol>
-<p>   - 不確実性推定</p>
-<p>   - 効率的データ生成</p>
-<p>   - 50-90%の計算量削減</p>
-
-<ol>
-<li><strong>最新トレンド</strong></li>
-</ol>
-<p>   - Universal MLP（CHGNet、M3GNet）</p>
-<p>   - Foundation Models</p>
-<p>   - 自律実験</p>
-
-<p><h3>重要なポイント</h3></p>
-
-<ul>
-<li>MLPは計算材料科学の新しいパラダイム</li>
-<li>Active Learningが訓練効率の鍵</li>
-<li>Universal MLPで事前訓練済みモデルが利用可能</li>
-<li>実用化が進んでいる（自律実験、材料探索）</li>
-</ul>
-
-<p><h3>次のステップ</h3></p>
-
-<ul>
-<li>自分の研究テーマでMLPを試す</li>
-<li>最新論文を追う（<em>npj Computational Materials</em>, <em>Nature Materials</em>）</li>
-<li>オープンソースツールに貢献</li>
-<li>実験研究者との共同研究</li>
-</ul>
-
-<p>---</p>
-
-<p><h2>演習問題</h2></p>
-
-<p><h3>問題1（難易度：easy）</h3></p>
-
-<p>Classical MD、AIMD、MLP-MDの違いを表にまとめてください。</p>
-
-<p><details></p>
-<p><summary>解答例</summary></p>
-
-<p>| 項目 | Classical MD | AIMD（DFT-MD） | MLP-MD |</p>
-<p>|------|-------------|--------------|--------|</p>
-<p>| <strong>力の計算法</strong> | 経験的力場（解析式） | DFT（第一原理） | 機械学習モデル |</p>
-<p>| <strong>精度</strong> | 中（力場の質に依存） | 高（量子力学的に正確） | 高（DFTと同等） |</p>
-<p>| <strong>計算速度</strong> | 超高速（1 ns/日） | 極めて遅い（10 ps/日） | 高速（1 ns/日） |</p>
-<p>| <strong>系のサイズ</strong> | 数百万原子 | 数百原子 | 数千〜数万原子 |</p>
-<p>| <strong>化学反応</strong> | 記述不可（ReaxFFは可） | 正確に記述 | 正確に記述 |</p>
-<p>| <strong>適用範囲</strong> | 力場が訓練された系のみ | 汎用的 | 訓練データ範囲内 |</p>
-<p>| <strong>開発コスト</strong> | 低（既存力場） | なし | 高（訓練データ生成） |</p>
-<p>| <strong>用途</strong> | 拡散、相転移、大規模 | 化学反応、電子状態 | 反応+長時間MD |</p>
-
-<p><strong>使い分けの目安</strong>:</p>
-<ul>
-<li>既知の力場がある → Classical MD</li>
-<li>化学反応を含む短時間 → AIMD</li>
-<li>化学反応+長時間 → MLP-MD</li>
-<li>新規材料の探索 → AIMD → MLP → 大規模MD</li>
-</ul>
-
-<p></details></p>
-
-<p><h3>問題2（難易度：medium）</h3></p>
-
-<p>Active Learningがなぜ効率的なのか、具体例とともに説明してください。</p>
-
-<p><details></p>
-<p><summary>解答例</summary></p>
-
-<p><strong>Active Learningの基本原理</strong>:</p>
-
-<p>従来の機械学習（Random Sampling）:</p>
-<ul>
-<li>データをランダムにサンプリング</li>
-<li>多くのデータが「既知の領域」の重複</li>
-<li>非効率</li>
-</ul>
-
-<p>Active Learning（Uncertainty Sampling）:</p>
-<ul>
-<li>モデルが「不確実」な配置を優先的にサンプリング</li>
-<li>新しい情報を効率的に獲得</li>
-<li>少ないデータで高精度</li>
-</ul>
-
-<p><strong>具体例: 水分子のNNP訓練</strong></p>
-
-<p><strong>Random Sampling（従来法）</strong>:</p>
-<ul>
-<li>300K平衡状態から100配置をランダムサンプリング</li>
-<li>そのうち80%は平衡構造の近傍（類似配置）</li>
-<li>残り20%が反応経路や高エネルギー配置</li>
-<li>結果: 100 DFT計算、精度 MAE = 5 meV/atom</li>
-</ul>
-
-<p><strong>Active Learning</strong>:</p>
-<ul>
-<li>初期20配置から訓練</li>
-<li>MDシミュレーション中に不確実性の高い配置を検出</li>
-</ul>
-<p>  - O-H結合が伸びた配置（解離過程）</p>
-<p>  - H-O-H角度が大きく歪んだ配置</p>
-<p>  - 高エネルギー励起状態</p>
-<ul>
-<li>これらの配置でDFT計算（20配置追加）</li>
-<li>合計40 DFT計算、精度 MAE = 3 meV/atom</li>
-</ul>
-
-<p><strong>効率化の理由</strong>:</p>
-
-<ol>
-<li><strong>情報量の最大化</strong>:</li>
-</ol>
-<p>   - 類似配置の重複を避ける</p>
-<p>   - モデルが「知らない」領域を優先</p>
-
-<ol>
-<li><strong>探索と活用のバランス</strong>:</li>
-</ol>
-<p>   - 既知の配置での安定予測（活用）</p>
-<p>   - 未知の配置での新情報獲得（探索）</p>
-
-<ol>
-<li><strong>適応的サンプリング</strong>:</li>
-</ol>
-<p>   - 系の重要領域（反応経路、相転移）を自動検出</p>
-<p>   - 人間の直感に頼らない</p>
-
-<p><strong>実際の効率化</strong>:</p>
-<ul>
-<li>50-90%のDFT計算削減（文献値）</li>
-<li>特に複雑な系（多成分、反応系）で効果大</li>
-<li>訓練時間全体では10-50倍の効率化</li>
-</ul>
-
-<p><strong>例: Li-ion電池電解液</strong>:</p>
-<ul>
-<li>Random: 10,000 DFT計算、2ヶ月</li>
-<li>Active Learning: 2,000 DFT計算、2週間</li>
-<li>効率化: 5倍、同等精度</li>
-</ul>
-
-<p></details></p>
-
-<p><h3>問題3（難易度：hard）</h3></p>
-
-<p>Universal Machine Learning Potential（CHGNet、M3GNet等）の利点と限界を議論してください。</p>
-
-<p><details></p>
-<p><summary>解答例</summary></p>
-
-<p><strong>Universal MLP（例: CHGNet）の概要</strong>:</p>
-
-<ul>
-<li><strong>訓練データ</strong>: Materials Project（140万材料、89元素）</li>
-<li><strong>モデル</strong>: Graph Neural Network</li>
-<li><strong>予測</strong>: エネルギー、力、応力、磁気モーメント</li>
-</ul>
-
-<p><strong>利点</strong>:</p>
-
-<ol>
-<li><strong>即座に使える</strong>:</li>
-</ol>
-<p>   - 事前訓練済み → 追加訓練不要</p>
-<p>   - 任意の結晶構造で予測可能</p>
-<p>   - 数秒で数千材料をスクリーニング</p>
-
-<ol>
-<li><strong>広い適用範囲</strong>:</li>
-</ol>
-<p>   - 89元素（H-Amまで）</p>
-<p>   - 酸化物、合金、半導体、絶縁体</p>
-<p>   - 磁性材料も対応</p>
-
-<ol>
-<li><strong>転移学習の基盤</strong>:</li>
-</ol>
-<p>   - 少数データ（10-100サンプル）でファインチューニング</p>
-<p>   - 系特化の高精度モデルを効率的に作成</p>
-
-<ol>
-<li><strong>材料探索の加速</strong>:</li>
-</ol>
-<p>   - 大規模候補スクリーニング（100万材料/日）</p>
-<p>   - 実験候補の絞り込み</p>
-<p>   - ハイスループット計算との組み合わせ</p>
-
-<p><strong>限界</strong>:</p>
-
-<ol>
-<li><strong>精度の限界</strong>:</li>
-</ol>
-<p>   - DFT誤差の約2-5倍程度（CHGNet: MAE ~30 meV/atom）</p>
-<p>   - 精密計算には不十分</p>
-<p>   - 特定系では専用MLPに劣る</p>
-
-<ol>
-<li><strong>外挿の問題</strong>:</li>
-</ol>
-<p>   - 訓練データにない配置（極端な温度・圧力）で精度低下</p>
-<p>   - 新規材料系（超高圧、新元素組み合わせ）は不確実</p>
-
-<ol>
-<li><strong>データバイアス</strong>:</li>
-</ol>
-<p>   - Materials Projectの計算条件（PBE汎関数）に依存</p>
-<p>   - 実験との系統的なずれ（バンドギャップ過小評価等）</p>
-<p>   - 特定材料クラスの過剰/過少表現</p>
-
-<ol>
-<li><strong>物理的制約の欠如</strong>:</li>
-</ol>
-<p>   - エネルギー保存則の厳密な保証なし</p>
-<p>   - 長時間MDでのドリフト</p>
-<p>   - 対称性の破れ（稀）</p>
-
-<p><strong>実用的戦略</strong>:</p>
-
-<p><strong>Scenario 1: 材料スクリーニング</strong></p>
-<ul>
-<li>Universal MLPで100万候補から上位1000に絞り込み</li>
-<li>DFTで精密計算</li>
-<li>効率化: 1000倍</li>
-</ul>
-
-<p><strong>Scenario 2: 特定系の精密MD</strong></p>
-<ul>
-<li>Universal MLPから転移学習</li>
-<li>系特化データ（100サンプル）で追加訓練</li>
-<li>精度向上: MAE 5 meV/atom（実用レベル）</li>
-</ul>
-
-<p><strong>Scenario 3: 新規材料クラス</strong></p>
-<ul>
-<li>Universal MLPは参考程度</li>
-<li>ゼロから専用MLP構築（Active Learning）</li>
-<li>訓練データ: 500-1000サンプル</li>
-</ul>
-
-<p><strong>将来展望</strong>:</p>
-
-<ol>
-<li><strong>データセットの拡充</strong>:</li>
-</ol>
-<p>   - 実験データの統合</p>
-<p>   - 多様な計算手法（GW、DMFT）のデータ</p>
-
-<ol>
-<li><strong>Foundation Modelsへの進化</strong>:</li>
-</ol>
-<p>   - 自然言語処理のGPTに相当</p>
-<p>   - Few-shot learning（数サンプルで適応）</p>
-<p>   - Zero-shot transfer（訓練なしで新規系）</p>
-
-<ol>
-<li><strong>実験との連携</strong>:</li>
-</ol>
-<p>   - 自律実験ループ</p>
-<p>   - リアルタイムフィードバック</p>
-
-<p><strong>結論</strong>:</p>
-<p>Universal MLPは材料科学の「基盤インフラ」となりつつあるが、万能ではない。用途に応じて専用MLPと使い分けが重要。</p>
-
-<p></details></p>
-
-<p>---</p>
-
-<p><h2>参考文献</h2></p>
-
-<ol>
-<li>Behler, J., & Parrinello, M. (2007). "Generalized Neural-Network Representation of High-Dimensional Potential-Energy Surfaces." <em>Physical Review Letters</em>, 98, 146401.</li>
-</ol>
-<p>   DOI: <a href="https://doi.org/10.1103/PhysRevLett.98.146401">10.1103/PhysRevLett.98.146401</a></p>
-
-<ol>
-<li>Bartók, A. P., et al. (2010). "Gaussian Approximation Potentials: The Accuracy of Quantum Mechanics, without the Electrons." <em>Physical Review Letters</em>, 104, 136403.</li>
-</ol>
-<p>   DOI: <a href="https://doi.org/10.1103/PhysRevLett.104.136403">10.1103/PhysRevLett.104.136403</a></p>
-
-<ol>
-<li>Schütt, K. T., et al. (2017). "SchNet: A continuous-filter convolutional neural network for modeling quantum interactions." <em>NeurIPS</em>.</li>
-</ol>
-
-<ol>
-<li>Chen, C., & Ong, S. P. (2022). "A universal graph deep learning interatomic potential for the periodic table." <em>Nature Computational Science</em>, 2, 718-728.</li>
-</ol>
-<p>   DOI: <a href="https://doi.org/10.1038/s43588-022-00349-3">10.1038/s43588-022-00349-3</a></p>
-
-<ol>
-<li>Batatia, I., et al. (2022). "MACE: Higher Order Equivariant Message Passing Neural Networks for Fast and Accurate Force Fields." <em>NeurIPS</em>.</li>
-</ol>
-
-<ol>
-<li>CHGNet: https://github.com/CederGroupHub/chgnet</li>
-<li>M3GNet: https://github.com/materialsvirtuallab/m3gnet</li>
-<li>MACE: https://github.com/ACEsuit/mace</li>
-</ol>
-
-<p>---</p>
-
-<p><h2>著者情報</h2></p>
-
-<p><strong>作成者</strong>: MI Knowledge Hub Content Team</p>
-<p><strong>監修</strong>: Dr. Yusuke Hashimoto（東北大学）</p>
-<p><strong>作成日</strong>: 2025-10-17</p>
-<p><strong>バージョン</strong>: 1.0</p>
-<p><strong>シリーズ</strong>: 計算材料科学基礎入門 v1.0</p>
-
-<p><strong>ライセンス</strong>: Creative Commons BY-NC-SA 4.0</p>
-
-<p>---</p>
-
-<p><strong>おめでとうございます！計算材料科学基礎入門シリーズを完了しました！</strong></p>
-
-<p>次のステップ：</p>
-<ul>
-<li>自分の研究テーマで実際に計算を実行</li>
-<li>ハイスループット計算入門シリーズへ進む</li>
-<li>最新論文を読んで知識を深める</li>
-<li>コミュニティに参加（GitHub、学会）</li>
-</ul>
-
-<p><strong>継続的な学習が材料科学の未来を拓きます！</strong></p>
-
-
-        
-        <div class="navigation">
-            <a href="chapter-6.html" class="nav-button">次章: 第6章 →</a>
-            <a href="index.html" class="nav-button">← シリーズ目次に戻る</a>
-            <a href="chapter-4.html" class="nav-button">← 前章: 第4章</a>
-        </div>
-    
+<strong>Behler-Parrinello型</strong>: 各原子のローカル環境を記述子化
+
+$$
+E_{\text{NNP}} = \sum_{i=1}^{N_{\text{atoms}}} E_i^{\text{NN}}(\{\mathbf{G}_i\})
+$$
+
+- $E_i^{\text{NN}}$: 原子$i$のニューラルネットワークエネルギー
+- $\mathbf{G}_i$: 対称関数（Symmetry Functions）、原子$i$の周囲環境を記述
+
+<strong>対称関数の例</strong>（動径成分）:
+
+$$
+G_i^{\text{rad}} = \sum_{j \neq i} e^{-\eta(r_{ij} - R_s)^2} f_c(r_{ij})
+$$
+
+- $r_{ij}$: 原子間距離
+- $f_c(r)$: カットオフ関数（一定距離以遠を無視）
+
+<strong>特徴</strong>:
+- ✅ 大規模系でも高速
+- ✅ 訓練データ数が増えても計算コスト一定
+- ❌ 不確実性推定が困難
+
+<h3>3. Message Passing Neural Network (MPNN)</h3>
+
+グラフニューラルネットワーク（GNN）の一種：
+
+$$
+\mathbf{h}_i^{(k+1)} = \text{Update}\left(\mathbf{h}_i^{(k)}, \sum_{j \in \mathcal{N}(i)} \text{Message}(\mathbf{h}_i^{(k)}, \mathbf{h}_j^{(k)}, \mathbf{e}_{ij})\right)
+$$
+
+- $\mathbf{h}_i^{(k)}$: 原子$i$の$k$層目の隠れ状態
+- $\mathcal{N}(i)$: 原子$i$の近傍原子
+- $\mathbf{e}_{ij}$: 結合情報（距離、角度）
+
+<strong>代表的モデル</strong>: SchNet、DimeNet、GemNet、MACE
+
+<strong>特徴</strong>:
+- ✅ 回転・並進不変性を自然に実現
+- ✅ 長距離相互作用を効率的に学習
+- ✅ 最新の高精度モデル
+
+<h3>4. Moment Tensor Potential (MTP)</h3>
+
+<strong>原理</strong>: 原子環境を多体展開で記述
+
+$$
+E_{\text{MTP}} = \sum_i \sum_{\alpha} c_{\alpha} B_{\alpha}(\mathbf{R}_i)
+$$
+
+$B_{\alpha}$はモーメントテンソル基底関数。
+
+<strong>特徴</strong>:
+- ✅ 高速（線形モデル）
+- ✅ 訓練が容易
+- ❌ 表現力がNNPより低い
+
+---
+
+<h2>5.3 Neural Network Potentialの訓練（実践）</h2>
+
+<h3>Example 1: AMPを使ったNNP訓練（水分子）</h3>
+
+<pre><code class="language-python">import numpy as np
+from ase.build import molecule
+from ase.calculators.emt import EMT
+from gpaw import GPAW, PW
+from amp import Amp
+from amp.descriptor.gaussian import Gaussian
+from amp.model.neuralnetwork import NeuralNetwork
+import matplotlib.pyplot as plt
+
+<h1>Step 1: 訓練データ生成（MDシミュレーション + DFT）</h1>
+def generate_training_data(n_samples=50):
+    """
+    水分子の様々な配置でDFT計算
+    """
+    from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
+    from ase.md.verlet import VelocityVerlet
+    from ase import units
+
+    h2o = molecule('H2O')
+    h2o.center(vacuum=5.0)
+
+    # DFT計算機
+    calc = GPAW(mode=PW(300), xc='PBE', txt=None)
+    h2o.calc = calc
+
+    # 初期速度
+    MaxwellBoltzmannDistribution(h2o, temperature_K=500)
+
+    # MDシミュレーション
+    dyn = VelocityVerlet(h2o, timestep=1.0*units.fs)
+
+    images = []
+    for i in range(n_samples):
+        dyn.run(10)  # 10ステップごとにサンプリング
+        atoms_copy = h2o.copy()
+        atoms_copy.calc = calc
+        atoms_copy.get_potential_energy()  # DFT計算実行
+        atoms_copy.get_forces()
+        images.append(atoms_copy)
+        print(f"Sample {i+1}/{n_samples} collected")
+
+    return images
+
+print("Generating training data...")
+train_images = generate_training_data(n_samples=50)
+
+<h1>Step 2: NNPの訓練</h1>
+print("Training Neural Network Potential...")
+
+<h1>記述子: Gaussian対称関数</h1>
+descriptor = Gaussian()
+
+<h1>モデル: ニューラルネットワーク</h1>
+model = NeuralNetwork(hiddenlayers=(10, 10, 10))  # 3層、各10ノード
+
+<h1>AMPポテンシャル</h1>
+calc_nnp = Amp(descriptor=descriptor,
+               model=model,
+               label='h2o_nnp',
+               dblabel='h2o_nnp')
+
+<h1>訓練</h1>
+calc_nnp.train(images=train_images,
+               energy_coefficient=1.0,
+               force_coefficient=0.04)
+
+print("Training complete!")
+
+<h1>Step 3: テストデータで精度評価</h1>
+print("\nGenerating test data...")
+test_images = generate_training_data(n_samples=10)
+
+E_dft = []
+E_nnp = []
+F_dft = []
+F_nnp = []
+
+for atoms in test_images:
+    # DFT
+    atoms.calc = GPAW(mode=PW(300), xc='PBE', txt=None)
+    e_dft = atoms.get_potential_energy()
+    f_dft = atoms.get_forces().flatten()
+
+    # NNP
+    atoms.calc = calc_nnp
+    e_nnp = atoms.get_potential_energy()
+    f_nnp = atoms.get_forces().flatten()
+
+    E_dft.append(e_dft)
+    E_nnp.append(e_nnp)
+    F_dft.extend(f_dft)
+    F_nnp.extend(f_nnp)
+
+E_dft = np.array(E_dft)
+E_nnp = np.array(E_nnp)
+F_dft = np.array(F_dft)
+F_nnp = np.array(F_nnp)
+
+<h1>プロット</h1>
+fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+<h1>エネルギー</h1>
+axes[0].scatter(E_dft, E_nnp, alpha=0.6)
+axes[0].plot([E_dft.min(), E_dft.max()],
+             [E_dft.min(), E_dft.max()], 'r--', label='Perfect')
+axes[0].set_xlabel('DFT Energy (eV)', fontsize=12)
+axes[0].set_ylabel('NNP Energy (eV)', fontsize=12)
+axes[0].set_title('Energy Prediction', fontsize=14)
+mae_e = np.mean(np.abs(E_dft - E_nnp))
+axes[0].text(0.05, 0.95, f'MAE = {mae_e:.3f} eV',
+            transform=axes[0].transAxes, va='top')
+axes[0].legend()
+axes[0].grid(alpha=0.3)
+
+<h1>力</h1>
+axes[1].scatter(F_dft, F_nnp, alpha=0.3, s=10)
+axes[1].plot([F_dft.min(), F_dft.max()],
+             [F_dft.min(), F_dft.max()], 'r--', label='Perfect')
+axes[1].set_xlabel('DFT Force (eV/Å)', fontsize=12)
+axes[1].set_ylabel('NNP Force (eV/Å)', fontsize=12)
+axes[1].set_title('Force Prediction', fontsize=14)
+mae_f = np.mean(np.abs(F_dft - F_nnp))
+axes[1].text(0.05, 0.95, f'MAE = {mae_f:.3f} eV/Å',
+            transform=axes[1].transAxes, va='top')
+axes[1].legend()
+axes[1].grid(alpha=0.3)
+
+plt.tight_layout()
+plt.savefig('nnp_accuracy.png', dpi=150)
+plt.show()
+
+print(f"\nNNP Accuracy:")
+print(f"Energy MAE: {mae_e:.4f} eV")
+print(f"Force MAE: {mae_f:.4f} eV/Å")</code></pre>
+
+<strong>目標精度</strong>:
+- エネルギー: MAE < 1 meV/atom
+- 力: MAE < 0.1 eV/Å
+
+---
+
+<h2>5.4 Active Learning</h2>
+
+<h3>基本的な考え方</h3>
+
+<strong>問題</strong>: すべての配置でDFT計算を行うのは非現実的（計算コスト大）
+
+<strong>解決策</strong>: <strong>最も情報量の多い配置を優先的にサンプリング</strong>
+
+<div class="mermaid">graph TD
+    A[初期データセット少数] --> B[NNP訓練]
+    B --> C[MDシミュレーション with NNP]
+    C --> D[不確実性の高い配置を検出]
+    D --> E{追加データ必要?}
+    E -->|Yes| F[DFT計算追加データ]
+    F --> G[データセットに追加]
+    G --> B
+    E -->|No| H[訓練完了]
+
+    style A fill:#e3f2fd
+    style H fill:#c8e6c9</div>
+
+<h3>不確実性推定の方法</h3>
+
+<strong>1. Ensemble法</strong>:
+- 複数のNNPを訓練（異なる初期値、データ分割）
+- 予測のばらつき（分散）を不確実性とする
+
+$$
+\sigma_E^2 = \frac{1}{M}\sum_{m=1}^M (E_m - \bar{E})^2
+$$
+
+<strong>2. Dropout法</strong>:
+- 訓練時にランダムにノードを無効化
+- 推論時にもDropoutを適用し、複数回予測
+- 予測のばらつきを不確実性とする
+
+<strong>3. Query-by-Committee</strong>:
+- 異なるアルゴリズムのモデルを複数使用
+- 予測の一致度が低い配置をサンプリング
+
+<h3>Active Learning実装例</h3>
+
+<pre><code class="language-python">import numpy as np
+from ase.md.langevin import Langevin
+from ase import units
+
+def active_learning_loop(initial_images, n_iterations=5, n_md_steps=1000):
+    """
+    Active Learningによる効率的訓練データ生成
+    """
+    dataset = initial_images.copy()
+
+    for iteration in range(n_iterations):
+        print(f"\n--- Iteration {iteration+1}/{n_iterations} ---")
+
+        # Step 1: NNPを訓練
+        print("Training NNP...")
+        nnp = train_nnp(dataset)  # 前述のAmp訓練
+
+        # Step 2: NNPでMDシミュレーション
+        print("Running MD with NNP...")
+        h2o = dataset[0].copy()
+        h2o.calc = nnp
+
+        # Langevin MD（熱浴付き）
+        dyn = Langevin(h2o, timestep=1.0*units.fs,
+                       temperature_K=500, friction=0.01)
+
+        # 不確実性の高い配置を収集
+        uncertain_images = []
+        uncertainties = []
+
+        for step in range(n_md_steps):
+            dyn.run(1)
+
+            # Ensembleで不確実性推定（簡略化）
+            # 実際には複数のNNPで予測してばらつきを計算
+            uncertainty = estimate_uncertainty(h2o, nnp)  # 仮想関数
+
+            if uncertainty > threshold:  # 閾値以上なら追加
+                atoms_copy = h2o.copy()
+                uncertain_images.append(atoms_copy)
+                uncertainties.append(uncertainty)
+
+        print(f"Found {len(uncertain_images)} uncertain configurations")
+
+        # Step 3: 不確実性の高い配置でDFT計算
+        print("Running DFT for uncertain configurations...")
+        for atoms in uncertain_images[:10]:  # 上位10個
+            atoms.calc = GPAW(mode=PW(300), xc='PBE', txt=None)
+            atoms.get_potential_energy()
+            atoms.get_forces()
+            dataset.append(atoms)
+
+        print(f"Dataset size: {len(dataset)}")
+
+    return dataset, nnp
+
+<h1>実行</h1>
+initial_data = generate_training_data(n_samples=20)
+final_dataset, final_nnp = active_learning_loop(initial_data, n_iterations=5)
+
+print(f"\nFinal dataset size: {len(final_dataset)}")
+print(f"vs. random sampling: 50-100 samples would be needed")
+print(f"Efficiency gain: {100/len(final_dataset):.1f}x")</code></pre>
+
+<strong>Active Learningの利点</strong>:
+- 訓練データ数を50-90%削減可能
+- 重要な配置（相転移、反応経路）を優先的にサンプリング
+- 計算資源の効率的利用
+
+---
+
+<h2>5.5 最新トレンド</h2>
+
+<h3>1. Universal Machine Learning Potential</h3>
+
+<strong>目標</strong>: 1つのモデルで多様な材料系をカバー
+
+<strong>代表例</strong>:
+- <strong>CHGNet</strong>（2023年）: 140万材料のMaterials Projectデータで訓練
+  - 89元素をカバー
+  - 磁性も考慮
+  - オープンソース
+
+- <strong>M3GNet</strong>（2022年）: 多体グラフネットワーク
+  - 結晶、表面、分子に適用可能
+  - 力、応力、磁気モーメントを予測
+
+- <strong>MACE</strong>（2023年）: 等変メッセージパッシング
+  - 高精度（DFT誤差の約2倍程度の誤差）
+  - 小規模データで訓練可能
+
+<strong>使い方</strong>:
+<pre><code class="language-python">from chgnet.model import CHGNet
+from pymatgen.core import Structure
+
+<h1>事前訓練モデルのロード</h1>
+model = CHGNet.load()
+
+<h1>任意の結晶構造で予測</h1>
+structure = Structure.from_file('POSCAR')
+energy = model.predict_structure(structure)
+
+print(f"Predicted energy: {energy} eV")</code></pre>
+
+<h3>2. Foundation Models for Materials</h3>
+
+<strong>大規模言語モデル（LLM）の材料科学版</strong>:
+
+- <strong>MatGPT</strong>: 材料データベースで事前学習
+- <strong>LLaMat</strong>: 結晶構造→特性予測
+
+<strong>転移学習</strong>:
+- 大規模データで事前学習
+- 少数データでファインチューニング
+- 10-100サンプルで実用精度
+
+<h3>3. 自律実験への応用</h3>
+
+<strong>クローズドループ最適化</strong>:
+
+<pre><code>ML予測 → 最適候補提案 → ロボット実験 → 測定 → データ蓄積 → ML再訓練</code></pre>
+
+<strong>実例</strong>:
+- <strong>A-Lab</strong>（Berkeley, 2023年）: 41材料を17日で合成・評価
+- <strong>自律材料探索</strong>: 触媒、電池材料、量子ドット
+
+---
+
+<h2>5.6 MLPの実用ガイドライン</h2>
+
+<h3>いつMLPを使うべきか</h3>
+
+<strong>適している場合</strong>:
+- ✅ 長時間MD（ns-μs）が必要
+- ✅ 大規模系（数千原子以上）
+- ✅ 化学反応を含む
+- ✅ 力場が存在しない新規材料
+- ✅ 訓練データ生成の計算資源がある
+
+<strong>適さない場合</strong>:
+- ❌ 1回限りの短時間MD（直接AIMDが簡単）
+- ❌ 訓練データの代表性を確保できない
+- ❌ 訓練データ範囲外の外挿が必要
+- ❌ 既存の高精度力場がある（ReaxFF、COMB等）
+
+<h3>実装の流れ</h3>
+
+<div class="mermaid">graph TD
+    A[問題設定] --> B[初期データ生成 20-100サンプル]
+    B --> C[NNP訓練]
+    C --> D[検証セットで精度評価]
+    D --> E{精度OK?}
+    E -->|No| F[Active Learning]
+    F --> G[追加DFT計算]
+    G --> C
+    E -->|Yes| H[本番MDシミュレーション]
+    H --> I[物性計算]
+
+    style A fill:#e3f2fd
+    style I fill:#c8e6c9</div>
+
+<h3>推奨ツール</h3>
+
+| ツール | 手法 | 特徴 |
+|--------|------|------|
+| <strong>AMP</strong> | NNP | Pythonネイティブ、ASE統合 |
+| <strong>DeePMD</strong> | NNP | 高速、並列化、TensorFlow |
+| <strong>SchNetPack</strong> | GNN | SchNet、研究向け |
+| <strong>MACE</strong> | Equivariant GNN | 最新、高精度 |
+| <strong>GAP</strong> | Gaussian Process | 不確実性推定 |
+| <strong>MTP</strong> | Moment Tensor | 高速訓練 |
+| <strong>CHGNet</strong> | Universal | 事前訓練済み |
+
+---
+
+<h2>5.7 本章のまとめ</h2>
+
+<h3>学んだこと</h3>
+
+1. <strong>MLPの必要性</strong>
+   - DFT級精度 + Classical MD級速度
+   - 長時間・大規模系のシミュレーション
+
+2. <strong>MLPの種類</strong>
+   - GAP（Gaussian Process）
+   - NNP（Neural Network）
+   - MPNN（Graph Neural Network）
+   - MTP（Moment Tensor）
+
+3. <strong>NNPの訓練</strong>
+   - DFTデータ生成
+   - AMPでの実装
+   - 精度評価
+
+4. <strong>Active Learning</strong>
+   - 不確実性推定
+   - 効率的データ生成
+   - 50-90%の計算量削減
+
+5. <strong>最新トレンド</strong>
+   - Universal MLP（CHGNet、M3GNet）
+   - Foundation Models
+   - 自律実験
+
+<h3>重要なポイント</h3>
+
+- MLPは計算材料科学の新しいパラダイム
+- Active Learningが訓練効率の鍵
+- Universal MLPで事前訓練済みモデルが利用可能
+- 実用化が進んでいる（自律実験、材料探索）
+
+<h3>次のステップ</h3>
+
+- 自分の研究テーマでMLPを試す
+- 最新論文を追う（*npj Computational Materials*, *Nature Materials*）
+- オープンソースツールに貢献
+- 実験研究者との共同研究
+
+---
+
+<h2>演習問題</h2>
+
+<h3>問題1（難易度：easy）</h3>
+
+Classical MD、AIMD、MLP-MDの違いを表にまとめてください。
+
+<details>
+<summary>解答例</summary>
+
+| 項目 | Classical MD | AIMD（DFT-MD） | MLP-MD |
+|------|-------------|--------------|--------|
+| <strong>力の計算法</strong> | 経験的力場（解析式） | DFT（第一原理） | 機械学習モデル |
+| <strong>精度</strong> | 中（力場の質に依存） | 高（量子力学的に正確） | 高（DFTと同等） |
+| <strong>計算速度</strong> | 超高速（1 ns/日） | 極めて遅い（10 ps/日） | 高速（1 ns/日） |
+| <strong>系のサイズ</strong> | 数百万原子 | 数百原子 | 数千〜数万原子 |
+| <strong>化学反応</strong> | 記述不可（ReaxFFは可） | 正確に記述 | 正確に記述 |
+| <strong>適用範囲</strong> | 力場が訓練された系のみ | 汎用的 | 訓練データ範囲内 |
+| <strong>開発コスト</strong> | 低（既存力場） | なし | 高（訓練データ生成） |
+| <strong>用途</strong> | 拡散、相転移、大規模 | 化学反応、電子状態 | 反応+長時間MD |
+
+<strong>使い分けの目安</strong>:
+- 既知の力場がある → Classical MD
+- 化学反応を含む短時間 → AIMD
+- 化学反応+長時間 → MLP-MD
+- 新規材料の探索 → AIMD → MLP → 大規模MD
+
+</details>
+
+<h3>問題2（難易度：medium）</h3>
+
+Active Learningがなぜ効率的なのか、具体例とともに説明してください。
+
+<details>
+<summary>解答例</summary>
+
+<strong>Active Learningの基本原理</strong>:
+
+従来の機械学習（Random Sampling）:
+- データをランダムにサンプリング
+- 多くのデータが「既知の領域」の重複
+- 非効率
+
+Active Learning（Uncertainty Sampling）:
+- モデルが「不確実」な配置を優先的にサンプリング
+- 新しい情報を効率的に獲得
+- 少ないデータで高精度
+
+<strong>具体例: 水分子のNNP訓練</strong>
+
+<strong>Random Sampling（従来法）</strong>:
+- 300K平衡状態から100配置をランダムサンプリング
+- そのうち80%は平衡構造の近傍（類似配置）
+- 残り20%が反応経路や高エネルギー配置
+- 結果: 100 DFT計算、精度 MAE = 5 meV/atom
+
+<strong>Active Learning</strong>:
+- 初期20配置から訓練
+- MDシミュレーション中に不確実性の高い配置を検出
+  - O-H結合が伸びた配置（解離過程）
+  - H-O-H角度が大きく歪んだ配置
+  - 高エネルギー励起状態
+- これらの配置でDFT計算（20配置追加）
+- 合計40 DFT計算、精度 MAE = 3 meV/atom
+
+<strong>効率化の理由</strong>:
+
+1. <strong>情報量の最大化</strong>:
+   - 類似配置の重複を避ける
+   - モデルが「知らない」領域を優先
+
+2. <strong>探索と活用のバランス</strong>:
+   - 既知の配置での安定予測（活用）
+   - 未知の配置での新情報獲得（探索）
+
+3. <strong>適応的サンプリング</strong>:
+   - 系の重要領域（反応経路、相転移）を自動検出
+   - 人間の直感に頼らない
+
+<strong>実際の効率化</strong>:
+- 50-90%のDFT計算削減（文献値）
+- 特に複雑な系（多成分、反応系）で効果大
+- 訓練時間全体では10-50倍の効率化
+
+<strong>例: Li-ion電池電解液</strong>:
+- Random: 10,000 DFT計算、2ヶ月
+- Active Learning: 2,000 DFT計算、2週間
+- 効率化: 5倍、同等精度
+
+</details>
+
+<h3>問題3（難易度：hard）</h3>
+
+Universal Machine Learning Potential（CHGNet、M3GNet等）の利点と限界を議論してください。
+
+<details>
+<summary>解答例</summary>
+
+<strong>Universal MLP（例: CHGNet）の概要</strong>:
+
+- <strong>訓練データ</strong>: Materials Project（140万材料、89元素）
+- <strong>モデル</strong>: Graph Neural Network
+- <strong>予測</strong>: エネルギー、力、応力、磁気モーメント
+
+<strong>利点</strong>:
+
+1. <strong>即座に使える</strong>:
+   - 事前訓練済み → 追加訓練不要
+   - 任意の結晶構造で予測可能
+   - 数秒で数千材料をスクリーニング
+
+2. <strong>広い適用範囲</strong>:
+   - 89元素（H-Amまで）
+   - 酸化物、合金、半導体、絶縁体
+   - 磁性材料も対応
+
+3. <strong>転移学習の基盤</strong>:
+   - 少数データ（10-100サンプル）でファインチューニング
+   - 系特化の高精度モデルを効率的に作成
+
+4. <strong>材料探索の加速</strong>:
+   - 大規模候補スクリーニング（100万材料/日）
+   - 実験候補の絞り込み
+   - ハイスループット計算との組み合わせ
+
+<strong>限界</strong>:
+
+1. <strong>精度の限界</strong>:
+   - DFT誤差の約2-5倍程度（CHGNet: MAE ~30 meV/atom）
+   - 精密計算には不十分
+   - 特定系では専用MLPに劣る
+
+2. <strong>外挿の問題</strong>:
+   - 訓練データにない配置（極端な温度・圧力）で精度低下
+   - 新規材料系（超高圧、新元素組み合わせ）は不確実
+
+3. <strong>データバイアス</strong>:
+   - Materials Projectの計算条件（PBE汎関数）に依存
+   - 実験との系統的なずれ（バンドギャップ過小評価等）
+   - 特定材料クラスの過剰/過少表現
+
+4. <strong>物理的制約の欠如</strong>:
+   - エネルギー保存則の厳密な保証なし
+   - 長時間MDでのドリフト
+   - 対称性の破れ（稀）
+
+<strong>実用的戦略</strong>:
+
+<strong>Scenario 1: 材料スクリーニング</strong>
+- Universal MLPで100万候補から上位1000に絞り込み
+- DFTで精密計算
+- 効率化: 1000倍
+
+<strong>Scenario 2: 特定系の精密MD</strong>
+- Universal MLPから転移学習
+- 系特化データ（100サンプル）で追加訓練
+- 精度向上: MAE 5 meV/atom（実用レベル）
+
+<strong>Scenario 3: 新規材料クラス</strong>
+- Universal MLPは参考程度
+- ゼロから専用MLP構築（Active Learning）
+- 訓練データ: 500-1000サンプル
+
+<strong>将来展望</strong>:
+
+1. <strong>データセットの拡充</strong>:
+   - 実験データの統合
+   - 多様な計算手法（GW、DMFT）のデータ
+
+2. <strong>Foundation Modelsへの進化</strong>:
+   - 自然言語処理のGPTに相当
+   - Few-shot learning（数サンプルで適応）
+   - Zero-shot transfer（訓練なしで新規系）
+
+3. <strong>実験との連携</strong>:
+   - 自律実験ループ
+   - リアルタイムフィードバック
+
+<strong>結論</strong>:
+Universal MLPは材料科学の「基盤インフラ」となりつつあるが、万能ではない。用途に応じて専用MLPと使い分けが重要。
+
+</details>
+
+---
+
+<h2>参考文献</h2>
+
+1. Behler, J., & Parrinello, M. (2007). "Generalized Neural-Network Representation of High-Dimensional Potential-Energy Surfaces." *Physical Review Letters*, 98, 146401.
+   DOI: [10.1103/PhysRevLett.98.146401](https://doi.org/10.1103/PhysRevLett.98.146401)
+
+2. Bartók, A. P., et al. (2010). "Gaussian Approximation Potentials: The Accuracy of Quantum Mechanics, without the Electrons." *Physical Review Letters*, 104, 136403.
+   DOI: [10.1103/PhysRevLett.104.136403](https://doi.org/10.1103/PhysRevLett.104.136403)
+
+3. Schütt, K. T., et al. (2017). "SchNet: A continuous-filter convolutional neural network for modeling quantum interactions." *NeurIPS*.
+
+4. Chen, C., & Ong, S. P. (2022). "A universal graph deep learning interatomic potential for the periodic table." *Nature Computational Science*, 2, 718-728.
+   DOI: [10.1038/s43588-022-00349-3](https://doi.org/10.1038/s43588-022-00349-3)
+
+5. Batatia, I., et al. (2022). "MACE: Higher Order Equivariant Message Passing Neural Networks for Fast and Accurate Force Fields." *NeurIPS*.
+
+6. CHGNet: https://github.com/CederGroupHub/chgnet
+7. M3GNet: https://github.com/materialsvirtuallab/m3gnet
+8. MACE: https://github.com/ACEsuit/mace
+
+---
+
+<h2>著者情報</h2>
+
+<strong>作成者</strong>: MI Knowledge Hub Content Team
+<strong>監修</strong>: Dr. Yusuke Hashimoto（東北大学）
+<strong>作成日</strong>: 2025-10-17
+<strong>バージョン</strong>: 1.0
+<strong>シリーズ</strong>: 計算材料科学基礎入門 v1.0
+
+<strong>ライセンス</strong>: Creative Commons BY-NC-SA 4.0
+
+---
+
+<strong>おめでとうございます！計算材料科学基礎入門シリーズを完了しました！</strong>
+
+次のステップ：
+- 自分の研究テーマで実際に計算を実行
+- ハイスループット計算入門シリーズへ進む
+- 最新論文を読んで知識を深める
+- コミュニティに参加（GitHub、学会）
+
+<strong>継続的な学習が材料科学の未来を拓きます！</strong>
+<div class="navigation">
+    <a href="chapter-4.html" class="nav-button">← 第4章</a>
+    <a href="index.html" class="nav-button">シリーズ目次に戻る</a>
+</div>
     </main>
 
     <footer>
         <p><strong>作成者</strong>: AI Terakoya Content Team</p>
-        <p><strong>監修</strong>: Dr. Yusuke Hashimoto(東北大学)</p>
+        <p><strong>監修</strong>: Dr. Yusuke Hashimoto（東北大学）</p>
         <p><strong>バージョン</strong>: 1.0 | <strong>作成日</strong>: 2025-10-17</p>
         <p><strong>ライセンス</strong>: Creative Commons BY 4.0</p>
         <p>© 2025 AI Terakoya. All rights reserved.</p>

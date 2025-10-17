@@ -15,7 +15,16 @@ SERIES = [
     "chemoinformatics-introduction",
     "bioinformatics-introduction",
     "active-learning-introduction",
-    "data-driven-materials-introduction"
+    "data-driven-materials-introduction",
+    "transformer-introduction",
+    "gnn-introduction",
+    "bayesian-optimization-introduction",
+    "computational-materials-basics-introduction",
+    "reinforcement-learning-introduction",
+    "robotic-lab-automation-introduction",
+    "experimental-data-analysis-introduction",
+    "high-throughput-computing-introduction",
+    "materials-databases-introduction"
 ]
 
 BASE_PATH = Path("/Users/yusukehashimoto/Documents/pycharm/AI_Homepage/wp/knowledge/jp")
@@ -489,7 +498,7 @@ def convert_markdown_to_html(md_content):
     return html
 
 
-def create_navigation(chapter_num, series_name):
+def create_navigation(chapter_num, series_path):
     """Create navigation links for chapter."""
     nav_html = '<div class="navigation">\n'
 
@@ -500,8 +509,9 @@ def create_navigation(chapter_num, series_name):
     # Index
     nav_html += '    <a href="index.html" class="nav-button">シリーズ目次に戻る</a>\n'
 
-    # Next chapter (assuming max 4 chapters)
-    if chapter_num < 4:
+    # Next chapter (check if next chapter exists)
+    next_chapter = series_path / f"chapter-{chapter_num+1}.md"
+    if next_chapter.exists():
         nav_html += f'    <a href="chapter-{chapter_num+1}.html" class="nav-button">第{chapter_num+1}章 →</a>\n'
 
     nav_html += '</div>'
@@ -530,7 +540,7 @@ def convert_chapter(series_path, chapter_file):
     chapter_num = int(chapter_match.group(1)) if chapter_match else 1
 
     # Create navigation
-    nav_html = create_navigation(chapter_num, series_path.name)
+    nav_html = create_navigation(chapter_num, series_path)
 
     # Build complete HTML
     html = HTML_HEADER_TEMPLATE.format(
@@ -567,14 +577,15 @@ def main():
         print(f"\nProcessing series: {series}")
         print("-" * 60)
 
-        # Convert chapters 1-4
-        for i in range(1, 5):
+        # Convert all chapters (check 1-10)
+        for i in range(1, 11):
             chapter_file = f"chapter-{i}.md"
             chapter_path = series_path / chapter_file
 
             if chapter_path.exists():
                 convert_chapter(series_path, chapter_file)
-            else:
+            # Only print warning for chapters 1-5 (most series have 4-5 chapters)
+            elif i <= 5:
                 print(f"⚠ Skipping {chapter_file} (not found)")
 
     print("\n" + "=" * 60)

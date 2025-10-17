@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Untitled - AI Terakoya</title>
+    <title>Chapter - AI Terakoya</title>
 
     <style>
         :root {
@@ -198,6 +198,55 @@
             border-radius: var(--border-radius);
         }
 
+        .mermaid {
+            text-align: center;
+            margin: var(--spacing-lg) 0;
+            background-color: var(--color-bg-alt);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        details {
+            background-color: var(--color-bg-alt);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--color-primary);
+            user-select: none;
+            padding: var(--spacing-xs);
+            margin: calc(-1 * var(--spacing-md));
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        summary:hover {
+            background-color: rgba(123, 44, 191, 0.1);
+        }
+
+        details[open] summary {
+            margin-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .learning-objectives {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--color-accent);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .learning-objectives h2 {
+            margin-top: 0;
+            border-bottom: none;
+        }
+
         .navigation {
             display: flex;
             justify-content: space-between;
@@ -270,678 +319,625 @@
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         mermaid.initialize({ startOnLoad: true, theme: 'default' });
     </script>
+
+    <!-- MathJax for LaTeX equation rendering -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\(', '\)']],
+                displayMath: [['$$', '$$'], ['\[', '\]']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
 </head>
 <body>
     <header>
         <div class="header-content">
-            <h1>Untitled</h1>
-            
+            <h1>Chapter</h1>
+            <p class="subtitle"></p>
             <div class="meta">
-                <span class="meta-item">📖 読了時間: 20-30分</span>
-                <span class="meta-item">📊 難易度: 中級</span>
-                <span class="meta-item">💻 コード例: 5個</span>
+                <span class="meta-item">📖 読了時間: 20-25分</span>
+                <span class="meta-item">📊 難易度: 初級</span>
+                <span class="meta-item">💻 コード例: 0個</span>
+                <span class="meta-item">📝 演習問題: 0問</span>
             </div>
         </div>
     </header>
 
     <main class="container">
-        <p><h1>第1章: Transformer革命と材料科学</h1></p>
+<h1>第1章: Transformer革命と材料科学</h1>
 
-<p><strong>学習時間</strong>: 20-30分 | <strong>難易度</strong>: 中級</p>
+<strong>学習時間</strong>: 20-30分 | <strong>難易度</strong>: 中級
 
-<p><h2>📋 この章で学ぶこと</h2></p>
+<h2>📋 この章で学ぶこと</h2>
 
-<ul>
-<li>Attention機構の原理と数学的理解</li>
-<li>Self-AttentionとMulti-Head Attentionの仕組み</li>
-<li>TransformerがRNN/CNNより優れている理由</li>
-<li>BERT、GPTの基本構造と違い</li>
-<li>材料科学での成功事例</li>
-</ul>
+- Attention機構の原理と数学的理解
+- Self-AttentionとMulti-Head Attentionの仕組み
+- TransformerがRNN/CNNより優れている理由
+- BERT、GPTの基本構造と違い
+- 材料科学での成功事例
 
-<p>---</p>
+---
 
-<p><h2>1.1 なぜTransformerが革命を起こしたのか</h2></p>
+<h2>1.1 なぜTransformerが革命を起こしたのか</h2>
 
-<p><h3>従来のRNN/CNNの限界</h3></p>
+<h3>従来のRNN/CNNの限界</h3>
 
-<p><strong>RNN（Recurrent Neural Network）の問題</strong>:</p>
-<ul>
-<li>長い系列での勾配消失・爆発</li>
-<li>並列化が困難（逐次処理が必要）</li>
-<li>長期依存関係の捕捉が難しい</li>
-</ul>
+<strong>RNN（Recurrent Neural Network）の問題</strong>:
+- 長い系列での勾配消失・爆発
+- 並列化が困難（逐次処理が必要）
+- 長期依存関係の捕捉が難しい
 
-<p><strong>CNN（Convolutional Neural Network）の問題</strong>:</p>
-<ul>
-<li>局所的な特徴しか捉えられない</li>
-<li>長距離の関係性を捉えるには深い層が必要</li>
-<li>分子・材料のような不規則な構造には不向き</li>
-</ul>
+<strong>CNN（Convolutional Neural Network）の問題</strong>:
+- 局所的な特徴しか捉えられない
+- 長距離の関係性を捉えるには深い層が必要
+- 分子・材料のような不規則な構造には不向き
 
-<p><h3>Transformerの革新性</h3></p>
+<h3>Transformerの革新性</h3>
 
-<p><strong>2017年、"Attention Is All You Need"論文で登場</strong>:</p>
-<ul>
-<li>✅ <strong>全要素間の関係を直接モデル化</strong>（Attention機構）</li>
-<li>✅ <strong>完全並列化可能</strong>（GPUを最大限活用）</li>
-<li>✅ <strong>長距離依存関係を効率的に捕捉</strong></li>
-<li>✅ <strong>解釈性</strong>（Attention重みで重要な部分を可視化）</li>
-</ul>
+<strong>2017年、"Attention Is All You Need"論文で登場</strong>:
+- ✅ <strong>全要素間の関係を直接モデル化</strong>（Attention機構）
+- ✅ <strong>完全並列化可能</strong>（GPUを最大限活用）
+- ✅ <strong>長距離依存関係を効率的に捕捉</strong>
+- ✅ <strong>解釈性</strong>（Attention重みで重要な部分を可視化）
 
-<p><pre><code class="language-mermaid">graph LR</p>
-<p>    A[入力系列] --> B[Self-Attention]</p>
-<p>    B --> C[Feed Forward]</p>
-<p>    C --> D[出力]</p>
+<div class="mermaid">graph LR
+    A[入力系列] --> B[Self-Attention]
+    B --> C[Feed Forward]
+    C --> D[出力]
 
-<p>    B -.すべての要素間の関係を計算.-> B</p>
+    B -.すべての要素間の関係を計算.-> B
 
-<p>    style B fill:#e1f5ff</p>
-<p></code></pre></p>
+    style B fill:#e1f5ff</div>
 
-<p>---</p>
+---
 
-<p><h2>1.2 Attention機構の原理</h2></p>
+<h2>1.2 Attention機構の原理</h2>
 
-<p><h3>Attention機構とは</h3></p>
+<h3>Attention機構とは</h3>
 
-<p><strong>基本概念</strong>: 入力の中で「どこに注目すべきか」を学習する仕組み</p>
+<strong>基本概念</strong>: 入力の中で「どこに注目すべきか」を学習する仕組み
 
-<p><strong>数式</strong>:</p>
-<p>$$</p>
-<p>\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V</p>
-<p>$$</p>
+<strong>数式</strong>:
+$$
+\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V
+$$
 
-<ul>
-<li><strong>Q (Query)</strong>: 「何を探しているか」</li>
-<li><strong>K (Key)</strong>: 「何を持っているか」</li>
-<li><strong>V (Value)</strong>: 「実際の内容」</li>
-<li>$d_k$: Keyの次元（スケーリング因子）</li>
-</ul>
+- <strong>Q (Query)</strong>: 「何を探しているか」
+- <strong>K (Key)</strong>: 「何を持っているか」
+- <strong>V (Value)</strong>: 「実際の内容」
+- $d_k$: Keyの次元（スケーリング因子）
 
-<p><h3>直感的理解</h3></p>
+<h3>直感的理解</h3>
 
-<p><strong>図書館の例え</strong>:</p>
-<ul>
-<li><strong>Query</strong>: 「機械学習の本を探している」</li>
-<li><strong>Key</strong>: 各本の目次・タイトル</li>
-<li><strong>Value</strong>: 本の実際の内容</li>
-<li><strong>Attention</strong>: 関連性が高い本に「注目」して読む</li>
-</ul>
+<strong>図書館の例え</strong>:
+- <strong>Query</strong>: 「機械学習の本を探している」
+- <strong>Key</strong>: 各本の目次・タイトル
+- <strong>Value</strong>: 本の実際の内容
+- <strong>Attention</strong>: 関連性が高い本に「注目」して読む
 
-<p><h3>Python実装: 基本的なAttention</h3></p>
+<h3>Python実装: 基本的なAttention</h3>
 
-<p><pre><code class="language-python">import torch</p>
-<p>import torch.nn.functional as F</p>
+<pre><code class="language-python">import torch
+import torch.nn.functional as F
 
-<p>def scaled_dot_product_attention(Q, K, V, mask=None):</p>
-<p>    """</p>
-<p>    Scaled Dot-Product Attention</p>
+def scaled_dot_product_attention(Q, K, V, mask=None):
+    """
+    Scaled Dot-Product Attention
 
-<p>    Args:</p>
-<p>        Q: Query (batch_size, seq_len, d_k)</p>
-<p>        K: Key (batch_size, seq_len, d_k)</p>
-<p>        V: Value (batch_size, seq_len, d_v)</p>
-<p>        mask: マスク（オプション）</p>
-<p>    """</p>
-<p>    d_k = Q.size(-1)</p>
+    Args:
+        Q: Query (batch_size, seq_len, d_k)
+        K: Key (batch_size, seq_len, d_k)
+        V: Value (batch_size, seq_len, d_v)
+        mask: マスク（オプション）
+    """
+    d_k = Q.size(-1)
 
-<p>    <h1>1. QとKの内積を計算（類似度）</h1></p>
-<p>    scores = torch.matmul(Q, K.transpose(-2, -1)) / torch.sqrt(torch.tensor(d_k, dtype=torch.float32))</p>
-<p>    <h1>scores shape: (batch_size, seq_len_q, seq_len_k)</h1></p>
+    # 1. QとKの内積を計算（類似度）
+    scores = torch.matmul(Q, K.transpose(-2, -1)) / torch.sqrt(torch.tensor(d_k, dtype=torch.float32))
+    # scores shape: (batch_size, seq_len_q, seq_len_k)
 
-<p>    <h1>2. マスク適用（必要な場合）</h1></p>
-<p>    if mask is not None:</p>
-<p>        scores = scores.masked_fill(mask == 0, -1e9)</p>
+    # 2. マスク適用（必要な場合）
+    if mask is not None:
+        scores = scores.masked_fill(mask == 0, -1e9)
 
-<p>    <h1>3. Softmaxで正規化（Attention重み）</h1></p>
-<p>    attention_weights = F.softmax(scores, dim=-1)</p>
+    # 3. Softmaxで正規化（Attention重み）
+    attention_weights = F.softmax(scores, dim=-1)
 
-<p>    <h1>4. Attention重みでValueを重み付け和</h1></p>
-<p>    output = torch.matmul(attention_weights, V)</p>
+    # 4. Attention重みでValueを重み付け和
+    output = torch.matmul(attention_weights, V)
 
-<p>    return output, attention_weights</p>
+    return output, attention_weights
 
-<p><h1>使用例</h1></p>
-<p>batch_size, seq_len, d_model = 2, 5, 64</p>
-<p>Q = torch.randn(batch_size, seq_len, d_model)</p>
-<p>K = torch.randn(batch_size, seq_len, d_model)</p>
-<p>V = torch.randn(batch_size, seq_len, d_model)</p>
+<h1>使用例</h1>
+batch_size, seq_len, d_model = 2, 5, 64
+Q = torch.randn(batch_size, seq_len, d_model)
+K = torch.randn(batch_size, seq_len, d_model)
+V = torch.randn(batch_size, seq_len, d_model)
 
-<p>output, attn_weights = scaled_dot_product_attention(Q, K, V)</p>
-<p>print(f"Output shape: {output.shape}")  <h1>(2, 5, 64)</h1></p>
-<p>print(f"Attention weights shape: {attn_weights.shape}")  <h1>(2, 5, 5)</h1></p>
-<p></code></pre></p>
+output, attn_weights = scaled_dot_product_attention(Q, K, V)
+print(f"Output shape: {output.shape}")  # (2, 5, 64)
+print(f"Attention weights shape: {attn_weights.shape}")  # (2, 5, 5)</code></pre>
 
-<p><h3>Attention重みの可視化</h3></p>
+<h3>Attention重みの可視化</h3>
 
-<p><pre><code class="language-python">import matplotlib.pyplot as plt</p>
-<p>import seaborn as sns</p>
+<pre><code class="language-python">import matplotlib.pyplot as plt
+import seaborn as sns
 
-<p>def visualize_attention(attention_weights, tokens=None):</p>
-<p>    """</p>
-<p>    Attention重みをヒートマップで可視化</p>
+def visualize_attention(attention_weights, tokens=None):
+    """
+    Attention重みをヒートマップで可視化
 
-<p>    Args:</p>
-<p>        attention_weights: (seq_len, seq_len)のAttention重み</p>
-<p>        tokens: トークンのリスト（オプション）</p>
-<p>    """</p>
-<p>    plt.figure(figsize=(8, 6))</p>
+    Args:
+        attention_weights: (seq_len, seq_len)のAttention重み
+        tokens: トークンのリスト（オプション）
+    """
+    plt.figure(figsize=(8, 6))
 
-<p>    <h1>最初のサンプルの最初のヘッドのAttention重みを取得</h1></p>
-<p>    attn = attention_weights[0].detach().numpy()</p>
+    # 最初のサンプルの最初のヘッドのAttention重みを取得
+    attn = attention_weights[0].detach().numpy()
 
-<p>    sns.heatmap(attn, cmap='YlOrRd', cbar=True, square=True,</p>
-<p>                xticklabels=tokens if tokens else range(attn.shape[0]),</p>
-<p>                yticklabels=tokens if tokens else range(attn.shape[0]))</p>
+    sns.heatmap(attn, cmap='YlOrRd', cbar=True, square=True,
+                xticklabels=tokens if tokens else range(attn.shape[0]),
+                yticklabels=tokens if tokens else range(attn.shape[0]))
 
-<p>    plt.xlabel('Key (参照先)')</p>
-<p>    plt.ylabel('Query (注目元)')</p>
-<p>    plt.title('Attention Weights')</p>
-<p>    plt.tight_layout()</p>
-<p>    plt.show()</p>
+    plt.xlabel('Key (参照先)')
+    plt.ylabel('Query (注目元)')
+    plt.title('Attention Weights')
+    plt.tight_layout()
+    plt.show()
 
-<p><h1>使用例</h1></p>
-<p>tokens = ['H', 'C', 'C', 'O', 'H']</p>
-<p>visualize_attention(attn_weights, tokens)</p>
-<p></code></pre></p>
+<h1>使用例</h1>
+tokens = ['H', 'C', 'C', 'O', 'H']
+visualize_attention(attn_weights, tokens)</code></pre>
 
-<p>---</p>
+---
 
-<p><h2>1.3 Self-Attention: 自己注意機構</h2></p>
+<h2>1.3 Self-Attention: 自己注意機構</h2>
 
-<p><h3>Self-Attentionとは</h3></p>
+<h3>Self-Attentionとは</h3>
 
-<p><strong>定義</strong>: 入力系列自身に対してAttentionを適用する仕組み</p>
+<strong>定義</strong>: 入力系列自身に対してAttentionを適用する仕組み
 
-<p><strong>特徴</strong>:</p>
-<ul>
-<li>Query、Key、Valueすべて同じ入力から生成</li>
-<li>系列内の任意の2要素間の関係を直接モデル化</li>
-<li>位置に関わらず、関連性の高い要素に注目</li>
-</ul>
+<strong>特徴</strong>:
+- Query、Key、Valueすべて同じ入力から生成
+- 系列内の任意の2要素間の関係を直接モデル化
+- 位置に関わらず、関連性の高い要素に注目
 
-<p><h3>分子におけるSelf-Attentionの例</h3></p>
+<h3>分子におけるSelf-Attentionの例</h3>
 
-<p><strong>メタノール (CH₃OH)の例</strong>:</p>
-<p><pre><code class="language-python"><h1>原子: C, H, H, H, O, H</h1></p>
-<p><h1>Self-Attentionで各原子が他の原子との関係を学習</h1></p>
-<p><h1>例: O原子はC原子と強い関係性を持つ</h1></p>
-<p></code></pre></p>
+<strong>メタノール (CH₃OH)の例</strong>:
+<pre><code class="language-python"><h1>原子: C, H, H, H, O, H</h1>
+<h1>Self-Attentionで各原子が他の原子との関係を学習</h1>
+<h1>例: O原子はC原子と強い関係性を持つ</h1></code></pre>
 
-<p><h3>Self-Attention実装</h3></p>
+<h3>Self-Attention実装</h3>
 
-<p><pre><code class="language-python">import torch.nn as nn</p>
+<pre><code class="language-python">import torch.nn as nn
 
-<p>class SelfAttention(nn.Module):</p>
-<p>    def __init__(self, d_model):</p>
-<p>        super(SelfAttention, self).__init__()</p>
-<p>        self.d_model = d_model</p>
+class SelfAttention(nn.Module):
+    def __init__(self, d_model):
+        super(SelfAttention, self).__init__()
+        self.d_model = d_model
 
-<p>        <h1>Q, K, Vへの線形変換</h1></p>
-<p>        self.W_q = nn.Linear(d_model, d_model)</p>
-<p>        self.W_k = nn.Linear(d_model, d_model)</p>
-<p>        self.W_v = nn.Linear(d_model, d_model)</p>
+        # Q, K, Vへの線形変換
+        self.W_q = nn.Linear(d_model, d_model)
+        self.W_k = nn.Linear(d_model, d_model)
+        self.W_v = nn.Linear(d_model, d_model)
 
-<p>    def forward(self, x):</p>
-<p>        """</p>
-<p>        Args:</p>
-<p>            x: (batch_size, seq_len, d_model)</p>
-<p>        """</p>
-<p>        <h1>Q, K, Vを生成</h1></p>
-<p>        Q = self.W_q(x)</p>
-<p>        K = self.W_k(x)</p>
-<p>        V = self.W_v(x)</p>
+    def forward(self, x):
+        """
+        Args:
+            x: (batch_size, seq_len, d_model)
+        """
+        # Q, K, Vを生成
+        Q = self.W_q(x)
+        K = self.W_k(x)
+        V = self.W_v(x)
 
-<p>        <h1>Scaled Dot-Product Attention</h1></p>
-<p>        output, attn_weights = scaled_dot_product_attention(Q, K, V)</p>
+        # Scaled Dot-Product Attention
+        output, attn_weights = scaled_dot_product_attention(Q, K, V)
 
-<p>        return output, attn_weights</p>
+        return output, attn_weights
 
-<p><h1>使用例</h1></p>
-<p>d_model = 128</p>
-<p>seq_len = 10</p>
-<p>batch_size = 4</p>
+<h1>使用例</h1>
+d_model = 128
+seq_len = 10
+batch_size = 4
 
-<p>self_attn = SelfAttention(d_model)</p>
-<p>x = torch.randn(batch_size, seq_len, d_model)</p>
-<p>output, attn_weights = self_attn(x)</p>
+self_attn = SelfAttention(d_model)
+x = torch.randn(batch_size, seq_len, d_model)
+output, attn_weights = self_attn(x)
 
-<p>print(f"Input shape: {x.shape}")          <h1>(4, 10, 128)</h1></p>
-<p>print(f"Output shape: {output.shape}")    <h1>(4, 10, 128)</h1></p>
-<p>print(f"Attention shape: {attn_weights.shape}")  <h1>(4, 10, 10)</h1></p>
-<p></code></pre></p>
+print(f"Input shape: {x.shape}")          # (4, 10, 128)
+print(f"Output shape: {output.shape}")    # (4, 10, 128)
+print(f"Attention shape: {attn_weights.shape}")  # (4, 10, 10)</code></pre>
 
-<p>---</p>
+---
 
-<p><h2>1.4 Multi-Head Attention: 多頭注意機構</h2></p>
+<h2>1.4 Multi-Head Attention: 多頭注意機構</h2>
 
-<p><h3>なぜMulti-Headが必要か</h3></p>
+<h3>なぜMulti-Headが必要か</h3>
 
-<p><strong>単一のAttentionヘッドの限界</strong>:</p>
-<ul>
-<li>1つの視点からしか関係性を見られない</li>
-<li>複雑な関係性（化学結合、立体配座など）を捉えきれない</li>
-</ul>
+<strong>単一のAttentionヘッドの限界</strong>:
+- 1つの視点からしか関係性を見られない
+- 複雑な関係性（化学結合、立体配座など）を捉えきれない
 
-<p><strong>Multi-Head Attentionの利点</strong>:</p>
-<ul>
-<li>複数の異なる視点から関係性を学習</li>
-<li>各ヘッドが異なる特徴（結合、距離、角度など）を捉える</li>
-<li>より豊かな表現が可能</li>
-</ul>
+<strong>Multi-Head Attentionの利点</strong>:
+- 複数の異なる視点から関係性を学習
+- 各ヘッドが異なる特徴（結合、距離、角度など）を捉える
+- より豊かな表現が可能
 
-<p><h3>数式</h3></p>
+<h3>数式</h3>
 
-<p>$$</p>
-<p>\text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, ..., \text{head}_h)W^O</p>
-<p>$$</p>
+$$
+\text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, ..., \text{head}_h)W^O
+$$
 
-<p>where $\text{head}_i = \text{Attention}(QW_i^Q, KW_i^K, VW_i^V)$</p>
+where $\text{head}_i = \text{Attention}(QW_i^Q, KW_i^K, VW_i^V)$
 
-<p><h3>実装</h3></p>
+<h3>実装</h3>
 
-<p><pre><code class="language-python">class MultiHeadAttention(nn.Module):</p>
-<p>    def __init__(self, d_model, num_heads):</p>
-<p>        super(MultiHeadAttention, self).__init__()</p>
-<p>        assert d_model % num_heads == 0, "d_modelはnum_headsで割り切れる必要があります"</p>
+<pre><code class="language-python">class MultiHeadAttention(nn.Module):
+    def __init__(self, d_model, num_heads):
+        super(MultiHeadAttention, self).__init__()
+        assert d_model % num_heads == 0, "d_modelはnum_headsで割り切れる必要があります"
 
-<p>        self.d_model = d_model</p>
-<p>        self.num_heads = num_heads</p>
-<p>        self.d_k = d_model // num_heads</p>
+        self.d_model = d_model
+        self.num_heads = num_heads
+        self.d_k = d_model // num_heads
 
-<p>        <h1>Q, K, V変換</h1></p>
-<p>        self.W_q = nn.Linear(d_model, d_model)</p>
-<p>        self.W_k = nn.Linear(d_model, d_model)</p>
-<p>        self.W_v = nn.Linear(d_model, d_model)</p>
+        # Q, K, V変換
+        self.W_q = nn.Linear(d_model, d_model)
+        self.W_k = nn.Linear(d_model, d_model)
+        self.W_v = nn.Linear(d_model, d_model)
 
-<p>        <h1>出力変換</h1></p>
-<p>        self.W_o = nn.Linear(d_model, d_model)</p>
+        # 出力変換
+        self.W_o = nn.Linear(d_model, d_model)
 
-<p>    def forward(self, x, mask=None):</p>
-<p>        batch_size = x.size(0)</p>
+    def forward(self, x, mask=None):
+        batch_size = x.size(0)
 
-<p>        <h1>1. Q, K, Vを生成して、ヘッドごとに分割</h1></p>
-<p>        Q = self.W_q(x).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)</p>
-<p>        K = self.W_k(x).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)</p>
-<p>        V = self.W_v(x).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)</p>
-<p>        <h1>Shape: (batch_size, num_heads, seq_len, d_k)</h1></p>
+        # 1. Q, K, Vを生成して、ヘッドごとに分割
+        Q = self.W_q(x).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)
+        K = self.W_k(x).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)
+        V = self.W_v(x).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)
+        # Shape: (batch_size, num_heads, seq_len, d_k)
 
-<p>        <h1>2. 各ヘッドでScaled Dot-Product Attention</h1></p>
-<p>        output, attn_weights = scaled_dot_product_attention(Q, K, V, mask)</p>
-<p>        <h1>output: (batch_size, num_heads, seq_len, d_k)</h1></p>
+        # 2. 各ヘッドでScaled Dot-Product Attention
+        output, attn_weights = scaled_dot_product_attention(Q, K, V, mask)
+        # output: (batch_size, num_heads, seq_len, d_k)
 
-<p>        <h1>3. ヘッドを連結</h1></p>
-<p>        output = output.transpose(1, 2).contiguous().view(batch_size, -1, self.d_model)</p>
-<p>        <h1>Shape: (batch_size, seq_len, d_model)</h1></p>
+        # 3. ヘッドを連結
+        output = output.transpose(1, 2).contiguous().view(batch_size, -1, self.d_model)
+        # Shape: (batch_size, seq_len, d_model)
 
-<p>        <h1>4. 出力変換</h1></p>
-<p>        output = self.W_o(output)</p>
+        # 4. 出力変換
+        output = self.W_o(output)
 
-<p>        return output, attn_weights</p>
+        return output, attn_weights
 
-<p><h1>使用例</h1></p>
-<p>d_model = 512</p>
-<p>num_heads = 8</p>
-<p>seq_len = 20</p>
-<p>batch_size = 2</p>
+<h1>使用例</h1>
+d_model = 512
+num_heads = 8
+seq_len = 20
+batch_size = 2
 
-<p>mha = MultiHeadAttention(d_model, num_heads)</p>
-<p>x = torch.randn(batch_size, seq_len, d_model)</p>
-<p>output, attn_weights = mha(x)</p>
+mha = MultiHeadAttention(d_model, num_heads)
+x = torch.randn(batch_size, seq_len, d_model)
+output, attn_weights = mha(x)
 
-<p>print(f"Input shape: {x.shape}")          <h1>(2, 20, 512)</h1></p>
-<p>print(f"Output shape: {output.shape}")    <h1>(2, 20, 512)</h1></p>
-<p>print(f"Attention shape: {attn_weights.shape}")  <h1>(2, 8, 20, 20)</h1></p>
-<p></code></pre></p>
+print(f"Input shape: {x.shape}")          # (2, 20, 512)
+print(f"Output shape: {output.shape}")    # (2, 20, 512)
+print(f"Attention shape: {attn_weights.shape}")  # (2, 8, 20, 20)</code></pre>
 
-<p>---</p>
+---
 
-<p><h2>1.5 Positional Encoding: 位置情報の埋め込み</h2></p>
+<h2>1.5 Positional Encoding: 位置情報の埋め込み</h2>
 
-<p><h3>なぜ必要か</h3></p>
+<h3>なぜ必要か</h3>
 
-<p><strong>問題</strong>: Self-Attentionには順序の概念がない</p>
-<ul>
-<li>"H-C-O" と "O-C-H" を区別できない</li>
-<li>分子や材料では原子の配置順序が重要</li>
-</ul>
+<strong>問題</strong>: Self-Attentionには順序の概念がない
+- "H-C-O" と "O-C-H" を区別できない
+- 分子や材料では原子の配置順序が重要
 
-<p><strong>解決策</strong>: Positional Encodingで位置情報を追加</p>
+<strong>解決策</strong>: Positional Encodingで位置情報を追加
 
-<p><h3>数式</h3></p>
+<h3>数式</h3>
 
-<p>$$</p>
-<p>PE_{(pos, 2i)} = \sin\left(\frac{pos}{10000^{2i/d_{model}}}\right)</p>
-<p>$$</p>
-
-<p>$$</p>
-<p>PE_{(pos, 2i+1)} = \cos\left(\frac{pos}{10000^{2i/d_{model}}}\right)</p>
-<p>$$</p>
+$$
+PE_{(pos, 2i)} = \sin\left(\frac{pos}{10000^{2i/d_{model}}}\right)
+$$
 
-<p><h3>実装</h3></p>
+$$
+PE_{(pos, 2i+1)} = \cos\left(\frac{pos}{10000^{2i/d_{model}}}\right)
+$$
 
-<p><pre><code class="language-python">class PositionalEncoding(nn.Module):</p>
-<p>    def __init__(self, d_model, max_len=5000):</p>
-<p>        super(PositionalEncoding, self).__init__()</p>
-
-<p>        <h1>位置エンコーディング行列を作成</h1></p>
-<p>        pe = torch.zeros(max_len, d_model)</p>
-<p>        position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)</p>
-<p>        div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-torch.log(torch.tensor(10000.0)) / d_model))</p>
-
-<p>        pe[:, 0::2] = torch.sin(position * div_term)</p>
-<p>        pe[:, 1::2] = torch.cos(position * div_term)</p>
-
-<p>        pe = pe.unsqueeze(0)  <h1>(1, max_len, d_model)</h1></p>
-<p>        self.register_buffer('pe', pe)</p>
-
-<p>    def forward(self, x):</p>
-<p>        """</p>
-<p>        Args:</p>
-<p>            x: (batch_size, seq_len, d_model)</p>
-<p>        """</p>
-<p>        seq_len = x.size(1)</p>
-<p>        x = x + self.pe[:, :seq_len, :]</p>
-<p>        return x</p>
+<h3>実装</h3>
 
-<p><h1>使用例と可視化</h1></p>
-<p>d_model = 128</p>
-<p>max_len = 100</p>
-
-<p>pos_enc = PositionalEncoding(d_model, max_len)</p>
-
-<p><h1>ダミー入力</h1></p>
-<p>x = torch.zeros(1, 50, d_model)</p>
-<p>output = pos_enc(x)</p>
-
-<p><h1>可視化</h1></p>
-<p>plt.figure(figsize=(12, 4))</p>
-<p>plt.plot(pos_enc.pe[0, :50, :8].numpy())</p>
-<p>plt.xlabel('Position')</p>
-<p>plt.ylabel('Encoding Value')</p>
-<p>plt.title('Positional Encoding (first 8 dimensions)')</p>
-<p>plt.legend([f'dim {i}' for i in range(8)])</p>
-<p>plt.tight_layout()</p>
-<p>plt.show()</p>
-<p></code></pre></p>
-
-<p>---</p>
-
-<p><h2>1.6 TransformerとBERT/GPT</h2></p>
-
-<p><h3>Transformer全体アーキテクチャ</h3></p>
-
-<p><pre><code class="language-mermaid">graph TB</p>
-<p>    subgraph Encoder</p>
-<p>        E1[Input Embedding] --> E2[Positional Encoding]</p>
-<p>        E2 --> E3[Multi-Head Attention]</p>
-<p>        E3 --> E4[Add & Norm]</p>
-<p>        E4 --> E5[Feed Forward]</p>
-<p>        E5 --> E6[Add & Norm]</p>
-<p>    end</p>
-
-<p>    subgraph Decoder</p>
-<p>        D1[Output Embedding] --> D2[Positional Encoding]</p>
-<p>        D2 --> D3[Masked Multi-Head Attention]</p>
-<p>        D3 --> D4[Add & Norm]</p>
-<p>        D4 --> D5[Multi-Head Attention]</p>
-<p>        D5 --> D6[Add & Norm]</p>
-<p>        D6 --> D7[Feed Forward]</p>
-<p>        D7 --> D8[Add & Norm]</p>
-<p>    end</p>
-
-<p>    E6 -.Encoder出力.-> D5</p>
-<p>    D8 --> O[Output]</p>
-
-<p>    style E3 fill:#e1f5ff</p>
-<p>    style D3 fill:#ffe1e1</p>
-<p>    style D5 fill:#e1ffe1</p>
-<p></code></pre></p>
-
-<p><h3>BERT（Bidirectional Encoder Representations from Transformers）</h3></p>
+<pre><code class="language-python">class PositionalEncoding(nn.Module):
+    def __init__(self, d_model, max_len=5000):
+        super(PositionalEncoding, self).__init__()
 
-<p><strong>特徴</strong>:</p>
-<ul>
-<li><strong>Encoderのみ</strong>使用</li>
-<li><strong>双方向</strong>でコンテキストを理解</li>
-<li><strong>事前学習タスク</strong>: Masked Language Model (MLM) + Next Sentence Prediction (NSP)</li>
-<li><strong>用途</strong>: 分類、特徴抽出、質問応答</li>
-</ul>
+        # 位置エンコーディング行列を作成
+        pe = torch.zeros(max_len, d_model)
+        position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-torch.log(torch.tensor(10000.0)) / d_model))
 
-<p><strong>材料科学での応用</strong>:</p>
-<ul>
-<li>MatBERT: 材料の組成式から特性予測</li>
-<li>ChemBERTa: 分子SMILES表現学習</li>
-</ul>
-
-<p><h3>GPT（Generative Pre-trained Transformer）</h3></p>
+        pe[:, 0::2] = torch.sin(position * div_term)
+        pe[:, 1::2] = torch.cos(position * div_term)
 
-<p><strong>特徴</strong>:</p>
-<ul>
-<li><strong>Decoderのみ</strong>使用</li>
-<li><strong>単方向</strong>（左から右）でテキスト生成</li>
-<li><strong>事前学習タスク</strong>: 次の単語予測</li>
-<li><strong>用途</strong>: テキスト生成、対話、創造的タスク</li>
-</ul>
-
-<p><strong>材料科学での応用</strong>:</p>
-<ul>
-<li>分子生成（SMILES文字列生成）</li>
-<li>材料記述文の自動生成</li>
-<li>合成経路の提案</li>
-</ul>
-
-<p>---</p>
-
-<p><h2>1.7 材料科学での成功事例</h2></p>
-
-<p><h3>1. ChemBERTa: 分子表現学習</h3></p>
-
-<p><strong>概要</strong>: SMILESをBERTで学習</p>
-<p><pre><code class="language-python"><h1>分子SMILES: CC(C)Cc1ccc(cc1)C(C)C(=O)O (イブプロフェン)</h1></p>
-<p><h1>ChemBERTaで埋め込みベクトルに変換 → 特性予測</h1></p>
-<p></code></pre></p>
-
-<p><strong>成果</strong>:</p>
-<ul>
-<li>小規模データでの高精度予測</li>
-<li>転移学習により開発期間短縮</li>
-<li>解釈可能性（Attentionで重要部分可視化）</li>
-</ul>
-
-<p><h3>2. Matformer: 材料特性予測</h3></p>
-
-<p><strong>概要</strong>: 結晶構造をTransformerで処理</p>
-<p><pre><code class="language-python"><h1>入力: 原子座標、原子番号、格子定数</h1></p>
-<p><h1>出力: バンドギャップ、形成エネルギー</h1></p>
-<p></code></pre></p>
-
-<p><strong>成果</strong>:</p>
-<ul>
-<li>Materials Projectデータで高精度</li>
-<li>GNNと同等以上の性能</li>
-<li>計算効率が良い</li>
-</ul>
-
-<p><h3>3. 拡散モデルによる分子生成</h3></p>
+        pe = pe.unsqueeze(0)  # (1, max_len, d_model)
+        self.register_buffer('pe', pe)
 
-<p><strong>概要</strong>: 条件付き拡散モデルで新規分子生成</p>
-<p><pre><code class="language-python"><h1>条件: 溶解度 > 5 mg/mL, LogP < 3</h1></p>
-<p><h1>生成: 条件を満たす分子SMILES</h1></p>
-<p></code></pre></p>
-
-<p><strong>成果</strong>:</p>
-<ul>
-<li>創薬で有望な候補分子発見</li>
-<li>従来手法より多様性が高い</li>
-<li>合成可能性も考慮</li>
-</ul>
-
-<p>---</p>
-
-<p><h2>1.8 まとめ</h2></p>
+    def forward(self, x):
+        """
+        Args:
+            x: (batch_size, seq_len, d_model)
+        """
+        seq_len = x.size(1)
+        x = x + self.pe[:, :seq_len, :]
+        return x
 
-<p><h3>重要ポイント</h3></p>
-
-<ol>
-<li><strong>Attention機構</strong>: 系列内の任意の要素間の関係を直接モデル化</li>
-<li><strong>Self-Attention</strong>: 入力系列自身に対するAttention</li>
-<li><strong>Multi-Head Attention</strong>: 複数の視点から関係性を学習</li>
-<li><strong>Positional Encoding</strong>: 位置情報を埋め込み</li>
-<li><strong>BERT/GPT</strong>: Transformer based の代表的事前学習モデル</li>
-<li><strong>材料科学応用</strong>: 分子・材料表現学習、特性予測、生成モデル</li>
-</ol>
-
-<p><h3>次章への準備</h3></p>
-
-<p>第2章では、材料科学に特化したTransformerアーキテクチャ（Matformer、CrystalFormer、ChemBERTa）を詳しく学びます。</p>
-
-<p>---</p>
-
-<p><h2>📝 演習問題</h2></p>
-
-<p><h3>問題1: 基礎理解（概念）</h3></p>
-<p>Attention機構における Query、Key、Value の役割を、図書館の例え以外で説明してください。</p>
-
-<p><details></p>
-<p><summary>解答例</summary></p>
-
-<p><strong>検索エンジンの例え</strong>:</p>
-<ul>
-<li><strong>Query</strong>: ユーザーが入力した検索キーワード</li>
-<li><strong>Key</strong>: 各Webページのメタデータ（タイトル、要約）</li>
-<li><strong>Value</strong>: Webページの実際のコンテンツ</li>
-<li><strong>Attention</strong>: 検索キーワードとの関連性が高いページを上位表示</li>
-</ul>
-
-<p><strong>分子の例え</strong>:</p>
-<ul>
-<li><strong>Query</strong>: ある原子が「どの原子と相互作用したいか」</li>
-<li><strong>Key</strong>: 各原子の特徴（原子番号、電荷、位置）</li>
-<li><strong>Value</strong>: 各原子の詳細な情報</li>
-<li><strong>Attention</strong>: 化学結合や相互作用の強さを表現</li>
-</ul>
-<p></details></p>
-
-<p><h3>問題2: 実装（コーディング）</h3></p>
-<p>以下のコードの空欄を埋めて、Simple Attention（スケーリングなし、マスクなし）を実装してください。</p>
-
-<p><pre><code class="language-python">def simple_attention(Q, K, V):</p>
-<p>    """</p>
-<p>    シンプルなAttention機構</p>
-
-<p>    Args:</p>
-<p>        Q: Query (batch_size, seq_len, d_k)</p>
-<p>        K: Key (batch_size, seq_len, d_k)</p>
-<p>        V: Value (batch_size, seq_len, d_v)</p>
-
-<p>    Returns:</p>
-<p>        output: (batch_size, seq_len, d_v)</p>
-<p>        attention_weights: (batch_size, seq_len, seq_len)</p>
-<p>    """</p>
-<p>    <h1>1. QとKの内積を計算</h1></p>
-<p>    scores = torch.matmul(______, ______.transpose(-2, -1))</p>
-
-<p>    <h1>2. Softmaxで正規化</h1></p>
-<p>    attention_weights = F.softmax(______, dim=-1)</p>
-
-<p>    <h1>3. Attention重みでValueを重み付け和</h1></p>
-<p>    output = torch.matmul(______, ______)</p>
-
-<p>    return output, attention_weights</p>
-<p></code></pre></p>
-
-<p><details></p>
-<p><summary>解答例</summary></p>
-
-<p><pre><code class="language-python">def simple_attention(Q, K, V):</p>
-<p>    <h1>1. QとKの内積を計算</h1></p>
-<p>    scores = torch.matmul(Q, K.transpose(-2, -1))</p>
-
-<p>    <h1>2. Softmaxで正規化</h1></p>
-<p>    attention_weights = F.softmax(scores, dim=-1)</p>
-
-<p>    <h1>3. Attention重みでValueを重み付け和</h1></p>
-<p>    output = torch.matmul(attention_weights, V)</p>
-
-<p>    return output, attention_weights</p>
-<p></code></pre></p>
-<p></details></p>
-
-<p><h3>問題3: 応用（考察）</h3></p>
-<p>分子 "CCO"（エタノール）におけるSelf-Attentionを考えます。以下の質問に答えてください：</p>
-
-<ol>
-<li>どの原子間のAttention重みが最も高くなると予想されますか？</li>
-<li>その理由を化学的観点から説明してください。</li>
-<li>Multi-Head Attentionでは、各ヘッドがどのような異なる情報を捉える可能性がありますか？</li>
-</ol>
-
-<p><details></p>
-<p><summary>解答例</summary></p>
-
-<ol>
-<li><strong>最も高いAttention重み</strong>: C-C結合、C-O結合</li>
-</ol>
-
-<ol>
-<li><strong>化学的理由</strong>:</li>
-</ol>
-<p>   - 共有結合により強い相互作用がある</p>
-<p>   - 電子の共有により電子密度が高い</p>
-<p>   - O原子はC原子と極性結合を形成</p>
-
-<ol>
-<li><strong>各ヘッドが捉える情報の例</strong>:</li>
-</ol>
-<p>   - <strong>ヘッド1</strong>: 化学結合（1次結合）</p>
-<p>   - <strong>ヘッド2</strong>: 2次結合（C-C-O角度）</p>
-<p>   - <strong>ヘッド3</strong>: 電子密度分布</p>
-<p>   - <strong>ヘッド4</strong>: 原子の種類（C vs O vs H）</p>
-<p>   - <strong>ヘッド5</strong>: 立体配座情報</p>
-<p>   - <strong>ヘッド6</strong>: 極性相互作用</p>
-
-<p>   各ヘッドが異なる視点から分子を理解することで、より豊かな表現が可能になる。</p>
-<p></details></p>
-
-<p>---</p>
-
-<p><h2>🔗 参考資料</h2></p>
-
-<p><h3>論文</h3></p>
-<ul>
-<li>Vaswani et al. (2017) "Attention Is All You Need" <a href="https://arxiv.org/abs/1706.03762">arXiv:1706.03762</a></li>
-<li>Devlin et al. (2019) "BERT: Pre-training of Deep Bidirectional Transformers" <a href="https://arxiv.org/abs/1810.04805">arXiv:1810.04805</a></li>
-</ul>
-
-<p><h3>チュートリアル</h3></p>
-<ul>
-<li><a href="http://jalammar.github.io/illustrated-transformer/">The Illustrated Transformer</a></li>
-<li><a href="https://pytorch.org/tutorials/beginner/transformer_tutorial.html">PyTorch Transformer Tutorial</a></li>
-</ul>
-
-<p><h3>次章</h3></p>
-<p><strong><a href="chapter-2.md">第2章: 材料向けTransformerアーキテクチャ</a></strong> で、Matformer、ChemBERTaなど材料科学特化モデルを学びます。</p>
-
-<p>---</p>
-
-<p><strong>作成者</strong>: 橋本佑介（東北大学）</p>
-<p><strong>最終更新</strong>: 2025年10月17日</p>
-
-
-        
-        <div class="navigation">
-            <a href="chapter-2.html" class="nav-button">次章: 第2章 →</a>
-            <a href="index.html" class="nav-button">← シリーズ目次に戻る</a>
-            
-        </div>
-    
+<h1>使用例と可視化</h1>
+d_model = 128
+max_len = 100
+
+pos_enc = PositionalEncoding(d_model, max_len)
+
+<h1>ダミー入力</h1>
+x = torch.zeros(1, 50, d_model)
+output = pos_enc(x)
+
+<h1>可視化</h1>
+plt.figure(figsize=(12, 4))
+plt.plot(pos_enc.pe[0, :50, :8].numpy())
+plt.xlabel('Position')
+plt.ylabel('Encoding Value')
+plt.title('Positional Encoding (first 8 dimensions)')
+plt.legend([f'dim {i}' for i in range(8)])
+plt.tight_layout()
+plt.show()</code></pre>
+
+---
+
+<h2>1.6 TransformerとBERT/GPT</h2>
+
+<h3>Transformer全体アーキテクチャ</h3>
+
+<div class="mermaid">graph TB
+    subgraph Encoder
+        E1[Input Embedding] --> E2[Positional Encoding]
+        E2 --> E3[Multi-Head Attention]
+        E3 --> E4[Add & Norm]
+        E4 --> E5[Feed Forward]
+        E5 --> E6[Add & Norm]
+    end
+
+    subgraph Decoder
+        D1[Output Embedding] --> D2[Positional Encoding]
+        D2 --> D3[Masked Multi-Head Attention]
+        D3 --> D4[Add & Norm]
+        D4 --> D5[Multi-Head Attention]
+        D5 --> D6[Add & Norm]
+        D6 --> D7[Feed Forward]
+        D7 --> D8[Add & Norm]
+    end
+
+    E6 -.Encoder出力.-> D5
+    D8 --> O[Output]
+
+    style E3 fill:#e1f5ff
+    style D3 fill:#ffe1e1
+    style D5 fill:#e1ffe1</div>
+
+<h3>BERT（Bidirectional Encoder Representations from Transformers）</h3>
+
+<strong>特徴</strong>:
+- <strong>Encoderのみ</strong>使用
+- <strong>双方向</strong>でコンテキストを理解
+- <strong>事前学習タスク</strong>: Masked Language Model (MLM) + Next Sentence Prediction (NSP)
+- <strong>用途</strong>: 分類、特徴抽出、質問応答
+
+<strong>材料科学での応用</strong>:
+- MatBERT: 材料の組成式から特性予測
+- ChemBERTa: 分子SMILES表現学習
+
+<h3>GPT（Generative Pre-trained Transformer）</h3>
+
+<strong>特徴</strong>:
+- <strong>Decoderのみ</strong>使用
+- <strong>単方向</strong>（左から右）でテキスト生成
+- <strong>事前学習タスク</strong>: 次の単語予測
+- <strong>用途</strong>: テキスト生成、対話、創造的タスク
+
+<strong>材料科学での応用</strong>:
+- 分子生成（SMILES文字列生成）
+- 材料記述文の自動生成
+- 合成経路の提案
+
+---
+
+<h2>1.7 材料科学での成功事例</h2>
+
+<h3>1. ChemBERTa: 分子表現学習</h3>
+
+<strong>概要</strong>: SMILESをBERTで学習
+<pre><code class="language-python"><h1>分子SMILES: CC(C)Cc1ccc(cc1)C(C)C(=O)O (イブプロフェン)</h1>
+<h1>ChemBERTaで埋め込みベクトルに変換 → 特性予測</h1></code></pre>
+
+<strong>成果</strong>:
+- 小規模データでの高精度予測
+- 転移学習により開発期間短縮
+- 解釈可能性（Attentionで重要部分可視化）
+
+<h3>2. Matformer: 材料特性予測</h3>
+
+<strong>概要</strong>: 結晶構造をTransformerで処理
+<pre><code class="language-python"><h1>入力: 原子座標、原子番号、格子定数</h1>
+<h1>出力: バンドギャップ、形成エネルギー</h1></code></pre>
+
+<strong>成果</strong>:
+- Materials Projectデータで高精度
+- GNNと同等以上の性能
+- 計算効率が良い
+
+<h3>3. 拡散モデルによる分子生成</h3>
+
+<strong>概要</strong>: 条件付き拡散モデルで新規分子生成
+<pre><code class="language-python"><h1>条件: 溶解度 > 5 mg/mL, LogP < 3</h1>
+<h1>生成: 条件を満たす分子SMILES</h1></code></pre>
+
+<strong>成果</strong>:
+- 創薬で有望な候補分子発見
+- 従来手法より多様性が高い
+- 合成可能性も考慮
+
+---
+
+<h2>1.8 まとめ</h2>
+
+<h3>重要ポイント</h3>
+
+1. <strong>Attention機構</strong>: 系列内の任意の要素間の関係を直接モデル化
+2. <strong>Self-Attention</strong>: 入力系列自身に対するAttention
+3. <strong>Multi-Head Attention</strong>: 複数の視点から関係性を学習
+4. <strong>Positional Encoding</strong>: 位置情報を埋め込み
+5. <strong>BERT/GPT</strong>: Transformer based の代表的事前学習モデル
+6. <strong>材料科学応用</strong>: 分子・材料表現学習、特性予測、生成モデル
+
+<h3>次章への準備</h3>
+
+第2章では、材料科学に特化したTransformerアーキテクチャ（Matformer、CrystalFormer、ChemBERTa）を詳しく学びます。
+
+---
+
+<h2>📝 演習問題</h2>
+
+<h3>問題1: 基礎理解（概念）</h3>
+Attention機構における Query、Key、Value の役割を、図書館の例え以外で説明してください。
+
+<details>
+<summary>解答例</summary>
+
+<strong>検索エンジンの例え</strong>:
+- <strong>Query</strong>: ユーザーが入力した検索キーワード
+- <strong>Key</strong>: 各Webページのメタデータ（タイトル、要約）
+- <strong>Value</strong>: Webページの実際のコンテンツ
+- <strong>Attention</strong>: 検索キーワードとの関連性が高いページを上位表示
+
+<strong>分子の例え</strong>:
+- <strong>Query</strong>: ある原子が「どの原子と相互作用したいか」
+- <strong>Key</strong>: 各原子の特徴（原子番号、電荷、位置）
+- <strong>Value</strong>: 各原子の詳細な情報
+- <strong>Attention</strong>: 化学結合や相互作用の強さを表現
+</details>
+
+<h3>問題2: 実装（コーディング）</h3>
+以下のコードの空欄を埋めて、Simple Attention（スケーリングなし、マスクなし）を実装してください。
+
+<pre><code class="language-python">def simple_attention(Q, K, V):
+    """
+    シンプルなAttention機構
+
+    Args:
+        Q: Query (batch_size, seq_len, d_k)
+        K: Key (batch_size, seq_len, d_k)
+        V: Value (batch_size, seq_len, d_v)
+
+    Returns:
+        output: (batch_size, seq_len, d_v)
+        attention_weights: (batch_size, seq_len, seq_len)
+    """
+    # 1. QとKの内積を計算
+    scores = torch.matmul(______, ______.transpose(-2, -1))
+
+    # 2. Softmaxで正規化
+    attention_weights = F.softmax(______, dim=-1)
+
+    # 3. Attention重みでValueを重み付け和
+    output = torch.matmul(______, ______)
+
+    return output, attention_weights</code></pre>
+
+<details>
+<summary>解答例</summary>
+
+<pre><code class="language-python">def simple_attention(Q, K, V):
+    # 1. QとKの内積を計算
+    scores = torch.matmul(Q, K.transpose(-2, -1))
+
+    # 2. Softmaxで正規化
+    attention_weights = F.softmax(scores, dim=-1)
+
+    # 3. Attention重みでValueを重み付け和
+    output = torch.matmul(attention_weights, V)
+
+    return output, attention_weights</code></pre>
+</details>
+
+<h3>問題3: 応用（考察）</h3>
+分子 "CCO"（エタノール）におけるSelf-Attentionを考えます。以下の質問に答えてください：
+
+1. どの原子間のAttention重みが最も高くなると予想されますか？
+2. その理由を化学的観点から説明してください。
+3. Multi-Head Attentionでは、各ヘッドがどのような異なる情報を捉える可能性がありますか？
+
+<details>
+<summary>解答例</summary>
+
+1. <strong>最も高いAttention重み</strong>: C-C結合、C-O結合
+
+2. <strong>化学的理由</strong>:
+   - 共有結合により強い相互作用がある
+   - 電子の共有により電子密度が高い
+   - O原子はC原子と極性結合を形成
+
+3. <strong>各ヘッドが捉える情報の例</strong>:
+   - <strong>ヘッド1</strong>: 化学結合（1次結合）
+   - <strong>ヘッド2</strong>: 2次結合（C-C-O角度）
+   - <strong>ヘッド3</strong>: 電子密度分布
+   - <strong>ヘッド4</strong>: 原子の種類（C vs O vs H）
+   - <strong>ヘッド5</strong>: 立体配座情報
+   - <strong>ヘッド6</strong>: 極性相互作用
+
+   各ヘッドが異なる視点から分子を理解することで、より豊かな表現が可能になる。
+</details>
+
+---
+
+<h2>🔗 参考資料</h2>
+
+<h3>論文</h3>
+- Vaswani et al. (2017) "Attention Is All You Need" [arXiv:1706.03762](https://arxiv.org/abs/1706.03762)
+- Devlin et al. (2019) "BERT: Pre-training of Deep Bidirectional Transformers" [arXiv:1810.04805](https://arxiv.org/abs/1810.04805)
+
+<h3>チュートリアル</h3>
+- [The Illustrated Transformer](http://jalammar.github.io/illustrated-transformer/)
+- [PyTorch Transformer Tutorial](https://pytorch.org/tutorials/beginner/transformer_tutorial.html)
+
+<h3>次章</h3>
+<strong>[第2章: 材料向けTransformerアーキテクチャ](chapter-2.md)</strong> で、Matformer、ChemBERTaなど材料科学特化モデルを学びます。
+
+---
+
+<strong>作成者</strong>: 橋本佑介（東北大学）
+<strong>最終更新</strong>: 2025年10月17日
+<div class="navigation">
+    <a href="index.html" class="nav-button">シリーズ目次に戻る</a>
+    <a href="chapter-2.html" class="nav-button">第2章 →</a>
+</div>
     </main>
 
     <footer>
         <p><strong>作成者</strong>: AI Terakoya Content Team</p>
-        <p><strong>監修</strong>: Dr. Yusuke Hashimoto(東北大学)</p>
+        <p><strong>監修</strong>: Dr. Yusuke Hashimoto（東北大学）</p>
         <p><strong>バージョン</strong>: 1.0 | <strong>作成日</strong>: 2025-10-17</p>
         <p><strong>ライセンス</strong>: Creative Commons BY 4.0</p>
         <p>© 2025 AI Terakoya. All rights reserved.</p>

@@ -319,121 +319,132 @@
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         mermaid.initialize({ startOnLoad: true, theme: 'default' });
     </script>
+
+    <!-- MathJax for LaTeX equation rendering -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\(', '\)']],
+                displayMath: [['$$', '$$'], ['\[', '\]']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
 </head>
 <body>
     <header>
         <div class="header-content">
             <h1>第4章：データ管理とポストプロセス（FireWorks, AiiDA）</h1>
-            
+            <p class="subtitle"></p>
             <div class="meta">
                 <span class="meta-item">📖 読了時間: 20-25分</span>
-<span class="meta-item">📊 難易度: 上級</span>
+                <span class="meta-item">📊 難易度: 上級</span>
+                <span class="meta-item">💻 コード例: 6個</span>
+                <span class="meta-item">📝 演習問題: 0問</span>
             </div>
         </div>
     </header>
 
     <main class="container">
-        <h1>第4章：データ管理とポストプロセス（FireWorks, AiiDA）</h1>
+
+<h1>第4章：データ管理とポストプロセス（FireWorks, AiiDA）</h1>
 
 <h2>学習目標</h2>
 
-<p>この章を読むことで、以下を習得できます：</p>
+この章を読むことで、以下を習得できます：
 
-<ul>
-<li>✅ FireWorksで複雑なワークフローを構築できる</li>
-<li>✅ Atomateの標準ワークフローを使いこなせる</li>
-<li>✅ AiiDAでデータプロビナンスを記録できる</li>
-<li>✅ 計算結果を構造化データベースに保存できる</li>
-<li>✅ 結果をNOMADに公開できる</li>
-</ul>
+- ✅ FireWorksで複雑なワークフローを構築できる
+- ✅ Atomateの標準ワークフローを使いこなせる
+- ✅ AiiDAでデータプロビナンスを記録できる
+- ✅ 計算結果を構造化データベースに保存できる
+- ✅ 結果をNOMADに公開できる
 
-<p>---</p>
+---
 
 <h2>4.1 FireWorksによるワークフロー管理</h2>
 
 <h3>FireWorksのアーキテクチャ</h3>
 
-<pre><code class="language-mermaid">graph TD
-<p>A[Firework] -->|連鎖| B[Workflow]</p>
-<p>B --> C[LaunchPad<br/>MongoDB]</p>
-<p>C -->|タスク割当| D[Rocket Launcher]</p>
-<p>D -->|実行| E[計算ノード]</p>
-<p>E -->|結果| C</p>
+<div class="mermaid">graph TD
+    A[Firework] -->|連鎖| B[Workflow]
+    B --> C[LaunchPad<br/>MongoDB]
+    C -->|タスク割当| D[Rocket Launcher]
+    D -->|実行| E[計算ノード]
+    E -->|結果| C
 
-<p>style C fill:#4ecdc4</p>
-<p>style A fill:#ffe66d</p>
-<p>style B fill:#ff6b6b</p>
-</code></pre>
+    style C fill:#4ecdc4
+    style A fill:#ffe66d
+    style B fill:#ff6b6b</div>
 
 <strong>主要コンポーネント</strong>:
-<ul>
-<li><strong>Firework</strong>: 単一タスク（1つのDFT計算）</li>
-<li><strong>Workflow</strong>: 複数Fireworkの連鎖</li>
-<li><strong>LaunchPad</strong>: データベース（MongoDB）</li>
-<li><strong>Rocket</strong>: タスク実行エンジン</li>
-</ul>
+- <strong>Firework</strong>: 単一タスク（1つのDFT計算）
+- <strong>Workflow</strong>: 複数Fireworkの連鎖
+- <strong>LaunchPad</strong>: データベース（MongoDB）
+- <strong>Rocket</strong>: タスク実行エンジン
 
 <h3>インストールと設定</h3>
 
 <pre><code class="language-bash"><h1>FireWorksインストール</h1>
-<p>pip install fireworks</p>
+pip install fireworks
 
 <h1>MongoDBインストール（macOS）</h1>
-<p>brew install mongodb-community</p>
+brew install mongodb-community
 
 <h1>MongoDB起動</h1>
-<p>brew services start mongodb-community</p>
+brew services start mongodb-community
 
 <h1>FireWorks設定</h1>
-<p>lpad init</p>
-<h1>→ my_launchpad.yamlが生成される</h1>
-</code></pre>
+lpad init
+<h1>→ my_launchpad.yamlが生成される</h1></code></pre>
 
 <strong>my_launchpad.yaml</strong>:
 <pre><code class="language-yaml">host: localhost
-<p>port: 27017</p>
-<p>name: fireworks</p>
-<p>username: null</p>
-<p>password: null</p>
-</code></pre>
+port: 27017
+name: fireworks
+username: null
+password: null</code></pre>
 
 <h3>基本的なFirework作成</h3>
 
 <pre><code class="language-python">from fireworks import Firework, LaunchPad, ScriptTask
-<p>from fireworks.core.rocket_launcher import rapidfire</p>
+from fireworks.core.rocket_launcher import rapidfire
 
 <h1>LaunchPad（データベース）に接続</h1>
-<p>launchpad = LaunchPad(host='localhost', port=27017, name='fireworks')</p>
+launchpad = LaunchPad(host='localhost', port=27017, name='fireworks')
 
 <h1>Task定義（VASP実行）</h1>
-<p>vasp_task = ScriptTask.from_str(</p>
-<p>'mpirun -np 48 vasp_std',</p>
-<p>use_shell=True</p>
-<p>)</p>
+vasp_task = ScriptTask.from_str(
+    'mpirun -np 48 vasp_std',
+    use_shell=True
+)
 
 <h1>Firework作成</h1>
-<p>fw = Firework(</p>
-<p>vasp_task,</p>
-<p>name='VASP relaxation',</p>
-<p>spec={'_category': 'VASP'}</p>
-<p>)</p>
+fw = Firework(
+    vasp_task,
+    name='VASP relaxation',
+    spec={'_category': 'VASP'}
+)
 
 <h1>LaunchPadに追加</h1>
-<p>launchpad.add_wf(fw)</p>
+launchpad.add_wf(fw)
 
 <h1>実行</h1>
-<p>rapidfire(launchpad)</p>
-</code></pre>
+rapidfire(launchpad)</code></pre>
 
 <h3>Atomateの標準ワークフロー</h3>
 
 <strong>Atomate</strong>は、Materials Projectで使用されている標準ワークフローライブラリです。
 
 <pre><code class="language-python">from atomate.vasp.workflows.base.core import get_wf
-<p>from pymatgen.core import Structure</p>
+from pymatgen.core import Structure
 
 <h1>構造読み込み</h1>
-<p>structure = Structure.from_file("LiCoO2.cif")</p>
+structure = Structure.from_file("LiCoO2.cif")
 
 <h1>標準ワークフロー取得</h1>
 <h1>optimize_structure_and_properties:</h1>
@@ -441,128 +452,125 @@
 <h1>  2. 静的計算</h1>
 <h1>  3. バンド構造</h1>
 <h1>  4. DOS計算</h1>
-<p>wf = get_wf(</p>
-<p>structure,</p>
-<p>"optimize_structure_and_properties.yaml"</p>
-<p>)</p>
+wf = get_wf(
+    structure,
+    "optimize_structure_and_properties.yaml"
+)
 
 <h1>LaunchPadに追加</h1>
-<p>launchpad.add_wf(wf)</p>
+launchpad.add_wf(wf)
 
 <h1>実行</h1>
-<p>rapidfire(launchpad, nlaunches='infinite')</p>
-</code></pre>
+rapidfire(launchpad, nlaunches='infinite')</code></pre>
 
 <h3>カスタムワークフロー作成</h3>
 
 <pre><code class="language-python">from fireworks import Firework, Workflow
-<p>from fireworks.core.firework import FiretaskBase</p>
-<p>from atomate.vasp.firetasks.write_inputs import WriteVaspFromIOSet</p>
-<p>from atomate.vasp.firetasks.run_calc import RunVaspCustodian</p>
-<p>from atomate.vasp.firetasks.parse_outputs import VaspToDb</p>
-<p>from pymatgen.io.vasp.sets import MPRelaxSet, MPStaticSet</p>
+from fireworks.core.firework import FiretaskBase
+from atomate.vasp.firetasks.write_inputs import WriteVaspFromIOSet
+from atomate.vasp.firetasks.run_calc import RunVaspCustodian
+from atomate.vasp.firetasks.parse_outputs import VaspToDb
+from pymatgen.io.vasp.sets import MPRelaxSet, MPStaticSet
 
-<p>class CustomWorkflow:</p>
-<p>"""カスタムワークフロー生成"""</p>
+class CustomWorkflow:
+    """カスタムワークフロー生成"""
 
-<p>@staticmethod</p>
-<p>def bandgap_workflow(structure):</p>
-<p>"""</p>
-<p>バンドギャップ計算ワークフロー</p>
-<p>1. 構造最適化 → 2. 静的計算 → 3. バンドギャップ抽出</p>
-<p>"""</p>
-<p># Firework 1: 構造最適化</p>
-<p>fw1 = Firework(</p>
-<p>[</p>
-<p>WriteVaspFromIOSet(structure=structure, vasp_input_set=MPRelaxSet),</p>
-<p>RunVaspCustodian(vasp_cmd="vasp_std"),</p>
-<p>VaspToDb(db_file="db.json", task_label="relax")</p>
-<p>],</p>
-<p>name="Structural relaxation",</p>
-<p>spec={"_category": "relax"}</p>
-<p>)</p>
+    @staticmethod
+    def bandgap_workflow(structure):
+        """
+        バンドギャップ計算ワークフロー
+        1. 構造最適化 → 2. 静的計算 → 3. バンドギャップ抽出
+        """
+        # Firework 1: 構造最適化
+        fw1 = Firework(
+            [
+                WriteVaspFromIOSet(structure=structure, vasp_input_set=MPRelaxSet),
+                RunVaspCustodian(vasp_cmd="vasp_std"),
+                VaspToDb(db_file="db.json", task_label="relax")
+            ],
+            name="Structural relaxation",
+            spec={"_category": "relax"}
+        )
 
-<p># Firework 2: 静的計算</p>
-<p>fw2 = Firework(</p>
-<p>[</p>
-<p>WriteVaspFromIOSet(structure=structure, vasp_input_set=MPStaticSet),</p>
-<p>RunVaspCustodian(vasp_cmd="vasp_std"),</p>
-<p>VaspToDb(db_file="db.json", task_label="static")</p>
-<p>],</p>
-<p>name="Static calculation",</p>
-<p>spec={"_category": "static"}</p>
-<p>)</p>
+        # Firework 2: 静的計算
+        fw2 = Firework(
+            [
+                WriteVaspFromIOSet(structure=structure, vasp_input_set=MPStaticSet),
+                RunVaspCustodian(vasp_cmd="vasp_std"),
+                VaspToDb(db_file="db.json", task_label="static")
+            ],
+            name="Static calculation",
+            spec={"_category": "static"}
+        )
 
-<p># Firework 3: バンドギャップ抽出</p>
-<p>fw3 = Firework(</p>
-<p>[ExtractBandgapTask()],</p>
-<p>name="Extract bandgap"</p>
-<p>)</p>
+        # Firework 3: バンドギャップ抽出
+        fw3 = Firework(
+            [ExtractBandgapTask()],
+            name="Extract bandgap"
+        )
 
-<p># ワークフロー構築（fw1 → fw2 → fw3）</p>
-<p>wf = Workflow(</p>
-<p>[fw1, fw2, fw3],</p>
-<p>links_dict={fw1: [fw2], fw2: [fw3]},</p>
-<p>name=f"Bandgap workflow: {structure.composition.reduced_formula}"</p>
-<p>)</p>
+        # ワークフロー構築（fw1 → fw2 → fw3）
+        wf = Workflow(
+            [fw1, fw2, fw3],
+            links_dict={fw1: [fw2], fw2: [fw3]},
+            name=f"Bandgap workflow: {structure.composition.reduced_formula}"
+        )
 
-<p>return wf</p>
+        return wf
 
 
-<p>class ExtractBandgapTask(FiretaskBase):</p>
-<p>"""バンドギャップ抽出タスク"""</p>
+class ExtractBandgapTask(FiretaskBase):
+    """バンドギャップ抽出タスク"""
 
-<p>def run_task(self, fw_spec):</p>
-<p>from pymatgen.io.vasp.outputs import Vasprun</p>
+    def run_task(self, fw_spec):
+        from pymatgen.io.vasp.outputs import Vasprun
 
-<p>vasprun = Vasprun("vasprun.xml")</p>
-<p>bandgap = vasprun.get_band_structure().get_band_gap()</p>
+        vasprun = Vasprun("vasprun.xml")
+        bandgap = vasprun.get_band_structure().get_band_gap()
 
-<p>print(f"バンドギャップ: {bandgap['energy']:.3f} eV")</p>
+        print(f"バンドギャップ: {bandgap['energy']:.3f} eV")
 
-<p># 結果をデータベースに保存</p>
-<p>return {"bandgap": bandgap['energy']}</p>
+        # 結果をデータベースに保存
+        return {"bandgap": bandgap['energy']}
 
 <h1>使用例</h1>
-<p>structure = Structure.from_file("LiCoO2.cif")</p>
-<p>wf = CustomWorkflow.bandgap_workflow(structure)</p>
+structure = Structure.from_file("LiCoO2.cif")
+wf = CustomWorkflow.bandgap_workflow(structure)
 
-<p>launchpad.add_wf(wf)</p>
-<p>rapidfire(launchpad)</p>
-</code></pre>
+launchpad.add_wf(wf)
+rapidfire(launchpad)</code></pre>
 
 <h3>エラーハンドリングとリスタート</h3>
 
 <pre><code class="language-python">from custodian.custodian import Custodian
-<p>from custodian.vasp.handlers import VaspErrorHandler, UnconvergedErrorHandler</p>
-<p>from custodian.vasp.jobs import VaspJob</p>
+from custodian.vasp.handlers import VaspErrorHandler, UnconvergedErrorHandler
+from custodian.vasp.jobs import VaspJob
 
 <h1>エラーハンドラー設定</h1>
-<p>handlers = [</p>
-<p>VaspErrorHandler(),           # 一般的なVASPエラー</p>
-<p>UnconvergedErrorHandler(),    # 収束性エラー</p>
-<p>]</p>
+handlers = [
+    VaspErrorHandler(),           # 一般的なVASPエラー
+    UnconvergedErrorHandler(),    # 収束性エラー
+]
 
 <h1>VASPジョブ定義</h1>
-<p>jobs = [</p>
-<p>VaspJob(</p>
-<p>vasp_cmd=["mpirun", "-np", "48", "vasp_std"],</p>
-<p>output_file="vasp.out",</p>
-<p>auto_npar=False</p>
-<p>)</p>
-<p>]</p>
+jobs = [
+    VaspJob(
+        vasp_cmd=["mpirun", "-np", "48", "vasp_std"],
+        output_file="vasp.out",
+        auto_npar=False
+    )
+]
 
 <h1>Custodian実行（自動エラー処理）</h1>
-<p>c = Custodian(</p>
-<p>handlers=handlers,</p>
-<p>jobs=jobs,</p>
-<p>max_errors=5</p>
-<p>)</p>
+c = Custodian(
+    handlers=handlers,
+    jobs=jobs,
+    max_errors=5
+)
 
-<p>c.run()</p>
-</code></pre>
+c.run()</code></pre>
 
-<p>---</p>
+---
 
 <h2>4.2 AiiDAによるプロビナンス管理</h2>
 
@@ -571,430 +579,420 @@
 <strong>プロビナンス</strong>とは、計算結果がどのように得られたかの完全な記録です。
 
 <strong>追跡すべき情報</strong>:
-<ul>
-<li>入力データ（構造、パラメータ）</li>
-<li>使用ソフトウェア（VASP 6.3.0等）</li>
-<li>計算環境（ノード、コア数、日時）</li>
-<li>中間結果</li>
-<li>最終結果</li>
-</ul>
+- 入力データ（構造、パラメータ）
+- 使用ソフトウェア（VASP 6.3.0等）
+- 計算環境（ノード、コア数、日時）
+- 中間結果
+- 最終結果
 
 <h3>AiiDAインストール</h3>
 
 <pre><code class="language-bash"><h1>AiiDAインストール</h1>
-<p>pip install aiida-core aiida-vasp</p>
+pip install aiida-core aiida-vasp
 
 <h1>データベース初期化</h1>
-<p>verdi quicksetup</p>
+verdi quicksetup
 
 <h1>動作確認</h1>
-<p>verdi status</p>
-</code></pre>
+verdi status</code></pre>
 
 <h3>AiiDAでの計算実行</h3>
 
 <pre><code class="language-python">from aiida import orm, engine
-<p>from aiida.plugins import CalculationFactory, DataFactory</p>
+from aiida.plugins import CalculationFactory, DataFactory
 
 <h1>VASP計算クラス取得</h1>
-<p>VaspCalculation = CalculationFactory('vasp.vasp')</p>
+VaspCalculation = CalculationFactory('vasp.vasp')
 
 <h1>データ型</h1>
-<p>StructureData = DataFactory('structure')</p>
-<p>KpointsData = DataFactory('array.kpoints')</p>
+StructureData = DataFactory('structure')
+KpointsData = DataFactory('array.kpoints')
 
 <h1>構造データ作成</h1>
-<p>structure = StructureData()</p>
+structure = StructureData()
 <h1>（構造を設定）</h1>
 
 <h1>k-points設定</h1>
-<p>kpoints = KpointsData()</p>
-<p>kpoints.set_kpoints_mesh([8, 8, 8])</p>
+kpoints = KpointsData()
+kpoints.set_kpoints_mesh([8, 8, 8])
 
 <h1>計算パラメータ</h1>
-<p>parameters = orm.Dict(dict={</p>
-<p>'ENCUT': 520,</p>
-<p>'EDIFF': 1e-5,</p>
-<p>'ISMEAR': 0,</p>
-<p>'SIGMA': 0.05,</p>
-<p>})</p>
+parameters = orm.Dict(dict={
+    'ENCUT': 520,
+    'EDIFF': 1e-5,
+    'ISMEAR': 0,
+    'SIGMA': 0.05,
+})
 
 <h1>計算ビルダー</h1>
-<p>builder = VaspCalculation.get_builder()</p>
-<p>builder.structure = structure</p>
-<p>builder.kpoints = kpoints</p>
-<p>builder.parameters = parameters</p>
-<p>builder.code = orm.Code.get_from_string('vasp@localhost')</p>
+builder = VaspCalculation.get_builder()
+builder.structure = structure
+builder.kpoints = kpoints
+builder.parameters = parameters
+builder.code = orm.Code.get_from_string('vasp@localhost')
 
 <h1>実行</h1>
-<p>calc_node = engine.submit(builder)</p>
-<p>print(f"計算ノード: {calc_node.pk}")</p>
-</code></pre>
+calc_node = engine.submit(builder)
+print(f"計算ノード: {calc_node.pk}")</code></pre>
 
 <h3>データクエリ</h3>
 
 <pre><code class="language-python">from aiida.orm import QueryBuilder
 
 <h1>すべてのVASP計算を検索</h1>
-<p>qb = QueryBuilder()</p>
-<p>qb.append(VaspCalculation, filters={'attributes.exit_status': 0})</p>
+qb = QueryBuilder()
+qb.append(VaspCalculation, filters={'attributes.exit_status': 0})
 
-<p>for calc in qb.all():</p>
-<p>print(f"PK: {calc[0].pk}, Formula: {calc[0].inputs.structure.get_formula()}")</p>
+for calc in qb.all():
+    print(f"PK: {calc[0].pk}, Formula: {calc[0].inputs.structure.get_formula()}")
 
 <h1>バンドギャップが1.5-2.5 eVの材料を検索</h1>
-<p>qb = QueryBuilder()</p>
-<p>qb.append(VaspCalculation, tag='calc')</p>
-<p>qb.append(orm.Dict, with_incoming='calc', filters={</p>
-<p>'attributes.band_gap': {'and': [{'>=': 1.5}, {'<=': 2.5}]}</p>
-<p>})</p>
+qb = QueryBuilder()
+qb.append(VaspCalculation, tag='calc')
+qb.append(orm.Dict, with_incoming='calc', filters={
+    'attributes.band_gap': {'and': [{'>=': 1.5}, {'<=': 2.5}]}
+})
 
-<p>results = qb.all()</p>
-<p>print(f"該当する材料: {len(results)}個")</p>
-</code></pre>
+results = qb.all()
+print(f"該当する材料: {len(results)}個")</code></pre>
 
-<p>---</p>
+---
 
 <h2>4.3 計算データの構造化</h2>
 
 <h3>JSONスキーマ設計</h3>
 
 <pre><code class="language-python">import json
-<p>from datetime import datetime</p>
+from datetime import datetime
 
-<p>class MaterialsDataSchema:</p>
-<p>"""材料計算データのスキーマ"""</p>
+class MaterialsDataSchema:
+    """材料計算データのスキーマ"""
 
-<p>@staticmethod</p>
-<p>def create_entry(material_id, formula, structure, calculation_results):</p>
-<p>"""</p>
-<p>データベースエントリを作成</p>
+    @staticmethod
+    def create_entry(material_id, formula, structure, calculation_results):
+        """
+        データベースエントリを作成
 
-<p>Returns:</p>
-<p>--------</p>
-<p>entry : dict</p>
-<p>構造化データ</p>
-<p>"""</p>
-<p>entry = {</p>
-<p># 識別情報</p>
-<p>"material_id": material_id,</p>
-<p>"formula": formula,</p>
-<p>"created_at": datetime.now().isoformat(),</p>
+        Returns:
+        --------
+        entry : dict
+            構造化データ
+        """
+        entry = {
+            # 識別情報
+            "material_id": material_id,
+            "formula": formula,
+            "created_at": datetime.now().isoformat(),
 
-<p># 構造情報</p>
-<p>"structure": {</p>
-<p>"lattice": structure.lattice.matrix.tolist(),</p>
-<p>"species": [str(site.specie) for site in structure],</p>
-<p>"coords": [site.frac_coords.tolist() for site in structure],</p>
-<p>"space_group": structure.get_space_group_info()[1]</p>
-<p>},</p>
+            # 構造情報
+            "structure": {
+                "lattice": structure.lattice.matrix.tolist(),
+                "species": [str(site.specie) for site in structure],
+                "coords": [site.frac_coords.tolist() for site in structure],
+                "space_group": structure.get_space_group_info()[1]
+            },
 
-<p># 計算結果</p>
-<p>"properties": {</p>
-<p>"energy": calculation_results.get("energy"),</p>
-<p>"band_gap": calculation_results.get("band_gap"),</p>
-<p>"formation_energy": calculation_results.get("formation_energy"),</p>
-<p>},</p>
+            # 計算結果
+            "properties": {
+                "energy": calculation_results.get("energy"),
+                "band_gap": calculation_results.get("band_gap"),
+                "formation_energy": calculation_results.get("formation_energy"),
+            },
 
-<p># 計算メタデータ</p>
-<p>"calculation_metadata": {</p>
-<p>"software": "VASP 6.3.0",</p>
-<p>"functional": "PBE",</p>
-<p>"encut": 520,</p>
-<p>"kpoints": calculation_results.get("kpoints"),</p>
-<p>"converged": calculation_results.get("converged"),</p>
-<p>"calculation_time": calculation_results.get("calculation_time"),</p>
-<p>},</p>
+            # 計算メタデータ
+            "calculation_metadata": {
+                "software": "VASP 6.3.0",
+                "functional": "PBE",
+                "encut": 520,
+                "kpoints": calculation_results.get("kpoints"),
+                "converged": calculation_results.get("converged"),
+                "calculation_time": calculation_results.get("calculation_time"),
+            },
 
-<p># プロビナンス</p>
-<p>"provenance": {</p>
-<p>"input_structure_source": "Materials Project",</p>
-<p>"workflow": "Atomate optimize_structure",</p>
-<p>"hostname": calculation_results.get("hostname"),</p>
-<p>"date": calculation_results.get("date"),</p>
-<p>}</p>
-<p>}</p>
+            # プロビナンス
+            "provenance": {
+                "input_structure_source": "Materials Project",
+                "workflow": "Atomate optimize_structure",
+                "hostname": calculation_results.get("hostname"),
+                "date": calculation_results.get("date"),
+            }
+        }
 
-<p>return entry</p>
+        return entry
 
 <h1>使用例</h1>
-<p>entry = MaterialsDataSchema.create_entry(</p>
-<p>material_id="custom-0001",</p>
-<p>formula="LiCoO2",</p>
-<p>structure=structure,</p>
-<p>calculation_results={</p>
-<p>"energy": -45.67,</p>
-<p>"band_gap": 2.3,</p>
-<p>"converged": True,</p>
-<p>"kpoints": [12, 12, 8],</p>
-<p>"calculation_time": "2.5 hours",</p>
-<p>"hostname": "hpc.university.edu",</p>
-<p>"date": "2025-10-17",</p>
-<p>}</p>
-<p>)</p>
+entry = MaterialsDataSchema.create_entry(
+    material_id="custom-0001",
+    formula="LiCoO2",
+    structure=structure,
+    calculation_results={
+        "energy": -45.67,
+        "band_gap": 2.3,
+        "converged": True,
+        "kpoints": [12, 12, 8],
+        "calculation_time": "2.5 hours",
+        "hostname": "hpc.university.edu",
+        "date": "2025-10-17",
+    }
+)
 
 <h1>JSON保存</h1>
-<p>with open("data/custom-0001.json", 'w') as f:</p>
-<p>json.dump(entry, f, indent=2)</p>
-</code></pre>
+with open("data/custom-0001.json", 'w') as f:
+    json.dump(entry, f, indent=2)</code></pre>
 
 <h3>MongoDBによるデータ管理</h3>
 
 <pre><code class="language-python">from pymongo import MongoClient
-<p>import json</p>
+import json
 
-<p>class MaterialsDatabase:</p>
-<p>"""MongoDBによる材料データベース"""</p>
+class MaterialsDatabase:
+    """MongoDBによる材料データベース"""
 
-<p>def __init__(self, host='localhost', port=27017, db_name='materials'):</p>
-<p>self.client = MongoClient(host, port)</p>
-<p>self.db = self.client[db_name]</p>
-<p>self.collection = self.db['calculations']</p>
+    def __init__(self, host='localhost', port=27017, db_name='materials'):
+        self.client = MongoClient(host, port)
+        self.db = self.client[db_name]
+        self.collection = self.db['calculations']
 
-<p># インデックス作成（検索高速化）</p>
-<p>self.collection.create_index("material_id", unique=True)</p>
-<p>self.collection.create_index("formula")</p>
-<p>self.collection.create_index("properties.band_gap")</p>
+        # インデックス作成（検索高速化）
+        self.collection.create_index("material_id", unique=True)
+        self.collection.create_index("formula")
+        self.collection.create_index("properties.band_gap")
 
-<p>def insert(self, entry):</p>
-<p>"""データを挿入"""</p>
-<p>result = self.collection.insert_one(entry)</p>
-<p>return result.inserted_id</p>
+    def insert(self, entry):
+        """データを挿入"""
+        result = self.collection.insert_one(entry)
+        return result.inserted_id
 
-<p>def find_by_formula(self, formula):</p>
-<p>"""化学式で検索"""</p>
-<p>return list(self.collection.find({"formula": formula}))</p>
+    def find_by_formula(self, formula):
+        """化学式で検索"""
+        return list(self.collection.find({"formula": formula}))
 
-<p>def find_by_bandgap_range(self, min_gap, max_gap):</p>
-<p>"""バンドギャップ範囲で検索"""</p>
-<p>query = {</p>
-<p>"properties.band_gap": {</p>
-<p>"$gte": min_gap,</p>
-<p>"$lte": max_gap</p>
-<p>}</p>
-<p>}</p>
-<p>return list(self.collection.find(query))</p>
+    def find_by_bandgap_range(self, min_gap, max_gap):
+        """バンドギャップ範囲で検索"""
+        query = {
+            "properties.band_gap": {
+                "$gte": min_gap,
+                "$lte": max_gap
+            }
+        }
+        return list(self.collection.find(query))
 
-<p>def get_statistics(self):</p>
-<p>"""統計情報"""</p>
-<p>pipeline = [</p>
-<p>{</p>
-<p>"$group": {</p>
-<p>"_id": None,</p>
-<p>"total": {"$sum": 1},</p>
-<p>"avg_bandgap": {"$avg": "$properties.band_gap"},</p>
-<p>"avg_energy": {"$avg": "$properties.energy"}</p>
-<p>}</p>
-<p>}</p>
-<p>]</p>
+    def get_statistics(self):
+        """統計情報"""
+        pipeline = [
+            {
+                "$group": {
+                    "_id": None,
+                    "total": {"$sum": 1},
+                    "avg_bandgap": {"$avg": "$properties.band_gap"},
+                    "avg_energy": {"$avg": "$properties.energy"}
+                }
+            }
+        ]
 
-<p>result = list(self.collection.aggregate(pipeline))</p>
-<p>return result[0] if result else {}</p>
+        result = list(self.collection.aggregate(pipeline))
+        return result[0] if result else {}
 
 <h1>使用例</h1>
-<p>db = MaterialsDatabase()</p>
+db = MaterialsDatabase()
 
 <h1>データ挿入</h1>
-<p>db.insert(entry)</p>
+db.insert(entry)
 
 <h1>検索</h1>
-<p>licoo2_results = db.find_by_formula("LiCoO2")</p>
-<p>print(f"LiCoO2の計算: {len(licoo2_results)}件")</p>
+licoo2_results = db.find_by_formula("LiCoO2")
+print(f"LiCoO2の計算: {len(licoo2_results)}件")
 
 <h1>バンドギャップ検索</h1>
-<p>semiconductors = db.find_by_bandgap_range(0.5, 3.0)</p>
-<p>print(f"半導体（0.5-3.0 eV）: {len(semiconductors)}件")</p>
+semiconductors = db.find_by_bandgap_range(0.5, 3.0)
+print(f"半導体（0.5-3.0 eV）: {len(semiconductors)}件")
 
 <h1>統計</h1>
-<p>stats = db.get_statistics()</p>
-<p>print(f"平均バンドギャップ: {stats['avg_bandgap']:.2f} eV")</p>
-</code></pre>
+stats = db.get_statistics()
+print(f"平均バンドギャップ: {stats['avg_bandgap']:.2f} eV")</code></pre>
 
-<p>---</p>
+---
 
 <h2>4.4 ポストプロセスの自動化</h2>
 
 <h3>DOS/バンド構造の自動プロット</h3>
 
 <pre><code class="language-python">from pymatgen.io.vasp.outputs import Vasprun
-<p>from pymatgen.electronic_structure.plotter import BSPlotter, DosPlotter</p>
-<p>import matplotlib.pyplot as plt</p>
+from pymatgen.electronic_structure.plotter import BSPlotter, DosPlotter
+import matplotlib.pyplot as plt
 
-<p>def auto_plot_band_dos(directory):</p>
-<p>"""</p>
-<p>バンド構造とDOSを自動プロット</p>
+def auto_plot_band_dos(directory):
+    """
+    バンド構造とDOSを自動プロット
 
-<p>Parameters:</p>
-<p>-----------</p>
-<p>directory : str</p>
-<p>vasprun.xmlがあるディレクトリ</p>
-<p>"""</p>
-<p>vasprun = Vasprun(f"{directory}/vasprun.xml")</p>
+    Parameters:
+    -----------
+    directory : str
+        vasprun.xmlがあるディレクトリ
+    """
+    vasprun = Vasprun(f"{directory}/vasprun.xml")
 
-<p># バンド構造</p>
-<p>bs = vasprun.get_band_structure()</p>
-<p>bs_plotter = BSPlotter(bs)</p>
+    # バンド構造
+    bs = vasprun.get_band_structure()
+    bs_plotter = BSPlotter(bs)
 
-<p>fig = bs_plotter.get_plot(ylim=[-5, 5])</p>
-<p>fig.savefig(f"{directory}/band_structure.png", dpi=300)</p>
-<p>print(f"バンド構造を保存: {directory}/band_structure.png")</p>
+    fig = bs_plotter.get_plot(ylim=[-5, 5])
+    fig.savefig(f"{directory}/band_structure.png", dpi=300)
+    print(f"バンド構造を保存: {directory}/band_structure.png")
 
-<p># DOS</p>
-<p>dos = vasprun.complete_dos</p>
-<p>dos_plotter = DosPlotter()</p>
-<p>dos_plotter.add_dos("Total", dos)</p>
+    # DOS
+    dos = vasprun.complete_dos
+    dos_plotter = DosPlotter()
+    dos_plotter.add_dos("Total", dos)
 
-<p>fig = dos_plotter.get_plot(xlim=[-5, 5])</p>
-<p>fig.savefig(f"{directory}/dos.png", dpi=300)</p>
-<p>print(f"DOSを保存: {directory}/dos.png")</p>
+    fig = dos_plotter.get_plot(xlim=[-5, 5])
+    fig.savefig(f"{directory}/dos.png", dpi=300)
+    print(f"DOSを保存: {directory}/dos.png")
 
-<p># バンドギャップ</p>
-<p>bandgap = bs.get_band_gap()</p>
-<p>print(f"バンドギャップ: {bandgap['energy']:.3f} eV ({bandgap['transition']})")</p>
+    # バンドギャップ
+    bandgap = bs.get_band_gap()
+    print(f"バンドギャップ: {bandgap['energy']:.3f} eV ({bandgap['transition']})")
 
 <h1>使用例</h1>
-<p>auto_plot_band_dos("calculations/LiCoO2")</p>
-</code></pre>
+auto_plot_band_dos("calculations/LiCoO2")</code></pre>
 
 <h3>レポート自動生成</h3>
 
 <pre><code class="language-python">from jinja2 import Template
-<p>from datetime import datetime</p>
+from datetime import datetime
 
-<p>def generate_report(material_data, output_file="report.html"):</p>
-<p>"""</p>
-<p>計算結果レポートを自動生成</p>
+def generate_report(material_data, output_file="report.html"):
+    """
+    計算結果レポートを自動生成
 
-<p>Parameters:</p>
-<p>-----------</p>
-<p>material_data : dict</p>
-<p>材料データ</p>
-<p>output_file : str</p>
-<p>出力HTMLファイル</p>
-<p>"""</p>
-<p>template_str = """</p>
+    Parameters:
+    -----------
+    material_data : dict
+        材料データ
+    output_file : str
+        出力HTMLファイル
+    """
+    template_str = """
 <!DOCTYPE html>
 <html>
 <head>
-<title>計算レポート: {{ material_data.formula }}</title>
-<style>
-<p>body { font-family: Arial, sans-serif; margin: 40px; }</p>
-<p>table { border-collapse: collapse; width: 100%; }</p>
-<p>th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }</p>
-<p>th { background-color: #4CAF50; color: white; }</p>
-<p>img { max-width: 600px; }</p>
-</style>
+    <title>計算レポート: {{ material_data.formula }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #4CAF50; color: white; }
+        img { max-width: 600px; }
+    </style>
 </head>
 <body>
-<h1>{{ material_data.formula }}</h1>
-<p>生成日時: {{ generation_time }}</p>
+    <h1>{{ material_data.formula }}</h1>
+    <p>生成日時: {{ generation_time }}</p>
 
-<h2>構造情報</h2>
-<table>
-<tr><th>項目</th><th>値</th></tr>
-<tr><td>空間群</td><td>{{ material_data.structure.space_group }}</td></tr>
-<tr><td>格子定数 a</td><td>{{ "%.3f"|format(material_data.structure.lattice[0][0]) }} Å</td></tr>
-</table>
+    <h2>構造情報</h2>
+    <table>
+        <tr><th>項目</th><th>値</th></tr>
+        <tr><td>空間群</td><td>{{ material_data.structure.space_group }}</td></tr>
+        <tr><td>格子定数 a</td><td>{{ "%.3f"|format(material_data.structure.lattice[0][0]) }} Å</td></tr>
+    </table>
 
-<h2>計算結果</h2>
-<table>
-<tr><th>特性</th><th>値</th></tr>
-<tr><td>エネルギー</td><td>{{ "%.3f"|format(material_data.properties.energy) }} eV/atom</td></tr>
-<tr><td>バンドギャップ</td><td>{{ "%.3f"|format(material_data.properties.band_gap) }} eV</td></tr>
-</table>
+    <h2>計算結果</h2>
+    <table>
+        <tr><th>特性</th><th>値</th></tr>
+        <tr><td>エネルギー</td><td>{{ "%.3f"|format(material_data.properties.energy) }} eV/atom</td></tr>
+        <tr><td>バンドギャップ</td><td>{{ "%.3f"|format(material_data.properties.band_gap) }} eV</td></tr>
+    </table>
 
-<h2>バンド構造</h2>
-<img src="band_structure.png" alt="バンド構造">
+    <h2>バンド構造</h2>
+    <img src="band_structure.png" alt="バンド構造">
 
-<h2>状態密度</h2>
-<img src="dos.png" alt="DOS">
+    <h2>状態密度</h2>
+    <img src="dos.png" alt="DOS">
 </body>
 </html>
-<p>"""</p>
+    """
 
-<p>template = Template(template_str)</p>
+    template = Template(template_str)
 
-<p>html = template.render(</p>
-<p>material_data=material_data,</p>
-<p>generation_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")</p>
-<p>)</p>
+    html = template.render(
+        material_data=material_data,
+        generation_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    )
 
-<p>with open(output_file, 'w') as f:</p>
-<p>f.write(html)</p>
+    with open(output_file, 'w') as f:
+        f.write(html)
 
-<p>print(f"レポート生成: {output_file}")</p>
+    print(f"レポート生成: {output_file}")
 
 <h1>使用例</h1>
-<p>generate_report(entry, output_file="LiCoO2_report.html")</p>
-</code></pre>
+generate_report(entry, output_file="LiCoO2_report.html")</code></pre>
 
-<p>---</p>
+---
 
 <h2>4.5 データ共有とアーカイブ</h2>
 
 <h3>NOMAD Repositoryへのアップロード</h3>
 
 <pre><code class="language-python">import requests
-<p>import json</p>
+import json
 
-<p>def upload_to_nomad(data_files, metadata):</p>
-<p>"""</p>
-<p>NOMAD Repositoryにデータをアップロード</p>
+def upload_to_nomad(data_files, metadata):
+    """
+    NOMAD Repositoryにデータをアップロード
 
-<p>Parameters:</p>
-<p>-----------</p>
-<p>data_files : list</p>
-<p>アップロードするファイルリスト</p>
-<p>metadata : dict</p>
-<p>メタデータ</p>
-<p>"""</p>
-<p>nomad_url = "https://nomad-lab.eu/prod/rae/api/v1/uploads"</p>
+    Parameters:
+    -----------
+    data_files : list
+        アップロードするファイルリスト
+    metadata : dict
+        メタデータ
+    """
+    nomad_url = "https://nomad-lab.eu/prod/rae/api/v1/uploads"
 
-<p># メタデータ準備</p>
-<p>upload_metadata = {</p>
-<p>"upload_name": metadata.get("name", "Untitled"),</p>
-<p>"references": metadata.get("references", []),</p>
-<p>"coauthors": metadata.get("coauthors", []),</p>
-<p>}</p>
+    # メタデータ準備
+    upload_metadata = {
+        "upload_name": metadata.get("name", "Untitled"),
+        "references": metadata.get("references", []),
+        "coauthors": metadata.get("coauthors", []),
+    }
 
-<p># ファイルアップロード</p>
-<p>files = []</p>
-<p>for file_path in data_files:</p>
-<p>files.append(('file', open(file_path, 'rb')))</p>
+    # ファイルアップロード
+    files = []
+    for file_path in data_files:
+        files.append(('file', open(file_path, 'rb')))
 
-<p>response = requests.post(</p>
-<p>nomad_url,</p>
-<p>files=files,</p>
-<p>data={'metadata': json.dumps(upload_metadata)},</p>
-<p>headers={'Authorization': f'Bearer {NOMAD_API_TOKEN}'}</p>
-<p>)</p>
+    response = requests.post(
+        nomad_url,
+        files=files,
+        data={'metadata': json.dumps(upload_metadata)},
+        headers={'Authorization': f'Bearer {NOMAD_API_TOKEN}'}
+    )
 
-<p>if response.status_code == 200:</p>
-<p>upload_id = response.json()['upload_id']</p>
-<p>print(f"アップロード成功: {upload_id}")</p>
-<p>print(f"URL: https://nomad-lab.eu/prod/rae/gui/uploads/{upload_id}")</p>
-<p>return upload_id</p>
-<p>else:</p>
-<p>print(f"アップロード失敗: {response.status_code}")</p>
-<p>return None</p>
+    if response.status_code == 200:
+        upload_id = response.json()['upload_id']
+        print(f"アップロード成功: {upload_id}")
+        print(f"URL: https://nomad-lab.eu/prod/rae/gui/uploads/{upload_id}")
+        return upload_id
+    else:
+        print(f"アップロード失敗: {response.status_code}")
+        return None
 
 <h1>使用例</h1>
-<p>files = [</p>
-<p>"calculations/LiCoO2/vasprun.xml",</p>
-<p>"calculations/LiCoO2/OUTCAR",</p>
-<p>"calculations/LiCoO2/CONTCAR",</p>
-<p>]</p>
+files = [
+    "calculations/LiCoO2/vasprun.xml",
+    "calculations/LiCoO2/OUTCAR",
+    "calculations/LiCoO2/CONTCAR",
+]
 
-<p>metadata = {</p>
-<p>"name": "LiCoO2 battery material calculations",</p>
-<p>"references": ["https://doi.org/10.xxxx/xxxxx"],</p>
-<p>"coauthors": ["Dr. Yusuke Hashimoto"]</p>
-<p>}</p>
+metadata = {
+    "name": "LiCoO2 battery material calculations",
+    "references": ["https://doi.org/10.xxxx/xxxxx"],
+    "coauthors": ["Dr. Yusuke Hashimoto"]
+}
 
-<p>upload_to_nomad(files, metadata)</p>
-</code></pre>
+upload_to_nomad(files, metadata)</code></pre>
 
-<p>---</p>
+---
 
 <h2>4.6 演習問題</h2>
 
@@ -1006,112 +1004,105 @@
 <summary>解答例</summary>
 
 <pre><code class="language-python">from fireworks import Firework, Workflow
-<p>from atomate.vasp.firetasks.write_inputs import WriteVaspFromIOSet</p>
-<p>from atomate.vasp.firetasks.run_calc import RunVaspCustodian</p>
-<p>from pymatgen.io.vasp.sets import MPRelaxSet, MPStaticSet</p>
-<p>from pymatgen.core import Structure</p>
+from atomate.vasp.firetasks.write_inputs import WriteVaspFromIOSet
+from atomate.vasp.firetasks.run_calc import RunVaspCustodian
+from pymatgen.io.vasp.sets import MPRelaxSet, MPStaticSet
+from pymatgen.core import Structure
 
-<p>structure = Structure.from_file("POSCAR")</p>
+structure = Structure.from_file("POSCAR")
 
 <h1>Firework 1: 構造最適化</h1>
-<p>fw1 = Firework(</p>
-<p>[</p>
-<p>WriteVaspFromIOSet(structure=structure, vasp_input_set=MPRelaxSet),</p>
-<p>RunVaspCustodian(vasp_cmd="vasp_std")</p>
-<p>],</p>
-<p>name="Relax"</p>
-<p>)</p>
+fw1 = Firework(
+    [
+        WriteVaspFromIOSet(structure=structure, vasp_input_set=MPRelaxSet),
+        RunVaspCustodian(vasp_cmd="vasp_std")
+    ],
+    name="Relax"
+)
 
 <h1>Firework 2: 静的計算</h1>
-<p>fw2 = Firework(</p>
-<p>[</p>
-<p>WriteVaspFromIOSet(structure=structure, vasp_input_set=MPStaticSet),</p>
-<p>RunVaspCustodian(vasp_cmd="vasp_std")</p>
-<p>],</p>
-<p>name="Static"</p>
-<p>)</p>
+fw2 = Firework(
+    [
+        WriteVaspFromIOSet(structure=structure, vasp_input_set=MPStaticSet),
+        RunVaspCustodian(vasp_cmd="vasp_std")
+    ],
+    name="Static"
+)
 
 <h1>ワークフロー</h1>
-<p>wf = Workflow([fw1, fw2], links_dict={fw1: [fw2]})</p>
+wf = Workflow([fw1, fw2], links_dict={fw1: [fw2]})
 
-<p>launchpad.add_wf(wf)</p>
-</code></pre>
+launchpad.add_wf(wf)</code></pre>
 
 </details>
 
 <h3>問題2（難易度: hard）</h3>
 
 <strong>問題</strong>: MongoDBに保存された1000材料のデータから、以下を抽出してください：
-<ol>
-<li>バンドギャップが1.0-2.0 eVの半導体</li>
-<li>形成エネルギーが負（安定）</li>
-<li>結果をCSVに保存</li>
-</ol>
+1. バンドギャップが1.0-2.0 eVの半導体
+2. 形成エネルギーが負（安定）
+3. 結果をCSVに保存
 
 <details>
 <summary>解答例</summary>
 
 <pre><code class="language-python">import pandas as pd
 
-<p>db = MaterialsDatabase()</p>
+db = MaterialsDatabase()
 
 <h1>クエリ</h1>
-<p>query = {</p>
-<p>"properties.band_gap": {"$gte": 1.0, "$lte": 2.0},</p>
-<p>"properties.formation_energy": {"$lt": 0}</p>
-<p>}</p>
+query = {
+    "properties.band_gap": {"$gte": 1.0, "$lte": 2.0},
+    "properties.formation_energy": {"$lt": 0}
+}
 
-<p>results = list(db.collection.find(query))</p>
+results = list(db.collection.find(query))
 
 <h1>DataFrame化</h1>
-<p>data = []</p>
-<p>for r in results:</p>
-<p>data.append({</p>
-<p>"formula": r["formula"],</p>
-<p>"band_gap": r["properties"]["band_gap"],</p>
-<p>"formation_energy": r["properties"]["formation_energy"],</p>
-<p>"space_group": r["structure"]["space_group"]</p>
-<p>})</p>
+data = []
+for r in results:
+    data.append({
+        "formula": r["formula"],
+        "band_gap": r["properties"]["band_gap"],
+        "formation_energy": r["properties"]["formation_energy"],
+        "space_group": r["structure"]["space_group"]
+    })
 
-<p>df = pd.DataFrame(data)</p>
+df = pd.DataFrame(data)
 
 <h1>CSV保存</h1>
-<p>df.to_csv("stable_semiconductors.csv", index=False)</p>
-<p>print(f"該当材料: {len(df)}個")</p>
-<p>print(df.head())</p>
-</code></pre>
+df.to_csv("stable_semiconductors.csv", index=False)
+print(f"該当材料: {len(df)}個")
+print(df.head())</code></pre>
 
 </details>
 
-<p>---</p>
+---
 
 <h2>4.7 まとめ</h2>
 
 <strong>キーポイント</strong>:
 
-<ol>
-<li><strong>FireWorks</strong>: Materials Project標準のワークフロー管理</li>
-<li><strong>Atomate</strong>: 標準化された計算ワークフロー</li>
-<li><strong>AiiDA</strong>: データプロビナンス追跡</li>
-<li><strong>MongoDB</strong>: 大規模データ管理</li>
-<li><strong>NOMAD</strong>: データ公開とFAIR原則</li>
-</ol>
+1. <strong>FireWorks</strong>: Materials Project標準のワークフロー管理
+2. <strong>Atomate</strong>: 標準化された計算ワークフロー
+3. <strong>AiiDA</strong>: データプロビナンス追跡
+4. <strong>MongoDB</strong>: 大規模データ管理
+5. <strong>NOMAD</strong>: データ公開とFAIR原則
 
 <strong>次のステップ</strong>: 第5章でクラウドHPC活用を学びます。
 
-<strong><a href="./chapter-5.md">第5章: クラウドHPC活用と最適化 →</a></strong>
+<strong>[第5章: クラウドHPC活用と最適化 →](./chapter-5.md)</strong>
 
-<p>---</p>
+---
 
 <strong>ライセンス</strong>: CC BY 4.0
 <strong>作成日</strong>: 2025-10-17
 <strong>作成者</strong>: Dr. Yusuke Hashimoto, Tohoku University
-
-
-        <div class="navigation">
-            <a href="chapter-3.html" class="nav-button">← 前章: 第3章</a>
-<a href="chapter-5.html" class="nav-button">次章: 第5章 →</a>
-        </div>
+<div class="navigation">
+    <a href="chapter-3.html" class="nav-button">← 第3章</a>
+    <a href="index.html" class="nav-button">シリーズ目次に戻る</a>
+    <a href="chapter-5.html" class="nav-button">第5章 →</a>
+</div>
     </main>
 
     <footer>

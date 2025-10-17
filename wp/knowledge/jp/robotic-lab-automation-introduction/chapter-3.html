@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>chapter-3 - AI Terakoya</title>
+    <title>Chapter - AI Terakoya</title>
 
     <style>
         :root {
@@ -319,787 +319,768 @@
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         mermaid.initialize({ startOnLoad: true, theme: 'default' });
     </script>
+
+    <!-- MathJax for LaTeX equation rendering -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\(', '\)']],
+                displayMath: [['$$', '$$'], ['\[', '\]']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
 </head>
 <body>
     <header>
         <div class="header-content">
-            <h1>chapter-3</h1>
-            
+            <h1>Chapter</h1>
+            <p class="subtitle"></p>
             <div class="meta">
-                
+                <span class="meta-item">📖 読了時間: 20-25分</span>
+                <span class="meta-item">📊 難易度: 初級</span>
+                <span class="meta-item">💻 コード例: 0個</span>
+                <span class="meta-item">📝 演習問題: 0問</span>
             </div>
         </div>
     </header>
 
     <main class="container">
-        <h1>第3章: クローズドループ最適化</h1>
+<h1>第3章: クローズドループ最適化</h1>
 
 <strong>学習時間: 25-30分</strong>
 
-<p>---</p>
+---
 
 <h2>導入</h2>
 
-<p>実験自動化の真の価値は、単なるスループット向上にとどまりません。ベイズ最適化やアクティブラーニングと統合することで、<strong>人間の介入なしに自律的に最適な材料を探索するシステム</strong>を構築できます。</p>
+実験自動化の真の価値は、単なるスループット向上にとどまりません。ベイズ最適化やアクティブラーニングと統合することで、<strong>人間の介入なしに自律的に最適な材料を探索するシステム</strong>を構築できます。
 
-<p>本章では、実験→測定→解析→予測→次実験提案という<strong>クローズドループ（Closed-Loop）</strong>を自動化する技術を学びます。量子ドットの発光波長最適化、触媒の活性最大化など、実際の材料探索問題に適用できるPython実装を習得します。</p>
+本章では、実験→測定→解析→予測→次実験提案という<strong>クローズドループ（Closed-Loop）</strong>を自動化する技術を学びます。量子ドットの発光波長最適化、触媒の活性最大化など、実際の材料探索問題に適用できるPython実装を習得します。
 
-<p>---</p>
+---
 
 <h2>学習目標</h2>
 
-<p>本章を学習することで、以下を習得できます：</p>
+本章を学習することで、以下を習得できます：
 
-<ol>
-<li><strong>クローズドループの概念</strong>: 実験と機械学習の統合アーキテクチャ</li>
-<li><strong>ベイズ最適化との統合</strong>: ガウス過程による次実験候補の自動提案</li>
-<li><strong>アクティブラーニング</strong>: 効率的なデータ収集戦略</li>
-<li><strong>Python実装</strong>: scikit-optimize、BoTorchを使った実践的コード</li>
-<li><strong>シミュレーション環境</strong>: PyBulletによる仮想ロボット実験</li>
-<li><strong>実データでのデモ</strong>: 量子ドット発光波長の自動最適化</li>
-</ol>
+1. <strong>クローズドループの概念</strong>: 実験と機械学習の統合アーキテクチャ
+2. <strong>ベイズ最適化との統合</strong>: ガウス過程による次実験候補の自動提案
+3. <strong>アクティブラーニング</strong>: 効率的なデータ収集戦略
+4. <strong>Python実装</strong>: scikit-optimize、BoTorchを使った実践的コード
+5. <strong>シミュレーション環境</strong>: PyBulletによる仮想ロボット実験
+6. <strong>実データでのデモ</strong>: 量子ドット発光波長の自動最適化
 
-<p>---</p>
+---
 
 <h2>3.1 クローズドループ最適化の概念</h2>
 
 <h3>3.1.1 従来の手動最適化 vs クローズドループ</h3>
 
 <strong>従来の手動最適化</strong>:
-<ol>
-<li>研究者が直感で実験条件を決定</li>
-<li>実験を実行（1-2日）</li>
-<li>データを解析</li>
-<li>次の実験条件を考案（1-2日）</li>
-<li>ステップ1-4を繰り返し</li>
-</ol>
+1. 研究者が直感で実験条件を決定
+2. 実験を実行（1-2日）
+3. データを解析
+4. 次の実験条件を考案（1-2日）
+5. ステップ1-4を繰り返し
 
 <strong>問題点</strong>:
-<ul>
-<li>人間の認知バイアス（局所最適に陥りやすい）</li>
-<li>多次元パラメータ空間の探索が困難</li>
-<li>実験と解析の間にタイムラグ</li>
-<li>夜間・週末は実験が止まる</li>
-</ul>
+- 人間の認知バイアス（局所最適に陥りやすい）
+- 多次元パラメータ空間の探索が困難
+- 実験と解析の間にタイムラグ
+- 夜間・週末は実験が止まる
 
 <strong>クローズドループ最適化</strong>:
 
-<pre><code class="language-mermaid">graph LR
-<p>A[実験計画<br>ベイズ最適化] --> B[ロボット実験<br>自動合成]</p>
-<p>B --> C[測定<br>センサー自動取得]</p>
-<p>C --> D[データ解析<br>特性評価]</p>
-<p>D --> E[モデル更新<br>ガウス過程]</p>
-<p>E --> A</p>
+<div class="mermaid">graph LR
+    A[実験計画<br>ベイズ最適化] --> B[ロボット実験<br>自動合成]
+    B --> C[測定<br>センサー自動取得]
+    C --> D[データ解析<br>特性評価]
+    D --> E[モデル更新<br>ガウス過程]
+    E --> A
 
-<p>style A fill:#e1f5ff</p>
-<p>style B fill:#fff4e1</p>
-<p>style C fill:#ffe1e1</p>
-<p>style D fill:#f0e1ff</p>
-<p>style E fill:#e1ffe1</p>
-</code></pre>
+    style A fill:#e1f5ff
+    style B fill:#fff4e1
+    style C fill:#ffe1e1
+    style D fill:#f0e1ff
+    style E fill:#e1ffe1</div>
 
 <strong>利点</strong>:
-<ul>
-<li>24時間365日稼働</li>
-<li>認知バイアスなし（データ駆動）</li>
-<li>多次元探索に強い</li>
-<li>実験→解析→次実験が数分で完結</li>
-</ul>
+- 24時間365日稼働
+- 認知バイアスなし（データ駆動）
+- 多次元探索に強い
+- 実験→解析→次実験が数分で完結
 
-<p>---</p>
+---
 
 <h3>3.1.2 クローズドループの数学的定式化</h3>
 
-<p>最適化問題:</p>
-<p>$$</p>
-<p>\mathbf{x}^* = \arg\max_{\mathbf{x} \in \mathcal{X}} f(\mathbf{x})</p>
-<p>$$</p>
+最適化問題:
+$$
+\mathbf{x}^* = \arg\max_{\mathbf{x} \in \mathcal{X}} f(\mathbf{x})
+$$
 
-<p>ここで:</p>
-<ul>
-<li>$\mathbf{x}$: 実験条件（温度、時間、組成など）</li>
-<li>$f(\mathbf{x})$: 目的関数（触媒活性、発光波長など）</li>
-<li>$\mathcal{X}$: 探索空間（許容される実験条件の範囲）</li>
-</ul>
+ここで:
+- $\mathbf{x}$: 実験条件（温度、時間、組成など）
+- $f(\mathbf{x})$: 目的関数（触媒活性、発光波長など）
+- $\mathcal{X}$: 探索空間（許容される実験条件の範囲）
 
 <strong>課題</strong>: $f(\mathbf{x})$は未知関数で、実験でしか評価できない（計算コストが高い）
 
 <strong>解決策</strong>: ベイズ最適化
-<ol>
-<li><strong>サロゲートモデル</strong>: ガウス過程で$f(\mathbf{x})$を近似</li>
-<li><strong>獲得関数</strong>: 次にどこを実験すべきか提案（探索と活用のバランス）</li>
-<li><strong>反復</strong>: 実験→モデル更新→次候補提案を繰り返し</li>
-</ol>
+1. <strong>サロゲートモデル</strong>: ガウス過程で$f(\mathbf{x})$を近似
+2. <strong>獲得関数</strong>: 次にどこを実験すべきか提案（探索と活用のバランス）
+3. <strong>反復</strong>: 実験→モデル更新→次候補提案を繰り返し
 
-<p>---</p>
+---
 
 <h2>3.2 ベイズ最適化との統合</h2>
 
 <h3>3.2.1 ガウス過程の基礎</h3>
 
-<p>ガウス過程（Gaussian Process, GP）は、関数空間上の確率分布です。</p>
+ガウス過程（Gaussian Process, GP）は、関数空間上の確率分布です。
 
 <strong>数学的定義</strong>:
-<p>$$</p>
-<p>f(\mathbf{x}) \sim \mathcal{GP}(m(\mathbf{x}), k(\mathbf{x}, \mathbf{x}'))</p>
-<p>$$</p>
+$$
+f(\mathbf{x}) \sim \mathcal{GP}(m(\mathbf{x}), k(\mathbf{x}, \mathbf{x}'))
+$$
 
-<ul>
-<li>$m(\mathbf{x})$: 平均関数（通常は0）</li>
-<li>$k(\mathbf{x}, \mathbf{x}')$: カーネル関数（2点の類似度）</li>
-</ul>
+- $m(\mathbf{x})$: 平均関数（通常は0）
+- $k(\mathbf{x}, \mathbf{x}')$: カーネル関数（2点の類似度）
 
 <strong>予測</strong>:
-<p>観測データ $\mathcal{D} = \{(\mathbf{x}_i, y_i)\}_{i=1}^n$ が与えられたとき、新しい点 $\mathbf{x}_*$ での予測:</p>
+観測データ $\mathcal{D} = \{(\mathbf{x}_i, y_i)\}_{i=1}^n$ が与えられたとき、新しい点 $\mathbf{x}_*$ での予測:
 
-<p>$$</p>
-<p>\begin{aligned}</p>
-<p>\mu(\mathbf{x}_<em>) &= \mathbf{k}_</em>^\top (\mathbf{K} + \sigma^2 \mathbf{I})^{-1} \mathbf{y} \\</p>
-<p>\sigma^2(\mathbf{x}_<em>) &= k(\mathbf{x}_</em>, \mathbf{x}_<em>) - \mathbf{k}_</em>^\top (\mathbf{K} + \sigma^2 \mathbf{I})^{-1} \mathbf{k}_*</p>
-<p>\end{aligned}</p>
-<p>$$</p>
+$$
+\begin{aligned}
+\mu(\mathbf{x}_*) &= \mathbf{k}_*^\top (\mathbf{K} + \sigma^2 \mathbf{I})^{-1} \mathbf{y} \\
+\sigma^2(\mathbf{x}_*) &= k(\mathbf{x}_*, \mathbf{x}_*) - \mathbf{k}_*^\top (\mathbf{K} + \sigma^2 \mathbf{I})^{-1} \mathbf{k}_*
+\end{aligned}
+$$
 
-<ul>
-<li>$\mu(\mathbf{x}_*)$: 予測平均（期待値）</li>
-<li>$\sigma^2(\mathbf{x}_*)$: 予測分散（不確実性）</li>
-<li>$\mathbf{K}$: カーネル行列、$[\mathbf{K}]_{ij} = k(\mathbf{x}_i, \mathbf{x}_j)$</li>
-</ul>
+- $\mu(\mathbf{x}_*)$: 予測平均（期待値）
+- $\sigma^2(\mathbf{x}_*)$: 予測分散（不確実性）
+- $\mathbf{K}$: カーネル行列、$[\mathbf{K}]_{ij} = k(\mathbf{x}_i, \mathbf{x}_j)$
 
 <pre><code class="language-python">import numpy as np
-<p>import matplotlib.pyplot as plt</p>
-<p>from sklearn.gaussian_process import GaussianProcessRegressor</p>
-<p>from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C</p>
+import matplotlib.pyplot as plt
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
 
 <h1>真の関数（未知と仮定）</h1>
-<p>def true_function(x):</p>
-<p>"""</p>
-<p>最適化対象の真の関数（例: 触媒活性）</p>
-<p>実際の実験では未知で、実験でのみ評価可能</p>
-<p>"""</p>
-<p>return np.sin(3<em>x) + 0.3</em>np.cos(10<em>x) + 0.5</em>x</p>
+def true_function(x):
+    """
+    最適化対象の真の関数（例: 触媒活性）
+    実際の実験では未知で、実験でのみ評価可能
+    """
+    return np.sin(3*x) + 0.3*np.cos(10*x) + 0.5*x
 
 <h1>初期実験データ（3点）</h1>
-<p>np.random.seed(42)</p>
-<p>X_init = np.array([0.2, 0.5, 0.8]).reshape(-1, 1)</p>
-<p>y_init = true_function(X_init).ravel() + np.random.normal(0, 0.05, 3)  # ノイズ</p>
+np.random.seed(42)
+X_init = np.array([0.2, 0.5, 0.8]).reshape(-1, 1)
+y_init = true_function(X_init).ravel() + np.random.normal(0, 0.05, 3)  # ノイズ
 
 <h1>ガウス過程モデルの構築</h1>
-<p>kernel = C(1.0, (1e-3, 1e3)) * RBF(length_scale=0.2, length_scale_bounds=(1e-2, 1e2))</p>
-<p>gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10, alpha=0.05<em></em>2)</p>
+kernel = C(1.0, (1e-3, 1e3)) * RBF(length_scale=0.2, length_scale_bounds=(1e-2, 1e2))
+gp = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=10, alpha=0.05**2)
 
 <h1>モデルの学習</h1>
-<p>gp.fit(X_init, y_init)</p>
+gp.fit(X_init, y_init)
 
 <h1>予測（探索空間全体）</h1>
-<p>X_pred = np.linspace(0, 1, 100).reshape(-1, 1)</p>
-<p>y_pred, sigma = gp.predict(X_pred, return_std=True)</p>
+X_pred = np.linspace(0, 1, 100).reshape(-1, 1)
+y_pred, sigma = gp.predict(X_pred, return_std=True)
 
 <h1>可視化</h1>
-<p>plt.figure(figsize=(12, 6))</p>
+plt.figure(figsize=(12, 6))
 
 <h1>真の関数</h1>
-<p>plt.plot(X_pred, true_function(X_pred), 'k--', label='真の関数（未知）', linewidth=2)</p>
+plt.plot(X_pred, true_function(X_pred), 'k--', label='真の関数（未知）', linewidth=2)
 
 <h1>ガウス過程の予測</h1>
-<p>plt.plot(X_pred, y_pred, 'b-', label='GP予測（平均）', linewidth=2)</p>
-<p>plt.fill_between(X_pred.ravel(),</p>
-<p>y_pred - 1.96*sigma,  # 95%信頼区間</p>
-<p>y_pred + 1.96*sigma,</p>
-<p>alpha=0.2, color='blue', label='95%信頼区間')</p>
+plt.plot(X_pred, y_pred, 'b-', label='GP予測（平均）', linewidth=2)
+plt.fill_between(X_pred.ravel(),
+                 y_pred - 1.96*sigma,  # 95%信頼区間
+                 y_pred + 1.96*sigma,
+                 alpha=0.2, color='blue', label='95%信頼区間')
 
 <h1>観測点</h1>
-<p>plt.plot(X_init, y_init, 'ro', markersize=12, label='初期観測点', zorder=10)</p>
+plt.plot(X_init, y_init, 'ro', markersize=12, label='初期観測点', zorder=10)
 
-<p>plt.xlabel('実験条件 x', fontsize=12)</p>
-<p>plt.ylabel('目的関数 f(x)', fontsize=12)</p>
-<p>plt.title('ガウス過程による関数近似', fontsize=14, fontweight='bold')</p>
-<p>plt.legend()</p>
-<p>plt.grid(alpha=0.3)</p>
-<p>plt.tight_layout()</p>
-<p>plt.savefig('gaussian_process_approximation.png', dpi=300, bbox_inches='tight')</p>
-<p>plt.show()</p>
+plt.xlabel('実験条件 x', fontsize=12)
+plt.ylabel('目的関数 f(x)', fontsize=12)
+plt.title('ガウス過程による関数近似', fontsize=14, fontweight='bold')
+plt.legend()
+plt.grid(alpha=0.3)
+plt.tight_layout()
+plt.savefig('gaussian_process_approximation.png', dpi=300, bbox_inches='tight')
+plt.show()
 
-<p>print("ガウス過程の学習完了")</p>
-<p>print(f"最適化されたカーネルパラメータ: {gp.kernel_}")</p>
-</code></pre>
+print("ガウス過程の学習完了")
+print(f"最適化されたカーネルパラメータ: {gp.kernel_}")</code></pre>
 
 <strong>コード解説</strong>:
-<ol>
-<li><strong>カーネル関数</strong>: RBF（Radial Basis Function）カーネルを使用</li>
-</ol>
-<p>- <code>length_scale</code>: 関数の滑らかさを制御</p>
-<ol>
-<li><strong>ノイズ</strong>: <code>alpha</code> パラメータで測定ノイズを考慮</li>
-<li><strong>予測</strong>: 平均 $\mu(\mathbf{x})$ と標準偏差 $\sigma(\mathbf{x})$ を同時に計算</li>
-<li><strong>信頼区間</strong>: $\mu \pm 1.96\sigma$ で95%信頼区間</li>
-</ol>
+1. <strong>カーネル関数</strong>: RBF（Radial Basis Function）カーネルを使用
+   - <code>length_scale</code>: 関数の滑らかさを制御
+2. <strong>ノイズ</strong>: <code>alpha</code> パラメータで測定ノイズを考慮
+3. <strong>予測</strong>: 平均 $\mu(\mathbf{x})$ と標準偏差 $\sigma(\mathbf{x})$ を同時に計算
+4. <strong>信頼区間</strong>: $\mu \pm 1.96\sigma$ で95%信頼区間
 
-<p>---</p>
+---
 
 <h3>3.2.2 獲得関数（Acquisition Function）</h3>
 
-<p>次にどこを実験すべきかを決める関数。<strong>探索（Exploration）</strong>と<strong>活用（Exploitation）</strong>のトレードオフを自動調整します。</p>
+次にどこを実験すべきかを決める関数。<strong>探索（Exploration）</strong>と<strong>活用（Exploitation）</strong>のトレードオフを自動調整します。
 
 <strong>主な獲得関数</strong>:
 
-<ol>
-<li><strong>Expected Improvement (EI)</strong>:</li>
-</ol>
-<p>$$</p>
-<p>\text{EI}(\mathbf{x}) = \mathbb{E}[\max(f(\mathbf{x}) - f^+, 0)]</p>
-<p>$$</p>
-<p>最良観測値 $f^+$ を超える期待改善量</p>
+1. <strong>Expected Improvement (EI)</strong>:
+$$
+\text{EI}(\mathbf{x}) = \mathbb{E}[\max(f(\mathbf{x}) - f^+, 0)]
+$$
+最良観測値 $f^+$ を超える期待改善量
 
-<ol>
-<li><strong>Upper Confidence Bound (UCB)</strong>:</li>
-</ol>
-<p>$$</p>
-<p>\text{UCB}(\mathbf{x}) = \mu(\mathbf{x}) + \kappa \sigma(\mathbf{x})</p>
-<p>$$</p>
-<p>予測平均 + 不確実性（$\kappa$で調整）</p>
+2. <strong>Upper Confidence Bound (UCB)</strong>:
+$$
+\text{UCB}(\mathbf{x}) = \mu(\mathbf{x}) + \kappa \sigma(\mathbf{x})
+$$
+予測平均 + 不確実性（$\kappa$で調整）
 
-<ol>
-<li><strong>Probability of Improvement (PI)</strong>:</li>
-</ol>
-<p>$$</p>
-<p>\text{PI}(\mathbf{x}) = P(f(\mathbf{x}) > f^+)</p>
-<p>$$</p>
+3. <strong>Probability of Improvement (PI)</strong>:
+$$
+\text{PI}(\mathbf{x}) = P(f(\mathbf{x}) > f^+)
+$$
 
 <pre><code class="language-python">from scipy.stats import norm
 
-<p>def expected_improvement(X, gp, f_best, xi=0.01):</p>
-<p>"""</p>
-<p>Expected Improvement獲得関数</p>
+def expected_improvement(X, gp, f_best, xi=0.01):
+    """
+    Expected Improvement獲得関数
 
-<p>Args:</p>
-<p>X: 候補点</p>
-<p>gp: ガウス過程モデル</p>
-<p>f_best: 現在の最良値</p>
-<p>xi: Exploitation-Exploration trade-off（小さいほど活用重視）</p>
+    Args:
+        X: 候補点
+        gp: ガウス過程モデル
+        f_best: 現在の最良値
+        xi: Exploitation-Exploration trade-off（小さいほど活用重視）
 
-<p>Returns:</p>
-<p>EI値</p>
-<p>"""</p>
-<p>mu, sigma = gp.predict(X, return_std=True)</p>
+    Returns:
+        EI値
+    """
+    mu, sigma = gp.predict(X, return_std=True)
 
-<p># sigma=0の場合（既に観測済み）を回避</p>
-<p>sigma = np.maximum(sigma, 1e-9)</p>
+    # sigma=0の場合（既に観測済み）を回避
+    sigma = np.maximum(sigma, 1e-9)
 
-<p># EI計算</p>
-<p>z = (mu - f_best - xi) / sigma</p>
-<p>ei = (mu - f_best - xi) <em> norm.cdf(z) + sigma </em> norm.pdf(z)</p>
+    # EI計算
+    z = (mu - f_best - xi) / sigma
+    ei = (mu - f_best - xi) * norm.cdf(z) + sigma * norm.pdf(z)
 
-<p>return ei</p>
+    return ei
 
-<p>def upper_confidence_bound(X, gp, kappa=2.0):</p>
-<p>"""</p>
-<p>Upper Confidence Bound獲得関数</p>
+def upper_confidence_bound(X, gp, kappa=2.0):
+    """
+    Upper Confidence Bound獲得関数
 
-<p>Args:</p>
-<p>X: 候補点</p>
-<p>gp: ガウス過程モデル</p>
-<p>kappa: Exploration重視度（大きいほど探索重視）</p>
+    Args:
+        X: 候補点
+        gp: ガウス過程モデル
+        kappa: Exploration重視度（大きいほど探索重視）
 
-<p>Returns:</p>
-<p>UCB値</p>
-<p>"""</p>
-<p>mu, sigma = gp.predict(X, return_std=True)</p>
-<p>return mu + kappa * sigma</p>
+    Returns:
+        UCB値
+    """
+    mu, sigma = gp.predict(X, return_std=True)
+    return mu + kappa * sigma
 
 
 <h1>獲得関数の可視化</h1>
-<p>X_pred = np.linspace(0, 1, 100).reshape(-1, 1)</p>
-<p>y_pred, sigma = gp.predict(X_pred, return_std=True)</p>
+X_pred = np.linspace(0, 1, 100).reshape(-1, 1)
+y_pred, sigma = gp.predict(X_pred, return_std=True)
 
 <h1>現在の最良値</h1>
-<p>f_best = y_init.max()</p>
+f_best = y_init.max()
 
 <h1>獲得関数の計算</h1>
-<p>ei_values = expected_improvement(X_pred, gp, f_best)</p>
-<p>ucb_values = upper_confidence_bound(X_pred, gp, kappa=2.0)</p>
+ei_values = expected_improvement(X_pred, gp, f_best)
+ucb_values = upper_confidence_bound(X_pred, gp, kappa=2.0)
 
 <h1>可視化</h1>
-<p>fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(12, 12))</p>
+fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(12, 12))
 
 <h1>(1) ガウス過程の予測</h1>
-<p>ax1.plot(X_pred, true_function(X_pred), 'k--', label='真の関数', linewidth=2)</p>
-<p>ax1.plot(X_pred, y_pred, 'b-', label='GP予測', linewidth=2)</p>
-<p>ax1.fill_between(X_pred.ravel(), y_pred - 1.96<em>sigma, y_pred + 1.96</em>sigma,</p>
-<p>alpha=0.2, color='blue')</p>
-<p>ax1.plot(X_init, y_init, 'ro', markersize=12, label='観測点')</p>
-<p>ax1.axhline(y=f_best, color='red', linestyle=':', label=f'現在の最良値 ({f_best:.2f})')</p>
-<p>ax1.set_ylabel('目的関数 f(x)', fontsize=12)</p>
-<p>ax1.set_title('(1) ガウス過程の予測', fontsize=13, fontweight='bold')</p>
-<p>ax1.legend()</p>
-<p>ax1.grid(alpha=0.3)</p>
+ax1.plot(X_pred, true_function(X_pred), 'k--', label='真の関数', linewidth=2)
+ax1.plot(X_pred, y_pred, 'b-', label='GP予測', linewidth=2)
+ax1.fill_between(X_pred.ravel(), y_pred - 1.96*sigma, y_pred + 1.96*sigma,
+                 alpha=0.2, color='blue')
+ax1.plot(X_init, y_init, 'ro', markersize=12, label='観測点')
+ax1.axhline(y=f_best, color='red', linestyle=':', label=f'現在の最良値 ({f_best:.2f})')
+ax1.set_ylabel('目的関数 f(x)', fontsize=12)
+ax1.set_title('(1) ガウス過程の予測', fontsize=13, fontweight='bold')
+ax1.legend()
+ax1.grid(alpha=0.3)
 
 <h1>(2) Expected Improvement</h1>
-<p>next_x_ei = X_pred[np.argmax(ei_values)]</p>
-<p>ax2.plot(X_pred, ei_values, 'g-', linewidth=2)</p>
-<p>ax2.axvline(x=next_x_ei, color='red', linestyle='--', label=f'次候補 (x={next_x_ei[0]:.3f})')</p>
-<p>ax2.fill_between(X_pred.ravel(), 0, ei_values.ravel(), alpha=0.3, color='green')</p>
-<p>ax2.set_ylabel('EI(x)', fontsize=12)</p>
-<p>ax2.set_title('(2) Expected Improvement獲得関数', fontsize=13, fontweight='bold')</p>
-<p>ax2.legend()</p>
-<p>ax2.grid(alpha=0.3)</p>
+next_x_ei = X_pred[np.argmax(ei_values)]
+ax2.plot(X_pred, ei_values, 'g-', linewidth=2)
+ax2.axvline(x=next_x_ei, color='red', linestyle='--', label=f'次候補 (x={next_x_ei[0]:.3f})')
+ax2.fill_between(X_pred.ravel(), 0, ei_values.ravel(), alpha=0.3, color='green')
+ax2.set_ylabel('EI(x)', fontsize=12)
+ax2.set_title('(2) Expected Improvement獲得関数', fontsize=13, fontweight='bold')
+ax2.legend()
+ax2.grid(alpha=0.3)
 
 <h1>(3) Upper Confidence Bound</h1>
-<p>next_x_ucb = X_pred[np.argmax(ucb_values)]</p>
-<p>ax3.plot(X_pred, ucb_values, 'm-', linewidth=2, label='UCB')</p>
-<p>ax3.plot(X_pred, y_pred, 'b--', linewidth=1, alpha=0.5, label='GP平均')</p>
-<p>ax3.axvline(x=next_x_ucb, color='red', linestyle='--', label=f'次候補 (x={next_x_ucb[0]:.3f})')</p>
-<p>ax3.set_xlabel('実験条件 x', fontsize=12)</p>
-<p>ax3.set_ylabel('UCB(x)', fontsize=12)</p>
-<p>ax3.set_title('(3) Upper Confidence Bound獲得関数', fontsize=13, fontweight='bold')</p>
-<p>ax3.legend()</p>
-<p>ax3.grid(alpha=0.3)</p>
+next_x_ucb = X_pred[np.argmax(ucb_values)]
+ax3.plot(X_pred, ucb_values, 'm-', linewidth=2, label='UCB')
+ax3.plot(X_pred, y_pred, 'b--', linewidth=1, alpha=0.5, label='GP平均')
+ax3.axvline(x=next_x_ucb, color='red', linestyle='--', label=f'次候補 (x={next_x_ucb[0]:.3f})')
+ax3.set_xlabel('実験条件 x', fontsize=12)
+ax3.set_ylabel('UCB(x)', fontsize=12)
+ax3.set_title('(3) Upper Confidence Bound獲得関数', fontsize=13, fontweight='bold')
+ax3.legend()
+ax3.grid(alpha=0.3)
 
-<p>plt.tight_layout()</p>
-<p>plt.savefig('acquisition_functions.png', dpi=300, bbox_inches='tight')</p>
-<p>plt.show()</p>
+plt.tight_layout()
+plt.savefig('acquisition_functions.png', dpi=300, bbox_inches='tight')
+plt.show()
 
-<p>print(f"EIによる次候補: x = {next_x_ei[0]:.3f}")</p>
-<p>print(f"UCBによる次候補: x = {next_x_ucb[0]:.3f}")</p>
-</code></pre>
+print(f"EIによる次候補: x = {next_x_ei[0]:.3f}")
+print(f"UCBによる次候補: x = {next_x_ucb[0]:.3f}")</code></pre>
 
 <strong>獲得関数の特徴</strong>:
-<ul>
-<li><strong>EI</strong>: バランス型、最も広く使用される</li>
-<li><strong>UCB</strong>: 探索重視、$\kappa$で調整可能</li>
-<li><strong>PI</strong>: 保守的、既知領域の改善を優先</li>
-</ul>
+- <strong>EI</strong>: バランス型、最も広く使用される
+- <strong>UCB</strong>: 探索重視、$\kappa$で調整可能
+- <strong>PI</strong>: 保守的、既知領域の改善を優先
 
-<p>---</p>
+---
 
 <h2>3.3 クローズドループの実装</h2>
 
 <h3>3.3.1 scikit-optimizeによる実装</h3>
 
 <pre><code class="language-python">from skopt import gp_minimize
-<p>from skopt.space import Real</p>
-<p>from skopt.utils import use_named_args</p>
-<p>from skopt.plots import plot_convergence, plot_objective</p>
+from skopt.space import Real
+from skopt.utils import use_named_args
+from skopt.plots import plot_convergence, plot_objective
 
 <h1>最適化対象の関数（ロボット実験のシミュレーション）</h1>
-<p>def robot_experiment(x):</p>
-<p>"""</p>
-<p>ロボット実験のシミュレーション関数</p>
+def robot_experiment(x):
+    """
+    ロボット実験のシミュレーション関数
 
-<p>Args:</p>
-<p>x: 実験条件（例: [温度, 時間]）</p>
+    Args:
+        x: 実験条件（例: [温度, 時間]）
 
-<p>Returns:</p>
-<p>-f(x): 最小化問題に変換（scikit-optimizeは最小化）</p>
-<p>"""</p>
-<p># 実際の実験では、この部分がロボットによる合成・測定</p>
-<p>result = true_function(np.array([[x[0]]]))[0]</p>
+    Returns:
+        -f(x): 最小化問題に変換（scikit-optimizeは最小化）
+    """
+    # 実際の実験では、この部分がロボットによる合成・測定
+    result = true_function(np.array([[x[0]]]))[0]
 
-<p># ノイズ（実験誤差）</p>
-<p>result += np.random.normal(0, 0.05)</p>
+    # ノイズ（実験誤差）
+    result += np.random.normal(0, 0.05)
 
-<p>print(f"実験実行: x={x[0]:.3f}, 結果={result:.3f}")</p>
+    print(f"実験実行: x={x[0]:.3f}, 結果={result:.3f}")
 
-<p># 最大化→最小化に変換（scikit-optimizeは最小化）</p>
-<p>return -result</p>
+    # 最大化→最小化に変換（scikit-optimizeは最小化）
+    return -result
 
 
 <h1>探索空間の定義</h1>
-<p>space = [Real(0.0, 1.0, name='x')]</p>
+space = [Real(0.0, 1.0, name='x')]
 
 <h1>ベイズ最適化の実行</h1>
-<p>n_calls = 20  # 実験回数</p>
-<p>result = gp_minimize(</p>
-<p>robot_experiment,  # 目的関数（ロボット実験）</p>
-<p>space,  # 探索空間</p>
-<p>n_calls=n_calls,  # 総実験回数</p>
-<p>n_initial_points=5,  # 初期ランダム実験数</p>
-<p>acq_func='EI',  # 獲得関数</p>
-<p>random_state=42</p>
-<p>)</p>
+n_calls = 20  # 実験回数
+result = gp_minimize(
+    robot_experiment,  # 目的関数（ロボット実験）
+    space,  # 探索空間
+    n_calls=n_calls,  # 総実験回数
+    n_initial_points=5,  # 初期ランダム実験数
+    acq_func='EI',  # 獲得関数
+    random_state=42
+)
 
-<p>print(f"\n最適化完了!")</p>
-<p>print(f"最適条件: x = {result.x[0]:.3f}")</p>
-<p>print(f"最適値: f(x) = {-result.fun:.3f}")</p>
-<p>print(f"実験回数: {n_calls}回")</p>
+print(f"\n最適化完了!")
+print(f"最適条件: x = {result.x[0]:.3f}")
+print(f"最適値: f(x) = {-result.fun:.3f}")
+print(f"実験回数: {n_calls}回")
 
 <h1>収束プロット</h1>
-<p>fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))</p>
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
 
 <h1>(1) 収束履歴</h1>
-<p>plot_convergence(result, ax=ax1)</p>
-<p>ax1.set_title('最適化の収束', fontsize=14, fontweight='bold')</p>
+plot_convergence(result, ax=ax1)
+ax1.set_title('最適化の収束', fontsize=14, fontweight='bold')
 
 <h1>(2) 探索した点</h1>
-<p>X_evaluated = np.array([x[0] for x in result.x_iters])</p>
-<p>y_evaluated = -np.array(result.func_vals)  # 元のスケールに戻す</p>
+X_evaluated = np.array([x[0] for x in result.x_iters])
+y_evaluated = -np.array(result.func_vals)  # 元のスケールに戻す
 
-<p>X_plot = np.linspace(0, 1, 100)</p>
-<p>y_true = true_function(X_plot.reshape(-1, 1)).ravel()</p>
+X_plot = np.linspace(0, 1, 100)
+y_true = true_function(X_plot.reshape(-1, 1)).ravel()
 
-<p>ax2.plot(X_plot, y_true, 'k--', label='真の関数', linewidth=2)</p>
-<p>ax2.plot(X_evaluated, y_evaluated, 'ro-', markersize=8, label='評価点', alpha=0.6)</p>
-<p>ax2.plot(result.x[0], -result.fun, 'g*', markersize=20, label='最適解')</p>
-<p>ax2.set_xlabel('実験条件 x', fontsize=12)</p>
-<p>ax2.set_ylabel('目的関数 f(x)', fontsize=12)</p>
-<p>ax2.set_title('探索軌跡', fontsize=14, fontweight='bold')</p>
-<p>ax2.legend()</p>
-<p>ax2.grid(alpha=0.3)</p>
+ax2.plot(X_plot, y_true, 'k--', label='真の関数', linewidth=2)
+ax2.plot(X_evaluated, y_evaluated, 'ro-', markersize=8, label='評価点', alpha=0.6)
+ax2.plot(result.x[0], -result.fun, 'g*', markersize=20, label='最適解')
+ax2.set_xlabel('実験条件 x', fontsize=12)
+ax2.set_ylabel('目的関数 f(x)', fontsize=12)
+ax2.set_title('探索軌跡', fontsize=14, fontweight='bold')
+ax2.legend()
+ax2.grid(alpha=0.3)
 
-<p>plt.tight_layout()</p>
-<p>plt.savefig('bayesian_optimization_result.png', dpi=300, bbox_inches='tight')</p>
-<p>plt.show()</p>
-</code></pre>
+plt.tight_layout()
+plt.savefig('bayesian_optimization_result.png', dpi=300, bbox_inches='tight')
+plt.show()</code></pre>
 
-<p>---</p>
+---
 
 <h3>3.3.2 完全なクローズドループシステム</h3>
 
 <pre><code class="language-python">class ClosedLoopOptimization:
-<p>"""</p>
-<p>クローズドループ最適化システム</p>
-<p>実験 → 測定 → 解析 → 予測 → 次実験</p>
-<p>"""</p>
+    """
+    クローズドループ最適化システム
+    実験 → 測定 → 解析 → 予測 → 次実験
+    """
 
-<p>def __init__(self, robot_controller, sensor_controller):</p>
-<p>"""</p>
-<p>Args:</p>
-<p>robot_controller: ロボット制御インターフェース</p>
-<p>sensor_controller: センサー制御インターフェース</p>
-<p>"""</p>
-<p>self.robot = robot_controller</p>
-<p>self.sensor = sensor_controller</p>
-<p>self.data = []</p>
+    def __init__(self, robot_controller, sensor_controller):
+        """
+        Args:
+            robot_controller: ロボット制御インターフェース
+            sensor_controller: センサー制御インターフェース
+        """
+        self.robot = robot_controller
+        self.sensor = sensor_controller
+        self.data = []
 
-<p>def run_experiment(self, conditions):</p>
-<p>"""</p>
-<p>1回の実験サイクル</p>
+    def run_experiment(self, conditions):
+        """
+        1回の実験サイクル
 
-<p>Args:</p>
-<p>conditions: 実験条件（辞書）</p>
+        Args:
+            conditions: 実験条件（辞書）
 
-<p>Returns:</p>
-<p>measurement: 測定値</p>
-<p>"""</p>
-<p>print(f"\n--- 実験 {len(self.data)+1} ---")</p>
-<p>print(f"条件: {conditions}")</p>
+        Returns:
+            measurement: 測定値
+        """
+        print(f"\n--- 実験 {len(self.data)+1} ---")
+        print(f"条件: {conditions}")
 
-<p># (1) 試料調製</p>
-<p>print("  [1/4] ロボットによる試料調製...")</p>
-<p>self.robot.prepare_sample(conditions)</p>
+        # (1) 試料調製
+        print("  [1/4] ロボットによる試料調製...")
+        self.robot.prepare_sample(conditions)
 
-<p># (2) 測定</p>
-<p>print("  [2/4] センサーによる測定...")</p>
-<p>measurement = self.sensor.measure()</p>
+        # (2) 測定
+        print("  [2/4] センサーによる測定...")
+        measurement = self.sensor.measure()
 
-<p># (3) データ記録</p>
-<p>print("  [3/4] データ記録...")</p>
-<p>self.data.append({'conditions': conditions, 'measurement': measurement})</p>
+        # (3) データ記録
+        print("  [3/4] データ記録...")
+        self.data.append({'conditions': conditions, 'measurement': measurement})
 
-<p># (4) 結果表示</p>
-<p>print(f"  [4/4] 測定結果: {measurement:.3f}")</p>
+        # (4) 結果表示
+        print(f"  [4/4] 測定結果: {measurement:.3f}")
 
-<p>return measurement</p>
+        return measurement
 
-<p>def optimize(self, n_iterations=10):</p>
-<p>"""</p>
-<p>クローズドループ最適化の実行</p>
+    def optimize(self, n_iterations=10):
+        """
+        クローズドループ最適化の実行
 
-<p>Args:</p>
-<p>n_iterations: 最適化反復回数</p>
-<p>"""</p>
-<p>from skopt import Optimizer</p>
+        Args:
+            n_iterations: 最適化反復回数
+        """
+        from skopt import Optimizer
 
-<p># 探索空間（例: 温度とpH）</p>
-<p>space = [</p>
-<p>Real(50, 150, name='temperature'),  # 温度（℃）</p>
-<p>Real(4, 10, name='pH')  # pH</p>
-<p>]</p>
+        # 探索空間（例: 温度とpH）
+        space = [
+            Real(50, 150, name='temperature'),  # 温度（℃）
+            Real(4, 10, name='pH')  # pH
+        ]
 
-<p>optimizer = Optimizer(space, base_estimator='GP', acq_func='EI')</p>
+        optimizer = Optimizer(space, base_estimator='GP', acq_func='EI')
 
-<p>print("=" * 50)</p>
-<p>print("クローズドループ最適化開始")</p>
-<p>print("=" * 50)</p>
+        print("=" * 50)
+        print("クローズドループ最適化開始")
+        print("=" * 50)
 
-<p>for i in range(n_iterations):</p>
-<p># 次の実験条件を提案</p>
-<p>next_conditions = optimizer.ask()</p>
-<p>conditions_dict = {'temperature': next_conditions[0], 'pH': next_conditions[1]}</p>
+        for i in range(n_iterations):
+            # 次の実験条件を提案
+            next_conditions = optimizer.ask()
+            conditions_dict = {'temperature': next_conditions[0], 'pH': next_conditions[1]}
 
-<p># 実験実行</p>
-<p>result = self.run_experiment(conditions_dict)</p>
+            # 実験実行
+            result = self.run_experiment(conditions_dict)
 
-<p># オプティマイザーに結果を通知</p>
-<p>optimizer.tell(next_conditions, -result)  # 最大化→最小化</p>
+            # オプティマイザーに結果を通知
+            optimizer.tell(next_conditions, -result)  # 最大化→最小化
 
-<p># 最適条件</p>
-<p>best_result = optimizer.get_result()</p>
-<p>print("\n" + "=" * 50)</p>
-<p>print("最適化完了")</p>
-<p>print("=" * 50)</p>
-<p>print(f"最適条件: 温度={best_result.x[0]:.1f}℃, pH={best_result.x[1]:.1f}")</p>
-<p>print(f"最適値: {-best_result.fun:.3f}")</p>
+        # 最適条件
+        best_result = optimizer.get_result()
+        print("\n" + "=" * 50)
+        print("最適化完了")
+        print("=" * 50)
+        print(f"最適条件: 温度={best_result.x[0]:.1f}℃, pH={best_result.x[1]:.1f}")
+        print(f"最適値: {-best_result.fun:.3f}")
 
-<p>return best_result</p>
+        return best_result
 
 
 <h1>シミュレーション用のコントローラー</h1>
-<p>class RobotControllerSimulator:</p>
-<p>def prepare_sample(self, conditions):</p>
-<p>"""試料調製のシミュレーション"""</p>
-<p>time.sleep(0.1)  # 実際は数分</p>
+class RobotControllerSimulator:
+    def prepare_sample(self, conditions):
+        """試料調製のシミュレーション"""
+        time.sleep(0.1)  # 実際は数分
 
-<p>class SensorControllerSimulator:</p>
-<p>def __init__(self):</p>
-<p>self.measurement_count = 0</p>
+class SensorControllerSimulator:
+    def __init__(self):
+        self.measurement_count = 0
 
-<p>def measure(self):</p>
-<p>"""測定のシミュレーション（2変数関数）"""</p>
-<p># 仮想的な目的関数</p>
-<p># 最適値: temperature=100℃, pH=7</p>
-<p>temp = np.random.uniform(50, 150)</p>
-<p>ph = np.random.uniform(4, 10)</p>
-<p>result = -(temp - 100)<strong>2 / 1000 - (ph - 7)</strong>2 + 10</p>
-<p>result += np.random.normal(0, 0.2)  # ノイズ</p>
-<p>self.measurement_count += 1</p>
-<p>time.sleep(0.1)  # 実際は数十秒〜数分</p>
-<p>return result</p>
+    def measure(self):
+        """測定のシミュレーション（2変数関数）"""
+        # 仮想的な目的関数
+        # 最適値: temperature=100℃, pH=7
+        temp = np.random.uniform(50, 150)
+        ph = np.random.uniform(4, 10)
+        result = -(temp - 100)<strong>2 / 1000 - (ph - 7)</strong>2 + 10
+        result += np.random.normal(0, 0.2)  # ノイズ
+        self.measurement_count += 1
+        time.sleep(0.1)  # 実際は数十秒〜数分
+        return result
 
 
 <h1>クローズドループの実行</h1>
-<p>robot = RobotControllerSimulator()</p>
-<p>sensor = SensorControllerSimulator()</p>
-<p>closed_loop = ClosedLoopOptimization(robot, sensor)</p>
+robot = RobotControllerSimulator()
+sensor = SensorControllerSimulator()
+closed_loop = ClosedLoopOptimization(robot, sensor)
 
-<p>result = closed_loop.optimize(n_iterations=15)</p>
+result = closed_loop.optimize(n_iterations=15)
 
 <h1>探索した点の可視化（2D）</h1>
-<p>import pandas as pd</p>
+import pandas as pd
 
-<p>df = pd.DataFrame([</p>
-<p>{'temperature': d['conditions']['temperature'],</p>
-<p>'pH': d['conditions']['pH'],</p>
-<p>'measurement': d['measurement']}</p>
-<p>for d in closed_loop.data</p>
-<p>])</p>
+df = pd.DataFrame([
+    {'temperature': d['conditions']['temperature'],
+     'pH': d['conditions']['pH'],
+     'measurement': d['measurement']}
+    for d in closed_loop.data
+])
 
-<p>fig = plt.figure(figsize=(12, 5))</p>
+fig = plt.figure(figsize=(12, 5))
 
 <h1>温度 vs 測定値</h1>
-<p>ax1 = fig.add_subplot(121)</p>
-<p>ax1.scatter(df['temperature'], df['measurement'], c=range(len(df)), cmap='viridis', s=100, edgecolors='black')</p>
-<p>ax1.set_xlabel('温度（℃）', fontsize=12)</p>
-<p>ax1.set_ylabel('測定値', fontsize=12)</p>
-<p>ax1.set_title('温度と測定値の関係', fontsize=13, fontweight='bold')</p>
-<p>ax1.grid(alpha=0.3)</p>
+ax1 = fig.add_subplot(121)
+ax1.scatter(df['temperature'], df['measurement'], c=range(len(df)), cmap='viridis', s=100, edgecolors='black')
+ax1.set_xlabel('温度（℃）', fontsize=12)
+ax1.set_ylabel('測定値', fontsize=12)
+ax1.set_title('温度と測定値の関係', fontsize=13, fontweight='bold')
+ax1.grid(alpha=0.3)
 
 <h1>pH vs 測定値</h1>
-<p>ax2 = fig.add_subplot(122)</p>
-<p>scatter = ax2.scatter(df['pH'], df['measurement'], c=range(len(df)), cmap='viridis', s=100, edgecolors='black')</p>
-<p>ax2.set_xlabel('pH', fontsize=12)</p>
-<p>ax2.set_ylabel('測定値', fontsize=12)</p>
-<p>ax2.set_title('pHと測定値の関係', fontsize=13, fontweight='bold')</p>
-<p>ax2.grid(alpha=0.3)</p>
+ax2 = fig.add_subplot(122)
+scatter = ax2.scatter(df['pH'], df['measurement'], c=range(len(df)), cmap='viridis', s=100, edgecolors='black')
+ax2.set_xlabel('pH', fontsize=12)
+ax2.set_ylabel('測定値', fontsize=12)
+ax2.set_title('pHと測定値の関係', fontsize=13, fontweight='bold')
+ax2.grid(alpha=0.3)
 
 <h1>カラーバー（実験順序）</h1>
-<p>cbar = plt.colorbar(scatter, ax=[ax1, ax2])</p>
-<p>cbar.set_label('実験順序', fontsize=11)</p>
+cbar = plt.colorbar(scatter, ax=[ax1, ax2])
+cbar.set_label('実験順序', fontsize=11)
 
-<p>plt.tight_layout()</p>
-<p>plt.savefig('closed_loop_exploration.png', dpi=300, bbox_inches='tight')</p>
-<p>plt.show()</p>
-</code></pre>
+plt.tight_layout()
+plt.savefig('closed_loop_exploration.png', dpi=300, bbox_inches='tight')
+plt.show()</code></pre>
 
-<p>---</p>
+---
 
 <h2>3.4 量子ドット発光波長の自動最適化</h2>
 
-<p>実際の材料探索事例：量子ドットの発光波長を自動最適化します。</p>
+実際の材料探索事例：量子ドットの発光波長を自動最適化します。
 
 <h3>3.4.1 問題設定</h3>
 
 <strong>目標</strong>: CdSeS量子ドットの発光波長を520nm（緑色）に最適化
 
 <strong>実験パラメータ</strong>:
-<ul>
-<li>Cd/Se比（0.5-2.0）</li>
-<li>反応温度（150-300℃）</li>
-<li>反応時間（5-60分）</li>
-</ul>
+- Cd/Se比（0.5-2.0）
+- 反応温度（150-300℃）
+- 反応時間（5-60分）
 
 <pre><code class="language-python">def quantum_dot_synthesis_simulator(cd_se_ratio, temperature, reaction_time):
-<p>"""</p>
-<p>量子ドット合成と発光波長測定のシミュレーター</p>
+    """
+    量子ドット合成と発光波長測定のシミュレーター
 
-<p>Args:</p>
-<p>cd_se_ratio: Cd/Se比（0.5-2.0）</p>
-<p>temperature: 反応温度（150-300℃）</p>
-<p>reaction_time: 反応時間（5-60分）</p>
+    Args:
+        cd_se_ratio: Cd/Se比（0.5-2.0）
+        temperature: 反応温度（150-300℃）
+        reaction_time: 反応時間（5-60分）
 
-<p>Returns:</p>
-<p>emission_wavelength: 発光波長（nm）</p>
-<p>"""</p>
-<p># 実験則に基づくシミュレーションモデル</p>
-<p># 実際の実験では、この部分がロボット合成 + 蛍光分光測定</p>
+    Returns:
+        emission_wavelength: 発光波長（nm）
+    """
+    # 実験則に基づくシミュレーションモデル
+    # 実際の実験では、この部分がロボット合成 + 蛍光分光測定
 
-<p># 基本波長（組成依存）</p>
-<p>base_wavelength = 480 + 100 * (cd_se_ratio - 0.5) / 1.5</p>
+    # 基本波長（組成依存）
+    base_wavelength = 480 + 100 * (cd_se_ratio - 0.5) / 1.5
 
-<p># 温度効果（粒径制御）</p>
-<p>temp_effect = 0.2 * (temperature - 225)</p>
+    # 温度効果（粒径制御）
+    temp_effect = 0.2 * (temperature - 225)
 
-<p># 時間効果（成長時間）</p>
-<p>time_effect = 0.3 * (reaction_time - 32.5)</p>
+    # 時間効果（成長時間）
+    time_effect = 0.3 * (reaction_time - 32.5)
 
-<p># 総合的な発光波長</p>
-<p>emission_wavelength = base_wavelength + temp_effect + time_effect</p>
+    # 総合的な発光波長
+    emission_wavelength = base_wavelength + temp_effect + time_effect
 
-<p># ノイズ（実験誤差）</p>
-<p>emission_wavelength += np.random.normal(0, 3)</p>
+    # ノイズ（実験誤差）
+    emission_wavelength += np.random.normal(0, 3)
 
-<p>return emission_wavelength</p>
+    return emission_wavelength
 
 
 <h1>クローズドループ最適化</h1>
-<p>from skopt import gp_minimize</p>
-<p>from skopt.space import Real</p>
+from skopt import gp_minimize
+from skopt.space import Real
 
 <h1>目標波長</h1>
-<p>target_wavelength = 520  # nm（緑色）</p>
+target_wavelength = 520  # nm（緑色）
 
-<p>def objective_function(params):</p>
-<p>"""</p>
-<p>目的関数: 目標波長との差を最小化</p>
+def objective_function(params):
+    """
+    目的関数: 目標波長との差を最小化
 
-<p>Args:</p>
-<p>params: [cd_se_ratio, temperature, reaction_time]</p>
+    Args:
+        params: [cd_se_ratio, temperature, reaction_time]
 
-<p>Returns:</p>
-<p>error: 目標との差（最小化）</p>
-<p>"""</p>
-<p>cd_se_ratio, temperature, reaction_time = params</p>
+    Returns:
+        error: 目標との差（最小化）
+    """
+    cd_se_ratio, temperature, reaction_time = params
 
-<p># 量子ドット合成（シミュレーション）</p>
-<p>emission = quantum_dot_synthesis_simulator(cd_se_ratio, temperature, reaction_time)</p>
+    # 量子ドット合成（シミュレーション）
+    emission = quantum_dot_synthesis_simulator(cd_se_ratio, temperature, reaction_time)
 
-<p># 誤差（目標波長との差の絶対値）</p>
-<p>error = abs(emission - target_wavelength)</p>
+    # 誤差（目標波長との差の絶対値）
+    error = abs(emission - target_wavelength)
 
-<p>print(f"Cd/Se={cd_se_ratio:.2f}, T={temperature:.0f}℃, t={reaction_time:.0f}min → λ={emission:.1f}nm (誤差: {error:.1f}nm)")</p>
+    print(f"Cd/Se={cd_se_ratio:.2f}, T={temperature:.0f}℃, t={reaction_time:.0f}min → λ={emission:.1f}nm (誤差: {error:.1f}nm)")
 
-<p>return error</p>
+    return error
 
 
 <h1>探索空間</h1>
-<p>space = [</p>
-<p>Real(0.5, 2.0, name='cd_se_ratio'),</p>
-<p>Real(150, 300, name='temperature'),</p>
-<p>Real(5, 60, name='reaction_time')</p>
-<p>]</p>
+space = [
+    Real(0.5, 2.0, name='cd_se_ratio'),
+    Real(150, 300, name='temperature'),
+    Real(5, 60, name='reaction_time')
+]
 
-<p>print("=" * 70)</p>
-<p>print("量子ドット発光波長の自動最適化")</p>
-<p>print(f"目標波長: {target_wavelength}nm（緑色）")</p>
-<p>print("=" * 70)</p>
+print("=" * 70)
+print("量子ドット発光波長の自動最適化")
+print(f"目標波長: {target_wavelength}nm（緑色）")
+print("=" * 70)
 
 <h1>ベイズ最適化の実行</h1>
-<p>result = gp_minimize(</p>
-<p>objective_function,</p>
-<p>space,</p>
-<p>n_calls=30,  # 30回の実験</p>
-<p>n_initial_points=10,  # 初期10回はランダム</p>
-<p>acq_func='EI',</p>
-<p>random_state=42</p>
-<p>)</p>
+result = gp_minimize(
+    objective_function,
+    space,
+    n_calls=30,  # 30回の実験
+    n_initial_points=10,  # 初期10回はランダム
+    acq_func='EI',
+    random_state=42
+)
 
-<p>print("\n" + "=" * 70)</p>
-<p>print("最適化完了")</p>
-<p>print("=" * 70)</p>
-<p>print(f"最適条件:")</p>
-<p>print(f"  Cd/Se比: {result.x[0]:.2f}")</p>
-<p>print(f"  温度: {result.x[1]:.0f}℃")</p>
-<p>print(f"  反応時間: {result.x[2]:.0f}分")</p>
+print("\n" + "=" * 70)
+print("最適化完了")
+print("=" * 70)
+print(f"最適条件:")
+print(f"  Cd/Se比: {result.x[0]:.2f}")
+print(f"  温度: {result.x[1]:.0f}℃")
+print(f"  反応時間: {result.x[2]:.0f}分")
 
 <h1>最適条件での実測値</h1>
-<p>optimized_wavelength = quantum_dot_synthesis_simulator(result.x[0], result.x[1], result.x[2])</p>
-<p>print(f"\n最適条件での発光波長: {optimized_wavelength:.1f}nm")</p>
-<p>print(f"目標との誤差: {abs(optimized_wavelength - target_wavelength):.1f}nm")</p>
+optimized_wavelength = quantum_dot_synthesis_simulator(result.x[0], result.x[1], result.x[2])
+print(f"\n最適条件での発光波長: {optimized_wavelength:.1f}nm")
+print(f"目標との誤差: {abs(optimized_wavelength - target_wavelength):.1f}nm")
 
 <h1>結果の可視化</h1>
-<p>fig = plt.figure(figsize=(14, 10))</p>
+fig = plt.figure(figsize=(14, 10))
 
 <h1>(1) 収束履歴</h1>
-<p>ax1 = fig.add_subplot(221)</p>
-<p>errors = result.func_vals</p>
-<p>ax1.plot(errors, 'o-', linewidth=2, markersize=8, color='steelblue')</p>
-<p>ax1.axhline(y=5, color='red', linestyle='--', label='目標誤差 (<5nm)')</p>
-<p>ax1.set_xlabel('実験回数', fontsize=12)</p>
-<p>ax1.set_ylabel('誤差（nm）', fontsize=12)</p>
-<p>ax1.set_title('(1) 最適化の収束', fontsize=13, fontweight='bold')</p>
-<p>ax1.legend()</p>
-<p>ax1.grid(alpha=0.3)</p>
+ax1 = fig.add_subplot(221)
+errors = result.func_vals
+ax1.plot(errors, 'o-', linewidth=2, markersize=8, color='steelblue')
+ax1.axhline(y=5, color='red', linestyle='--', label='目標誤差 (<5nm)')
+ax1.set_xlabel('実験回数', fontsize=12)
+ax1.set_ylabel('誤差（nm）', fontsize=12)
+ax1.set_title('(1) 最適化の収束', fontsize=13, fontweight='bold')
+ax1.legend()
+ax1.grid(alpha=0.3)
 
 <h1>(2) Cd/Se比 vs 発光波長</h1>
-<p>ax2 = fig.add_subplot(222)</p>
-<p>cd_se_ratios = [x[0] for x in result.x_iters]</p>
-<p>wavelengths = [target_wavelength - e if i % 2 == 0 else target_wavelength + e</p>
-<p>for i, e in enumerate(errors)]  # 簡易再構成</p>
-<p>ax2.scatter(cd_se_ratios, wavelengths, c=range(len(cd_se_ratios)), cmap='viridis',</p>
-<p>s=100, edgecolors='black')</p>
-<p>ax2.axhline(y=target_wavelength, color='red', linestyle='--', label='目標波長')</p>
-<p>ax2.set_xlabel('Cd/Se比', fontsize=12)</p>
-<p>ax2.set_ylabel('発光波長（nm）', fontsize=12)</p>
-<p>ax2.set_title('(2) Cd/Se比と発光波長', fontsize=13, fontweight='bold')</p>
-<p>ax2.legend()</p>
-<p>ax2.grid(alpha=0.3)</p>
+ax2 = fig.add_subplot(222)
+cd_se_ratios = [x[0] for x in result.x_iters]
+wavelengths = [target_wavelength - e if i % 2 == 0 else target_wavelength + e
+               for i, e in enumerate(errors)]  # 簡易再構成
+ax2.scatter(cd_se_ratios, wavelengths, c=range(len(cd_se_ratios)), cmap='viridis',
+            s=100, edgecolors='black')
+ax2.axhline(y=target_wavelength, color='red', linestyle='--', label='目標波長')
+ax2.set_xlabel('Cd/Se比', fontsize=12)
+ax2.set_ylabel('発光波長（nm）', fontsize=12)
+ax2.set_title('(2) Cd/Se比と発光波長', fontsize=13, fontweight='bold')
+ax2.legend()
+ax2.grid(alpha=0.3)
 
 <h1>(3) 温度 vs 発光波長</h1>
-<p>ax3 = fig.add_subplot(223)</p>
-<p>temperatures = [x[1] for x in result.x_iters]</p>
-<p>ax3.scatter(temperatures, wavelengths, c=range(len(temperatures)), cmap='plasma',</p>
-<p>s=100, edgecolors='black')</p>
-<p>ax3.axhline(y=target_wavelength, color='red', linestyle='--', label='目標波長')</p>
-<p>ax3.set_xlabel('温度（℃）', fontsize=12)</p>
-<p>ax3.set_ylabel('発光波長（nm）', fontsize=12)</p>
-<p>ax3.set_title('(3) 温度と発光波長', fontsize=13, fontweight='bold')</p>
-<p>ax3.legend()</p>
-<p>ax3.grid(alpha=0.3)</p>
+ax3 = fig.add_subplot(223)
+temperatures = [x[1] for x in result.x_iters]
+ax3.scatter(temperatures, wavelengths, c=range(len(temperatures)), cmap='plasma',
+            s=100, edgecolors='black')
+ax3.axhline(y=target_wavelength, color='red', linestyle='--', label='目標波長')
+ax3.set_xlabel('温度（℃）', fontsize=12)
+ax3.set_ylabel('発光波長（nm）', fontsize=12)
+ax3.set_title('(3) 温度と発光波長', fontsize=13, fontweight='bold')
+ax3.legend()
+ax3.grid(alpha=0.3)
 
 <h1>(4) 反応時間 vs 発光波長</h1>
-<p>ax4 = fig.add_subplot(224)</p>
-<p>reaction_times = [x[2] for x in result.x_iters]</p>
-<p>scatter = ax4.scatter(reaction_times, wavelengths, c=range(len(reaction_times)),</p>
-<p>cmap='coolwarm', s=100, edgecolors='black')</p>
-<p>ax4.axhline(y=target_wavelength, color='red', linestyle='--', label='目標波長')</p>
-<p>ax4.set_xlabel('反応時間（分）', fontsize=12)</p>
-<p>ax4.set_ylabel('発光波長（nm）', fontsize=12)</p>
-<p>ax4.set_title('(4) 反応時間と発光波長', fontsize=13, fontweight='bold')</p>
-<p>ax4.legend()</p>
-<p>ax4.grid(alpha=0.3)</p>
+ax4 = fig.add_subplot(224)
+reaction_times = [x[2] for x in result.x_iters]
+scatter = ax4.scatter(reaction_times, wavelengths, c=range(len(reaction_times)),
+                      cmap='coolwarm', s=100, edgecolors='black')
+ax4.axhline(y=target_wavelength, color='red', linestyle='--', label='目標波長')
+ax4.set_xlabel('反応時間（分）', fontsize=12)
+ax4.set_ylabel('発光波長（nm）', fontsize=12)
+ax4.set_title('(4) 反応時間と発光波長', fontsize=13, fontweight='bold')
+ax4.legend()
+ax4.grid(alpha=0.3)
 
 <h1>カラーバー</h1>
-<p>cbar = plt.colorbar(scatter, ax=[ax2, ax3, ax4])</p>
-<p>cbar.set_label('実験順序', fontsize=11)</p>
+cbar = plt.colorbar(scatter, ax=[ax2, ax3, ax4])
+cbar.set_label('実験順序', fontsize=11)
 
-<p>plt.tight_layout()</p>
-<p>plt.savefig('quantum_dot_optimization.png', dpi=300, bbox_inches='tight')</p>
-<p>plt.show()</p>
-</code></pre>
+plt.tight_layout()
+plt.savefig('quantum_dot_optimization.png', dpi=300, bbox_inches='tight')
+plt.show()</code></pre>
 
 <strong>結果の解釈</strong>:
-<ul>
-<li>初期10回: ランダム探索で広範囲をサンプリング</li>
-<li>11回目以降: ベイズ最適化が有望領域に集中</li>
-<li>20-30回目: 目標波長±5nm以内に収束</li>
-</ul>
+- 初期10回: ランダム探索で広範囲をサンプリング
+- 11回目以降: ベイズ最適化が有望領域に集中
+- 20-30回目: 目標波長±5nm以内に収束
 
-<p>---</p>
+---
 
 <h2>3.5 演習問題</h2>
 
 <h3>演習1: 獲得関数の比較（難易度: Medium）</h3>
 
-<p>EI（Expected Improvement）とUCB（Upper Confidence Bound）の2つの獲得関数で同じ最適化問題を解き、探索挙動の違いを比較してください。</p>
+EI（Expected Improvement）とUCB（Upper Confidence Bound）の2つの獲得関数で同じ最適化問題を解き、探索挙動の違いを比較してください。
 
 <details>
 <summary>ヒント</summary>
@@ -1112,78 +1093,75 @@
 <summary>解答例</summary>
 
 <pre><code class="language-python"><h1>EIとUCBで同じ問題を最適化</h1>
-<p>results = {}</p>
+results = {}
 
-<p>for acq_func in ['EI', 'LCB']:  # LCB = -UCB（最小化問題なので）</p>
-<p>print(f"\n獲得関数: {acq_func}")</p>
-<p>result = gp_minimize(</p>
-<p>robot_experiment,</p>
-<p>space,</p>
-<p>n_calls=20,</p>
-<p>n_initial_points=5,</p>
-<p>acq_func=acq_func,</p>
-<p>random_state=42</p>
-<p>)</p>
-<p>results[acq_func] = result</p>
-<p>print(f"最適値: {-result.fun:.3f}, 最適条件: {result.x[0]:.3f}")</p>
+for acq_func in ['EI', 'LCB']:  # LCB = -UCB（最小化問題なので）
+    print(f"\n獲得関数: {acq_func}")
+    result = gp_minimize(
+        robot_experiment,
+        space,
+        n_calls=20,
+        n_initial_points=5,
+        acq_func=acq_func,
+        random_state=42
+    )
+    results[acq_func] = result
+    print(f"最適値: {-result.fun:.3f}, 最適条件: {result.x[0]:.3f}")
 
 <h1>比較プロット</h1>
-<p>fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))</p>
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
 
-<p>colors = {'EI': 'blue', 'LCB': 'red'}</p>
+colors = {'EI': 'blue', 'LCB': 'red'}
 
 <h1>収束比較</h1>
-<p>for acq_func, result in results.items():</p>
-<p>ax1.plot(-np.array(result.func_vals), label=acq_func, color=colors[acq_func], linewidth=2)</p>
+for acq_func, result in results.items():
+    ax1.plot(-np.array(result.func_vals), label=acq_func, color=colors[acq_func], linewidth=2)
 
-<p>ax1.set_xlabel('実験回数', fontsize=12)</p>
-<p>ax1.set_ylabel('目的関数値', fontsize=12)</p>
-<p>ax1.set_title('獲得関数による収束の違い', fontsize=14, fontweight='bold')</p>
-<p>ax1.legend()</p>
-<p>ax1.grid(alpha=0.3)</p>
+ax1.set_xlabel('実験回数', fontsize=12)
+ax1.set_ylabel('目的関数値', fontsize=12)
+ax1.set_title('獲得関数による収束の違い', fontsize=14, fontweight='bold')
+ax1.legend()
+ax1.grid(alpha=0.3)
 
 <h1>探索点の分布</h1>
-<p>X_true = np.linspace(0, 1, 100)</p>
-<p>y_true = true_function(X_true.reshape(-1, 1)).ravel()</p>
+X_true = np.linspace(0, 1, 100)
+y_true = true_function(X_true.reshape(-1, 1)).ravel()
 
-<p>ax2.plot(X_true, y_true, 'k--', label='真の関数', linewidth=2)</p>
+ax2.plot(X_true, y_true, 'k--', label='真の関数', linewidth=2)
 
-<p>for acq_func, result in results.items():</p>
-<p>X_eval = np.array([x[0] for x in result.x_iters])</p>
-<p>y_eval = -np.array(result.func_vals)</p>
-<p>ax2.scatter(X_eval, y_eval, label=f'{acq_func}', s=80, alpha=0.6, color=colors[acq_func])</p>
+for acq_func, result in results.items():
+    X_eval = np.array([x[0] for x in result.x_iters])
+    y_eval = -np.array(result.func_vals)
+    ax2.scatter(X_eval, y_eval, label=f'{acq_func}', s=80, alpha=0.6, color=colors[acq_func])
 
-<p>ax2.set_xlabel('実験条件 x', fontsize=12)</p>
-<p>ax2.set_ylabel('目的関数 f(x)', fontsize=12)</p>
-<p>ax2.set_title('探索した点の分布', fontsize=14, fontweight='bold')</p>
-<p>ax2.legend()</p>
-<p>ax2.grid(alpha=0.3)</p>
+ax2.set_xlabel('実験条件 x', fontsize=12)
+ax2.set_ylabel('目的関数 f(x)', fontsize=12)
+ax2.set_title('探索した点の分布', fontsize=14, fontweight='bold')
+ax2.legend()
+ax2.grid(alpha=0.3)
 
-<p>plt.tight_layout()</p>
-<p>plt.savefig('acquisition_function_comparison.png', dpi=300, bbox_inches='tight')</p>
-<p>plt.show()</p>
+plt.tight_layout()
+plt.savefig('acquisition_function_comparison.png', dpi=300, bbox_inches='tight')
+plt.show()
 
-<p>print("\n考察:")</p>
-<p>print("EI: バランス型、広範囲を効率的に探索")</p>
-<p>print("UCB: 探索重視、不確実性の高い領域を積極的に調査")</p>
-</code></pre>
+print("\n考察:")
+print("EI: バランス型、広範囲を効率的に探索")
+print("UCB: 探索重視、不確実性の高い領域を積極的に調査")</code></pre>
 
 </details>
 
-<p>---</p>
+---
 
 <h3>演習2: 制約付き最適化（難易度: Hard）</h3>
 
-<p>量子ドット合成で、以下の制約条件を追加してください：</p>
-<ul>
-<li>温度 ≤ 250℃（安全性）</li>
-<li>反応時間 ≤ 30分（スループット）</li>
-</ul>
+量子ドット合成で、以下の制約条件を追加してください：
+- 温度 ≤ 250℃（安全性）
+- 反応時間 ≤ 30分（スループット）
 
 <details>
 <summary>ヒント</summary>
 
-<p>探索空間の定義を変更するか、目的関数内でペナルティを追加します。制約違反時に大きなペナルティ（例: +1000）を加えます。</p>
+探索空間の定義を変更するか、目的関数内でペナルティを追加します。制約違反時に大きなペナルティ（例: +1000）を加えます。
 
 </details>
 
@@ -1191,92 +1169,89 @@
 <summary>解答例</summary>
 
 <pre><code class="language-python">def constrained_objective(params):
-<p>"""</p>
-<p>制約付き目的関数</p>
+    """
+    制約付き目的関数
 
-<p>Args:</p>
-<p>params: [cd_se_ratio, temperature, reaction_time]</p>
+    Args:
+        params: [cd_se_ratio, temperature, reaction_time]
 
-<p>Returns:</p>
-<p>error: 誤差 + 制約違反ペナルティ</p>
-<p>"""</p>
-<p>cd_se_ratio, temperature, reaction_time = params</p>
+    Returns:
+        error: 誤差 + 制約違反ペナルティ
+    """
+    cd_se_ratio, temperature, reaction_time = params
 
-<p># 基本目的関数</p>
-<p>emission = quantum_dot_synthesis_simulator(cd_se_ratio, temperature, reaction_time)</p>
-<p>error = abs(emission - target_wavelength)</p>
+    # 基本目的関数
+    emission = quantum_dot_synthesis_simulator(cd_se_ratio, temperature, reaction_time)
+    error = abs(emission - target_wavelength)
 
-<p># 制約チェック</p>
-<p>penalty = 0</p>
-<p>constraints_violated = []</p>
+    # 制約チェック
+    penalty = 0
+    constraints_violated = []
 
-<p>if temperature > 250:</p>
-<p>penalty += 1000 * (temperature - 250)</p>
-<p>constraints_violated.append(f"温度制約違反({temperature:.0f}℃ > 250℃)")</p>
+    if temperature > 250:
+        penalty += 1000 * (temperature - 250)
+        constraints_violated.append(f"温度制約違反({temperature:.0f}℃ > 250℃)")
 
-<p>if reaction_time > 30:</p>
-<p>penalty += 1000 * (reaction_time - 30)</p>
-<p>constraints_violated.append(f"時間制約違反({reaction_time:.0f}分 > 30分)")</p>
+    if reaction_time > 30:
+        penalty += 1000 * (reaction_time - 30)
+        constraints_violated.append(f"時間制約違反({reaction_time:.0f}分 > 30分)")
 
-<p>if constraints_violated:</p>
-<p>print(f"  制約違反: {', '.join(constraints_violated)} → ペナルティ={penalty:.0f}")</p>
-<p>else:</p>
-<p>print(f"Cd/Se={cd_se_ratio:.2f}, T={temperature:.0f}℃, t={reaction_time:.0f}min → λ={emission:.1f}nm")</p>
+    if constraints_violated:
+        print(f"  制約違反: {', '.join(constraints_violated)} → ペナルティ={penalty:.0f}")
+    else:
+        print(f"Cd/Se={cd_se_ratio:.2f}, T={temperature:.0f}℃, t={reaction_time:.0f}min → λ={emission:.1f}nm")
 
-<p>return error + penalty</p>
+    return error + penalty
 
 
 <h1>制約付き最適化</h1>
-<p>space_constrained = [</p>
-<p>Real(0.5, 2.0, name='cd_se_ratio'),</p>
-<p>Real(150, 300, name='temperature'),  # 探索空間は変更しない</p>
-<p>Real(5, 60, name='reaction_time')</p>
-<p>]</p>
+space_constrained = [
+    Real(0.5, 2.0, name='cd_se_ratio'),
+    Real(150, 300, name='temperature'),  # 探索空間は変更しない
+    Real(5, 60, name='reaction_time')
+]
 
-<p>print("制約付き最適化:")</p>
-<p>print("  温度 ≤ 250℃")</p>
-<p>print("  反応時間 ≤ 30分\n")</p>
+print("制約付き最適化:")
+print("  温度 ≤ 250℃")
+print("  反応時間 ≤ 30分\n")
 
-<p>result_constrained = gp_minimize(</p>
-<p>constrained_objective,</p>
-<p>space_constrained,</p>
-<p>n_calls=30,</p>
-<p>n_initial_points=10,</p>
-<p>acq_func='EI',</p>
-<p>random_state=42</p>
-<p>)</p>
+result_constrained = gp_minimize(
+    constrained_objective,
+    space_constrained,
+    n_calls=30,
+    n_initial_points=10,
+    acq_func='EI',
+    random_state=42
+)
 
-<p>print(f"\n最適条件:")</p>
-<p>print(f"  Cd/Se比: {result_constrained.x[0]:.2f}")</p>
-<p>print(f"  温度: {result_constrained.x[1]:.0f}℃")</p>
-<p>print(f"  反応時間: {result_constrained.x[2]:.0f}分")</p>
+print(f"\n最適条件:")
+print(f"  Cd/Se比: {result_constrained.x[0]:.2f}")
+print(f"  温度: {result_constrained.x[1]:.0f}℃")
+print(f"  反応時間: {result_constrained.x[2]:.0f}分")
 
 <h1>制約充足の確認</h1>
-<p>if result_constrained.x[1] <= 250 and result_constrained.x[2] <= 30:</p>
-<p>print("✅ すべての制約を満たしています")</p>
-<p>else:</p>
-<p>print("❌ 制約違反があります")</p>
-</code></pre>
+if result_constrained.x[1] <= 250 and result_constrained.x[2] <= 30:
+    print("✅ すべての制約を満たしています")
+else:
+    print("❌ 制約違反があります")</code></pre>
 
 </details>
 
-<p>---</p>
+---
 
 <h3>演習3: 多目的最適化（難易度: Hard）</h3>
 
-<p>量子ドットの発光波長と量子収率（発光効率）を同時に最適化してください。</p>
+量子ドットの発光波長と量子収率（発光効率）を同時に最適化してください。
 
 <strong>目標</strong>:
-<ul>
-<li>発光波長: 520nm</li>
-<li>量子収率: 最大化（0-100%）</li>
-</ul>
+- 発光波長: 520nm
+- 量子収率: 最大化（0-100%）
 
 <details>
 <summary>ヒント</summary>
 
-<p>Pareto最適解を見つける必要があります。簡易的には、重み付き和を最小化します：</p>
-<p>$$\text{objective} = w_1 \times |\lambda - 520| + w_2 \times (100 - QY)$$</p>
+Pareto最適解を見つける必要があります。簡易的には、重み付き和を最小化します：
+$$\text{objective} = w_1 \times |\lambda - 520| + w_2 \times (100 - QY)$$
 
 </details>
 
@@ -1284,142 +1259,128 @@
 <summary>解答例</summary>
 
 <pre><code class="language-python">def multi_objective_synthesis(cd_se_ratio, temperature, reaction_time):
-<p>"""</p>
-<p>量子ドット合成（発光波長 + 量子収率）</p>
+    """
+    量子ドット合成（発光波長 + 量子収率）
 
-<p>Returns:</p>
-<p>emission_wavelength, quantum_yield</p>
-<p>"""</p>
-<p># 発光波長</p>
-<p>emission = quantum_dot_synthesis_simulator(cd_se_ratio, temperature, reaction_time)</p>
+    Returns:
+        emission_wavelength, quantum_yield
+    """
+    # 発光波長
+    emission = quantum_dot_synthesis_simulator(cd_se_ratio, temperature, reaction_time)
 
-<p># 量子収率（仮想モデル）</p>
-<p># 低温・短時間で高QY（表面欠陥が少ない）</p>
-<p>qy = 80 - 0.2 <em> (temperature - 200) - 0.5 </em> (reaction_time - 15)</p>
-<p>qy = np.clip(qy + np.random.normal(0, 2), 0, 100)</p>
+    # 量子収率（仮想モデル）
+    # 低温・短時間で高QY（表面欠陥が少ない）
+    qy = 80 - 0.2 * (temperature - 200) - 0.5 * (reaction_time - 15)
+    qy = np.clip(qy + np.random.normal(0, 2), 0, 100)
 
-<p>return emission, qy</p>
+    return emission, qy
 
 
-<p>def multi_objective_function(params, w1=1.0, w2=0.1):</p>
-<p>"""</p>
-<p>多目的関数（重み付き和）</p>
+def multi_objective_function(params, w1=1.0, w2=0.1):
+    """
+    多目的関数（重み付き和）
 
-<p>Args:</p>
-<p>params: [cd_se_ratio, temperature, reaction_time]</p>
-<p>w1: 波長誤差の重み</p>
-<p>w2: 量子収率の重み</p>
+    Args:
+        params: [cd_se_ratio, temperature, reaction_time]
+        w1: 波長誤差の重み
+        w2: 量子収率の重み
 
-<p>Returns:</p>
-<p>weighted_error: 重み付き誤差</p>
-<p>"""</p>
-<p>cd_se_ratio, temperature, reaction_time = params</p>
+    Returns:
+        weighted_error: 重み付き誤差
+    """
+    cd_se_ratio, temperature, reaction_time = params
 
-<p>emission, qy = multi_objective_synthesis(cd_se_ratio, temperature, reaction_time)</p>
+    emission, qy = multi_objective_synthesis(cd_se_ratio, temperature, reaction_time)
 
-<p># 2つの目的</p>
-<p>wavelength_error = abs(emission - 520)</p>
-<p>qy_loss = 100 - qy  # 最大化→最小化</p>
+    # 2つの目的
+    wavelength_error = abs(emission - 520)
+    qy_loss = 100 - qy  # 最大化→最小化
 
-<p># 重み付き和</p>
-<p>weighted_error = w1 <em> wavelength_error + w2 </em> qy_loss</p>
+    # 重み付き和
+    weighted_error = w1 * wavelength_error + w2 * qy_loss
 
-<p>print(f"T={temperature:.0f}℃, t={reaction_time:.0f}min → λ={emission:.1f}nm, QY={qy:.1f}%")</p>
+    print(f"T={temperature:.0f}℃, t={reaction_time:.0f}min → λ={emission:.1f}nm, QY={qy:.1f}%")
 
-<p>return weighted_error</p>
+    return weighted_error
 
 
 <h1>多目的最適化</h1>
-<p>result_multi = gp_minimize(</p>
-<p>multi_objective_function,</p>
-<p>space,</p>
-<p>n_calls=30,</p>
-<p>n_initial_points=10,</p>
-<p>acq_func='EI',</p>
-<p>random_state=42</p>
-<p>)</p>
+result_multi = gp_minimize(
+    multi_objective_function,
+    space,
+    n_calls=30,
+    n_initial_points=10,
+    acq_func='EI',
+    random_state=42
+)
 
-<p>print(f"\n最適条件:")</p>
-<p>print(f"  Cd/Se比: {result_multi.x[0]:.2f}")</p>
-<p>print(f"  温度: {result_multi.x[1]:.0f}℃")</p>
-<p>print(f"  反応時間: {result_multi.x[2]:.0f}分")</p>
+print(f"\n最適条件:")
+print(f"  Cd/Se比: {result_multi.x[0]:.2f}")
+print(f"  温度: {result_multi.x[1]:.0f}℃")
+print(f"  反応時間: {result_multi.x[2]:.0f}分")
 
 <h1>最適条件での性能確認</h1>
-<p>opt_emission, opt_qy = multi_objective_synthesis(result_multi.x[0], result_multi.x[1], result_multi.x[2])</p>
-<p>print(f"\n性能:")</p>
-<p>print(f"  発光波長: {opt_emission:.1f}nm（目標520nm、誤差{abs(opt_emission-520):.1f}nm）")</p>
-<p>print(f"  量子収率: {opt_qy:.1f}%")</p>
-</code></pre>
+opt_emission, opt_qy = multi_objective_synthesis(result_multi.x[0], result_multi.x[1], result_multi.x[2])
+print(f"\n性能:")
+print(f"  発光波長: {opt_emission:.1f}nm（目標520nm、誤差{abs(opt_emission-520):.1f}nm）")
+print(f"  量子収率: {opt_qy:.1f}%")</code></pre>
 
 </details>
 
-<p>---</p>
+---
 
 <h2>本章のまとめ</h2>
 
-<p>本章では、クローズドループ最適化の理論と実装を学びました。</p>
+本章では、クローズドループ最適化の理論と実装を学びました。
 
 <h3>キーポイント</h3>
 
-<ol>
-<li><strong>クローズドループの概念</strong>:</li>
-</ol>
-<p>- 実験→測定→解析→予測→次実験の自動サイクル</p>
-<p>- 24時間365日稼働による加速</p>
+1. <strong>クローズドループの概念</strong>:
+   - 実験→測定→解析→予測→次実験の自動サイクル
+   - 24時間365日稼働による加速
 
-<ol>
-<li><strong>ベイズ最適化</strong>:</li>
-</ol>
-<p>- ガウス過程による関数近似</p>
-<p>- 獲得関数（EI、UCB）による次候補選択</p>
-<p>- 探索と活用のバランス</p>
+2. <strong>ベイズ最適化</strong>:
+   - ガウス過程による関数近似
+   - 獲得関数（EI、UCB）による次候補選択
+   - 探索と活用のバランス
 
-<ol>
-<li><strong>実装</strong>:</li>
-</ol>
-<p>- scikit-optimize: 簡単な最適化</p>
-<p>- カスタムクローズドループシステム</p>
-<p>- ロボット・センサー統合</p>
+3. <strong>実装</strong>:
+   - scikit-optimize: 簡単な最適化
+   - カスタムクローズドループシステム
+   - ロボット・センサー統合
 
-<ol>
-<li><strong>実応用</strong>:</li>
-</ol>
-<p>- 量子ドット発光波長最適化</p>
-<p>- 30回の実験で目標達成</p>
-<p>- 従来の試行錯誤（数週間）→自動化（1日）</p>
+4. <strong>実応用</strong>:
+   - 量子ドット発光波長最適化
+   - 30回の実験で目標達成
+   - 従来の試行錯誤（数週間）→自動化（1日）
 
-<ol>
-<li><strong>高度な手法</strong>:</li>
-</ol>
-<p>- 制約付き最適化</p>
-<p>- 多目的最適化</p>
+5. <strong>高度な手法</strong>:
+   - 制約付き最適化
+   - 多目的最適化
 
 <h3>次章予告</h3>
 
-<p>第4章では、クラウドラボ（Emerald Cloud Lab）を使った遠隔実験を学びます。装置を持たずにAPIで実験を依頼し、データを自動取得する最先端の実験環境を体験します。</p>
+第4章では、クラウドラボ（Emerald Cloud Lab）を使った遠隔実験を学びます。装置を持たずにAPIで実験を依頼し、データを自動取得する最先端の実験環境を体験します。
 
-<p>---</p>
+---
 
 <h2>参考文献</h2>
 
-<ol>
-<li>Shahriari, B. et al. (2016). "Taking the Human Out of the Loop: A Review of Bayesian Optimization." <em>Proceedings of the IEEE</em>, 104(1), 148-175.</li>
-<li>Rasmussen, C. E., & Williams, C. K. I. (2006). <em>Gaussian Processes for Machine Learning</em>. MIT Press.</li>
-<li>MacLeod, B. P. et al. (2020). "Self-driving laboratory for accelerated discovery of thin-film materials." <em>Science Advances</em>, 6(20), eaaz8867.</li>
-<li>Häse, F. et al. (2018). "Next-Generation Experimentation with Self-Driving Laboratories." <em>Trends in Chemistry</em>, 1(3), 282-291.</li>
-</ol>
+1. Shahriari, B. et al. (2016). "Taking the Human Out of the Loop: A Review of Bayesian Optimization." *Proceedings of the IEEE*, 104(1), 148-175.
+2. Rasmussen, C. E., & Williams, C. K. I. (2006). *Gaussian Processes for Machine Learning*. MIT Press.
+3. MacLeod, B. P. et al. (2020). "Self-driving laboratory for accelerated discovery of thin-film materials." *Science Advances*, 6(20), eaaz8867.
+4. Häse, F. et al. (2018). "Next-Generation Experimentation with Self-Driving Laboratories." *Trends in Chemistry*, 1(3), 282-291.
 
-<p>---</p>
+---
 
-<strong>次の章へ</strong>: <a href="chapter-4.html">第4章: クラウドラボと遠隔実験</a>
+<strong>次の章へ</strong>: [第4章: クラウドラボと遠隔実験](chapter-4.html)
 
-<a href="index.html">目次に戻る</a>
-
-
-        <div class="navigation">
-            <a href="index.html" class="nav-button">← シリーズ目次に戻る</a>
-<a href="chapter-2.html" class="nav-button">次章: 第2章 →</a>
-        </div>
+[目次に戻る](index.html)
+<div class="navigation">
+    <a href="chapter-2.html" class="nav-button">← 第2章</a>
+    <a href="index.html" class="nav-button">シリーズ目次に戻る</a>
+    <a href="chapter-4.html" class="nav-button">第4章 →</a>
+</div>
     </main>
 
     <footer>

@@ -4,30 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>第4章：時系列データと統合解析 - AI Terakoya</title>
+
     <style>
         :root {
-            --color-primary-900: #1a252f;
-            --color-primary-700: #2c3e50;
-            --color-primary-500: #34495e;
-            --color-primary-300: #4a5f7a;
+            --color-primary: #2c3e50;
+            --color-primary-dark: #1a252f;
             --color-accent: #7b2cbf;
             --color-accent-light: #9d4edd;
+            --color-text: #2d3748;
+            --color-text-light: #4a5568;
             --color-bg: #ffffff;
-            --color-bg-secondary: #f8f9fa;
-            --color-text: #2c3e50;
-            --color-text-light: #6c757d;
-            --color-border: #e9ecef;
+            --color-bg-alt: #f7fafc;
+            --color-border: #e2e8f0;
             --color-code-bg: #f8f9fa;
+            --color-link: #3182ce;
+            --color-link-hover: #2c5aa0;
+
             --spacing-xs: 0.5rem;
             --spacing-sm: 1rem;
             --spacing-md: 1.5rem;
             --spacing-lg: 2rem;
             --spacing-xl: 3rem;
-            --font-base: 1rem;
-            --font-sm: 0.875rem;
-            --font-lg: 1.125rem;
-            --font-xl: 1.5rem;
-            --font-2xl: 2rem;
+
+            --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+
+            --border-radius: 8px;
+            --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         * {
@@ -37,34 +40,37 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", sans-serif;
+            font-family: var(--font-body);
             line-height: 1.7;
             color: var(--color-text);
-            background: var(--color-bg);
+            background-color: var(--color-bg);
+            font-size: 16px;
         }
 
         header {
             background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
             color: white;
             padding: var(--spacing-xl) var(--spacing-md);
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--box-shadow);
         }
 
         .header-content {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
         }
 
-        header h1 {
-            font-size: var(--font-2xl);
-            margin-bottom: var(--spacing-sm);
+        h1 {
+            font-size: 2rem;
             font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.2;
         }
 
         .subtitle {
-            font-size: var(--font-lg);
+            font-size: 1.1rem;
             opacity: 0.95;
+            font-weight: 400;
             margin-bottom: var(--spacing-md);
         }
 
@@ -72,134 +78,173 @@
             display: flex;
             flex-wrap: wrap;
             gap: var(--spacing-md);
-            justify-content: center;
-            font-size: var(--font-sm);
+            font-size: 0.9rem;
             opacity: 0.9;
         }
 
         .meta-item {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.3rem;
         }
 
         .container {
             max-width: 900px;
             margin: 0 auto;
-            padding: var(--spacing-xl) var(--spacing-md);
+            padding: 0 var(--spacing-md) var(--spacing-xl);
         }
 
         h2 {
-            font-size: var(--font-xl);
-            color: var(--color-accent);
-            margin: var(--spacing-lg) 0 var(--spacing-md) 0;
+            font-size: 1.75rem;
+            color: var(--color-primary);
+            margin-top: var(--spacing-xl);
+            margin-bottom: var(--spacing-md);
             padding-bottom: var(--spacing-xs);
-            border-bottom: 2px solid var(--color-accent-light);
+            border-bottom: 3px solid var(--color-accent);
         }
 
         h3 {
-            font-size: var(--font-lg);
-            color: var(--color-primary-700);
-            margin: var(--spacing-md) 0 var(--spacing-sm) 0;
+            font-size: 1.4rem;
+            color: var(--color-primary);
+            margin-top: var(--spacing-lg);
+            margin-bottom: var(--spacing-sm);
         }
 
         h4 {
-            font-size: var(--font-base);
-            color: var(--color-primary-500);
-            margin: var(--spacing-sm) 0;
+            font-size: 1.1rem;
+            color: var(--color-primary-dark);
+            margin-top: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
         }
 
         p {
             margin-bottom: var(--spacing-md);
-            line-height: 1.8;
+            color: var(--color-text);
+        }
+
+        a {
+            color: var(--color-link);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: var(--color-link-hover);
+            text-decoration: underline;
         }
 
         ul, ol {
-            margin: var(--spacing-md) 0;
-            padding-left: var(--spacing-lg);
+            margin-left: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
         }
 
         li {
             margin-bottom: var(--spacing-xs);
-        }
-
-        code {
-            background: var(--color-code-bg);
-            padding: 0.2em 0.4em;
-            border-radius: 3px;
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            font-size: 0.9em;
-            color: var(--color-accent);
-        }
-
-        pre {
-            background: var(--color-code-bg);
-            border-left: 4px solid var(--color-accent);
-            padding: var(--spacing-md);
-            overflow-x: auto;
-            border-radius: 4px;
-            margin: var(--spacing-md) 0;
-        }
-
-        pre code {
-            background: none;
-            padding: 0;
             color: var(--color-text);
         }
 
-        .mermaid {
-            background: white;
+        pre {
+            background-color: var(--color-code-bg);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
             padding: var(--spacing-md);
-            border-radius: 8px;
-            margin: var(--spacing-md) 0;
-            text-align: center;
+            overflow-x: auto;
+            margin-bottom: var(--spacing-md);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        code {
+            font-family: var(--font-mono);
+            font-size: 0.9em;
+            background-color: var(--color-code-bg);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: var(--spacing-md) 0;
-            background: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: var(--spacing-md);
+            font-size: 0.95rem;
         }
 
         th, td {
+            border: 1px solid var(--color-border);
             padding: var(--spacing-sm);
             text-align: left;
-            border-bottom: 1px solid var(--color-border);
         }
 
         th {
-            background: var(--color-accent);
-            color: white;
+            background-color: var(--color-bg-alt);
             font-weight: 600;
+            color: var(--color-primary);
         }
 
-        tr:hover {
-            background: var(--color-bg-secondary);
+        blockquote {
+            border-left: 4px solid var(--color-accent);
+            padding-left: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+            color: var(--color-text-light);
+            font-style: italic;
+            background-color: var(--color-bg-alt);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        .mermaid {
+            text-align: center;
+            margin: var(--spacing-lg) 0;
+            background-color: var(--color-bg-alt);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
         }
 
         details {
-            background: var(--color-bg-secondary);
-            padding: var(--spacing-md);
-            border-radius: 8px;
-            margin: var(--spacing-md) 0;
+            background-color: var(--color-bg-alt);
             border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
         }
 
         summary {
             cursor: pointer;
             font-weight: 600;
-            color: var(--color-accent);
-            padding: var(--spacing-sm);
+            color: var(--color-primary);
+            user-select: none;
+            padding: var(--spacing-xs);
             margin: calc(-1 * var(--spacing-md));
-            margin-bottom: var(--spacing-md);
-            background: white;
-            border-radius: 8px 8px 0 0;
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
         }
 
         summary:hover {
-            background: var(--color-bg-secondary);
+            background-color: rgba(123, 44, 191, 0.1);
+        }
+
+        details[open] summary {
+            margin-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .learning-objectives {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--color-accent);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .learning-objectives h2 {
+            margin-top: 0;
+            border-bottom: none;
         }
 
         .navigation {
@@ -208,221 +253,177 @@
             gap: var(--spacing-md);
             margin: var(--spacing-xl) 0;
             padding-top: var(--spacing-lg);
-            border-top: 1px solid var(--color-border);
+            border-top: 2px solid var(--color-border);
         }
 
-        .btn {
-            display: inline-block;
-            padding: var(--spacing-sm) var(--spacing-md);
-            border-radius: 6px;
+        .nav-button {
+            flex: 1;
+            padding: var(--spacing-md);
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+            color: white;
+            border-radius: var(--border-radius);
+            text-align: center;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: var(--box-shadow);
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             text-decoration: none;
-            font-weight: 500;
-            transition: all 0.2s;
-            min-height: 44px;
-            display: flex;
-            align-items: center;
-        }
-
-        .btn-primary {
-            background: var(--color-accent);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: var(--color-primary-500);
-            color: white;
-        }
-
-        @media (hover: hover) and (pointer: fine) {
-            .btn-primary:hover {
-                background: var(--color-accent-light);
-                transform: translateY(-2px);
-                box-shadow: 0 4px 8px rgba(123, 44, 191, 0.3);
-            }
-
-            .btn-secondary:hover {
-                background: var(--color-primary-700);
-                transform: translateY(-2px);
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            }
         }
 
         footer {
-            background: var(--color-primary-900);
-            color: white;
-            padding: var(--spacing-lg);
-            text-align: center;
             margin-top: var(--spacing-xl);
-        }
-
-        footer a {
-            color: var(--color-accent-light);
-            text-decoration: none;
+            padding: var(--spacing-lg) var(--spacing-md);
+            background-color: var(--color-bg-alt);
+            border-top: 1px solid var(--color-border);
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--color-text-light);
         }
 
         @media (max-width: 768px) {
-            header h1 {
-                font-size: var(--font-xl);
+            h1 {
+                font-size: 1.5rem;
             }
 
-            .subtitle {
-                font-size: var(--font-base);
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            h3 {
+                font-size: 1.2rem;
             }
 
             .meta {
-                font-size: 0.8rem;
+                font-size: 0.85rem;
             }
 
             .navigation {
                 flex-direction: column;
             }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: var(--spacing-xs);
+            }
         }
     </style>
+
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         mermaid.initialize({ startOnLoad: true, theme: 'default' });
     </script>
+
+    <!-- MathJax for LaTeX equation rendering -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\(', '\)']],
+                displayMath: [['$$', '$$'], ['\[', '\]']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
 </head>
 <body>
     <header>
         <div class="header-content">
             <h1>第4章：時系列データと統合解析</h1>
-            <p class="subtitle"></p>
+            <p class="subtitle">センサーデータ解析とPCA - 多変量データの統合的理解</p>
             <div class="meta">
                 <span class="meta-item">📖 読了時間: 20-25分</span>
                 <span class="meta-item">📊 難易度: 中級</span>
-                <span class="meta-item">💻 コード例: 5</span>
-                <span class="meta-item">📝 演習問題: 3</span>
+                <span class="meta-item">💻 コード例: 5個</span>
+                <span class="meta-item">📝 演習問題: 3問</span>
             </div>
         </div>
     </header>
 
     <main class="container">
-        <p>
+
 <h1>第4章：時系列データと統合解析</h1>
-</p>
-<p>
+
 <strong>センサーデータ解析とPCA - 多変量データの統合的理解</strong>
-</p>
-<p>
+
 <h2>学習目標</h2>
-</p>
-<p>
+
 この章を読むことで、以下を習得できます：
-</p>
-<p>
-<ul><li>✅ 温度・圧力センサーデータの前処理と異常検知ができる</li>
-<li>✅ 移動窓（sliding window）解析を実装できる</li>
-<li>✅ PCA（主成分分析）による次元削減と可視化ができる</li>
-<li>✅ sklearn Pipelineによる統合解析パイプラインを構築できる</li>
-<li>✅ 複数測定技術のデータを統合的に解析できる</li>
-</p>
-<p>
+
+- ✅ 温度・圧力センサーデータの前処理と異常検知ができる
+- ✅ 移動窓（sliding window）解析を実装できる
+- ✅ PCA（主成分分析）による次元削減と可視化ができる
+- ✅ sklearn Pipelineによる統合解析パイプラインを構築できる
+- ✅ 複数測定技術のデータを統合的に解析できる
+
 <strong>読了時間</strong>: 20-25分
 <strong>コード例</strong>: 5個
 <strong>演習問題</strong>: 3問
-</p>
-<p>
+
 ---
-</p>
-<p>
+
 <h2>4.1 時系列データの特徴と前処理</h2>
-</p>
-<p>
+
 <h3>材料合成・プロセス監視における時系列データ</h3>
-</p>
-<p>
+
 材料合成プロセスでは、温度、圧力、流量、組成などの物理量を時間経過とともに測定します。
-</p>
-<p>
-<table>
-<thead>
-<tr>
-<th>測定項目</th>
-<th>典型的なサンプリング周期</th>
-<th>主な用途</th>
-<th>データ特性</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>温度</strong></td>
-<td>0.1-10 Hz</td>
-<td>反応制御、熱処理</td>
-<td>トレンド、周期性</td>
-</tr>
-<tr>
-<td><strong>圧力</strong></td>
-<td>1-100 Hz</td>
-<td>CVD、スパッタリング</td>
-<td>ノイズ多、急峻な変化</td>
-</tr>
-<tr>
-<td><strong>流量</strong></td>
-<td>0.1-1 Hz</td>
-<td>ガス供給制御</td>
-<td>ドリフト、ステップ変化</td>
-</tr>
-<tr>
-<td><strong>組成</strong></td>
-<td>0.01-1 Hz</td>
-<td>in-situ分析</td>
-<td>遅延、積分効果</td>
-</tr>
-</tbody>
-</table></p>
-<p>
+
+| 測定項目 | 典型的なサンプリング周期 | 主な用途 | データ特性 |
+|---------|---------------------|---------|----------|
+| <strong>温度</strong> | 0.1-10 Hz | 反応制御、熱処理 | トレンド、周期性 |
+| <strong>圧力</strong> | 1-100 Hz | CVD、スパッタリング | ノイズ多、急峻な変化 |
+| <strong>流量</strong> | 0.1-1 Hz | ガス供給制御 | ドリフト、ステップ変化 |
+| <strong>組成</strong> | 0.01-1 Hz | in-situ分析 | 遅延、積分効果 |
+
 <h3>時系列データ解析のワークフロー</h3>
-</p>
-<p>
-<pre><code class="language-mermaid">flowchart TD
+
+<div class="mermaid">flowchart TD
     A[データ収集] --> B[前処理]
     B --> C[特徴抽出]
     C --> D[異常検知]
     D --> E[統合解析]
     E --> F[プロセス最適化]
-</p>
-<p>
+
     B --> B1[リサンプリング]
     B --> B2[トレンド除去]
     B --> B3[ノイズ除去]
-</p>
-<p>
+
     C --> C1[統計量]
     C --> C2[移動窓解析]
-</p>
-<p>
+
     style A fill:#e3f2fd
     style B fill:#fff3e0
     style C fill:#f3e5f5
     style D fill:#e8f5e9
-    style E fill:#fce4ec
-</code></pre>
-</p>
-<p>
+    style E fill:#fce4ec</div>
+
 ---
-</p>
-<p>
+
 <h2>4.2 時系列データの前処理と移動窓解析</h2>
-</p>
-<p>
+
 <h3>サンプルデータ生成と基本的な可視化</h3>
-</p>
-<p>
+
 <strong>コード例1: 合成プロセスのセンサーデータ生成</strong>
-</p>
-<p>
+
 <pre><code class="language-python">import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import signal
-</p>
-<p>
+
 <h1>材料合成プロセスのシミュレーション（1000秒、10 Hz）</h1>
 np.random.seed(42)
 time = np.linspace(0, 1000, 10000)
-</p>
-<p>
+
 <h1>温度プロファイル（ランプ昇温→保持→冷却）</h1>
 temperature = np.piecewise(
     time,
@@ -432,8 +433,7 @@ temperature = np.piecewise(
      lambda t: 100 - 0.1 * (t - 700)]  # 冷却
 )
 temperature += np.random.normal(0, 2, len(time))  # ノイズ
-</p>
-<p>
+
 <h1>圧力（真空度、ステップ変化あり）</h1>
 pressure = np.piecewise(
     time,
@@ -441,18 +441,15 @@ pressure = np.piecewise(
     [100, 1, 100]  # Torr
 )
 pressure += np.random.normal(0, 0.5, len(time))
-</p>
-<p>
+
 <h1>ガス流量（周期的変動）</h1>
-flow_rate = 50 + 10 <em> np.sin(2 </em> np.pi * time / 100) + \
+flow_rate = 50 + 10 * np.sin(2 * np.pi * time / 100) + \
             np.random.normal(0, 2, len(time))
-</p>
-<p>
+
 <h1>異常値を意図的に挿入（センサー異常を模擬）</h1>
 temperature[5000:5010] = 200  # スパイクノイズ
 pressure[3000] = -50          # 物理的にありえない値
-</p>
-<p>
+
 <h1>DataFrameに格納</h1>
 df_sensor = pd.DataFrame({
     'time': time,
@@ -460,76 +457,60 @@ df_sensor = pd.DataFrame({
     'pressure': pressure,
     'flow_rate': flow_rate
 })
-</p>
-<p>
+
 <h1>可視化</h1>
 fig, axes = plt.subplots(3, 1, figsize=(14, 10), sharex=True)
-</p>
-<p>
+
 axes[0].plot(df_sensor['time'], df_sensor['temperature'],
              linewidth=0.8, alpha=0.8)
 axes[0].set_ylabel('Temperature (°C)')
 axes[0].set_title('Process Sensor Data')
 axes[0].grid(True, alpha=0.3)
-</p>
-<p>
+
 axes[1].plot(df_sensor['time'], df_sensor['pressure'],
              linewidth=0.8, alpha=0.8, color='orange')
 axes[1].set_ylabel('Pressure (Torr)')
 axes[1].grid(True, alpha=0.3)
-</p>
-<p>
+
 axes[2].plot(df_sensor['time'], df_sensor['flow_rate'],
              linewidth=0.8, alpha=0.8, color='green')
 axes[2].set_xlabel('Time (s)')
 axes[2].set_ylabel('Flow Rate (sccm)')
 axes[2].grid(True, alpha=0.3)
-</p>
-<p>
+
 plt.tight_layout()
 plt.show()
-</p>
-<p>
+
 print("=== センサーデータ統計 ===")
-print(df_sensor.describe())
-</code></pre>
-</p>
-<p>
+print(df_sensor.describe())</code></pre>
+
 <h3>移動窓解析（Rolling Statistics）</h3>
-</p>
-<p>
+
 <strong>コード例2: 移動平均と移動標準偏差</strong>
-</p>
-<p>
-<pre><code class="language-python"># 移動窓統計量の計算
+
+<pre><code class="language-python"><h1>移動窓統計量の計算</h1>
 window_size = 100  # 10秒間の窓（10 Hz × 10s）
-</p>
-<p>
+
 df_sensor['temp_rolling_mean'] = df_sensor['temperature'].rolling(
     window=window_size, center=True
 ).mean()
-</p>
-<p>
+
 df_sensor['temp_rolling_std'] = df_sensor['temperature'].rolling(
     window=window_size, center=True
 ).std()
-</p>
-<p>
+
 df_sensor['pressure_rolling_mean'] = df_sensor['pressure'].rolling(
     window=window_size, center=True
 ).mean()
-</p>
-<p>
+
 <h1>異常検知（3σ法）</h1>
 df_sensor['temp_anomaly'] = np.abs(
     df_sensor['temperature'] - df_sensor['temp_rolling_mean']
 ) > 3 * df_sensor['temp_rolling_std']
-</p>
-<p>
+
 <h1>可視化</h1>
 fig, axes = plt.subplots(2, 1, figsize=(14, 10), sharex=True)
-</p>
-<p>
+
 <h1>温度と移動平均</h1>
 axes[0].plot(df_sensor['time'], df_sensor['temperature'],
              label='Raw', alpha=0.5, linewidth=0.8)
@@ -549,8 +530,7 @@ axes[0].set_ylabel('Temperature (°C)')
 axes[0].set_title('Rolling Statistics and Anomaly Detection')
 axes[0].legend()
 axes[0].grid(True, alpha=0.3)
-</p>
-<p>
+
 <h1>移動標準偏差（変動の大きさ）</h1>
 axes[1].plot(df_sensor['time'], df_sensor['temp_rolling_std'],
              linewidth=1.5, color='purple')
@@ -558,50 +538,39 @@ axes[1].set_xlabel('Time (s)')
 axes[1].set_ylabel('Temperature Std (°C)')
 axes[1].set_title('Rolling Standard Deviation')
 axes[1].grid(True, alpha=0.3)
-</p>
-<p>
+
 plt.tight_layout()
 plt.show()
-</p>
-<p>
+
 print(f"=== 異常検知結果 ===")
 print(f"異常点の数: {df_sensor['temp_anomaly'].sum()}")
 anomaly_times = df_sensor.loc[df_sensor['temp_anomaly'], 'time'].values
-print(f"異常発生時刻: {anomaly_times[:5]}... (最初の5点)")
-</code></pre>
-</p>
-<p>
+print(f"異常発生時刻: {anomaly_times[:5]}... (最初の5点)")</code></pre>
+
 <h3>トレンド除去と定常化</h3>
-</p>
-<p>
+
 <strong>コード例3: 差分・デトレンド処理</strong>
-</p>
-<p>
+
 <pre><code class="language-python">from scipy.signal import detrend
-</p>
-<p>
+
 <h1>差分（1次差分 = 変化率）</h1>
 df_sensor['temp_diff'] = df_sensor['temperature'].diff()
-</p>
-<p>
+
 <h1>デトレンド（線形トレンド除去）</h1>
 df_sensor['temp_detrended'] = detrend(
     df_sensor['temperature'].fillna(method='bfill')
 )
-</p>
-<p>
+
 <h1>可視化</h1>
 fig, axes = plt.subplots(3, 1, figsize=(14, 12), sharex=True)
-</p>
-<p>
+
 <h1>元データ</h1>
 axes[0].plot(df_sensor['time'], df_sensor['temperature'],
              linewidth=1, alpha=0.8)
 axes[0].set_ylabel('Temperature (°C)')
 axes[0].set_title('Original Time Series')
 axes[0].grid(True, alpha=0.3)
-</p>
-<p>
+
 <h1>1次差分</h1>
 axes[1].plot(df_sensor['time'], df_sensor['temp_diff'],
              linewidth=1, alpha=0.8, color='orange')
@@ -609,8 +578,7 @@ axes[1].axhline(y=0, color='red', linestyle='--', alpha=0.5)
 axes[1].set_ylabel('Temperature Diff (°C/0.1s)')
 axes[1].set_title('First Difference (Change Rate)')
 axes[1].grid(True, alpha=0.3)
-</p>
-<p>
+
 <h1>デトレンド</h1>
 axes[2].plot(df_sensor['time'], df_sensor['temp_detrended'],
              linewidth=1, alpha=0.8, color='green')
@@ -619,66 +587,51 @@ axes[2].set_xlabel('Time (s)')
 axes[2].set_ylabel('Temperature (°C)')
 axes[2].set_title('Detrended (Linear Trend Removed)')
 axes[2].grid(True, alpha=0.3)
-</p>
-<p>
+
 plt.tight_layout()
 plt.show()
-</p>
-<p>
+
 <h1>定常性の評価（変動の安定性）</h1>
 print("=== 定常性評価 ===")
 print(f"元データの標準偏差: {df_sensor['temperature'].std():.2f}")
 print(f"差分データの標準偏差: {df_sensor['temp_diff'].std():.2f}")
-print(f"デトレンドデータの標準偏差: {df_sensor['temp_detrended'].std():.2f}")
-</code></pre>
-</p>
-<p>
+print(f"デトレンドデータの標準偏差: {df_sensor['temp_detrended'].std():.2f}")</code></pre>
+
 ---
-</p>
-<p>
+
 <h2>4.3 PCA（主成分分析）による次元削減</h2>
-</p>
-<p>
+
 <h3>多変量データの可視化</h3>
-</p>
-<p>
+
 <strong>コード例4: PCAによる次元削減と可視化</strong>
-</p>
-<p>
+
 <pre><code class="language-python">from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
-</p>
-<p>
+
 <h1>データ準備（異常値除去後）</h1>
 df_clean = df_sensor[~df_sensor['temp_anomaly']].copy()
-</p>
-<p>
+
 <h1>特徴量行列（温度、圧力、流量）</h1>
 X = df_clean[['temperature', 'pressure', 'flow_rate']].dropna().values
-</p>
-<p>
+
 <h1>標準化（PCAの前に必須）</h1>
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
-</p>
-<p>
+
 <h1>PCA実行</h1>
 pca = PCA(n_components=3)
 X_pca = pca.fit_transform(X_scaled)
-</p>
-<p>
+
 <h1>結果をDataFrameに</h1>
 df_pca = pd.DataFrame(
     X_pca,
     columns=['PC1', 'PC2', 'PC3']
 )
 df_pca['time'] = df_clean['time'].values[:len(df_pca)]
-</p>
-<p>
+
 <h1>可視化</h1>
 fig = plt.figure(figsize=(16, 12))
-</p>
-<p>
+
 <h1>2D散布図（PC1 vs PC2）</h1>
 ax1 = plt.subplot(2, 2, 1)
 scatter = ax1.scatter(df_pca['PC1'], df_pca['PC2'],
@@ -689,8 +642,7 @@ ax1.set_ylabel(f'PC2 ({pca.explained_variance_ratio_[1]*100:.1f}%)')
 ax1.set_title('PCA: PC1 vs PC2 (colored by time)')
 plt.colorbar(scatter, ax=ax1, label='Time (s)')
 ax1.grid(True, alpha=0.3)
-</p>
-<p>
+
 <h1>寄与率（Scree plot）</h1>
 ax2 = plt.subplot(2, 2, 2)
 cumsum_variance = np.cumsum(pca.explained_variance_ratio_)
@@ -704,8 +656,7 @@ ax2.set_title('Scree Plot')
 ax2.set_xticks(range(1, 4))
 ax2.legend()
 ax2.grid(True, alpha=0.3, axis='y')
-</p>
-<p>
+
 <h1>3D散布図</h1>
 ax3 = plt.subplot(2, 2, 3, projection='3d')
 scatter_3d = ax3.scatter(df_pca['PC1'], df_pca['PC2'], df_pca['PC3'],
@@ -715,21 +666,18 @@ ax3.set_xlabel(f'PC1 ({pca.explained_variance_ratio_[0]*100:.1f}%)')
 ax3.set_ylabel(f'PC2 ({pca.explained_variance_ratio_[1]*100:.1f}%)')
 ax3.set_zlabel(f'PC3 ({pca.explained_variance_ratio_[2]*100:.1f}%)')
 ax3.set_title('PCA: 3D Visualization')
-</p>
-<p>
+
 <h1>Loading plot（主成分の解釈）</h1>
 ax4 = plt.subplot(2, 2, 4)
 loadings = pca.components_.T * np.sqrt(pca.explained_variance_)
 features = ['Temperature', 'Pressure', 'Flow Rate']
-</p>
-<p>
+
 for i, feature in enumerate(features):
     ax4.arrow(0, 0, loadings[i, 0], loadings[i, 1],
              head_width=0.05, head_length=0.05, fc='blue', ec='blue')
-    ax4.text(loadings[i, 0] <em> 1.15, loadings[i, 1] </em> 1.15,
+    ax4.text(loadings[i, 0] * 1.15, loadings[i, 1] * 1.15,
             feature, fontsize=12, ha='center')
-</p>
-<p>
+
 ax4.set_xlabel(f'PC1 ({pca.explained_variance_ratio_[0]*100:.1f}%)')
 ax4.set_ylabel(f'PC2 ({pca.explained_variance_ratio_[1]*100:.1f}%)')
 ax4.set_title('Loading Plot (Feature Contribution)')
@@ -738,59 +686,47 @@ ax4.axvline(x=0, color='k', linewidth=0.5)
 ax4.grid(True, alpha=0.3)
 ax4.set_xlim(-1, 1)
 ax4.set_ylim(-1, 1)
-</p>
-<p>
+
 plt.tight_layout()
 plt.show()
-</p>
-<p>
+
 <h1>PCA統計</h1>
 print("=== PCA結果 ===")
 print(f"累積寄与率:")
 for i, var in enumerate(cumsum_variance, 1):
     print(f"  PC{i}まで: {var*100:.2f}%")
-</p>
-<p>
+
 print(f"\n主成分の成分（Loading）:")
 loading_df = pd.DataFrame(
     pca.components_.T,
     columns=[f'PC{i+1}' for i in range(3)],
     index=features
 )
-print(loading_df)
-</code></pre>
-</p>
-<p>
+print(loading_df)</code></pre>
+
 <strong>PCAの解釈</strong>:
-<li><strong>PC1（第1主成分）</strong>: 最も分散の大きい方向（通常、全体的なプロセス進行）</li>
-<li><strong>PC2（第2主成分）</strong>: PC1と直交する次に分散が大きい方向</li>
-<li><strong>Loading値</strong>: 各変数が主成分に与える影響（絶対値が大きいほど重要）</li>
-</p>
-<p>
+- <strong>PC1（第1主成分）</strong>: 最も分散の大きい方向（通常、全体的なプロセス進行）
+- <strong>PC2（第2主成分）</strong>: PC1と直交する次に分散が大きい方向
+- <strong>Loading値</strong>: 各変数が主成分に与える影響（絶対値が大きいほど重要）
+
 ---
-</p>
-<p>
+
 <h2>4.4 統合解析パイプライン（sklearn Pipeline）</h2>
-</p>
-<p>
+
 <h3>複数測定技術のデータ統合</h3>
-</p>
-<p>
+
 <strong>コード例5: 自動化された統合解析パイプライン</strong>
-</p>
-<p>
+
 <pre><code class="language-python">from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler, RobustScaler
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 import joblib
-</p>
-<p>
+
 class IntegratedAnalysisPipeline:
     """統合解析パイプライン"""
-</p>
-<p>
+
     def __init__(self, n_clusters=3):
         """
         Parameters:
@@ -805,14 +741,12 @@ class IntegratedAnalysisPipeline:
             ('clustering', KMeans(n_clusters=n_clusters, random_state=42))
         ])
         self.n_clusters = n_clusters
-</p>
-<p>
+
     def fit(self, X):
         """パイプライン学習"""
         self.pipeline.fit(X)
         return self
-</p>
-<p>
+
     def transform(self, X):
         """次元削減のみ"""
         # クラスタリング前までのステップを実行
@@ -820,61 +754,50 @@ class IntegratedAnalysisPipeline:
         for step_name, step in self.pipeline.steps[:-1]:
             X_transformed = step.transform(X_transformed)
         return X_transformed
-</p>
-<p>
+
     def predict(self, X):
         """クラスター予測"""
         return self.pipeline.predict(X)
-</p>
-<p>
+
     def get_feature_importance(self, feature_names):
         """主成分における特徴量の重要度"""
         pca = self.pipeline.named_steps['pca']
         loadings = pca.components_.T * np.sqrt(pca.explained_variance_)
-</p>
-<p>
+
         importance_df = pd.DataFrame(
             loadings,
             columns=[f'PC{i+1}' for i in range(pca.n_components_)],
             index=feature_names
         )
         return importance_df
-</p>
-<p>
+
     def save(self, filename):
         """モデル保存"""
         joblib.dump(self.pipeline, filename)
-</p>
-<p>
+
     @staticmethod
     def load(filename):
         """モデル読み込み"""
         return joblib.load(filename)
-</p>
-<p>
+
 <h1>使用例：統合解析の実行</h1>
 <h1>特徴量行列準備</h1>
 X_integrated = df_clean[['temperature', 'pressure',
                          'flow_rate']].dropna().values
-</p>
-<p>
+
 <h1>パイプライン実行</h1>
 pipeline = IntegratedAnalysisPipeline(n_clusters=3)
 pipeline.fit(X_integrated)
-</p>
-<p>
+
 <h1>次元削減結果</h1>
 X_reduced = pipeline.transform(X_integrated)
-</p>
-<p>
+
 <h1>クラスター予測</h1>
 clusters = pipeline.predict(X_integrated)
-</p>
-<p>
+
 <h1>可視化</h1>
 fig, axes = plt.subplots(2, 2, figsize=(14, 12))
-</p>
-<p>
+
 <h1>時系列でのクラスター可視化</h1>
 time_clean = df_clean['time'].values[:len(clusters)]
 axes[0, 0].scatter(time_clean, clusters, c=clusters,
@@ -883,8 +806,7 @@ axes[0, 0].set_xlabel('Time (s)')
 axes[0, 0].set_ylabel('Cluster ID')
 axes[0, 0].set_title('Process State Clustering (Time Series)')
 axes[0, 0].grid(True, alpha=0.3)
-</p>
-<p>
+
 <h1>PCA空間でのクラスター</h1>
 axes[0, 1].scatter(X_reduced[:, 0], X_reduced[:, 1],
                   c=clusters, cmap='viridis', s=10, alpha=0.6)
@@ -892,8 +814,7 @@ axes[0, 1].set_xlabel('PC1')
 axes[0, 1].set_ylabel('PC2')
 axes[0, 1].set_title('Clusters in PCA Space')
 axes[0, 1].grid(True, alpha=0.3)
-</p>
-<p>
+
 <h1>各クラスターの温度プロファイル</h1>
 temp_clean = df_clean['temperature'].values[:len(clusters)]
 for cluster_id in range(pipeline.n_clusters):
@@ -905,8 +826,7 @@ axes[1, 0].set_ylabel('Temperature (°C)')
 axes[1, 0].set_title('Temperature Profile by Cluster')
 axes[1, 0].legend()
 axes[1, 0].grid(True, alpha=0.3)
-</p>
-<p>
+
 <h1>特徴量重要度</h1>
 importance = pipeline.get_feature_importance(
     ['Temperature', 'Pressure', 'Flow Rate']
@@ -915,12 +835,10 @@ importance.plot(kind='bar', ax=axes[1, 1])
 axes[1, 1].set_title('Feature Importance in PCA')
 axes[1, 1].set_ylabel('Loading')
 axes[1, 1].grid(True, alpha=0.3, axis='y')
-</p>
-<p>
+
 plt.tight_layout()
 plt.show()
-</p>
-<p>
+
 <h1>クラスター統計</h1>
 print("=== クラスター統計 ===")
 for cluster_id in range(pipeline.n_clusters):
@@ -930,231 +848,179 @@ for cluster_id in range(pipeline.n_clusters):
     print(f"  サンプル数: {mask.sum()}")
     print(f"  平均温度: {cluster_temp.mean():.2f}°C")
     print(f"  温度範囲: {cluster_temp.min():.2f} - {cluster_temp.max():.2f}°C")
-</p>
-<p>
+
 <h1>パイプライン保存</h1>
 pipeline.save('process_analysis_pipeline.pkl')
-print("\nPipeline saved to 'process_analysis_pipeline.pkl'")
-</code></pre>
-</p>
-<p>
+print("\nPipeline saved to 'process_analysis_pipeline.pkl'")</code></pre>
+
 <strong>sklearn Pipelineの利点</strong>:
 1. <strong>再現性</strong>: 全処理ステップが1つのオブジェクトに格納
 2. <strong>保守性</strong>: ステップの追加・変更が容易
 3. <strong>デプロイ</strong>: <code>.pkl</code>ファイルで保存・読み込み可能
 4. <strong>自動化</strong>: 新データへの適用が<code>predict()</code>1行で完結
-</p>
-<p>
+
 ---
-</p>
-<p>
+
 <h2>4.5 統合解析のワークフロー図</h2>
-</p>
-<p>
+
 <h3>複数測定技術の統合</h3>
-</p>
-<p>
-<pre><code class="language-mermaid">flowchart LR
+
+<div class="mermaid">flowchart LR
     A[XRDデータ] --> D[特徴抽出]
     B[XPSデータ] --> E[特徴抽出]
     C[SEMデータ] --> F[特徴抽出]
     G[センサーデータ] --> H[特徴抽出]
-</p>
-<p>
+
     D --> I[統合特徴量行列]
     E --> I
     F --> I
     H --> I
-</p>
-<p>
+
     I --> J[標準化]
     J --> K[PCA]
     K --> L[クラスタリング<br/>or<br/>回帰モデル]
     L --> M[結果解釈]
-</p>
-<p>
+
     style A fill:#e3f2fd
     style B fill:#fff3e0
     style C fill:#f3e5f5
     style G fill:#e8f5e9
     style I fill:#fce4ec
-    style M fill:#fff9c4
-</code></pre>
-</p>
-<p>
+    style M fill:#fff9c4</div>
+
 ---
-</p>
-<p>
+
 <h2>4.6 本章のまとめ</h2>
-</p>
-<p>
+
 <h3>学んだこと</h3>
-</p>
-<p>
+
 1. <strong>時系列データ解析</strong>
    - 移動窓統計量（平均、標準偏差）
    - 異常検知（3σ法）
    - トレンド除去と定常化（差分、デトレンド）
-</p>
-<p>
+
 2. <strong>PCA（主成分分析）</strong>
    - 多変量データの次元削減
    - 寄与率による成分選択
    - Loading plotによる解釈
-</p>
-<p>
+
 3. <strong>統合解析パイプライン</strong>
    - sklearn Pipelineによる自動化
    - 欠損値補完→標準化→PCA→クラスタリング
    - モデルの保存と再利用
-</p>
-<p>
+
 4. <strong>実践的応用</strong>
    - プロセス状態のクラスタリング
    - 複数測定技術の統合
    - 異常検知と品質管理
-</p>
-<p>
+
 <h3>重要なポイント</h3>
-</p>
-<p>
-<li>✅ 時系列データは前処理（定常化）が重要</li>
-<li>✅ PCAは変数間の相関を考慮した次元削減</li>
-<li>✅ sklearn Pipelineにより再現性の高い解析が実現</li>
-<li>✅ 統合解析により単一測定では得られない知見が得られる</li>
-</p>
-<p>
+
+- ✅ 時系列データは前処理（定常化）が重要
+- ✅ PCAは変数間の相関を考慮した次元削減
+- ✅ sklearn Pipelineにより再現性の高い解析が実現
+- ✅ 統合解析により単一測定では得られない知見が得られる
+
 <h3>シリーズのまとめ</h3>
-</p>
-<p>
+
 本シリーズでは、材料科学における実験データ解析の基礎から応用までを学びました：
-</p>
-<p>
-<li><strong>第1章</strong>: データ前処理の基礎（ノイズ除去、外れ値検出、標準化）</li>
-<li><strong>第2章</strong>: スペクトルデータ解析（XRD、XPS、IR、Raman）</li>
-<li><strong>第3章</strong>: 画像データ解析（SEM、TEM、粒子検出、CNN分類）</li>
-<li><strong>第4章</strong>: 時系列データと統合解析（センサーデータ、PCA、Pipeline）</li>
-</p>
-<p>
+
+- <strong>第1章</strong>: データ前処理の基礎（ノイズ除去、外れ値検出、標準化）
+- <strong>第2章</strong>: スペクトルデータ解析（XRD、XPS、IR、Raman）
+- <strong>第3章</strong>: 画像データ解析（SEM、TEM、粒子検出、CNN分類）
+- <strong>第4章</strong>: 時系列データと統合解析（センサーデータ、PCA、Pipeline）
+
 これらの技術を組み合わせることで、材料開発の高速化・高精度化が実現できます。
-</p>
-<p>
+
 ---
-</p>
-<p>
+
 <h2>演習問題</h2>
-</p>
-<p>
+
 <h3>問題1（難易度：easy）</h3>
-</p>
-<p>
+
 次の文章の正誤を判定してください。
-</p>
-<p>
+
 1. 移動平均フィルタは時系列データのトレンドを除去する
 2. PCAの第1主成分は最も分散が大きい方向である
 3. sklearn Pipelineでは、全ての処理ステップが同じデータ型を要求する
-</p>
-<p>
+
 <details>
 <summary>ヒント</summary>
-</p>
-<p>
+
 1. 移動平均は平滑化であり、トレンド除去とは異なる
 2. PCAの定義（分散最大化）を確認
 3. Pipelineの各ステップの入出力の型を考える
-</p>
-<p>
+
 </details>
-</p>
-<p>
+
 <details>
 <summary>解答例</summary>
-</p>
-<p>
+
 <strong>解答</strong>:
 1. <strong>誤</strong> - 移動平均はノイズ除去（平滑化）であり、トレンド除去には差分やデトレンドを使用
 2. <strong>正</strong> - PCAは分散が最大になる方向を第1主成分とする
 3. <strong>誤</strong> - 各ステップは適切な変換を行えば、異なるデータ型でも対応可能（例：Imputer→Scaler）
-</p>
-<p>
+
 <strong>解説</strong>:
 時系列データの「平滑化」「トレンド除去」「定常化」は異なる概念です。移動平均は高周波ノイズを除去しますが、低周波のトレンドは残ります。PCAは教師なし学習の次元削減手法で、データの分散を最大限保持します。
-</p>
-<p>
+
 </details>
-</p>
-<p>
+
 ---
-</p>
-<p>
+
 <h3>問題2（難易度：medium）</h3>
-</p>
-<p>
+
 以下のセンサーデータに対して、移動窓解析と異常検知を実行してください。
-</p>
-<p>
+
 <pre><code class="language-python">import numpy as np
-</p>
-<p>
+
 <h1>サンプルセンサーデータ</h1>
 np.random.seed(200)
 time = np.linspace(0, 500, 5000)
-signal = 50 + 10 <em> np.sin(2 </em> np.pi * time / 50) + \
+signal = 50 + 10 * np.sin(2 * np.pi * time / 50) + \
          np.random.normal(0, 3, len(time))
-</p>
-<p>
+
 <h1>異常値を挿入</h1>
 signal[2000:2005] = 100
-signal[3500] = -20
-</code></pre>
-</p>
-<p>
+signal[3500] = -20</code></pre>
+
 <strong>要求事項</strong>:
 1. 移動平均（窓サイズ50）を計算
 2. 移動標準偏差を計算
 3. 3σ法で異常値を検出
 4. 異常値の時刻を出力
 5. 結果を可視化
-</p>
-<p>
+
 <details>
 <summary>ヒント</summary>
-</p>
-<p>
+
 <strong>処理フロー</strong>:
 1. <code>pandas.Series.rolling(window=50).mean()</code>
 2. <code>pandas.Series.rolling(window=50).std()</code>
 3. <code>np.abs(signal - rolling_mean) > 3 * rolling_std</code>
 4. <code>time[anomaly_mask]</code>
 5. <code>matplotlib</code>で元信号、移動平均、±3σ範囲、異常点をプロット
-</p>
-<p>
+
 </details>
-</p>
-<p>
+
 <details>
 <summary>解答例</summary>
-</p>
-<p>
+
 <pre><code class="language-python">import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-</p>
-<p>
+
 <h1>サンプルデータ</h1>
 np.random.seed(200)
 time = np.linspace(0, 500, 5000)
-signal = 50 + 10 <em> np.sin(2 </em> np.pi * time / 50) + \
+signal = 50 + 10 * np.sin(2 * np.pi * time / 50) + \
          np.random.normal(0, 3, len(time))
 signal[2000:2005] = 100
 signal[3500] = -20
-</p>
-<p>
+
 <h1>DataFrameに変換</h1>
 df = pd.DataFrame({'time': time, 'signal': signal})
-</p>
-<p>
+
 <h1>移動統計量</h1>
 window_size = 50
 df['rolling_mean'] = df['signal'].rolling(
@@ -1163,25 +1029,21 @@ df['rolling_mean'] = df['signal'].rolling(
 df['rolling_std'] = df['signal'].rolling(
     window=window_size, center=True
 ).std()
-</p>
-<p>
+
 <h1>異常検知</h1>
 df['anomaly'] = np.abs(
     df['signal'] - df['rolling_mean']
 ) > 3 * df['rolling_std']
-</p>
-<p>
+
 <h1>異常時刻</h1>
 anomaly_times = df.loc[df['anomaly'], 'time'].values
 print("=== 異常検知結果 ===")
 print(f"異常点の数: {df['anomaly'].sum()}")
 print(f"異常発生時刻: {anomaly_times}")
-</p>
-<p>
+
 <h1>可視化</h1>
 plt.figure(figsize=(14, 6))
-</p>
-<p>
+
 plt.plot(df['time'], df['signal'], label='Raw Signal',
          alpha=0.6, linewidth=0.8)
 plt.plot(df['time'], df['rolling_mean'], label='Rolling Mean',
@@ -1195,78 +1057,61 @@ plt.fill_between(
 plt.scatter(df.loc[df['anomaly'], 'time'],
            df.loc[df['anomaly'], 'signal'],
            color='black', s=50, zorder=5, label='Anomalies')
-</p>
-<p>
+
 plt.xlabel('Time (s)')
 plt.ylabel('Signal')
 plt.title('Rolling Window Analysis and Anomaly Detection')
 plt.legend()
 plt.grid(True, alpha=0.3)
 plt.tight_layout()
-plt.show()
-</code></pre>
-</p>
-<p>
+plt.show()</code></pre>
+
 <strong>出力例</strong>:
-``<code>
-=== 異常検知結果 ===
+<pre><code>=== 異常検知結果 ===
 異常点の数: 6
-異常発生時刻: [200.04  200.14  200.24  200.34  200.44  350.07]
-</code>`<code>
-</p>
-<p>
+異常発生時刻: [200.04  200.14  200.24  200.34  200.44  350.07]</code></pre>
+
 <strong>解説</strong>:
 移動窓統計により、信号の局所的な挙動（平均・標準偏差）を捉え、3σルールで統計的異常を検出できます。この例では、時刻200秒付近のスパイクと350秒付近の負のスパイクが正しく検出されました。
-</p>
-<p>
+
 </details>
-</p>
-<p>
+
 ---
-</p>
-<p>
+
 <h3>問題3（難易度：hard）</h3>
-</p>
-<p>
+
 複数の測定技術（XRD、XPS、SEM、センサー）から得られたデータを統合し、材料の品質を予測するパイプラインを構築してください。
-</p>
-<p>
+
 <strong>背景</strong>:
 材料合成実験で、各サンプルについて以下のデータが取得されました：
-<li>XRDピーク強度（3つの主ピーク）</li>
-<li>XPS元素組成（C, O, Fe の原子%）</li>
-<li>SEM粒径統計（平均直径、標準偏差）</li>
-<li>プロセスセンサー統計（最高温度、平均圧力）</li>
-</p>
-<p>
+- XRDピーク強度（3つの主ピーク）
+- XPS元素組成（C, O, Fe の原子%）
+- SEM粒径統計（平均直径、標準偏差）
+- プロセスセンサー統計（最高温度、平均圧力）
+
 これら11変数から、材料の品質スコア（0-100）を予測するモデルを構築します。
-</p>
-<p>
+
 <strong>課題</strong>:
 1. 欠損値補完と標準化を含むパイプライン構築
 2. PCAで次元削減（累積寄与率90%）
 3. 回帰モデル（Ridge回帰）で品質予測
 4. クロスバリデーションで性能評価
 5. 特徴量重要度の可視化
-</p>
-<p>
+
 <strong>制約条件</strong>:
-<li>サンプル数100（訓練80、テスト20）</li>
-<li>一部データに欠損値あり（5-10%）</li>
-<li>スケールが大きく異なる（XRDは数千、組成は0-100%）</li>
-</p>
-<p>
+- サンプル数100（訓練80、テスト20）
+- 一部データに欠損値あり（5-10%）
+- スケールが大きく異なる（XRDは数千、組成は0-100%）
+
 <details>
 <summary>ヒント</summary>
-</p>
-<p>
+
 <strong>設計方針</strong>:
-1. </code>sklearn.pipeline.Pipeline<code>で統合
-2. </code>SimpleImputer<code> → </code>StandardScaler<code> → </code>PCA<code> → </code>Ridge<code>
-3. </code>cross_val_score<code>で評価
+1. <code>sklearn.pipeline.Pipeline</code>で統合
+2. <code>SimpleImputer</code> → <code>StandardScaler</code> → <code>PCA</code> → <code>Ridge</code>
+3. <code>cross_val_score</code>で評価
 4. PCAのloadingsから特徴量重要度を計算
-</p>
-<p>
+
 <strong>パイプライン例</strong>:
 <pre><code class="language-python">from sklearn.linear_model import Ridge
 pipeline = Pipeline([
@@ -1274,24 +1119,18 @@ pipeline = Pipeline([
     ('scaler', StandardScaler()),
     ('pca', PCA(n_components=0.9)),
     ('regressor', Ridge(alpha=1.0))
-])
-</code></pre>
-</p>
-<p>
+])</code></pre>
+
 </details>
-</p>
-<p>
+
 <details>
 <summary>解答例</summary>
-</p>
-<p>
+
 <strong>解答の概要</strong>:
 欠損値補完、標準化、PCA、回帰を統合したパイプラインで品質予測を実現します。
-</p>
-<p>
+
 <strong>実装コード</strong>:
-</p>
-<p>
+
 <pre><code class="language-python">import numpy as np
 import pandas as pd
 from sklearn.pipeline import Pipeline
@@ -1302,42 +1141,35 @@ from sklearn.linear_model import Ridge
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import mean_absolute_error, r2_score
 import matplotlib.pyplot as plt
-</p>
-<p>
+
 <h1>サンプルデータ生成</h1>
 np.random.seed(42)
 n_samples = 100
-</p>
-<p>
+
 <h1>特徴量生成（11変数）</h1>
 data = {
     # XRDピーク強度
     'xrd_peak1': np.random.normal(1000, 200, n_samples),
     'xrd_peak2': np.random.normal(1500, 300, n_samples),
     'xrd_peak3': np.random.normal(800, 150, n_samples),
-</p>
-<p>
+
     # XPS組成
     'xps_C': np.random.normal(20, 5, n_samples),
     'xps_O': np.random.normal(50, 10, n_samples),
     'xps_Fe': np.random.normal(30, 8, n_samples),
-</p>
-<p>
+
     # SEM統計
     'sem_mean_diameter': np.random.normal(50, 10, n_samples),
     'sem_std_diameter': np.random.normal(8, 2, n_samples),
-</p>
-<p>
+
     # センサー統計
     'max_temperature': np.random.normal(300, 50, n_samples),
     'avg_pressure': np.random.normal(10, 3, n_samples),
     'total_flow': np.random.normal(100, 20, n_samples)
 }
-</p>
-<p>
+
 df = pd.DataFrame(data)
-</p>
-<p>
+
 <h1>品質スコア（複数変数の線形結合 + ノイズ）</h1>
 quality_score = (
     0.02 * df['xrd_peak2'] +
@@ -1347,24 +1179,20 @@ quality_score = (
     np.random.normal(0, 5, n_samples)
 )
 quality_score = np.clip(quality_score, 0, 100)
-</p>
-<p>
+
 <h1>欠損値を意図的に挿入（5%）</h1>
 mask = np.random.rand(n_samples, 11) < 0.05
 df_with_missing = df.copy()
 df_with_missing[mask] = np.nan
-</p>
-<p>
+
 <h1>データ分割</h1>
 X = df_with_missing.values
 y = quality_score.values
-</p>
-<p>
+
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
-</p>
-<p>
+
 <h1>パイプライン構築</h1>
 pipeline = Pipeline([
     ('imputer', SimpleImputer(strategy='median')),
@@ -1372,45 +1200,37 @@ pipeline = Pipeline([
     ('pca', PCA(n_components=0.9)),  # 累積寄与率90%
     ('regressor', Ridge(alpha=1.0))
 ])
-</p>
-<p>
+
 <h1>訓練</h1>
 pipeline.fit(X_train, y_train)
-</p>
-<p>
+
 <h1>予測</h1>
 y_pred_train = pipeline.predict(X_train)
 y_pred_test = pipeline.predict(X_test)
-</p>
-<p>
+
 <h1>性能評価</h1>
 train_r2 = r2_score(y_train, y_pred_train)
 test_r2 = r2_score(y_test, y_pred_test)
 test_mae = mean_absolute_error(y_test, y_pred_test)
-</p>
-<p>
+
 <h1>クロスバリデーション</h1>
 cv_scores = cross_val_score(pipeline, X_train, y_train, cv=5,
                             scoring='r2')
-</p>
-<p>
+
 print("=== モデル性能 ===")
 print(f"訓練 R²: {train_r2:.3f}")
 print(f"テスト R²: {test_r2:.3f}")
 print(f"テスト MAE: {test_mae:.2f}")
 print(f"CV R² (mean ± std): {cv_scores.mean():.3f} ± {cv_scores.std():.3f}")
-</p>
-<p>
+
 <h1>PCA成分数</h1>
 n_components = pipeline.named_steps['pca'].n_components_
 print(f"\nPCA主成分数: {n_components}")
 print(f"累積寄与率: {pipeline.named_steps['pca'].explained_variance_ratio_.sum()*100:.1f}%")
-</p>
-<p>
+
 <h1>可視化</h1>
 fig, axes = plt.subplots(2, 2, figsize=(14, 12))
-</p>
-<p>
+
 <h1>予測 vs 実測（訓練データ）</h1>
 axes[0, 0].scatter(y_train, y_pred_train, alpha=0.6, s=30)
 axes[0, 0].plot([0, 100], [0, 100], 'r--', linewidth=2)
@@ -1418,8 +1238,7 @@ axes[0, 0].set_xlabel('True Quality Score')
 axes[0, 0].set_ylabel('Predicted Quality Score')
 axes[0, 0].set_title(f'Training Set (R²={train_r2:.3f})')
 axes[0, 0].grid(True, alpha=0.3)
-</p>
-<p>
+
 <h1>予測 vs 実測（テストデータ）</h1>
 axes[0, 1].scatter(y_test, y_pred_test, alpha=0.6, s=30, color='orange')
 axes[0, 1].plot([0, 100], [0, 100], 'r--', linewidth=2)
@@ -1427,8 +1246,7 @@ axes[0, 1].set_xlabel('True Quality Score')
 axes[0, 1].set_ylabel('Predicted Quality Score')
 axes[0, 1].set_title(f'Test Set (R²={test_r2:.3f})')
 axes[0, 1].grid(True, alpha=0.3)
-</p>
-<p>
+
 <h1>残差プロット</h1>
 residuals = y_test - y_pred_test
 axes[1, 0].scatter(y_pred_test, residuals, alpha=0.6, s=30, color='green')
@@ -1437,50 +1255,40 @@ axes[1, 0].set_xlabel('Predicted Quality Score')
 axes[1, 0].set_ylabel('Residuals')
 axes[1, 0].set_title('Residual Plot')
 axes[1, 0].grid(True, alpha=0.3)
-</p>
-<p>
+
 <h1>特徴量重要度（PCA loadings）</h1>
 pca = pipeline.named_steps['pca']
 loadings = np.abs(pca.components_).sum(axis=0)
 feature_importance = loadings / loadings.sum()
-</p>
-<p>
+
 feature_names = list(data.keys())
 axes[1, 1].barh(feature_names, feature_importance, alpha=0.7)
 axes[1, 1].set_xlabel('Importance (normalized)')
 axes[1, 1].set_title('Feature Importance (PCA Loadings)')
 axes[1, 1].grid(True, alpha=0.3, axis='x')
-</p>
-<p>
+
 plt.tight_layout()
 plt.show()
-</p>
-<p>
+
 <h1>特徴量重要度ランキング</h1>
 importance_df = pd.DataFrame({
     'Feature': feature_names,
     'Importance': feature_importance
 }).sort_values('Importance', ascending=False)
-</p>
-<p>
+
 print("\n=== 特徴量重要度ランキング ===")
-print(importance_df.to_string(index=False))
-</code></pre>
-</p>
-<p>
+print(importance_df.to_string(index=False))</code></pre>
+
 <strong>結果例</strong>:
-</code>`<code>
-=== モデル性能 ===
+<pre><code>=== モデル性能 ===
 訓練 R²: 0.892
 テスト R²: 0.867
 テスト MAE: 4.23
 CV R² (mean ± std): 0.875 ± 0.032
-</p>
-<p>
+
 PCA主成分数: 6
 累積寄与率: 91.2%
-</p>
-<p>
+
 === 特徴量重要度ランキング ===
           Feature  Importance
       xrd_peak2      0.1456
@@ -1489,128 +1297,121 @@ sem_mean_diameter   0.1142
 max_temperature     0.1078
       xrd_peak1     0.0987
       avg_pressure  0.0921
-      ...
-</code>`<code>
-</p>
-<p>
+      ...</code></pre>
+
 <strong>詳細な解説</strong>:
-1. <strong>欠損値対応</strong>: </code>SimpleImputer`で中央値補完（外れ値に頑健）
+1. <strong>欠損値対応</strong>: <code>SimpleImputer</code>で中央値補完（外れ値に頑健）
 2. <strong>標準化</strong>: 異なるスケールの変数を統一（PCAに必須）
 3. <strong>PCA</strong>: 11変数→6主成分に削減（情報損失10%未満）
 4. <strong>Ridge回帰</strong>: L2正則化により過学習を抑制
 5. <strong>特徴量重要度</strong>: XRDピーク2、Fe組成、粒径が重要と判明
-</p>
-<p>
+
 <strong>追加の検討事項</strong>:
-<li>ハイパーパラメータ最適化（GridSearchCV）</li>
-<li>非線形モデル（RandomForest、XGBoost）の検討</li>
-<li>SHAPによる予測の解釈性向上</li>
-<li>実験計画法（DOE）との統合</li>
-</p>
-<p>
+- ハイパーパラメータ最適化（GridSearchCV）
+- 非線形モデル（RandomForest、XGBoost）の検討
+- SHAPによる予測の解釈性向上
+- 実験計画法（DOE）との統合
+
 </details>
-</p>
-<p>
+
 ---
-</p>
-<p>
+
 <h2>参考文献</h2>
-</p>
-<p>
-1. Hyndman, R. J., & Athanasopoulos, G. (2018). "Forecasting: Principles and Practice." OTexts. URL: <a href="https://otexts.com/fpp2/">https://otexts.com/fpp2/</a>
-</p>
-<p>
-2. Jolliffe, I. T., & Cadima, J. (2016). "Principal component analysis: a review and recent developments." <em>Philosophical Transactions of the Royal Society A</em>, 374(2065). DOI: <a href="https://doi.org/10.1098/rsta.2015.0202">10.1098/rsta.2015.0202</a>
-</p>
-<p>
-3. Pedregosa, F. et al. (2011). "Scikit-learn: Machine Learning in Python." <em>Journal of Machine Learning Research</em>, 12, 2825-2830.
-</p>
-<p>
-4. sklearn Documentation: Pipeline. URL: <a href="https://scikit-learn.org/stable/modules/compose.html">https://scikit-learn.org/stable/modules/compose.html</a>
-</p>
-<p>
-5. Chandola, V. et al. (2009). "Anomaly detection: A survey." <em>ACM Computing Surveys</em>, 41(3), 1-58. DOI: <a href="https://doi.org/10.1145/1541880.1541882">10.1145/1541880.1541882</a>
-</p>
-<p>
+
+1. Hyndman, R. J., & Athanasopoulos, G. (2018). "Forecasting: Principles and Practice." OTexts. URL: [https://otexts.com/fpp2/](https://otexts.com/fpp2/)
+
+2. Jolliffe, I. T., & Cadima, J. (2016). "Principal component analysis: a review and recent developments." *Philosophical Transactions of the Royal Society A*, 374(2065). DOI: [10.1098/rsta.2015.0202](https://doi.org/10.1098/rsta.2015.0202)
+
+3. Pedregosa, F. et al. (2011). "Scikit-learn: Machine Learning in Python." *Journal of Machine Learning Research*, 12, 2825-2830.
+
+4. sklearn Documentation: Pipeline. URL: [https://scikit-learn.org/stable/modules/compose.html](https://scikit-learn.org/stable/modules/compose.html)
+
+5. Chandola, V. et al. (2009). "Anomaly detection: A survey." *ACM Computing Surveys*, 41(3), 1-58. DOI: [10.1145/1541880.1541882](https://doi.org/10.1145/1541880.1541882)
+
 ---
-</p>
-<p>
+
 <h2>ナビゲーション</h2>
-</p>
-<p>
+
 <h3>前の章</h3>
-<strong><a href="./chapter-3.md">第3章：画像データ解析 ←</a></strong>
-</p>
-<p>
+<strong>[第3章：画像データ解析 ←](./chapter-3.md)</strong>
+
 <h3>シリーズ目次</h3>
-<strong><a href="./index.md">← シリーズ目次に戻る</a></strong>
-</p>
-<p>
+<strong>[← シリーズ目次に戻る](./index.md)</strong>
+
 ---
-</p>
-<p>
+
 <h2>著者情報</h2>
-</p>
-<p>
+
 <strong>作成者</strong>: AI Terakoya Content Team
 <strong>監修</strong>: Dr. Yusuke Hashimoto（東北大学）
 <strong>作成日</strong>: 2025-10-17
 <strong>バージョン</strong>: 1.0
-</p>
-<p>
+
 <strong>更新履歴</strong>:
-<li>2025-10-17: v1.0 初版公開</li>
-</p>
-<p>
+- 2025-10-17: v1.0 初版公開
+
 <strong>フィードバック</strong>:
-<li>GitHub Issues: [リポジトリURL]/issues</li>
-<li>Email: yusuke.hashimoto.b8@tohoku.ac.jp</li>
-</p>
-<p>
+- GitHub Issues: [リポジトリURL]/issues
+- Email: yusuke.hashimoto.b8@tohoku.ac.jp
+
 <strong>ライセンス</strong>: Creative Commons BY 4.0
-</p>
-<p>
+
 ---
-</p>
-<p>
+
 <h2>シリーズ完了</h2>
-</p>
-<p>
+
 <strong>おめでとうございます！実験データ解析入門シリーズを完了しました！</strong>
-</p>
-<p>
+
 本シリーズで習得したスキル：
-<li>✅ データ前処理（ノイズ除去、外れ値検出、標準化）</li>
-<li>✅ スペクトル解析（XRD、XPS、IR、Raman）</li>
-<li>✅ 画像解析（SEM、TEM、粒子検出、CNN）</li>
-<li>✅ 時系列解析（センサーデータ、PCA、Pipeline）</li>
-</p>
-<p>
+- ✅ データ前処理（ノイズ除去、外れ値検出、標準化）
+- ✅ スペクトル解析（XRD、XPS、IR、Raman）
+- ✅ 画像解析（SEM、TEM、粒子検出、CNN）
+- ✅ 時系列解析（センサーデータ、PCA、Pipeline）
+
 <strong>次のステップ</strong>:
-<li>機械学習応用編（回帰、分類、クラスタリング）</li>
-<li>深層学習入門（PyTorch、TensorFlow）</li>
-<li>ベイズ最適化による材料探索</li>
-<li>実験計画法（DOE）との統合</li></ul>
-</p>
-<p>
+- 機械学習応用編（回帰、分類、クラスタリング）
+- 深層学習入門（PyTorch、TensorFlow）
+- ベイズ最適化による材料探索
+- 実験計画法（DOE）との統合
+
 引き続き、AI Terakoyaで学習を深めましょう！
-
-</p>
-
-        <div class="navigation">
-            <div>
-                <a href="chapter-3.html" class="btn btn-secondary">← 前へ</a>
-                <a href="index.html" class="btn btn-secondary">目次へ</a>
-            </div>
-            <div>
-                
-            </div>
-        </div>
+<div class="navigation">
+    <a href="chapter-3.html" class="nav-button">← 第3章</a>
+    <a href="index.html" class="nav-button">シリーズ目次に戻る</a>
+</div>
     </main>
 
     <footer>
-        <p>&copy; 2025 AI Terakoya - Tohoku University. All rights reserved.</p>
-        <p><a href="https://ai.tohoku.ac.jp">AI Terakoya Home</a></p>
+        <p><strong>作成者</strong>: AI Terakoya Content Team</p>
+        <p><strong>監修</strong>: Dr. Yusuke Hashimoto（東北大学）</p>
+        <p><strong>バージョン</strong>: 1.0 | <strong>作成日</strong>: 2025-10-17</p>
+        <p><strong>ライセンス</strong>: Creative Commons BY 4.0</p>
+        <p>© 2025 AI Terakoya. All rights reserved.</p>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mermaidCodeBlocks = document.querySelectorAll('pre.codehilite code.language-mermaid, pre code.language-mermaid');
+
+            mermaidCodeBlocks.forEach(function(codeBlock) {
+                const pre = codeBlock.parentElement;
+                const mermaidCode = codeBlock.textContent;
+
+                const mermaidDiv = document.createElement('div');
+                mermaidDiv.className = 'mermaid';
+                mermaidDiv.textContent = mermaidCode.trim();
+
+                pre.parentNode.replaceChild(mermaidDiv, pre);
+            });
+
+            if (typeof mermaid !== 'undefined') {
+                mermaid.initialize({
+                    startOnLoad: true,
+                    theme: 'default'
+                });
+                mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+            }
+        });
+    </script>
 </body>
 </html>

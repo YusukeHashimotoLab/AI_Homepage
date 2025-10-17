@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>chapter-2 - AI Terakoya</title>
+    <title>Chapter - AI Terakoya</title>
 
     <style>
         :root {
@@ -319,1142 +319,1141 @@
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         mermaid.initialize({ startOnLoad: true, theme: 'default' });
     </script>
+
+    <!-- MathJax for LaTeX equation rendering -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\(', '\)']],
+                displayMath: [['$$', '$$'], ['\[', '\]']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
 </head>
 <body>
     <header>
         <div class="header-content">
-            <h1>chapter-2</h1>
-            
+            <h1>Chapter</h1>
+            <p class="subtitle"></p>
             <div class="meta">
-                
+                <span class="meta-item">📖 読了時間: 20-25分</span>
+                <span class="meta-item">📊 難易度: 初級</span>
+                <span class="meta-item">💻 コード例: 0個</span>
+                <span class="meta-item">📝 演習問題: 0問</span>
             </div>
         </div>
     </header>
 
     <main class="container">
-        <h1>第2章: ロボティクス実験の基礎</h1>
+<h1>第2章: ロボティクス実験の基礎</h1>
 
 <strong>学習時間: 25-30分</strong>
 
-<p>---</p>
+---
 
 <h2>導入</h2>
 
-<p>実験自動化の心臓部は、ロボットアーム、液体ハンドリングシステム、センサーネットワークです。本章では、これらの基礎技術をPythonプログラミングを通じて実践的に学びます。</p>
+実験自動化の心臓部は、ロボットアーム、液体ハンドリングシステム、センサーネットワークです。本章では、これらの基礎技術をPythonプログラミングを通じて実践的に学びます。
 
-<p>OpenTrons OT-2液体ハンドリングロボットを中心に、実際に動くコード例を通じて、試薬の分注、プレートの移動、センサーデータの取得など、自動化実験の基本操作を習得します。</p>
+OpenTrons OT-2液体ハンドリングロボットを中心に、実際に動くコード例を通じて、試薬の分注、プレートの移動、センサーデータの取得など、自動化実験の基本操作を習得します。
 
-<p>---</p>
+---
 
 <h2>学習目標</h2>
 
-<p>本章を学習することで、以下を習得できます：</p>
+本章を学習することで、以下を習得できます：
 
-<ol>
-<li><strong>ロボットアーム制御</strong>: 逆運動学、経路計画の基礎とPython実装</li>
-<li><strong>液体ハンドリング</strong>: OpenTrons OT-2での精密ピペッティング</li>
-<li><strong>固体ハンドリング</strong>: 粉末計量、錠剤成形の自動化手法</li>
-<li><strong>センサー統合</strong>: カメラ、分光計、XRDとのインターフェース</li>
-<li><strong>安全設計</strong>: エラーハンドリング、緊急停止、異常検知</li>
-<li><strong>ラボウェア標準化</strong>: マイクロプレート、バイアル、キュベットの統一規格</li>
-</ol>
+1. <strong>ロボットアーム制御</strong>: 逆運動学、経路計画の基礎とPython実装
+2. <strong>液体ハンドリング</strong>: OpenTrons OT-2での精密ピペッティング
+3. <strong>固体ハンドリング</strong>: 粉末計量、錠剤成形の自動化手法
+4. <strong>センサー統合</strong>: カメラ、分光計、XRDとのインターフェース
+5. <strong>安全設計</strong>: エラーハンドリング、緊急停止、異常検知
+6. <strong>ラボウェア標準化</strong>: マイクロプレート、バイアル、キュベットの統一規格
 
-<p>---</p>
+---
 
 <h2>2.1 ロボットアーム制御の基礎</h2>
 
 <h3>2.1.1 順運動学と逆運動学</h3>
 
-<p>ロボットアームの制御には2つの運動学問題があります。</p>
+ロボットアームの制御には2つの運動学問題があります。
 
 <strong>順運動学（Forward Kinematics）</strong>:
-<p>関節角度 $\theta_1, \theta_2, ..., \theta_n$ からエンドエフェクタの位置・姿勢 $(x, y, z, roll, pitch, yaw)$ を計算</p>
+関節角度 $\theta_1, \theta_2, ..., \theta_n$ からエンドエフェクタの位置・姿勢 $(x, y, z, roll, pitch, yaw)$ を計算
 
 <strong>逆運動学（Inverse Kinematics, IK）</strong>:
-<p>目標位置・姿勢からそれを実現する関節角度を計算（実験では通常こちらを使用）</p>
+目標位置・姿勢からそれを実現する関節角度を計算（実験では通常こちらを使用）
 
 <pre><code class="language-python">import numpy as np
-<p>import matplotlib.pyplot as plt</p>
-<p>from mpl_toolkits.mplot3d import Axes3D</p>
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
-<p>class SimpleRobotArm:</p>
-<p>"""</p>
-<p>2リンク2D平面ロボットアームのシミュレーション</p>
-<p>材料科学実験での試薬ボトルへのアクセス、サンプル移動などを想定</p>
-<p>"""</p>
+class SimpleRobotArm:
+    """
+    2リンク2D平面ロボットアームのシミュレーション
+    材料科学実験での試薬ボトルへのアクセス、サンプル移動などを想定
+    """
 
-<p>def __init__(self, link1_length=0.3, link2_length=0.25):</p>
-<p>"""</p>
-<p>Args:</p>
-<p>link1_length: 第1リンクの長さ（メートル）</p>
-<p>link2_length: 第2リンクの長さ（メートル）</p>
-<p>"""</p>
-<p>self.L1 = link1_length</p>
-<p>self.L2 = link2_length</p>
+    def __init__(self, link1_length=0.3, link2_length=0.25):
+        """
+        Args:
+            link1_length: 第1リンクの長さ（メートル）
+            link2_length: 第2リンクの長さ（メートル）
+        """
+        self.L1 = link1_length
+        self.L2 = link2_length
 
-<p>def forward_kinematics(self, theta1, theta2):</p>
-<p>"""</p>
-<p>順運動学: 関節角度からエンドエフェクタ位置を計算</p>
+    def forward_kinematics(self, theta1, theta2):
+        """
+        順運動学: 関節角度からエンドエフェクタ位置を計算
 
-<p>Args:</p>
-<p>theta1: 第1関節の角度（度）</p>
-<p>theta2: 第2関節の角度（度）</p>
+        Args:
+            theta1: 第1関節の角度（度）
+            theta2: 第2関節の角度（度）
 
-<p>Returns:</p>
-<p>(x, y): エンドエフェクタの位置</p>
-<p>"""</p>
-<p># 度をラジアンに変換</p>
-<p>th1 = np.radians(theta1)</p>
-<p>th2 = np.radians(theta2)</p>
+        Returns:
+            (x, y): エンドエフェクタの位置
+        """
+        # 度をラジアンに変換
+        th1 = np.radians(theta1)
+        th2 = np.radians(theta2)
 
-<p># 第1リンクの先端位置</p>
-<p>x1 = self.L1 * np.cos(th1)</p>
-<p>y1 = self.L1 * np.sin(th1)</p>
+        # 第1リンクの先端位置
+        x1 = self.L1 * np.cos(th1)
+        y1 = self.L1 * np.sin(th1)
 
-<p># エンドエフェクタの位置</p>
-<p>x = x1 + self.L2 * np.cos(th1 + th2)</p>
-<p>y = y1 + self.L2 * np.sin(th1 + th2)</p>
+        # エンドエフェクタの位置
+        x = x1 + self.L2 * np.cos(th1 + th2)
+        y = y1 + self.L2 * np.sin(th1 + th2)
 
-<p>return x, y</p>
+        return x, y
 
-<p>def inverse_kinematics(self, target_x, target_y):</p>
-<p>"""</p>
-<p>逆運動学: 目標位置から関節角度を計算</p>
+    def inverse_kinematics(self, target_x, target_y):
+        """
+        逆運動学: 目標位置から関節角度を計算
 
-<p>Args:</p>
-<p>target_x: 目標X座標</p>
-<p>target_y: 目標Y座標</p>
+        Args:
+            target_x: 目標X座標
+            target_y: 目標Y座標
 
-<p>Returns:</p>
-<p>(theta1, theta2): 関節角度（度）または None（到達不能）</p>
-<p>"""</p>
-<p># 到達可能性チェック</p>
-<p>distance = np.sqrt(target_x<strong>2 + target_y</strong>2)</p>
-<p>if distance > (self.L1 + self.L2) or distance < abs(self.L1 - self.L2):</p>
-<p>print(f"警告: 目標位置 ({target_x:.2f}, {target_y:.2f}) は到達不能")</p>
-<p>return None</p>
+        Returns:
+            (theta1, theta2): 関節角度（度）または None（到達不能）
+        """
+        # 到達可能性チェック
+        distance = np.sqrt(target_x<strong>2 + target_y</strong>2)
+        if distance > (self.L1 + self.L2) or distance < abs(self.L1 - self.L2):
+            print(f"警告: 目標位置 ({target_x:.2f}, {target_y:.2f}) は到達不能")
+            return None
 
-<p># 余弦定理による第2関節角度の計算</p>
-<p>cos_theta2 = (target_x<strong>2 + target_y</strong>2 - self.L1<strong>2 - self.L2</strong>2) / (2 <em> self.L1 </em> self.L2)</p>
-<p># 数値誤差対策</p>
-<p>cos_theta2 = np.clip(cos_theta2, -1.0, 1.0)</p>
+        # 余弦定理による第2関節角度の計算
+        cos_theta2 = (target_x<strong>2 + target_y</strong>2 - self.L1<strong>2 - self.L2</strong>2) / (2 * self.L1 * self.L2)
+        # 数値誤差対策
+        cos_theta2 = np.clip(cos_theta2, -1.0, 1.0)
 
-<p># Elbow-upの解を選択（実験で一般的）</p>
-<p>theta2_rad = np.arccos(cos_theta2)</p>
+        # Elbow-upの解を選択（実験で一般的）
+        theta2_rad = np.arccos(cos_theta2)
 
-<p># 第1関節角度の計算</p>
-<p>k1 = self.L1 + self.L2 * np.cos(theta2_rad)</p>
-<p>k2 = self.L2 * np.sin(theta2_rad)</p>
-<p>theta1_rad = np.arctan2(target_y, target_x) - np.arctan2(k2, k1)</p>
+        # 第1関節角度の計算
+        k1 = self.L1 + self.L2 * np.cos(theta2_rad)
+        k2 = self.L2 * np.sin(theta2_rad)
+        theta1_rad = np.arctan2(target_y, target_x) - np.arctan2(k2, k1)
 
-<p># ラジアンから度に変換</p>
-<p>theta1 = np.degrees(theta1_rad)</p>
-<p>theta2 = np.degrees(theta2_rad)</p>
+        # ラジアンから度に変換
+        theta1 = np.degrees(theta1_rad)
+        theta2 = np.degrees(theta2_rad)
 
-<p>return theta1, theta2</p>
+        return theta1, theta2
 
-<p>def plot_arm(self, theta1, theta2, target_point=None):</p>
-<p>"""アームの現在位置を可視化"""</p>
-<p>th1 = np.radians(theta1)</p>
-<p>th2 = np.radians(theta2)</p>
+    def plot_arm(self, theta1, theta2, target_point=None):
+        """アームの現在位置を可視化"""
+        th1 = np.radians(theta1)
+        th2 = np.radians(theta2)
 
-<p># 各関節の位置</p>
-<p>x0, y0 = 0, 0  # ベース</p>
-<p>x1 = self.L1 * np.cos(th1)</p>
-<p>y1 = self.L1 * np.sin(th1)</p>
-<p>x2 = x1 + self.L2 * np.cos(th1 + th2)</p>
-<p>y2 = y1 + self.L2 * np.sin(th1 + th2)</p>
+        # 各関節の位置
+        x0, y0 = 0, 0  # ベース
+        x1 = self.L1 * np.cos(th1)
+        y1 = self.L1 * np.sin(th1)
+        x2 = x1 + self.L2 * np.cos(th1 + th2)
+        y2 = y1 + self.L2 * np.sin(th1 + th2)
 
-<p>plt.figure(figsize=(8, 8))</p>
-<p>plt.plot([x0, x1, x2], [y0, y1, y2], 'o-', linewidth=3, markersize=10, label='ロボットアーム')</p>
-<p>plt.plot(x0, y0, 'ro', markersize=15, label='ベース')</p>
-<p>plt.plot(x2, y2, 'go', markersize=12, label='エンドエフェクタ')</p>
+        plt.figure(figsize=(8, 8))
+        plt.plot([x0, x1, x2], [y0, y1, y2], 'o-', linewidth=3, markersize=10, label='ロボットアーム')
+        plt.plot(x0, y0, 'ro', markersize=15, label='ベース')
+        plt.plot(x2, y2, 'go', markersize=12, label='エンドエフェクタ')
 
-<p>if target_point:</p>
-<p>plt.plot(target_point[0], target_point[1], 'r*', markersize=20, label='目標位置')</p>
+        if target_point:
+            plt.plot(target_point[0], target_point[1], 'r*', markersize=20, label='目標位置')
 
-<p># 到達範囲の円</p>
-<p>theta = np.linspace(0, 2*np.pi, 100)</p>
-<p>r_max = self.L1 + self.L2</p>
-<p>r_min = abs(self.L1 - self.L2)</p>
-<p>plt.plot(r_max <em> np.cos(theta), r_max </em> np.sin(theta), 'k--', alpha=0.3, label='最大到達範囲')</p>
-<p>plt.plot(r_min <em> np.cos(theta), r_min </em> np.sin(theta), 'k--', alpha=0.3)</p>
+        # 到達範囲の円
+        theta = np.linspace(0, 2*np.pi, 100)
+        r_max = self.L1 + self.L2
+        r_min = abs(self.L1 - self.L2)
+        plt.plot(r_max * np.cos(theta), r_max * np.sin(theta), 'k--', alpha=0.3, label='最大到達範囲')
+        plt.plot(r_min * np.cos(theta), r_min * np.sin(theta), 'k--', alpha=0.3)
 
-<p>plt.axis('equal')</p>
-<p>plt.grid(True, alpha=0.3)</p>
-<p>plt.xlabel('X 位置 (m)', fontsize=12)</p>
-<p>plt.ylabel('Y 位置 (m)', fontsize=12)</p>
-<p>plt.title('2リンクロボットアーム', fontsize=14, fontweight='bold')</p>
-<p>plt.legend()</p>
-<p>plt.tight_layout()</p>
+        plt.axis('equal')
+        plt.grid(True, alpha=0.3)
+        plt.xlabel('X 位置 (m)', fontsize=12)
+        plt.ylabel('Y 位置 (m)', fontsize=12)
+        plt.title('2リンクロボットアーム', fontsize=14, fontweight='bold')
+        plt.legend()
+        plt.tight_layout()
 
 
 <h1>使用例</h1>
-<p>robot = SimpleRobotArm(link1_length=0.3, link2_length=0.25)</p>
+robot = SimpleRobotArm(link1_length=0.3, link2_length=0.25)
 
 <h1>逆運動学の使用例: 試薬ボトル (0.4, 0.2) にアクセス</h1>
-<p>target_x, target_y = 0.4, 0.2</p>
-<p>angles = robot.inverse_kinematics(target_x, target_y)</p>
+target_x, target_y = 0.4, 0.2
+angles = robot.inverse_kinematics(target_x, target_y)
 
-<p>if angles:</p>
-<p>theta1, theta2 = angles</p>
-<p>print(f"目標位置: ({target_x}, {target_y})")</p>
-<p>print(f"必要な関節角度: θ1 = {theta1:.2f}°, θ2 = {theta2:.2f}°")</p>
+if angles:
+    theta1, theta2 = angles
+    print(f"目標位置: ({target_x}, {target_y})")
+    print(f"必要な関節角度: θ1 = {theta1:.2f}°, θ2 = {theta2:.2f}°")
 
-<p># 検証: 順運動学で位置を確認</p>
-<p>x_check, y_check = robot.forward_kinematics(theta1, theta2)</p>
-<p>error = np.sqrt((x_check - target_x)<strong>2 + (y_check - target_y)</strong>2)</p>
-<p>print(f"検証: 実際の位置 ({x_check:.4f}, {y_check:.4f}), 誤差 {error:.6f}m")</p>
+    # 検証: 順運動学で位置を確認
+    x_check, y_check = robot.forward_kinematics(theta1, theta2)
+    error = np.sqrt((x_check - target_x)<strong>2 + (y_check - target_y)</strong>2)
+    print(f"検証: 実際の位置 ({x_check:.4f}, {y_check:.4f}), 誤差 {error:.6f}m")
 
-<p># 可視化</p>
-<p>robot.plot_arm(theta1, theta2, target_point=(target_x, target_y))</p>
-<p>plt.savefig('robot_arm_ik.png', dpi=300, bbox_inches='tight')</p>
-<p>plt.show()</p>
-</code></pre>
+    # 可視化
+    robot.plot_arm(theta1, theta2, target_point=(target_x, target_y))
+    plt.savefig('robot_arm_ik.png', dpi=300, bbox_inches='tight')
+    plt.show()</code></pre>
 
 <strong>コード解説</strong>:
-<ol>
-<li><strong>順運動学</strong>: 三角関数で各リンクの位置を計算</li>
-<li><strong>逆運動学</strong>: 余弦定理とアークタンジェントで関節角度を逆算</li>
-<li><strong>到達可能性</strong>: 目標距離が $|L_1 - L_2| \leq d \leq L_1 + L_2$ の範囲にあるかチェック</li>
-<li><strong>Elbow-up/down</strong>: 同じ目標位置に2つの解がある場合、実験では通常elbow-upを選択</li>
-</ol>
+1. <strong>順運動学</strong>: 三角関数で各リンクの位置を計算
+2. <strong>逆運動学</strong>: 余弦定理とアークタンジェントで関節角度を逆算
+3. <strong>到達可能性</strong>: 目標距離が $|L_1 - L_2| \leq d \leq L_1 + L_2$ の範囲にあるかチェック
+4. <strong>Elbow-up/down</strong>: 同じ目標位置に2つの解がある場合、実験では通常elbow-upを選択
 
-<p>---</p>
+---
 
 <h3>2.1.2 軌道計画（Path Planning）</h3>
 
-<p>試薬ボトルから反応容器への移動など、スムーズで安全な軌道を計画します。</p>
+試薬ボトルから反応容器への移動など、スムーズで安全な軌道を計画します。
 
 <pre><code class="language-python">def linear_trajectory(start_pos, end_pos, num_points=50):
-<p>"""</p>
-<p>2点間の直線軌道を生成</p>
+    """
+    2点間の直線軌道を生成
 
-<p>Args:</p>
-<p>start_pos: 開始位置 (x, y)</p>
-<p>end_pos: 終了位置 (x, y)</p>
-<p>num_points: 軌道上の点数</p>
+    Args:
+        start_pos: 開始位置 (x, y)
+        end_pos: 終了位置 (x, y)
+        num_points: 軌道上の点数
 
-<p>Returns:</p>
-<p>軌道上の点のリスト [(x1, y1), (x2, y2), ...]</p>
-<p>"""</p>
-<p>x_traj = np.linspace(start_pos[0], end_pos[0], num_points)</p>
-<p>y_traj = np.linspace(start_pos[1], end_pos[1], num_points)</p>
+    Returns:
+        軌道上の点のリスト [(x1, y1), (x2, y2), ...]
+    """
+    x_traj = np.linspace(start_pos[0], end_pos[0], num_points)
+    y_traj = np.linspace(start_pos[1], end_pos[1], num_points)
 
-<p>trajectory = list(zip(x_traj, y_traj))</p>
-<p>return trajectory</p>
+    trajectory = list(zip(x_traj, y_traj))
+    return trajectory
 
-<p>def execute_trajectory(robot, trajectory, plot=True):</p>
-<p>"""</p>
-<p>軌道を実行（シミュレーション）</p>
+def execute_trajectory(robot, trajectory, plot=True):
+    """
+    軌道を実行（シミュレーション）
 
-<p>Args:</p>
-<p>robot: RobotArmインスタンス</p>
-<p>trajectory: 目標位置のリスト</p>
-<p>plot: 軌道を可視化するか</p>
-<p>"""</p>
-<p>joint_angles = []</p>
-<p>successful_points = []</p>
+    Args:
+        robot: RobotArmインスタンス
+        trajectory: 目標位置のリスト
+        plot: 軌道を可視化するか
+    """
+    joint_angles = []
+    successful_points = []
 
-<p>for i, (x, y) in enumerate(trajectory):</p>
-<p>angles = robot.inverse_kinematics(x, y)</p>
-<p>if angles:</p>
-<p>joint_angles.append(angles)</p>
-<p>successful_points.append((x, y))</p>
-<p>else:</p>
-<p>print(f"警告: 点 {i} ({x:.3f}, {y:.3f}) は到達不能")</p>
+    for i, (x, y) in enumerate(trajectory):
+        angles = robot.inverse_kinematics(x, y)
+        if angles:
+            joint_angles.append(angles)
+            successful_points.append((x, y))
+        else:
+            print(f"警告: 点 {i} ({x:.3f}, {y:.3f}) は到達不能")
 
-<p>if plot and successful_points:</p>
-<p>plt.figure(figsize=(10, 8))</p>
+    if plot and successful_points:
+        plt.figure(figsize=(10, 8))
 
-<p># 到達範囲</p>
-<p>theta = np.linspace(0, 2*np.pi, 100)</p>
-<p>r_max = robot.L1 + robot.L2</p>
-<p>plt.plot(r_max <em> np.cos(theta), r_max </em> np.sin(theta), 'k--', alpha=0.2, label='最大到達範囲')</p>
+        # 到達範囲
+        theta = np.linspace(0, 2*np.pi, 100)
+        r_max = robot.L1 + robot.L2
+        plt.plot(r_max * np.cos(theta), r_max * np.sin(theta), 'k--', alpha=0.2, label='最大到達範囲')
 
-<p># 軌道</p>
-<p>traj_x, traj_y = zip(*successful_points)</p>
-<p>plt.plot(traj_x, traj_y, 'b-', linewidth=2, alpha=0.6, label='計画軌道')</p>
-<p>plt.plot(traj_x[0], traj_y[0], 'go', markersize=15, label='開始位置')</p>
-<p>plt.plot(traj_x[-1], traj_y[-1], 'ro', markersize=15, label='終了位置')</p>
+        # 軌道
+        traj_x, traj_y = zip(*successful_points)
+        plt.plot(traj_x, traj_y, 'b-', linewidth=2, alpha=0.6, label='計画軌道')
+        plt.plot(traj_x[0], traj_y[0], 'go', markersize=15, label='開始位置')
+        plt.plot(traj_x[-1], traj_y[-1], 'ro', markersize=15, label='終了位置')
 
-<p># いくつかの中間姿勢を表示</p>
-<p>for i in range(0, len(joint_angles), len(joint_angles)//5):</p>
-<p>theta1, theta2 = joint_angles[i]</p>
-<p>th1 = np.radians(theta1)</p>
-<p>th2 = np.radians(theta2)</p>
+        # いくつかの中間姿勢を表示
+        for i in range(0, len(joint_angles), len(joint_angles)//5):
+            theta1, theta2 = joint_angles[i]
+            th1 = np.radians(theta1)
+            th2 = np.radians(theta2)
 
-<p>x1 = robot.L1 * np.cos(th1)</p>
-<p>y1 = robot.L1 * np.sin(th1)</p>
-<p>x2 = x1 + robot.L2 * np.cos(th1 + th2)</p>
-<p>y2 = y1 + robot.L2 * np.sin(th1 + th2)</p>
+            x1 = robot.L1 * np.cos(th1)
+            y1 = robot.L1 * np.sin(th1)
+            x2 = x1 + robot.L2 * np.cos(th1 + th2)
+            y2 = y1 + robot.L2 * np.sin(th1 + th2)
 
-<p>plt.plot([0, x1, x2], [0, y1, y2], 'gray', alpha=0.3, linewidth=1)</p>
+            plt.plot([0, x1, x2], [0, y1, y2], 'gray', alpha=0.3, linewidth=1)
 
-<p>plt.axis('equal')</p>
-<p>plt.grid(True, alpha=0.3)</p>
-<p>plt.xlabel('X 位置 (m)', fontsize=12)</p>
-<p>plt.ylabel('Y 位置 (m)', fontsize=12)</p>
-<p>plt.title('ロボットアームの軌道計画', fontsize=14, fontweight='bold')</p>
-<p>plt.legend()</p>
-<p>plt.tight_layout()</p>
-<p>plt.savefig('trajectory_planning.png', dpi=300, bbox_inches='tight')</p>
-<p>plt.show()</p>
+        plt.axis('equal')
+        plt.grid(True, alpha=0.3)
+        plt.xlabel('X 位置 (m)', fontsize=12)
+        plt.ylabel('Y 位置 (m)', fontsize=12)
+        plt.title('ロボットアームの軌道計画', fontsize=14, fontweight='bold')
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig('trajectory_planning.png', dpi=300, bbox_inches='tight')
+        plt.show()
 
-<p>return joint_angles</p>
+    return joint_angles
 
 
 <h1>使用例: 試薬ボトル (0.35, 0.15) から反応容器 (0.25, 0.35) への移動</h1>
-<p>robot = SimpleRobotArm()</p>
-<p>start = (0.35, 0.15)</p>
-<p>end = (0.25, 0.35)</p>
+robot = SimpleRobotArm()
+start = (0.35, 0.15)
+end = (0.25, 0.35)
 
-<p>trajectory = linear_trajectory(start, end, num_points=30)</p>
-<p>print(f"軌道生成: {len(trajectory)}点")</p>
+trajectory = linear_trajectory(start, end, num_points=30)
+print(f"軌道生成: {len(trajectory)}点")
 
-<p>joint_angles = execute_trajectory(robot, trajectory, plot=True)</p>
-<p>print(f"実行成功: {len(joint_angles)}/{len(trajectory)}点")</p>
-</code></pre>
+joint_angles = execute_trajectory(robot, trajectory, plot=True)
+print(f"実行成功: {len(joint_angles)}/{len(trajectory)}点")</code></pre>
 
-<p>---</p>
+---
 
 <h2>2.2 液体ハンドリング: OpenTrons OT-2</h2>
 
 <h3>2.2.1 OpenTrons OT-2の概要</h3>
 
-<p>OpenTrons OT-2は、研究室で広く使われるオープンソースの液体ハンドリングロボットです。</p>
+OpenTrons OT-2は、研究室で広く使われるオープンソースの液体ハンドリングロボットです。
 
 <strong>主な仕様</strong>:
-<ul>
-<li><strong>精度</strong>: ±1 µL（1-20 µL）、±2%（20-300 µL）</li>
-<li><strong>容量</strong>: 1-1000 µL（ピペット交換で対応）</li>
-<li><strong>デッキサイズ</strong>: 11スロット（マイクロプレート、チューブラック、試薬ボトル）</li>
-<li><strong>価格</strong>: 約$10,000（学術割引あり）</li>
-<li><strong>プログラミング</strong>: Python API（直感的で学習容易）</li>
-</ul>
+- <strong>精度</strong>: ±1 µL（1-20 µL）、±2%（20-300 µL）
+- <strong>容量</strong>: 1-1000 µL（ピペット交換で対応）
+- <strong>デッキサイズ</strong>: 11スロット（マイクロプレート、チューブラック、試薬ボトル）
+- <strong>価格</strong>: 約$10,000（学術割引あり）
+- <strong>プログラミング</strong>: Python API（直感的で学習容易）
 
 <h3>2.2.2 基本的なピペッティング</h3>
 
 <pre><code class="language-python">from opentrons import protocol_api
 
 <h1>OT-2プロトコル: 96ウェルプレートへの試薬分注</h1>
-<p>metadata = {</p>
-<p>'protocolName': '基本的なピペッティング',</p>
-<p>'author': 'Materials Lab',</p>
-<p>'description': '試薬を96ウェルプレートに分注',</p>
-<p>'apiLevel': '2.13'</p>
-<p>}</p>
+metadata = {
+    'protocolName': '基本的なピペッティング',
+    'author': 'Materials Lab',
+    'description': '試薬を96ウェルプレートに分注',
+    'apiLevel': '2.13'
+}
 
-<p>def run(protocol: protocol_api.ProtocolContext):</p>
-<p>"""</p>
-<p>基本的なピペッティングプロトコル</p>
+def run(protocol: protocol_api.ProtocolContext):
+    """
+    基本的なピペッティングプロトコル
 
-<p>Args:</p>
-<p>protocol: OpenTrons ProtocolContext</p>
-<p>"""</p>
-<p># デッキレイアウトの設定</p>
-<p># スロット1: 96ウェルプレート（反応用）</p>
-<p>plate = protocol.load_labware('corning_96_wellplate_360ul_flat', location='1')</p>
+    Args:
+        protocol: OpenTrons ProtocolContext
+    """
+    # デッキレイアウトの設定
+    # スロット1: 96ウェルプレート（反応用）
+    plate = protocol.load_labware('corning_96_wellplate_360ul_flat', location='1')
 
-<p># スロット2: チューブラック（試薬ボトル）</p>
-<p>tuberack = protocol.load_labware('opentrons_24_tuberack_eppendorf_1.5ml_safelock_snapcap', location='2')</p>
+    # スロット2: チューブラック（試薬ボトル）
+    tuberack = protocol.load_labware('opentrons_24_tuberack_eppendorf_1.5ml_safelock_snapcap', location='2')
 
-<p># スロット3: ピペットチップラック</p>
-<p>tiprack = protocol.load_labware('opentrons_96_tiprack_300ul', location='3')</p>
+    # スロット3: ピペットチップラック
+    tiprack = protocol.load_labware('opentrons_96_tiprack_300ul', location='3')
 
-<p># ピペットの装着（P300 Single-Channel）</p>
-<p>pipette = protocol.load_instrument('p300_single_gen2', mount='left', tip_racks=[tiprack])</p>
+    # ピペットの装着（P300 Single-Channel）
+    pipette = protocol.load_instrument('p300_single_gen2', mount='left', tip_racks=[tiprack])
 
-<p># ピペッティング操作</p>
-<p># 試薬A（チューブA1）を各ウェルに50 µL分注</p>
-<p>reagent_a = tuberack.wells_by_name()['A1']</p>
+    # ピペッティング操作
+    # 試薬A（チューブA1）を各ウェルに50 µL分注
+    reagent_a = tuberack.wells_by_name()['A1']
 
-<p>for well in plate.wells():</p>
-<p>pipette.pick_up_tip()  # 新しいチップを取る</p>
-<p>pipette.aspirate(50, reagent_a)  # 試薬を吸引（50 µL）</p>
-<p>pipette.dispense(50, well)  # ウェルに分注</p>
-<p>pipette.blow_out(well.top())  # 余剰液を排出</p>
-<p>pipette.drop_tip()  # チップを廃棄</p>
+    for well in plate.wells():
+        pipette.pick_up_tip()  # 新しいチップを取る
+        pipette.aspirate(50, reagent_a)  # 試薬を吸引（50 µL）
+        pipette.dispense(50, well)  # ウェルに分注
+        pipette.blow_out(well.top())  # 余剰液を排出
+        pipette.drop_tip()  # チップを廃棄
 
-<p>protocol.comment("プロトコル完了: 96ウェルすべてに試薬Aを分注しました")</p>
+    protocol.comment("プロトコル完了: 96ウェルすべてに試薬Aを分注しました")
 
 
 <h1>プロトコルのシミュレーション（実機なしで動作確認）</h1>
-<h1>ターミナルで実行: opentrons_simulate basic_pipetting.py</h1>
-</code></pre>
+<h1>ターミナルで実行: opentrons_simulate basic_pipetting.py</h1></code></pre>
 
 <strong>コード解説</strong>:
-<ol>
-<li><strong>Labware読み込み</strong>: プレート、チューブラック、チップラックをデッキに配置</li>
-<li><strong>Pipette装着</strong>: シングルチャンネル300 µLピペット</li>
-<li><strong>ピペッティングループ</strong>: 各ウェルに試薬を分注</li>
-<li><strong>クロスコンタミネーション防止</strong>: 毎回新しいチップを使用</li>
-</ol>
+1. <strong>Labware読み込み</strong>: プレート、チューブラック、チップラックをデッキに配置
+2. <strong>Pipette装着</strong>: シングルチャンネル300 µLピペット
+3. <strong>ピペッティングループ</strong>: 各ウェルに試薬を分注
+4. <strong>クロスコンタミネーション防止</strong>: 毎回新しいチップを使用
 
-<p>---</p>
+---
 
 <h3>2.2.3 マルチチャンネルピペッティング</h3>
 
-<p>96ウェルプレート全体への高速分注には、8チャンネルピペットを使用します。</p>
+96ウェルプレート全体への高速分注には、8チャンネルピペットを使用します。
 
 <pre><code class="language-python">def run(protocol: protocol_api.ProtocolContext):
-<p>"""</p>
-<p>マルチチャンネルピペッティング（8列同時分注）</p>
-<p>"""</p>
-<p># デッキレイアウト</p>
-<p>source_plate = protocol.load_labware('nest_12_reservoir_15ml', location='1')  # 試薬リザーバー</p>
-<p>dest_plate = protocol.load_labware('corning_96_wellplate_360ul_flat', location='2')</p>
-<p>tiprack = protocol.load_labware('opentrons_96_tiprack_300ul', location='3')</p>
+    """
+    マルチチャンネルピペッティング（8列同時分注）
+    """
+    # デッキレイアウト
+    source_plate = protocol.load_labware('nest_12_reservoir_15ml', location='1')  # 試薬リザーバー
+    dest_plate = protocol.load_labware('corning_96_wellplate_360ul_flat', location='2')
+    tiprack = protocol.load_labware('opentrons_96_tiprack_300ul', location='3')
 
-<p># 8チャンネルピペット</p>
-<p>p300_multi = protocol.load_instrument('p300_multi_gen2', mount='left', tip_racks=[tiprack])</p>
+    # 8チャンネルピペット
+    p300_multi = protocol.load_instrument('p300_multi_gen2', mount='left', tip_racks=[tiprack])
 
-<p># 試薬リザーバーから96ウェルプレートへ</p>
-<p># 8チャンネルピペットは縦1列（8ウェル）を同時処理</p>
-<p>p300_multi.pick_up_tip()</p>
+    # 試薬リザーバーから96ウェルプレートへ
+    # 8チャンネルピペットは縦1列（8ウェル）を同時処理
+    p300_multi.pick_up_tip()
 
-<p># 12列を順次処理（96ウェル = 12列 × 8行）</p>
-<p>for col in dest_plate.columns():</p>
-<p>p300_multi.aspirate(100, source_plate['A1'])  # リザーバーから吸引</p>
-<p>p300_multi.dispense(100, col[0])  # 列の最初のウェル（A1, A2, ..., A12）</p>
-<p>p300_multi.blow_out()</p>
+    # 12列を順次処理（96ウェル = 12列 × 8行）
+    for col in dest_plate.columns():
+        p300_multi.aspirate(100, source_plate['A1'])  # リザーバーから吸引
+        p300_multi.dispense(100, col[0])  # 列の最初のウェル（A1, A2, ..., A12）
+        p300_multi.blow_out()
 
-<p>p300_multi.drop_tip()</p>
-<p>protocol.comment("96ウェル全てに100 µL分注完了")</p>
+    p300_multi.drop_tip()
+    protocol.comment("96ウェル全てに100 µL分注完了")
 
 
 <h1>効率比較</h1>
-<p>print("96ウェルプレートへの分注時間:")</p>
-<p>print("  シングルチャンネル: 96ウェル × 20秒 = 32分")</p>
-<p>print("  マルチチャンネル: 12列 × 20秒 = 4分")</p>
-<p>print("  効率化: 8倍高速")</p>
-</code></pre>
+print("96ウェルプレートへの分注時間:")
+print("  シングルチャンネル: 96ウェル × 20秒 = 32分")
+print("  マルチチャンネル: 12列 × 20秒 = 4分")
+print("  効率化: 8倍高速")</code></pre>
 
-<p>---</p>
+---
 
 <h3>2.2.4 段階希釈（Serial Dilution）</h3>
 
-<p>触媒スクリーニングなどで重要な段階希釈を自動化します。</p>
+触媒スクリーニングなどで重要な段階希釈を自動化します。
 
 <pre><code class="language-python">def run(protocol: protocol_api.ProtocolContext):
-<p>"""</p>
-<p>段階希釈プロトコル（10倍希釈系列）</p>
-<p>濃度: 10^0, 10^-1, 10^-2, ..., 10^-7 M</p>
-<p>"""</p>
-<p>plate = protocol.load_labware('corning_96_wellplate_360ul_flat', location='1')</p>
-<p>tiprack = protocol.load_labware('opentrons_96_tiprack_300ul', location='2')</p>
-<p>reservoir = protocol.load_labware('nest_12_reservoir_15ml', location='3')</p>
+    """
+    段階希釈プロトコル（10倍希釈系列）
+    濃度: 10^0, 10^-1, 10^-2, ..., 10^-7 M
+    """
+    plate = protocol.load_labware('corning_96_wellplate_360ul_flat', location='1')
+    tiprack = protocol.load_labware('opentrons_96_tiprack_300ul', location='2')
+    reservoir = protocol.load_labware('nest_12_reservoir_15ml', location='3')
 
-<p>pipette = protocol.load_instrument('p300_single_gen2', mount='left', tip_racks=[tiprack])</p>
+    pipette = protocol.load_instrument('p300_single_gen2', mount='left', tip_racks=[tiprack])
 
-<p># 希釈系列を作成（A列: 10^0 → 10^-7）</p>
-<p># ウェルA1: 原液、A2-A8: 希釈液</p>
+    # 希釈系列を作成（A列: 10^0 → 10^-7）
+    # ウェルA1: 原液、A2-A8: 希釈液
 
-<p># 1. 各ウェルに溶媒を分注（A2-A8）</p>
-<p>solvent = reservoir['A1']</p>
-<p>for well in plate.columns()[0][1:8]:  # A2からA8</p>
-<p>pipette.pick_up_tip()</p>
-<p>pipette.transfer(180, solvent, well, new_tip='never')</p>
-<p>pipette.drop_tip()</p>
+    # 1. 各ウェルに溶媒を分注（A2-A8）
+    solvent = reservoir['A1']
+    for well in plate.columns()[0][1:8]:  # A2からA8
+        pipette.pick_up_tip()
+        pipette.transfer(180, solvent, well, new_tip='never')
+        pipette.drop_tip()
 
-<p># 2. 原液を A1 に分注</p>
-<p>stock_solution = reservoir['A2']</p>
-<p>pipette.transfer(200, stock_solution, plate['A1'], new_tip='once')</p>
+    # 2. 原液を A1 に分注
+    stock_solution = reservoir['A2']
+    pipette.transfer(200, stock_solution, plate['A1'], new_tip='once')
 
-<p># 3. 段階希釈の実行</p>
-<p># A1 → A2 → A3 → ... → A8</p>
-<p>pipette.pick_up_tip()</p>
-<p>for i in range(7):</p>
-<p>source_well = plate.columns()[0][i]  # A1, A2, ..., A7</p>
-<p>dest_well = plate.columns()[0][i+1]  # A2, A3, ..., A8</p>
+    # 3. 段階希釈の実行
+    # A1 → A2 → A3 → ... → A8
+    pipette.pick_up_tip()
+    for i in range(7):
+        source_well = plate.columns()[0][i]  # A1, A2, ..., A7
+        dest_well = plate.columns()[0][i+1]  # A2, A3, ..., A8
 
-<p># 20 µLを次のウェルに移す</p>
-<p>pipette.aspirate(20, source_well)</p>
-<p>pipette.dispense(20, dest_well)</p>
-<p>pipette.mix(3, 100, dest_well)  # 3回混合（100 µL）</p>
+        # 20 µLを次のウェルに移す
+        pipette.aspirate(20, source_well)
+        pipette.dispense(20, dest_well)
+        pipette.mix(3, 100, dest_well)  # 3回混合（100 µL）
 
-<p>pipette.drop_tip()</p>
-<p>protocol.comment("段階希釈完了: 10^0 → 10^-7 M")</p>
+    pipette.drop_tip()
+    protocol.comment("段階希釈完了: 10^0 → 10^-7 M")
 
 
 <h1>段階希釈の濃度計算</h1>
-<p>import pandas as pd</p>
+import pandas as pd
 
-<p>dilution_factor = 10  # 10倍希釈</p>
-<p>num_dilutions = 8</p>
-<p>initial_concentration = 1.0  # M</p>
+dilution_factor = 10  # 10倍希釈
+num_dilutions = 8
+initial_concentration = 1.0  # M
 
-<p>concentrations = [initial_concentration / (dilution_factor <em></em> i) for i in range(num_dilutions)]</p>
-<p>wells = [f'A{i+1}' for i in range(num_dilutions)]</p>
+concentrations = [initial_concentration / (dilution_factor ** i) for i in range(num_dilutions)]
+wells = [f'A{i+1}' for i in range(num_dilutions)]
 
-<p>df_dilution = pd.DataFrame({</p>
-<p>'ウェル': wells,</p>
-<p>'濃度 (M)': concentrations,</p>
-<p>'対数濃度': [f'10^{int(np.log10(c))}' if c >= 1e-10 else '0' for c in concentrations]</p>
-<p>})</p>
+df_dilution = pd.DataFrame({
+    'ウェル': wells,
+    '濃度 (M)': concentrations,
+    '対数濃度': [f'10^{int(np.log10(c))}' if c >= 1e-10 else '0' for c in concentrations]
+})
 
-<p>print("段階希釈系列:")</p>
-<p>print(df_dilution.to_string(index=False))</p>
-</code></pre>
+print("段階希釈系列:")
+print(df_dilution.to_string(index=False))</code></pre>
 
-<p>---</p>
+---
 
 <h2>2.3 固体ハンドリング</h2>
 
 <h3>2.3.1 粉末計量の自動化</h3>
 
-<p>固体試薬の自動計量には、精密天秤とロボットアームの連携が必要です。</p>
+固体試薬の自動計量には、精密天秤とロボットアームの連携が必要です。
 
 <pre><code class="language-python">class PowderDispenserSimulator:
-<p>"""</p>
-<p>粉末分注システムのシミュレーター</p>
-<p>実際の装置: Mettler Toledo Balance + Robot Arm</p>
-<p>"""</p>
+    """
+    粉末分注システムのシミュレーター
+    実際の装置: Mettler Toledo Balance + Robot Arm
+    """
 
-<p>def __init__(self, accuracy=0.001):</p>
-<p>"""</p>
-<p>Args:</p>
-<p>accuracy: 計量精度（グラム）</p>
-<p>"""</p>
-<p>self.accuracy = accuracy</p>
-<p>self.dispensed_amounts = []</p>
+    def __init__(self, accuracy=0.001):
+        """
+        Args:
+            accuracy: 計量精度（グラム）
+        """
+        self.accuracy = accuracy
+        self.dispensed_amounts = []
 
-<p>def dispense_powder(self, target_mass, powder_name='試薬A'):</p>
-<p>"""</p>
-<p>粉末を目標質量まで分注</p>
+    def dispense_powder(self, target_mass, powder_name='試薬A'):
+        """
+        粉末を目標質量まで分注
 
-<p>Args:</p>
-<p>target_mass: 目標質量（グラム）</p>
-<p>powder_name: 粉末の名前</p>
+        Args:
+            target_mass: 目標質量（グラム）
+            powder_name: 粉末の名前
 
-<p>Returns:</p>
-<p>actual_mass: 実際に分注された質量</p>
-<p>"""</p>
-<p># シミュレーション: 正規分布でばらつきを模擬</p>
-<p>actual_mass = np.random.normal(target_mass, self.accuracy)</p>
-<p>self.dispensed_amounts.append(actual_mass)</p>
+        Returns:
+            actual_mass: 実際に分注された質量
+        """
+        # シミュレーション: 正規分布でばらつきを模擬
+        actual_mass = np.random.normal(target_mass, self.accuracy)
+        self.dispensed_amounts.append(actual_mass)
 
-<p>error = actual_mass - target_mass</p>
-<p>print(f"{powder_name} 分注: 目標 {target_mass:.3f}g, 実測 {actual_mass:.3f}g (誤差: {error:+.4f}g)")</p>
+        error = actual_mass - target_mass
+        print(f"{powder_name} 分注: 目標 {target_mass:.3f}g, 実測 {actual_mass:.3f}g (誤差: {error:+.4f}g)")
 
-<p>return actual_mass</p>
+        return actual_mass
 
-<p>def multi_component_dispensing(self, composition_dict):</p>
-<p>"""</p>
-<p>多成分粉末の自動配合</p>
+    def multi_component_dispensing(self, composition_dict):
+        """
+        多成分粉末の自動配合
 
-<p>Args:</p>
-<p>composition_dict: {成分名: 質量(g)}</p>
+        Args:
+            composition_dict: {成分名: 質量(g)}
 
-<p>Returns:</p>
-<p>actual_composition: 実際の組成</p>
-<p>"""</p>
-<p>print("多成分配合開始:")</p>
-<p>actual_composition = {}</p>
+        Returns:
+            actual_composition: 実際の組成
+        """
+        print("多成分配合開始:")
+        actual_composition = {}
 
-<p>for component, target_mass in composition_dict.items():</p>
-<p>actual_mass = self.dispense_powder(target_mass, component)</p>
-<p>actual_composition[component] = actual_mass</p>
+        for component, target_mass in composition_dict.items():
+            actual_mass = self.dispense_powder(target_mass, component)
+            actual_composition[component] = actual_mass
 
-<p>total_mass = sum(actual_composition.values())</p>
-<p>print(f"\n合計質量: {total_mass:.3f}g")</p>
+        total_mass = sum(actual_composition.values())
+        print(f"\n合計質量: {total_mass:.3f}g")
 
-<p># 組成比（重量%）</p>
-<p>print("\n実際の組成比（wt%）:")</p>
-<p>for component, mass in actual_composition.items():</p>
-<p>percentage = (mass / total_mass) * 100</p>
-<p>print(f"  {component}: {percentage:.2f}%")</p>
+        # 組成比（重量%）
+        print("\n実際の組成比（wt%）:")
+        for component, mass in actual_composition.items():
+            percentage = (mass / total_mass) * 100
+            print(f"  {component}: {percentage:.2f}%")
 
-<p>return actual_composition</p>
+        return actual_composition
 
 
 <h1>使用例: 三元系触媒 (NiO, CoO, MnO2) の配合</h1>
-<p>dispenser = PowderDispenserSimulator(accuracy=0.002)</p>
+dispenser = PowderDispenserSimulator(accuracy=0.002)
 
 <h1>目標組成: Ni:Co:Mn = 60:20:20 (wt%)</h1>
-<p>total_mass = 1.0  # 合計1.0g</p>
-<p>composition = {</p>
-<p>'NiO': 0.6,</p>
-<p>'CoO': 0.2,</p>
-<p>'MnO2': 0.2</p>
-<p>}</p>
+total_mass = 1.0  # 合計1.0g
+composition = {
+    'NiO': 0.6,
+    'CoO': 0.2,
+    'MnO2': 0.2
+}
 
-<p>actual_comp = dispenser.multi_component_dispensing(composition)</p>
+actual_comp = dispenser.multi_component_dispensing(composition)
 
 <h1>精度評価</h1>
-<p>print("\n精度評価:")</p>
-<p>for component, target_mass in composition.items():</p>
-<p>actual_mass = actual_comp[component]</p>
-<p>error_percent = abs((actual_mass - target_mass) / target_mass) * 100</p>
-<p>print(f"  {component}: 誤差 {error_percent:.2f}%")</p>
-</code></pre>
+print("\n精度評価:")
+for component, target_mass in composition.items():
+    actual_mass = actual_comp[component]
+    error_percent = abs((actual_mass - target_mass) / target_mass) * 100
+    print(f"  {component}: 誤差 {error_percent:.2f}%")</code></pre>
 
-<p>---</p>
+---
 
 <h3>2.3.2 固体試料の移送</h3>
 
 <pre><code class="language-python">def solid_sample_transfer_protocol():
-<p>"""</p>
-<p>固体試料の自動移送プロトコル（疑似コード）</p>
-<p>実際の実装はロボットアームのAPIに依存</p>
-<p>"""</p>
-<p>protocol_steps = [</p>
-<p>"1. ロボットアームがサンプルホルダーを把持",</p>
-<p>"2. XRD測定位置に移動",</p>
-<p>"3. サンプルをXRDステージに配置",</p>
-<p>"4. XRD測定開始（外部トリガー）",</p>
-<p>"5. 測定完了を待機",</p>
-<p>"6. サンプルを回収",</p>
-<p>"7. 次のサンプル位置に移動",</p>
-<p>"8. ステップ1-7を繰り返し"</p>
-<p>]</p>
+    """
+    固体試料の自動移送プロトコル（疑似コード）
+    実際の実装はロボットアームのAPIに依存
+    """
+    protocol_steps = [
+        "1. ロボットアームがサンプルホルダーを把持",
+        "2. XRD測定位置に移動",
+        "3. サンプルをXRDステージに配置",
+        "4. XRD測定開始（外部トリガー）",
+        "5. 測定完了を待機",
+        "6. サンプルを回収",
+        "7. 次のサンプル位置に移動",
+        "8. ステップ1-7を繰り返し"
+    ]
 
-<p>for step in protocol_steps:</p>
-<p>print(step)</p>
+    for step in protocol_steps:
+        print(step)
 
-<p># 疑似コード: 実際のロボット制御</p>
-<p>"""</p>
-<p># Universal Robots UR5eの例</p>
-<p>import urx</p>
+    # 疑似コード: 実際のロボット制御
+    """
+    # Universal Robots UR5eの例
+    import urx
 
-<p>robot = urx.Robot("192.168.1.100")  # ロボットのIPアドレス</p>
+    robot = urx.Robot("192.168.1.100")  # ロボットのIPアドレス
 
-<p># サンプル位置（XYZ座標、ミリメートル）</p>
-<p>sample_position = [300, 200, 100, 0, 0, 0]  # X, Y, Z, RX, RY, RZ</p>
-<p>xrd_position = [500, 200, 150, 0, 0, 0]</p>
+    # サンプル位置（XYZ座標、ミリメートル）
+    sample_position = [300, 200, 100, 0, 0, 0]  # X, Y, Z, RX, RY, RZ
+    xrd_position = [500, 200, 150, 0, 0, 0]
 
-<p># 移動</p>
-<p>robot.movel(sample_position, acc=0.1, vel=0.1)  # 線形移動</p>
-<p># グリッパーでサンプル把持</p>
-<p>robot.set_digital_out(0, True)  # デジタル出力でグリッパー制御</p>
+    # 移動
+    robot.movel(sample_position, acc=0.1, vel=0.1)  # 線形移動
+    # グリッパーでサンプル把持
+    robot.set_digital_out(0, True)  # デジタル出力でグリッパー制御
 
-<p>robot.movel(xrd_position, acc=0.1, vel=0.1)</p>
-<p># サンプルを配置</p>
-<p>robot.set_digital_out(0, False)</p>
+    robot.movel(xrd_position, acc=0.1, vel=0.1)
+    # サンプルを配置
+    robot.set_digital_out(0, False)
 
-<p>robot.close()</p>
-<p>"""</p>
+    robot.close()
+    """
 
-<p>solid_sample_transfer_protocol()</p>
-</code></pre>
+solid_sample_transfer_protocol()</code></pre>
 
-<p>---</p>
+---
 
 <h2>2.4 センサー統合</h2>
 
 <h3>2.4.1 分光計との連携</h3>
 
-<p>UV-Vis分光計でリアルタイムに反応をモニタリングします。</p>
+UV-Vis分光計でリアルタイムに反応をモニタリングします。
 
 <pre><code class="language-python">import time
 
-<p>class SpectrometerSimulator:</p>
-<p>"""</p>
-<p>UV-Vis分光計シミュレーター</p>
-<p>実際の装置: Ocean Optics USB4000, Agilent Cary 60</p>
-<p>"""</p>
+class SpectrometerSimulator:
+    """
+    UV-Vis分光計シミュレーター
+    実際の装置: Ocean Optics USB4000, Agilent Cary 60
+    """
 
-<p>def __init__(self, wavelength_range=(200, 800), resolution=1):</p>
-<p>"""</p>
-<p>Args:</p>
-<p>wavelength_range: 波長範囲（nm）</p>
-<p>resolution: 波長分解能（nm）</p>
-<p>"""</p>
-<p>self.wavelengths = np.arange(wavelength_range[0], wavelength_range[1], resolution)</p>
+    def __init__(self, wavelength_range=(200, 800), resolution=1):
+        """
+        Args:
+            wavelength_range: 波長範囲（nm）
+            resolution: 波長分解能（nm）
+        """
+        self.wavelengths = np.arange(wavelength_range[0], wavelength_range[1], resolution)
 
-<p>def measure_absorbance(self, sample_id, concentration=0.1):</p>
-<p>"""</p>
-<p>吸光度測定（シミュレーション）</p>
+    def measure_absorbance(self, sample_id, concentration=0.1):
+        """
+        吸光度測定（シミュレーション）
 
-<p>Args:</p>
-<p>sample_id: サンプルID</p>
-<p>concentration: 濃度（M）</p>
+        Args:
+            sample_id: サンプルID
+            concentration: 濃度（M）
 
-<p>Returns:</p>
-<p>wavelengths, absorbance: 波長と吸光度の配列</p>
-<p>"""</p>
-<p># Beer-Lambert則: A = ε <em> c </em> l</p>
-<p># ピーク波長: 450 nm（仮想的な化合物）</p>
-<p>peak_wavelength = 450</p>
-<p>peak_absorbance = concentration * 10  # εcl = 10 (仮定)</p>
+        Returns:
+            wavelengths, absorbance: 波長と吸光度の配列
+        """
+        # Beer-Lambert則: A = ε * c * l
+        # ピーク波長: 450 nm（仮想的な化合物）
+        peak_wavelength = 450
+        peak_absorbance = concentration * 10  # εcl = 10 (仮定)
 
-<p># ガウス型吸収スペクトル</p>
-<p>absorbance = peak_absorbance <em> np.exp(-((self.wavelengths - peak_wavelength) / 50)</em>*2)</p>
+        # ガウス型吸収スペクトル
+        absorbance = peak_absorbance * np.exp(-((self.wavelengths - peak_wavelength) / 50)**2)
 
-<p># ノイズ追加</p>
-<p>noise = np.random.normal(0, 0.01, len(self.wavelengths))</p>
-<p>absorbance += noise</p>
+        # ノイズ追加
+        noise = np.random.normal(0, 0.01, len(self.wavelengths))
+        absorbance += noise
 
-<p>print(f"サンプル {sample_id} 測定完了: ピーク波長 {peak_wavelength}nm, 吸光度 {peak_absorbance:.3f}")</p>
+        print(f"サンプル {sample_id} 測定完了: ピーク波長 {peak_wavelength}nm, 吸光度 {peak_absorbance:.3f}")
 
-<p>return self.wavelengths, absorbance</p>
+        return self.wavelengths, absorbance
 
-<p>def kinetic_measurement(self, duration=60, interval=5):</p>
-<p>"""</p>
-<p>反応速度論測定（時間変化を追跡）</p>
+    def kinetic_measurement(self, duration=60, interval=5):
+        """
+        反応速度論測定（時間変化を追跡）
 
-<p>Args:</p>
-<p>duration: 測定時間（秒）</p>
-<p>interval: 測定間隔（秒）</p>
+        Args:
+            duration: 測定時間（秒）
+            interval: 測定間隔（秒）
 
-<p>Returns:</p>
-<p>times, absorbance_at_450nm: 時間と450nmでの吸光度</p>
-<p>"""</p>
-<p>times = np.arange(0, duration, interval)</p>
-<p>absorbance_450 = []</p>
+        Returns:
+            times, absorbance_at_450nm: 時間と450nmでの吸光度
+        """
+        times = np.arange(0, duration, interval)
+        absorbance_450 = []
 
-<p>print("反応速度論測定開始...")</p>
-<p>for t in times:</p>
-<p># 一次反応のシミュレーション: [A] = [A]0 * exp(-kt)</p>
-<p>k = 0.02  # s^-1</p>
-<p>concentration = 0.1 <em> np.exp(-k </em> t)</p>
+        print("反応速度論測定開始...")
+        for t in times:
+            # 一次反応のシミュレーション: [A] = [A]0 * exp(-kt)
+            k = 0.02  # s^-1
+            concentration = 0.1 * np.exp(-k * t)
 
-<p>_, abs_spectrum = self.measure_absorbance(f't={t}s', concentration)</p>
-<p># 450nmでの吸光度を抽出</p>
-<p>idx_450 = np.argmin(np.abs(self.wavelengths - 450))</p>
-<p>absorbance_450.append(abs_spectrum[idx_450])</p>
+            _, abs_spectrum = self.measure_absorbance(f't={t}s', concentration)
+            # 450nmでの吸光度を抽出
+            idx_450 = np.argmin(np.abs(self.wavelengths - 450))
+            absorbance_450.append(abs_spectrum[idx_450])
 
-<p>time.sleep(0.1)  # 実際の測定では実時間で待機</p>
+            time.sleep(0.1)  # 実際の測定では実時間で待機
 
-<p>return times, np.array(absorbance_450)</p>
+        return times, np.array(absorbance_450)
 
 
 <h1>使用例</h1>
-<p>spectrometer = SpectrometerSimulator()</p>
+spectrometer = SpectrometerSimulator()
 
 <h1>スペクトル測定</h1>
-<p>wavelengths, absorbance = spectrometer.measure_absorbance('Sample_001', concentration=0.15)</p>
+wavelengths, absorbance = spectrometer.measure_absorbance('Sample_001', concentration=0.15)
 
-<p>plt.figure(figsize=(10, 6))</p>
-<p>plt.plot(wavelengths, absorbance, linewidth=2)</p>
-<p>plt.xlabel('波長 (nm)', fontsize=12)</p>
-<p>plt.ylabel('吸光度', fontsize=12)</p>
-<p>plt.title('UV-Vis吸収スペクトル', fontsize=14, fontweight='bold')</p>
-<p>plt.grid(alpha=0.3)</p>
-<p>plt.tight_layout()</p>
-<p>plt.savefig('uv_vis_spectrum.png', dpi=300, bbox_inches='tight')</p>
-<p>plt.show()</p>
+plt.figure(figsize=(10, 6))
+plt.plot(wavelengths, absorbance, linewidth=2)
+plt.xlabel('波長 (nm)', fontsize=12)
+plt.ylabel('吸光度', fontsize=12)
+plt.title('UV-Vis吸収スペクトル', fontsize=14, fontweight='bold')
+plt.grid(alpha=0.3)
+plt.tight_layout()
+plt.savefig('uv_vis_spectrum.png', dpi=300, bbox_inches='tight')
+plt.show()
 
 <h1>反応速度論測定</h1>
-<p>times, abs_450 = spectrometer.kinetic_measurement(duration=100, interval=10)</p>
+times, abs_450 = spectrometer.kinetic_measurement(duration=100, interval=10)
 
-<p>plt.figure(figsize=(10, 6))</p>
-<p>plt.plot(times, abs_450, 'o-', linewidth=2, markersize=8)</p>
-<p>plt.xlabel('時間 (s)', fontsize=12)</p>
-<p>plt.ylabel('吸光度 (450 nm)', fontsize=12)</p>
-<p>plt.title('反応速度論測定', fontsize=14, fontweight='bold')</p>
-<p>plt.grid(alpha=0.3)</p>
-<p>plt.tight_layout()</p>
-<p>plt.savefig('kinetic_measurement.png', dpi=300, bbox_inches='tight')</p>
-<p>plt.show()</p>
+plt.figure(figsize=(10, 6))
+plt.plot(times, abs_450, 'o-', linewidth=2, markersize=8)
+plt.xlabel('時間 (s)', fontsize=12)
+plt.ylabel('吸光度 (450 nm)', fontsize=12)
+plt.title('反応速度論測定', fontsize=14, fontweight='bold')
+plt.grid(alpha=0.3)
+plt.tight_layout()
+plt.savefig('kinetic_measurement.png', dpi=300, bbox_inches='tight')
+plt.show()
 
 <h1>一次反応速度定数のフィッティング</h1>
-<p>from scipy.optimize import curve_fit</p>
+from scipy.optimize import curve_fit
 
-<p>def first_order_kinetics(t, A0, k):</p>
-<p>return A0 <em> np.exp(-k </em> t)</p>
+def first_order_kinetics(t, A0, k):
+    return A0 * np.exp(-k * t)
 
-<p>params, covariance = curve_fit(first_order_kinetics, times, abs_450, p0=[1.5, 0.02])</p>
-<p>A0_fit, k_fit = params</p>
+params, covariance = curve_fit(first_order_kinetics, times, abs_450, p0=[1.5, 0.02])
+A0_fit, k_fit = params
 
-<p>print(f"\n一次反応フィッティング:")</p>
-<p>print(f"  初期吸光度 A0 = {A0_fit:.3f}")</p>
-<p>print(f"  速度定数 k = {k_fit:.4f} s^-1")</p>
-<p>print(f"  半減期 t1/2 = {np.log(2)/k_fit:.1f} s")</p>
-</code></pre>
+print(f"\n一次反応フィッティング:")
+print(f"  初期吸光度 A0 = {A0_fit:.3f}")
+print(f"  速度定数 k = {k_fit:.4f} s^-1")
+print(f"  半減期 t1/2 = {np.log(2)/k_fit:.1f} s")</code></pre>
 
-<p>---</p>
+---
 
 <h3>2.4.2 カメラによる画像解析</h3>
 
-<p>結晶成長、沈殿形成、色変化などをカメラで自動記録・解析します。</p>
+結晶成長、沈殿形成、色変化などをカメラで自動記録・解析します。
 
 <pre><code class="language-python">from PIL import Image, ImageDraw, ImageFont
-<p>import cv2</p>
+import cv2
 
-<p>class LabCameraSimulator:</p>
-<p>"""</p>
-<p>実験用カメラシミュレーター</p>
-<p>実際の装置: Basler ace, FLIR Blackfly</p>
-<p>"""</p>
+class LabCameraSimulator:
+    """
+    実験用カメラシミュレーター
+    実際の装置: Basler ace, FLIR Blackfly
+    """
 
-<p>def __init__(self, resolution=(1920, 1080)):</p>
-<p>self.resolution = resolution</p>
+    def __init__(self, resolution=(1920, 1080)):
+        self.resolution = resolution
 
-<p>def capture_wellplate(self, plate_id='Plate_001'):</p>
-<p>"""</p>
-<p>96ウェルプレートの画像取得（シミュレーション）</p>
+    def capture_wellplate(self, plate_id='Plate_001'):
+        """
+        96ウェルプレートの画像取得（シミュレーション）
 
-<p>Returns:</p>
-<p>image: PIL Image</p>
-<p>"""</p>
-<p># シミュレーション: 96ウェルプレートのグリッド画像を生成</p>
-<p>img = Image.new('RGB', self.resolution, color='white')</p>
-<p>draw = ImageDraw.Draw(img)</p>
+        Returns:
+            image: PIL Image
+        """
+        # シミュレーション: 96ウェルプレートのグリッド画像を生成
+        img = Image.new('RGB', self.resolution, color='white')
+        draw = ImageDraw.Draw(img)
 
-<p># 8行 × 12列のウェル</p>
-<p>well_diameter = 50</p>
-<p>spacing = 70</p>
-<p>offset_x, offset_y = 200, 100</p>
+        # 8行 × 12列のウェル
+        well_diameter = 50
+        spacing = 70
+        offset_x, offset_y = 200, 100
 
-<p>for row in range(8):</p>
-<p>for col in range(12):</p>
-<p>center_x = offset_x + col * spacing</p>
-<p>center_y = offset_y + row * spacing</p>
+        for row in range(8):
+            for col in range(12):
+                center_x = offset_x + col * spacing
+                center_y = offset_y + row * spacing
 
-<p># ウェルの色（濃度に応じて変化をシミュレート）</p>
-<p>intensity = int(255 * (1 - (row + col) / 20))  # 徐々に濃くなる</p>
-<p>color = (intensity, intensity, 255)</p>
+                # ウェルの色（濃度に応じて変化をシミュレート）
+                intensity = int(255 * (1 - (row + col) / 20))  # 徐々に濃くなる
+                color = (intensity, intensity, 255)
 
-<p># ウェルを描画</p>
-<p>draw.ellipse([center_x - well_diameter//2, center_y - well_diameter//2,</p>
-<p>center_x + well_diameter//2, center_y + well_diameter//2],</p>
-<p>fill=color, outline='black')</p>
+                # ウェルを描画
+                draw.ellipse([center_x - well_diameter//2, center_y - well_diameter//2,
+                              center_x + well_diameter//2, center_y + well_diameter//2],
+                             fill=color, outline='black')
 
-<p>print(f"プレート {plate_id} の画像取得完了")</p>
-<p>return img</p>
+        print(f"プレート {plate_id} の画像取得完了")
+        return img
 
-<p>def analyze_well_color(self, image, well_position):</p>
-<p>"""</p>
-<p>特定ウェルの色を解析</p>
+    def analyze_well_color(self, image, well_position):
+        """
+        特定ウェルの色を解析
 
-<p>Args:</p>
-<p>image: PIL Image</p>
-<p>well_position: (row, col) ウェル位置</p>
+        Args:
+            image: PIL Image
+            well_position: (row, col) ウェル位置
 
-<p>Returns:</p>
-<p>rgb_mean: RGB平均値</p>
-<p>"""</p>
-<p>row, col = well_position</p>
-<p>well_diameter = 50</p>
-<p>spacing = 70</p>
-<p>offset_x, offset_y = 200, 100</p>
+        Returns:
+            rgb_mean: RGB平均値
+        """
+        row, col = well_position
+        well_diameter = 50
+        spacing = 70
+        offset_x, offset_y = 200, 100
 
-<p>center_x = offset_x + col * spacing</p>
-<p>center_y = offset_y + row * spacing</p>
+        center_x = offset_x + col * spacing
+        center_y = offset_y + row * spacing
 
-<p># ウェル領域を切り出し</p>
-<p>crop_box = (center_x - well_diameter//2, center_y - well_diameter//2,</p>
-<p>center_x + well_diameter//2, center_y + well_diameter//2)</p>
-<p>well_img = image.crop(crop_box)</p>
+        # ウェル領域を切り出し
+        crop_box = (center_x - well_diameter//2, center_y - well_diameter//2,
+                    center_x + well_diameter//2, center_y + well_diameter//2)
+        well_img = image.crop(crop_box)
 
-<p># RGB平均値を計算</p>
-<p>well_array = np.array(well_img)</p>
-<p>rgb_mean = well_array.mean(axis=(0, 1))</p>
+        # RGB平均値を計算
+        well_array = np.array(well_img)
+        rgb_mean = well_array.mean(axis=(0, 1))
 
-<p>return rgb_mean</p>
+        return rgb_mean
 
 
 <h1>使用例</h1>
-<p>camera = LabCameraSimulator()</p>
-<p>plate_image = camera.capture_wellplate('Plate_001')</p>
-<p>plate_image.save('wellplate_image.png')</p>
+camera = LabCameraSimulator()
+plate_image = camera.capture_wellplate('Plate_001')
+plate_image.save('wellplate_image.png')
 
 <h1>ウェルA1の色解析</h1>
-<p>rgb = camera.analyze_well_color(plate_image, well_position=(0, 0))</p>
-<p>print(f"ウェルA1のRGB値: R={rgb[0]:.1f}, G={rgb[1]:.1f}, B={rgb[2]:.1f}")</p>
+rgb = camera.analyze_well_color(plate_image, well_position=(0, 0))
+print(f"ウェルA1のRGB値: R={rgb[0]:.1f}, G={rgb[1]:.1f}, B={rgb[2]:.1f}")
 
 <h1>全ウェルの色解析</h1>
-<p>print("\n全ウェルの青色成分（B値）マップ:")</p>
-<p>blue_values = np.zeros((8, 12))</p>
-<p>for row in range(8):</p>
-<p>for col in range(12):</p>
-<p>rgb = camera.analyze_well_color(plate_image, (row, col))</p>
-<p>blue_values[row, col] = rgb[2]</p>
+print("\n全ウェルの青色成分（B値）マップ:")
+blue_values = np.zeros((8, 12))
+for row in range(8):
+    for col in range(12):
+        rgb = camera.analyze_well_color(plate_image, (row, col))
+        blue_values[row, col] = rgb[2]
 
-<p>plt.figure(figsize=(12, 6))</p>
-<p>plt.imshow(blue_values, cmap='Blues', interpolation='nearest')</p>
-<p>plt.colorbar(label='青色成分 (B値)')</p>
-<p>plt.xlabel('列', fontsize=12)</p>
-<p>plt.ylabel('行', fontsize=12)</p>
-<p>plt.title('96ウェルプレートの色分布', fontsize=14, fontweight='bold')</p>
-<p>plt.xticks(range(12), [f'{i+1}' for i in range(12)])</p>
-<p>plt.yticks(range(8), ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])</p>
-<p>plt.tight_layout()</p>
-<p>plt.savefig('wellplate_color_map.png', dpi=300, bbox_inches='tight')</p>
-<p>plt.show()</p>
-</code></pre>
+plt.figure(figsize=(12, 6))
+plt.imshow(blue_values, cmap='Blues', interpolation='nearest')
+plt.colorbar(label='青色成分 (B値)')
+plt.xlabel('列', fontsize=12)
+plt.ylabel('行', fontsize=12)
+plt.title('96ウェルプレートの色分布', fontsize=14, fontweight='bold')
+plt.xticks(range(12), [f'{i+1}' for i in range(12)])
+plt.yticks(range(8), ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'])
+plt.tight_layout()
+plt.savefig('wellplate_color_map.png', dpi=300, bbox_inches='tight')
+plt.show()</code></pre>
 
-<p>---</p>
+---
 
 <h2>2.5 安全性とエラーハンドリング</h2>
 
 <h3>2.5.1 緊急停止機能</h3>
 
 <pre><code class="language-python">class SafetyController:
-<p>"""</p>
-<p>実験自動化システムの安全制御</p>
-<p>"""</p>
+    """
+    実験自動化システムの安全制御
+    """
 
-<p>def __init__(self):</p>
-<p>self.emergency_stop = False</p>
-<p>self.error_log = []</p>
+    def __init__(self):
+        self.emergency_stop = False
+        self.error_log = []
 
-<p>def check_safety(self, temperature, pressure, liquid_level):</p>
-<p>"""</p>
-<p>安全パラメータのチェック</p>
+    def check_safety(self, temperature, pressure, liquid_level):
+        """
+        安全パラメータのチェック
 
-<p>Args:</p>
-<p>temperature: 温度（℃）</p>
-<p>pressure: 圧力（bar）</p>
-<p>liquid_level: 液面レベル（%）</p>
+        Args:
+            temperature: 温度（℃）
+            pressure: 圧力（bar）
+            liquid_level: 液面レベル（%）
 
-<p>Returns:</p>
-<p>is_safe: 安全かどうか</p>
-<p>"""</p>
-<p>is_safe = True</p>
-<p>warnings = []</p>
+        Returns:
+            is_safe: 安全かどうか
+        """
+        is_safe = True
+        warnings = []
 
-<p># 温度チェック</p>
-<p>if temperature > 100:</p>
-<p>warnings.append(f"警告: 温度が高すぎます ({temperature}℃)")</p>
-<p>is_safe = False</p>
+        # 温度チェック
+        if temperature > 100:
+            warnings.append(f"警告: 温度が高すぎます ({temperature}℃)")
+            is_safe = False
 
-<p># 圧力チェック</p>
-<p>if pressure > 5:</p>
-<p>warnings.append(f"警告: 圧力が高すぎます ({pressure} bar)")</p>
-<p>is_safe = False</p>
+        # 圧力チェック
+        if pressure > 5:
+            warnings.append(f"警告: 圧力が高すぎます ({pressure} bar)")
+            is_safe = False
 
-<p># 液面レベルチェック</p>
-<p>if liquid_level < 10:</p>
-<p>warnings.append(f"警告: 液面が低すぎます ({liquid_level}%)")</p>
-<p>is_safe = False</p>
+        # 液面レベルチェック
+        if liquid_level < 10:
+            warnings.append(f"警告: 液面が低すぎます ({liquid_level}%)")
+            is_safe = False
 
-<p>if not is_safe:</p>
-<p>for warning in warnings:</p>
-<p>print(warning)</p>
-<p>self.error_log.append({'time': time.strftime('%Y-%m-%d %H:%M:%S'), 'message': warning})</p>
+        if not is_safe:
+            for warning in warnings:
+                print(warning)
+                self.error_log.append({'time': time.strftime('%Y-%m-%d %H:%M:%S'), 'message': warning})
 
-<p>return is_safe</p>
+        return is_safe
 
-<p>def emergency_stop_sequence(self):</p>
-<p>"""緊急停止シーケンス"""</p>
-<p>print("\n🚨 緊急停止を実行します 🚨")</p>
-<p>self.emergency_stop = True</p>
+    def emergency_stop_sequence(self):
+        """緊急停止シーケンス"""
+        print("\n🚨 緊急停止を実行します 🚨")
+        self.emergency_stop = True
 
-<p># 停止アクション</p>
-<p>actions = [</p>
-<p>"1. すべてのロボット動作を停止",</p>
-<p>"2. ヒーターを停止",</p>
-<p>"3. 冷却水を循環",</p>
-<p>"4. バルブを安全位置に移動",</p>
-<p>"5. オペレーターに通知",</p>
-<p>"6. ログを記録"</p>
-<p>]</p>
+        # 停止アクション
+        actions = [
+            "1. すべてのロボット動作を停止",
+            "2. ヒーターを停止",
+            "3. 冷却水を循環",
+            "4. バルブを安全位置に移動",
+            "5. オペレーターに通知",
+            "6. ログを記録"
+        ]
 
-<p>for action in actions:</p>
-<p>print(action)</p>
-<p>time.sleep(0.5)</p>
+        for action in actions:
+            print(action)
+            time.sleep(0.5)
 
-<p>print("\n緊急停止完了。システムは安全状態です。")</p>
+        print("\n緊急停止完了。システムは安全状態です。")
 
-<p>def print_error_log(self):</p>
-<p>"""エラーログを表示"""</p>
-<p>print("\n=== エラーログ ===")</p>
-<p>for error in self.error_log:</p>
-<p>print(f"[{error['time']}] {error['message']}")</p>
+    def print_error_log(self):
+        """エラーログを表示"""
+        print("\n=== エラーログ ===")
+        for error in self.error_log:
+            print(f"[{error['time']}] {error['message']}")
 
 
 <h1>使用例</h1>
-<p>safety = SafetyController()</p>
+safety = SafetyController()
 
 <h1>正常な状態</h1>
-<p>print("=== 正常運転 ===")</p>
-<p>is_safe = safety.check_safety(temperature=80, pressure=2.0, liquid_level=50)</p>
-<p>print(f"安全状態: {is_safe}\n")</p>
+print("=== 正常運転 ===")
+is_safe = safety.check_safety(temperature=80, pressure=2.0, liquid_level=50)
+print(f"安全状態: {is_safe}\n")
 
 <h1>異常な状態</h1>
-<p>print("=== 異常検知 ===")</p>
-<p>is_safe = safety.check_safety(temperature=120, pressure=6.5, liquid_level=5)</p>
-<p>print(f"安全状態: {is_safe}")</p>
+print("=== 異常検知 ===")
+is_safe = safety.check_safety(temperature=120, pressure=6.5, liquid_level=5)
+print(f"安全状態: {is_safe}")
 
-<p>if not is_safe:</p>
-<p>safety.emergency_stop_sequence()</p>
+if not is_safe:
+    safety.emergency_stop_sequence()
 
-<p>safety.print_error_log()</p>
-</code></pre>
+safety.print_error_log()</code></pre>
 
-<p>---</p>
+---
 
 <h3>2.5.2 エラーリカバリー</h3>
 
 <pre><code class="language-python">def robust_pipetting_with_retry(pipette, source, dest, volume, max_retries=3):
-<p>"""</p>
-<p>エラーリカバリー付きピペッティング</p>
+    """
+    エラーリカバリー付きピペッティング
 
-<p>Args:</p>
-<p>pipette: OT-2 pipette</p>
-<p>source: 吸引元</p>
-<p>dest: 分注先</p>
-<p>volume: 容量（µL）</p>
-<p>max_retries: 最大リトライ回数</p>
+    Args:
+        pipette: OT-2 pipette
+        source: 吸引元
+        dest: 分注先
+        volume: 容量（µL）
+        max_retries: 最大リトライ回数
 
-<p>Returns:</p>
-<p>success: 成功したかどうか</p>
-<p>"""</p>
-<p>for attempt in range(max_retries):</p>
-<p>try:</p>
-<p>pipette.pick_up_tip()</p>
-<p>pipette.aspirate(volume, source)</p>
-<p>pipette.dispense(volume, dest)</p>
-<p>pipette.drop_tip()</p>
+    Returns:
+        success: 成功したかどうか
+    """
+    for attempt in range(max_retries):
+        try:
+            pipette.pick_up_tip()
+            pipette.aspirate(volume, source)
+            pipette.dispense(volume, dest)
+            pipette.drop_tip()
 
-<p>print(f"ピペッティング成功: {volume} µL ({attempt+1}回目)")</p>
-<p>return True</p>
+            print(f"ピペッティング成功: {volume} µL ({attempt+1}回目)")
+            return True
 
-<p>except Exception as e:</p>
-<p>print(f"エラー発生 ({attempt+1}回目): {e}")</p>
+        except Exception as e:
+            print(f"エラー発生 ({attempt+1}回目): {e}")
 
-<p># リカバリーアクション</p>
-<p>if pipette.has_tip:</p>
-<p>pipette.drop_tip()</p>
+            # リカバリーアクション
+            if pipette.has_tip:
+                pipette.drop_tip()
 
-<p>if attempt < max_retries - 1:</p>
-<p>print("リトライします...")</p>
-<p>time.sleep(1)</p>
-<p>else:</p>
-<p>print("最大リトライ回数に達しました。操作を中止します。")</p>
-<p>return False</p>
+            if attempt < max_retries - 1:
+                print("リトライします...")
+                time.sleep(1)
+            else:
+                print("最大リトライ回数に達しました。操作を中止します。")
+                return False
 
-<p>return False</p>
+    return False
 
 
 <h1>疑似コードでの使用例</h1>
-<p>print("エラーリカバリー付きピペッティングのデモ:\n")</p>
+print("エラーリカバリー付きピペッティングのデモ:\n")
 
-<p>class MockPipette:</p>
-<p>def __init__(self, fail_probability=0.3):</p>
-<p>self.has_tip = False</p>
-<p>self.fail_probability = fail_probability</p>
+class MockPipette:
+    def __init__(self, fail_probability=0.3):
+        self.has_tip = False
+        self.fail_probability = fail_probability
 
-<p>def pick_up_tip(self):</p>
-<p>if np.random.random() < self.fail_probability:</p>
-<p>raise Exception("チップ取得失敗")</p>
-<p>self.has_tip = True</p>
+    def pick_up_tip(self):
+        if np.random.random() < self.fail_probability:
+            raise Exception("チップ取得失敗")
+        self.has_tip = True
 
-<p>def aspirate(self, volume, source):</p>
-<p>if np.random.random() < self.fail_probability:</p>
-<p>raise Exception("吸引失敗")</p>
+    def aspirate(self, volume, source):
+        if np.random.random() < self.fail_probability:
+            raise Exception("吸引失敗")
 
-<p>def dispense(self, volume, dest):</p>
-<p>if np.random.random() < self.fail_probability:</p>
-<p>raise Exception("分注失敗")</p>
+    def dispense(self, volume, dest):
+        if np.random.random() < self.fail_probability:
+            raise Exception("分注失敗")
 
-<p>def drop_tip(self):</p>
-<p>self.has_tip = False</p>
+    def drop_tip(self):
+        self.has_tip = False
 
-<p>mock_pipette = MockPipette(fail_probability=0.4)  # 40%の確率で失敗</p>
-<p>success = robust_pipetting_with_retry(mock_pipette, 'A1', 'B1', 100, max_retries=5)</p>
-<p>print(f"\n最終結果: {'成功' if success else '失敗'}")</p>
-</code></pre>
+mock_pipette = MockPipette(fail_probability=0.4)  # 40%の確率で失敗
+success = robust_pipetting_with_retry(mock_pipette, 'A1', 'B1', 100, max_retries=5)
+print(f"\n最終結果: {'成功' if success else '失敗'}")</code></pre>
 
-<p>---</p>
+---
 
 <h2>2.6 ラボウェアの標準化</h2>
 
 <h3>2.6.1 SBS（Society for Biomolecular Screening）規格</h3>
 
-<p>96ウェルプレート、384ウェルプレートなど、ラボウェアの寸法は国際規格で標準化されています。</p>
+96ウェルプレート、384ウェルプレートなど、ラボウェアの寸法は国際規格で標準化されています。
 
 <pre><code class="language-python">class SBS_Labware:
-<p>"""</p>
-<p>SBS規格のラボウェア仕様</p>
-<p>"""</p>
+    """
+    SBS規格のラボウェア仕様
+    """
 
-<p>@staticmethod</p>
-<p>def plate_96_well():</p>
-<p>"""96ウェルプレートの仕様"""</p>
-<p>specs = {</p>
-<p>'名称': '96ウェルプレート',</p>
-<p>'フットプリント': '127.76 mm × 85.48 mm (SBS規格)',</p>
-<p>'ウェル配置': '8行 × 12列',</p>
-<p>'ウェル間隔': '9.0 mm (中心間)',</p>
-<p>'ウェル容量': '通常 300-360 µL',</p>
-<p>'ウェル形状': 'フラット、U字型、V字型',</p>
-<p>'用途': '一般的なスクリーニング、アッセイ'</p>
-<p>}</p>
-<p>return specs</p>
+    @staticmethod
+    def plate_96_well():
+        """96ウェルプレートの仕様"""
+        specs = {
+            '名称': '96ウェルプレート',
+            'フットプリント': '127.76 mm × 85.48 mm (SBS規格)',
+            'ウェル配置': '8行 × 12列',
+            'ウェル間隔': '9.0 mm (中心間)',
+            'ウェル容量': '通常 300-360 µL',
+            'ウェル形状': 'フラット、U字型、V字型',
+            '用途': '一般的なスクリーニング、アッセイ'
+        }
+        return specs
 
-<p>@staticmethod</p>
-<p>def plate_384_well():</p>
-<p>"""384ウェルプレートの仕様"""</p>
-<p>specs = {</p>
-<p>'名称': '384ウェルプレート',</p>
-<p>'フットプリント': '127.76 mm × 85.48 mm (96ウェルと同じ)',</p>
-<p>'ウェル配置': '16行 × 24列',</p>
-<p>'ウェル間隔': '4.5 mm (中心間、96ウェルの半分)',</p>
-<p>'ウェル容量': '通常 50-100 µL',</p>
-<p>'用途': '高密度スクリーニング、創薬'</p>
-<p>}</p>
-<p>return specs</p>
+    @staticmethod
+    def plate_384_well():
+        """384ウェルプレートの仕様"""
+        specs = {
+            '名称': '384ウェルプレート',
+            'フットプリント': '127.76 mm × 85.48 mm (96ウェルと同じ)',
+            'ウェル配置': '16行 × 24列',
+            'ウェル間隔': '4.5 mm (中心間、96ウェルの半分)',
+            'ウェル容量': '通常 50-100 µL',
+            '用途': '高密度スクリーニング、創薬'
+        }
+        return specs
 
-<p>@staticmethod</p>
-<p>def plot_wellplate_layout(n_wells=96):</p>
-<p>"""ウェルプレートのレイアウトを可視化"""</p>
-<p>if n_wells == 96:</p>
-<p>rows, cols = 8, 12</p>
-<p>well_spacing = 9.0  # mm</p>
-<p>elif n_wells == 384:</p>
-<p>rows, cols = 16, 24</p>
-<p>well_spacing = 4.5  # mm</p>
-<p>else:</p>
-<p>raise ValueError("96または384ウェルのみサポート")</p>
+    @staticmethod
+    def plot_wellplate_layout(n_wells=96):
+        """ウェルプレートのレイアウトを可視化"""
+        if n_wells == 96:
+            rows, cols = 8, 12
+            well_spacing = 9.0  # mm
+        elif n_wells == 384:
+            rows, cols = 16, 24
+            well_spacing = 4.5  # mm
+        else:
+            raise ValueError("96または384ウェルのみサポート")
 
-<p>fig, ax = plt.subplots(figsize=(12, 6))</p>
+        fig, ax = plt.subplots(figsize=(12, 6))
 
-<p># ウェルを描画</p>
-<p>for row in range(rows):</p>
-<p>for col in range(cols):</p>
-<p>x = col * well_spacing</p>
-<p>y = row * well_spacing</p>
-<p>circle = plt.Circle((x, y), radius=well_spacing*0.4, color='lightblue', ec='black')</p>
-<p>ax.add_patch(circle)</p>
+        # ウェルを描画
+        for row in range(rows):
+            for col in range(cols):
+                x = col * well_spacing
+                y = row * well_spacing
+                circle = plt.Circle((x, y), radius=well_spacing*0.4, color='lightblue', ec='black')
+                ax.add_patch(circle)
 
-<p># ウェル名を表示（96ウェルのみ、見やすさのため）</p>
-<p>if n_wells == 96:</p>
-<p>well_name = f"{chr(65+row)}{col+1}"</p>
-<p>ax.text(x, y, well_name, ha='center', va='center', fontsize=8)</p>
+                # ウェル名を表示（96ウェルのみ、見やすさのため）
+                if n_wells == 96:
+                    well_name = f"{chr(65+row)}{col+1}"
+                    ax.text(x, y, well_name, ha='center', va='center', fontsize=8)
 
-<p>ax.set_xlim(-well_spacing, cols * well_spacing)</p>
-<p>ax.set_ylim(-well_spacing, rows * well_spacing)</p>
-<p>ax.set_aspect('equal')</p>
-<p>ax.invert_yaxis()  # Y軸を反転（A行が上）</p>
-<p>ax.set_xlabel('X 方向 (mm)', fontsize=12)</p>
-<p>ax.set_ylabel('Y 方向 (mm)', fontsize=12)</p>
-<p>ax.set_title(f'{n_wells}ウェルプレート レイアウト (SBS規格)', fontsize=14, fontweight='bold')</p>
-<p>ax.grid(alpha=0.3)</p>
-<p>plt.tight_layout()</p>
-<p>plt.savefig(f'{n_wells}_wellplate_layout.png', dpi=300, bbox_inches='tight')</p>
-<p>plt.show()</p>
+        ax.set_xlim(-well_spacing, cols * well_spacing)
+        ax.set_ylim(-well_spacing, rows * well_spacing)
+        ax.set_aspect('equal')
+        ax.invert_yaxis()  # Y軸を反転（A行が上）
+        ax.set_xlabel('X 方向 (mm)', fontsize=12)
+        ax.set_ylabel('Y 方向 (mm)', fontsize=12)
+        ax.set_title(f'{n_wells}ウェルプレート レイアウト (SBS規格)', fontsize=14, fontweight='bold')
+        ax.grid(alpha=0.3)
+        plt.tight_layout()
+        plt.savefig(f'{n_wells}_wellplate_layout.png', dpi=300, bbox_inches='tight')
+        plt.show()
 
 
 <h1>仕様の表示</h1>
-<p>labware = SBS_Labware()</p>
+labware = SBS_Labware()
 
-<p>print("=== 96ウェルプレート ===")</p>
-<p>for key, value in labware.plate_96_well().items():</p>
-<p>print(f"{key}: {value}")</p>
+print("=== 96ウェルプレート ===")
+for key, value in labware.plate_96_well().items():
+    print(f"{key}: {value}")
 
-<p>print("\n=== 384ウェルプレート ===")</p>
-<p>for key, value in labware.plate_384_well().items():</p>
-<p>print(f"{key}: {value}")</p>
+print("\n=== 384ウェルプレート ===")
+for key, value in labware.plate_384_well().items():
+    print(f"{key}: {value}")
 
 <h1>レイアウトの可視化</h1>
-<p>labware.plot_wellplate_layout(n_wells=96)</p>
-</code></pre>
+labware.plot_wellplate_layout(n_wells=96)</code></pre>
 
-<p>---</p>
+---
 
 <h2>2.7 演習問題</h2>
 
 <h3>演習1: ロボットアームの軌道最適化（難易度: Medium）</h3>
 
-<p>2つの試薬ボトル（位置A: (0.35, 0.15)、位置B: (0.25, 0.35)）と反応容器（位置C: (0.4, 0.3)）がある場合、最短時間で A → B → C の順に訪問する軌道を計画してください。</p>
+2つの試薬ボトル（位置A: (0.35, 0.15)、位置B: (0.25, 0.35)）と反応容器（位置C: (0.4, 0.3)）がある場合、最短時間で A → B → C の順に訪問する軌道を計画してください。
 
 <details>
 <summary>ヒント</summary>
 
-<p>直線軌道の移動時間は距離に比例します。A→B→C と A→C→B の2つのルートを比較し、総移動距離が短い方を選択してください。</p>
+直線軌道の移動時間は距離に比例します。A→B→C と A→C→B の2つのルートを比較し、総移動距離が短い方を選択してください。
 
 </details>
 
@@ -1462,85 +1461,82 @@
 <summary>解答例</summary>
 
 <pre><code class="language-python">def calculate_path_length(points):
-<p>"""経路の総距離を計算"""</p>
-<p>total_distance = 0</p>
-<p>for i in range(len(points) - 1):</p>
-<p>dx = points[i+1][0] - points[i][0]</p>
-<p>dy = points[i+1][1] - points[i][1]</p>
-<p>distance = np.sqrt(dx<strong>2 + dy</strong>2)</p>
-<p>total_distance += distance</p>
-<p>return total_distance</p>
+    """経路の総距離を計算"""
+    total_distance = 0
+    for i in range(len(points) - 1):
+        dx = points[i+1][0] - points[i][0]
+        dy = points[i+1][1] - points[i][1]
+        distance = np.sqrt(dx<strong>2 + dy</strong>2)
+        total_distance += distance
+    return total_distance
 
 <h1>試薬ボトルと反応容器の位置</h1>
-<p>A = (0.35, 0.15)  # 試薬A</p>
-<p>B = (0.25, 0.35)  # 試薬B</p>
-<p>C = (0.4, 0.3)    # 反応容器</p>
+A = (0.35, 0.15)  # 試薬A
+B = (0.25, 0.35)  # 試薬B
+C = (0.4, 0.3)    # 反応容器
 
 <h1>ルート1: A → B → C</h1>
-<p>route1 = [A, B, C]</p>
-<p>distance1 = calculate_path_length(route1)</p>
+route1 = [A, B, C]
+distance1 = calculate_path_length(route1)
 
 <h1>ルート2: A → C → B</h1>
-<p>route2 = [A, C, B]</p>
-<p>distance2 = calculate_path_length(route2)</p>
+route2 = [A, C, B]
+distance2 = calculate_path_length(route2)
 
-<p>print("ルート比較:")</p>
-<p>print(f"  A → B → C: {distance1:.3f} m")</p>
-<p>print(f"  A → C → B: {distance2:.3f} m")</p>
+print("ルート比較:")
+print(f"  A → B → C: {distance1:.3f} m")
+print(f"  A → C → B: {distance2:.3f} m")
 
-<p>if distance1 < distance2:</p>
-<p>print(f"\n最適ルート: A → B → C（{distance1:.3f} m）")</p>
-<p>optimal_route = route1</p>
-<p>else:</p>
-<p>print(f"\n最適ルート: A → C → B（{distance2:.3f} m）")</p>
-<p>optimal_route = route2</p>
+if distance1 < distance2:
+    print(f"\n最適ルート: A → B → C（{distance1:.3f} m）")
+    optimal_route = route1
+else:
+    print(f"\n最適ルート: A → C → B（{distance2:.3f} m）")
+    optimal_route = route2
 
 <h1>可視化</h1>
-<p>robot = SimpleRobotArm()</p>
-<p>fig, ax = plt.subplots(figsize=(10, 8))</p>
+robot = SimpleRobotArm()
+fig, ax = plt.subplots(figsize=(10, 8))
 
 <h1>到達範囲</h1>
-<p>theta = np.linspace(0, 2*np.pi, 100)</p>
-<p>r_max = robot.L1 + robot.L2</p>
-<p>ax.plot(r_max <em> np.cos(theta), r_max </em> np.sin(theta), 'k--', alpha=0.2, label='最大到達範囲')</p>
+theta = np.linspace(0, 2*np.pi, 100)
+r_max = robot.L1 + robot.L2
+ax.plot(r_max * np.cos(theta), r_max * np.sin(theta), 'k--', alpha=0.2, label='最大到達範囲')
 
 <h1>位置をプロット</h1>
-<p>for point, label in zip([A, B, C], ['試薬A', '試薬B', '反応容器']):</p>
-<p>ax.plot(point[0], point[1], 'o', markersize=15, label=label)</p>
+for point, label in zip([A, B, C], ['試薬A', '試薬B', '反応容器']):
+    ax.plot(point[0], point[1], 'o', markersize=15, label=label)
 
 <h1>最適ルートを描画</h1>
-<p>route_x, route_y = zip(*optimal_route)</p>
-<p>ax.plot(route_x, route_y, 'r-', linewidth=2, alpha=0.6, label='最適経路')</p>
+route_x, route_y = zip(*optimal_route)
+ax.plot(route_x, route_y, 'r-', linewidth=2, alpha=0.6, label='最適経路')
 
-<p>ax.axis('equal')</p>
-<p>ax.grid(alpha=0.3)</p>
-<p>ax.set_xlabel('X 位置 (m)', fontsize=12)</p>
-<p>ax.set_ylabel('Y 位置 (m)', fontsize=12)</p>
-<p>ax.set_title('経路最適化', fontsize=14, fontweight='bold')</p>
-<p>ax.legend()</p>
-<p>plt.tight_layout()</p>
-<p>plt.savefig('path_optimization.png', dpi=300, bbox_inches='tight')</p>
-<p>plt.show()</p>
-</code></pre>
+ax.axis('equal')
+ax.grid(alpha=0.3)
+ax.set_xlabel('X 位置 (m)', fontsize=12)
+ax.set_ylabel('Y 位置 (m)', fontsize=12)
+ax.set_title('経路最適化', fontsize=14, fontweight='bold')
+ax.legend()
+plt.tight_layout()
+plt.savefig('path_optimization.png', dpi=300, bbox_inches='tight')
+plt.show()</code></pre>
 
 </details>
 
-<p>---</p>
+---
 
 <h3>演習2: 96ウェルプレートへの複数試薬分注（難易度: Medium）</h3>
 
-<p>96ウェルプレートに3種類の試薬（A、B、C）を以下のパターンで分注するOpenTronsプロトコルを作成してください。</p>
+96ウェルプレートに3種類の試薬（A、B、C）を以下のパターンで分注するOpenTronsプロトコルを作成してください。
 
-<ul>
-<li>試薬A: 列1-4（ウェルA1-H4）に50 µL</li>
-<li>試薬B: 列5-8（ウェルA5-H8）に50 µL</li>
-<li>試薬C: 列9-12（ウェルA9-H12）に50 µL</li>
-</ul>
+- 試薬A: 列1-4（ウェルA1-H4）に50 µL
+- 試薬B: 列5-8（ウェルA5-H8）に50 µL
+- 試薬C: 列9-12（ウェルA9-H12）に50 µL
 
 <details>
 <summary>ヒント</summary>
 
-<p>8チャンネルピペットを使用すれば、各列を1回のピペッティングで処理できます。<code>plate.columns()[0:4]</code>で列1-4を選択できます。</p>
+8チャンネルピペットを使用すれば、各列を1回のピペッティングで処理できます。<code>plate.columns()[0:4]</code>で列1-4を選択できます。
 
 </details>
 
@@ -1549,82 +1545,79 @@
 
 <pre><code class="language-python">from opentrons import protocol_api
 
-<p>metadata = {</p>
-<p>'protocolName': '96ウェル 3試薬分注',</p>
-<p>'author': 'Materials Lab',</p>
-<p>'description': '3種類の試薬を列ごとに分注',</p>
-<p>'apiLevel': '2.13'</p>
-<p>}</p>
+metadata = {
+    'protocolName': '96ウェル 3試薬分注',
+    'author': 'Materials Lab',
+    'description': '3種類の試薬を列ごとに分注',
+    'apiLevel': '2.13'
+}
 
-<p>def run(protocol: protocol_api.ProtocolContext):</p>
-<p># デッキレイアウト</p>
-<p>plate = protocol.load_labware('corning_96_wellplate_360ul_flat', location='1')</p>
-<p>reservoir = protocol.load_labware('nest_12_reservoir_15ml', location='2')</p>
-<p>tiprack = protocol.load_labware('opentrons_96_tiprack_300ul', location='3')</p>
+def run(protocol: protocol_api.ProtocolContext):
+    # デッキレイアウト
+    plate = protocol.load_labware('corning_96_wellplate_360ul_flat', location='1')
+    reservoir = protocol.load_labware('nest_12_reservoir_15ml', location='2')
+    tiprack = protocol.load_labware('opentrons_96_tiprack_300ul', location='3')
 
-<p># 8チャンネルピペット</p>
-<p>pipette = protocol.load_instrument('p300_multi_gen2', mount='left', tip_racks=[tiprack])</p>
+    # 8チャンネルピペット
+    pipette = protocol.load_instrument('p300_multi_gen2', mount='left', tip_racks=[tiprack])
 
-<p># 試薬の位置</p>
-<p>reagent_a = reservoir['A1']</p>
-<p>reagent_b = reservoir['A2']</p>
-<p>reagent_c = reservoir['A3']</p>
+    # 試薬の位置
+    reagent_a = reservoir['A1']
+    reagent_b = reservoir['A2']
+    reagent_c = reservoir['A3']
 
-<p># 試薬Aを列1-4に分注</p>
-<p>pipette.pick_up_tip()</p>
-<p>for col in plate.columns()[0:4]:  # 列1-4</p>
-<p>pipette.aspirate(50, reagent_a)</p>
-<p>pipette.dispense(50, col[0])  # 列の先頭ウェル（A1, A2, A3, A4）</p>
-<p>pipette.blow_out()</p>
-<p>pipette.drop_tip()</p>
+    # 試薬Aを列1-4に分注
+    pipette.pick_up_tip()
+    for col in plate.columns()[0:4]:  # 列1-4
+        pipette.aspirate(50, reagent_a)
+        pipette.dispense(50, col[0])  # 列の先頭ウェル（A1, A2, A3, A4）
+        pipette.blow_out()
+    pipette.drop_tip()
 
-<p>protocol.comment("試薬A 分注完了")</p>
+    protocol.comment("試薬A 分注完了")
 
-<p># 試薬Bを列5-8に分注</p>
-<p>pipette.pick_up_tip()</p>
-<p>for col in plate.columns()[4:8]:  # 列5-8</p>
-<p>pipette.aspirate(50, reagent_b)</p>
-<p>pipette.dispense(50, col[0])</p>
-<p>pipette.blow_out()</p>
-<p>pipette.drop_tip()</p>
+    # 試薬Bを列5-8に分注
+    pipette.pick_up_tip()
+    for col in plate.columns()[4:8]:  # 列5-8
+        pipette.aspirate(50, reagent_b)
+        pipette.dispense(50, col[0])
+        pipette.blow_out()
+    pipette.drop_tip()
 
-<p>protocol.comment("試薬B 分注完了")</p>
+    protocol.comment("試薬B 分注完了")
 
-<p># 試薬Cを列9-12に分注</p>
-<p>pipette.pick_up_tip()</p>
-<p>for col in plate.columns()[8:12]:  # 列9-12</p>
-<p>pipette.aspirate(50, reagent_c)</p>
-<p>pipette.dispense(50, col[0])</p>
-<p>pipette.blow_out()</p>
-<p>pipette.drop_tip()</p>
+    # 試薬Cを列9-12に分注
+    pipette.pick_up_tip()
+    for col in plate.columns()[8:12]:  # 列9-12
+        pipette.aspirate(50, reagent_c)
+        pipette.dispense(50, col[0])
+        pipette.blow_out()
+    pipette.drop_tip()
 
-<p>protocol.comment("試薬C 分注完了")</p>
-<p>protocol.comment("プロトコル完了: 96ウェル全てに試薬を分注しました")</p>
+    protocol.comment("試薬C 分注完了")
+    protocol.comment("プロトコル完了: 96ウェル全てに試薬を分注しました")
 
 <h1>シミュレーション実行</h1>
-<p>print("プロトコル作成完了")</p>
-<p>print("実行コマンド: opentrons_simulate three_reagent_protocol.py")</p>
-</code></pre>
+print("プロトコル作成完了")
+print("実行コマンド: opentrons_simulate three_reagent_protocol.py")</code></pre>
 
 </details>
 
-<p>---</p>
+---
 
 <h3>演習3: センサーデータの異常検知（難易度: Hard）</h3>
 
-<p>UV-Vis分光計で反応をモニタリング中、異常な吸光度変化（急激な増加または減少）を検知し、緊急停止するシステムを実装してください。</p>
+UV-Vis分光計で反応をモニタリング中、異常な吸光度変化（急激な増加または減少）を検知し、緊急停止するシステムを実装してください。
 
 <strong>条件</strong>:
-<ul>
-<li>測定間隔: 10秒</li>
-<li>異常判定: 前回測定値から20%以上変化した場合</li>
-<li>異常が2回連続した場合に緊急停止</li>
-</ul>
+- 測定間隔: 10秒
+- 異常判定: 前回測定値から20%以上変化した場合
+- 異常が2回連続した場合に緊急停止
 
 <details>
 <summary>ヒント</summary>
 
-<p>各測定で前回値と比較し、変化率を計算します。異常カウンターを導入し、2回連続で異常が検知されたら緊急停止を実行します。</p>
+各測定で前回値と比較し、変化率を計算します。異常カウンターを導入し、2回連続で異常が検知されたら緊急停止を実行します。
 
 </details>
 
@@ -1632,170 +1625,154 @@
 <summary>解答例</summary>
 
 <pre><code class="language-python">class ReactionMonitor:
-<p>"""</p>
-<p>反応モニタリングと異常検知</p>
-<p>"""</p>
+    """
+    反応モニタリングと異常検知
+    """
 
-<p>def __init__(self, anomaly_threshold=0.2, consecutive_anomalies=2):</p>
-<p>"""</p>
-<p>Args:</p>
-<p>anomaly_threshold: 異常判定の閾値（変化率）</p>
-<p>consecutive_anomalies: 緊急停止までの連続異常回数</p>
-<p>"""</p>
-<p>self.threshold = anomaly_threshold</p>
-<p>self.consecutive_threshold = consecutive_anomalies</p>
-<p>self.anomaly_count = 0</p>
-<p>self.previous_value = None</p>
-<p>self.measurements = []</p>
+    def __init__(self, anomaly_threshold=0.2, consecutive_anomalies=2):
+        """
+        Args:
+            anomaly_threshold: 異常判定の閾値（変化率）
+            consecutive_anomalies: 緊急停止までの連続異常回数
+        """
+        self.threshold = anomaly_threshold
+        self.consecutive_threshold = consecutive_anomalies
+        self.anomaly_count = 0
+        self.previous_value = None
+        self.measurements = []
 
-<p>def check_anomaly(self, current_value):</p>
-<p>"""</p>
-<p>異常検知</p>
+    def check_anomaly(self, current_value):
+        """
+        異常検知
 
-<p>Args:</p>
-<p>current_value: 現在の測定値</p>
+        Args:
+            current_value: 現在の測定値
 
-<p>Returns:</p>
-<p>is_anomaly: 異常かどうか</p>
-<p>"""</p>
-<p>if self.previous_value is None:</p>
-<p>self.previous_value = current_value</p>
-<p>return False</p>
+        Returns:
+            is_anomaly: 異常かどうか
+        """
+        if self.previous_value is None:
+            self.previous_value = current_value
+            return False
 
-<p># 変化率を計算</p>
-<p>change_rate = abs((current_value - self.previous_value) / self.previous_value)</p>
+        # 変化率を計算
+        change_rate = abs((current_value - self.previous_value) / self.previous_value)
 
-<p>is_anomaly = change_rate > self.threshold</p>
+        is_anomaly = change_rate > self.threshold
 
-<p>if is_anomaly:</p>
-<p>self.anomaly_count += 1</p>
-<p>print(f"⚠️ 異常検知: 変化率 {change_rate<em>100:.1f}% (閾値: {self.threshold</em>100:.1f}%)")</p>
-<p>print(f"   前回値: {self.previous_value:.3f}, 現在値: {current_value:.3f}")</p>
-<p>print(f"   連続異常回数: {self.anomaly_count}/{self.consecutive_threshold}")</p>
-<p>else:</p>
-<p>self.anomaly_count = 0  # 正常なら異常カウンターをリセット</p>
+        if is_anomaly:
+            self.anomaly_count += 1
+            print(f"⚠️ 異常検知: 変化率 {change_rate*100:.1f}% (閾値: {self.threshold*100:.1f}%)")
+            print(f"   前回値: {self.previous_value:.3f}, 現在値: {current_value:.3f}")
+            print(f"   連続異常回数: {self.anomaly_count}/{self.consecutive_threshold}")
+        else:
+            self.anomaly_count = 0  # 正常なら異常カウンターをリセット
 
-<p>self.previous_value = current_value</p>
-<p>return is_anomaly</p>
+        self.previous_value = current_value
+        return is_anomaly
 
-<p>def should_emergency_stop(self):</p>
-<p>"""緊急停止が必要か判定"""</p>
-<p>return self.anomaly_count >= self.consecutive_threshold</p>
+    def should_emergency_stop(self):
+        """緊急停止が必要か判定"""
+        return self.anomaly_count >= self.consecutive_threshold
 
 
 <h1>シミュレーション</h1>
-<p>print("=== 反応モニタリング開始 ===\n")</p>
-<p>monitor = ReactionMonitor(anomaly_threshold=0.2, consecutive_anomalies=2)</p>
-<p>safety = SafetyController()</p>
+print("=== 反応モニタリング開始 ===\n")
+monitor = ReactionMonitor(anomaly_threshold=0.2, consecutive_anomalies=2)
+safety = SafetyController()
 
 <h1>測定データ（シミュレーション）</h1>
 <h1>正常 → 正常 → 異常1 → 異常2（緊急停止）</h1>
-<p>simulated_absorbance = [1.0, 1.05, 1.08, 1.40, 1.75]</p>
+simulated_absorbance = [1.0, 1.05, 1.08, 1.40, 1.75]
 
-<p>for i, absorbance in enumerate(simulated_absorbance):</p>
-<p>print(f"--- 測定 {i+1} ---")</p>
-<p>print(f"吸光度: {absorbance:.3f}")</p>
+for i, absorbance in enumerate(simulated_absorbance):
+    print(f"--- 測定 {i+1} ---")
+    print(f"吸光度: {absorbance:.3f}")
 
-<p>monitor.measurements.append(absorbance)</p>
-<p>is_anomaly = monitor.check_anomaly(absorbance)</p>
+    monitor.measurements.append(absorbance)
+    is_anomaly = monitor.check_anomaly(absorbance)
 
-<p>if monitor.should_emergency_stop():</p>
-<p>print("\n🚨 連続異常検知！ 緊急停止を実行します。")</p>
-<p>safety.emergency_stop_sequence()</p>
-<p>break</p>
+    if monitor.should_emergency_stop():
+        print("\n🚨 連続異常検知！ 緊急停止を実行します。")
+        safety.emergency_stop_sequence()
+        break
 
-<p>print()</p>
+    print()
 
 <h1>測定データのプロット</h1>
-<p>plt.figure(figsize=(10, 6))</p>
-<p>plt.plot(range(1, len(monitor.measurements) + 1), monitor.measurements, 'o-', linewidth=2, markersize=10)</p>
-<p>plt.axhline(y=monitor.measurements[0] * (1 + monitor.threshold), color='red', linestyle='--', label='上限閾値')</p>
-<p>plt.axhline(y=monitor.measurements[0] * (1 - monitor.threshold), color='red', linestyle='--', label='下限閾値')</p>
-<p>plt.xlabel('測定回数', fontsize=12)</p>
-<p>plt.ylabel('吸光度', fontsize=12)</p>
-<p>plt.title('反応モニタリングと異常検知', fontsize=14, fontweight='bold')</p>
-<p>plt.legend()</p>
-<p>plt.grid(alpha=0.3)</p>
-<p>plt.tight_layout()</p>
-<p>plt.savefig('anomaly_detection.png', dpi=300, bbox_inches='tight')</p>
-<p>plt.show()</p>
-</code></pre>
+plt.figure(figsize=(10, 6))
+plt.plot(range(1, len(monitor.measurements) + 1), monitor.measurements, 'o-', linewidth=2, markersize=10)
+plt.axhline(y=monitor.measurements[0] * (1 + monitor.threshold), color='red', linestyle='--', label='上限閾値')
+plt.axhline(y=monitor.measurements[0] * (1 - monitor.threshold), color='red', linestyle='--', label='下限閾値')
+plt.xlabel('測定回数', fontsize=12)
+plt.ylabel('吸光度', fontsize=12)
+plt.title('反応モニタリングと異常検知', fontsize=14, fontweight='bold')
+plt.legend()
+plt.grid(alpha=0.3)
+plt.tight_layout()
+plt.savefig('anomaly_detection.png', dpi=300, bbox_inches='tight')
+plt.show()</code></pre>
 
 </details>
 
-<p>---</p>
+---
 
 <h2>本章のまとめ</h2>
 
-<p>本章では、ロボティクス実験の基礎技術を実践的に学びました。</p>
+本章では、ロボティクス実験の基礎技術を実践的に学びました。
 
 <h3>キーポイント</h3>
 
-<ol>
-<li><strong>ロボットアーム制御</strong>:</li>
-</ol>
-<p>- 順運動学: 関節角度→位置</p>
-<p>- 逆運動学: 目標位置→関節角度（実験で使用）</p>
-<p>- 軌道計画: スムーズで安全な経路生成</p>
+1. <strong>ロボットアーム制御</strong>:
+   - 順運動学: 関節角度→位置
+   - 逆運動学: 目標位置→関節角度（実験で使用）
+   - 軌道計画: スムーズで安全な経路生成
 
-<ol>
-<li><strong>液体ハンドリング（OpenTrons OT-2）</strong>:</li>
-</ol>
-<p>- 基本ピペッティング: 精度±1 µL</p>
-<p>- マルチチャンネル: 8倍高速化</p>
-<p>- 段階希釈: 10^-7 Mまでの自動希釈系列</p>
+2. <strong>液体ハンドリング（OpenTrons OT-2）</strong>:
+   - 基本ピペッティング: 精度±1 µL
+   - マルチチャンネル: 8倍高速化
+   - 段階希釈: 10^-7 Mまでの自動希釈系列
 
-<ol>
-<li><strong>固体ハンドリング</strong>:</li>
-</ol>
-<p>- 粉末計量: ±0.001 gの精度</p>
-<p>- 多成分配合: 自動化による再現性向上</p>
+3. <strong>固体ハンドリング</strong>:
+   - 粉末計量: ±0.001 gの精度
+   - 多成分配合: 自動化による再現性向上
 
-<ol>
-<li><strong>センサー統合</strong>:</li>
-</ol>
-<p>- UV-Vis分光計: リアルタイム反応モニタリング</p>
-<p>- カメラ: 画像解析による定量評価</p>
+4. <strong>センサー統合</strong>:
+   - UV-Vis分光計: リアルタイム反応モニタリング
+   - カメラ: 画像解析による定量評価
 
-<ol>
-<li><strong>安全設計</strong>:</li>
-</ol>
-<p>- 緊急停止: 異常検知時の自動停止</p>
-<p>- エラーリカバリー: リトライ機能</p>
-<p>- ログ記録: トレーサビリティ確保</p>
+5. <strong>安全設計</strong>:
+   - 緊急停止: 異常検知時の自動停止
+   - エラーリカバリー: リトライ機能
+   - ログ記録: トレーサビリティ確保
 
-<ol>
-<li><strong>ラボウェア標準化</strong>:</li>
-</ol>
-<p>- SBS規格: 96/384ウェルプレートの国際標準</p>
-<p>- 互換性: 異なるメーカー間でも使用可能</p>
+6. <strong>ラボウェア標準化</strong>:
+   - SBS規格: 96/384ウェルプレートの国際標準
+   - 互換性: 異なるメーカー間でも使用可能
 
 <h3>次章予告</h3>
 
-<p>第3章では、ベイズ最適化とロボット実験を統合したクローズドループ最適化を学びます。実験→測定→解析→予測→次実験の自動サイクルを実装し、材料探索を劇的に加速します。</p>
+第3章では、ベイズ最適化とロボット実験を統合したクローズドループ最適化を学びます。実験→測定→解析→予測→次実験の自動サイクルを実装し、材料探索を劇的に加速します。
 
-<p>---</p>
+---
 
 <h2>参考文献</h2>
 
-<ol>
-<li>OpenTrons. "OT-2 Robot Documentation." https://docs.opentrons.com/</li>
-<li>Lynch, K. M., & Park, F. C. (2017). <em>Modern Robotics: Mechanics, Planning, and Control</em>. Cambridge University Press.</li>
-<li>Granda, J. M. et al. (2018). "Controlling an organic synthesis robot with machine learning to search for new reactivity." <em>Nature</em>, 559, 377-381.</li>
-<li>SBS (Society for Laboratory Automation and Screening). "ANSI/SLAS Microplate Standards." https://www.slas.org/education/ansi-slas-microplate-standards/</li>
-</ol>
+1. OpenTrons. "OT-2 Robot Documentation." https://docs.opentrons.com/
+2. Lynch, K. M., & Park, F. C. (2017). *Modern Robotics: Mechanics, Planning, and Control*. Cambridge University Press.
+3. Granda, J. M. et al. (2018). "Controlling an organic synthesis robot with machine learning to search for new reactivity." *Nature*, 559, 377-381.
+4. SBS (Society for Laboratory Automation and Screening). "ANSI/SLAS Microplate Standards." https://www.slas.org/education/ansi-slas-microplate-standards/
 
-<p>---</p>
+---
 
-<strong>次の章へ</strong>: <a href="chapter-3.html">第3章: クローズドループ最適化</a>
+<strong>次の章へ</strong>: [第3章: クローズドループ最適化](chapter-3.html)
 
-<a href="index.html">目次に戻る</a>
-
-
-        <div class="navigation">
-            <a href="index.html" class="nav-button">← シリーズ目次に戻る</a>
-<a href="chapter-2.html" class="nav-button">次章: 第2章 →</a>
-        </div>
+[目次に戻る](index.html)
+<div class="navigation">
+    <a href="chapter-1.html" class="nav-button">← 第1章</a>
+    <a href="index.html" class="nav-button">シリーズ目次に戻る</a>
+    <a href="chapter-3.html" class="nav-button">第3章 →</a>
+</div>
     </main>
 
     <footer>

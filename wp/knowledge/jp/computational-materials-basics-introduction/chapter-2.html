@@ -198,6 +198,55 @@
             border-radius: var(--border-radius);
         }
 
+        .mermaid {
+            text-align: center;
+            margin: var(--spacing-lg) 0;
+            background-color: var(--color-bg-alt);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        details {
+            background-color: var(--color-bg-alt);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--color-primary);
+            user-select: none;
+            padding: var(--spacing-xs);
+            margin: calc(-1 * var(--spacing-md));
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        summary:hover {
+            background-color: rgba(123, 44, 191, 0.1);
+        }
+
+        details[open] summary {
+            margin-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .learning-objectives {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--color-accent);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .learning-objectives h2 {
+            margin-top: 0;
+            border-bottom: none;
+        }
+
         .navigation {
             display: flex;
             justify-content: space-between;
@@ -270,6 +319,22 @@
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         mermaid.initialize({ startOnLoad: true, theme: 'default' });
     </script>
+
+    <!-- MathJax for LaTeX equation rendering -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\(', '\)']],
+                displayMath: [['$$', '$$'], ['\[', '\]']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
 </head>
 <body>
     <header>
@@ -277,744 +342,666 @@
             <h1>第2章：密度汎関数理論（DFT）入門</h1>
             <p class="subtitle">多電子系の第一原理計算の実践</p>
             <div class="meta">
-                <span class="meta-item">📖 読了時間: 30-35分</span>
+                <span class="meta-item">📖 読了時間: 20-25分</span>
                 <span class="meta-item">📊 難易度: 中級〜上級</span>
                 <span class="meta-item">💻 コード例: 8個</span>
+                <span class="meta-item">📝 演習問題: 0問</span>
             </div>
         </div>
     </header>
 
     <main class="container">
-        
-<p><h1>第2章：密度汎関数理論（DFT）入門</h1></p>
 
-<p><h2>学習目標</h2></p>
+<h1>第2章：密度汎関数理論（DFT）入門</h1>
 
-<p>この章を読むことで、以下を習得できます：</p>
-<ul>
-<li>DFTの基本原理（Hohenberg-Kohn定理、Kohn-Sham方程式）を理解する</li>
-<li>交換相関汎関数（LDA、GGA）の違いを説明できる</li>
-<li>ASEとGPAWを使ってDFT計算を実行できる</li>
-<li>バンド構造、状態密度、構造最適化を計算できる</li>
-<li>DFTの限界（バンドギャップ問題、van der Waals相互作用）を理解する</li>
-</ul>
+<h2>学習目標</h2>
 
-<p>---</p>
+この章を読むことで、以下を習得できます：
+- DFTの基本原理（Hohenberg-Kohn定理、Kohn-Sham方程式）を理解する
+- 交換相関汎関数（LDA、GGA）の違いを説明できる
+- ASEとGPAWを使ってDFT計算を実行できる
+- バンド構造、状態密度、構造最適化を計算できる
+- DFTの限界（バンドギャップ問題、van der Waals相互作用）を理解する
 
-<p><h2>2.1 多電子系の困難さとDFTの登場</h2></p>
+---
 
-<p><h3>多電子シュレーディンガー方程式</h3></p>
+<h2>2.1 多電子系の困難さとDFTの登場</h2>
 
-<p>多電子系（$N$個の電子）のシュレーディンガー方程式：</p>
+<h3>多電子シュレーディンガー方程式</h3>
 
-<p>$$</p>
-<p>\hat{H}\Psi(\mathbf{r}_1, \mathbf{r}_2, \ldots, \mathbf{r}_N) = E\Psi(\mathbf{r}_1, \mathbf{r}_2, \ldots, \mathbf{r}_N)</p>
-<p>$$</p>
+多電子系（$N$個の電子）のシュレーディンガー方程式：
 
-<p>波動関数$\Psi$は$3N$次元空間の関数です。これが決定的に困難な理由です。</p>
+$$
+\hat{H}\Psi(\mathbf{r}_1, \mathbf{r}_2, \ldots, \mathbf{r}_N) = E\Psi(\mathbf{r}_1, \mathbf{r}_2, \ldots, \mathbf{r}_N)
+$$
 
-<p><strong>計算量の爆発</strong>:</p>
-<ul>
-<li>2電子系: 6次元</li>
-<li>10電子系: 30次元</li>
-<li>100電子系（小さな分子）: 300次元</li>
-</ul>
+波動関数$\Psi$は$3N$次元空間の関数です。これが決定的に困難な理由です。
 
-<p>各次元を100点でサンプルすると、$100^{300} \approx 10^{600}$点が必要 → <strong>実質的に不可能</strong></p>
+<strong>計算量の爆発</strong>:
+- 2電子系: 6次元
+- 10電子系: 30次元
+- 100電子系（小さな分子）: 300次元
 
-<p><h3>DFTのパラダイムシフト</h3></p>
+各次元を100点でサンプルすると、$100^{300} \approx 10^{600}$点が必要 → <strong>実質的に不可能</strong>
 
-<p><strong>Walter Kohn（1998年ノーベル化学賞）のアイデア</strong>:</p>
+<h3>DFTのパラダイムシフト</h3>
 
-<p>> 波動関数$\Psi(\mathbf{r}_1, \ldots, \mathbf{r}_N)$（$3N$次元）の代わりに、<strong>電子密度</strong>$n(\mathbf{r})$（3次元）を基本変数にできないか？</p>
+<strong>Walter Kohn（1998年ノーベル化学賞）のアイデア</strong>:
 
-<p>$$</p>
-<p>n(\mathbf{r}) = N \int |\Psi(\mathbf{r}, \mathbf{r}_2, \ldots, \mathbf{r}_N)|^2 d\mathbf{r}_2 \cdots d\mathbf{r}_N</p>
-<p>$$</p>
+> 波動関数$\Psi(\mathbf{r}_1, \ldots, \mathbf{r}_N)$（$3N$次元）の代わりに、<strong>電子密度</strong>$n(\mathbf{r})$（3次元）を基本変数にできないか？
 
-<p>もしこれが可能なら：</p>
-<ul>
-<li>$3N$次元 → 3次元への次元削減</li>
-<li>計算量が劇的に削減</li>
-</ul>
+$$
+n(\mathbf{r}) = N \int |\Psi(\mathbf{r}, \mathbf{r}_2, \ldots, \mathbf{r}_N)|^2 d\mathbf{r}_2 \cdots d\mathbf{r}_N
+$$
 
-<p>---</p>
+もしこれが可能なら：
+- $3N$次元 → 3次元への次元削減
+- 計算量が劇的に削減
 
-<p><h2>2.2 Hohenberg-Kohn定理（1964年）</h2></p>
+---
 
-<p>DFTの理論的基礎を与える2つの定理です。</p>
+<h2>2.2 Hohenberg-Kohn定理（1964年）</h2>
 
-<p><h3>第1定理：一対一対応</h3></p>
+DFTの理論的基礎を与える2つの定理です。
 
-<p><strong>定理</strong>: 外部ポテンシャル$V_{\text{ext}}(\mathbf{r})$は電子密度$n(\mathbf{r})$により一意に決定される（定数を除いて）。</p>
+<h3>第1定理：一対一対応</h3>
 
-<p><strong>物理的意味</strong>:</p>
-<ul>
-<li>電子密度$n(\mathbf{r})$が分かれば、ハミルトニアン$\hat{H}$が決まる</li>
-<li>ハミルトニアンが決まれば、すべての物理量が決まる</li>
-<li>つまり、$n(\mathbf{r})$だけですべての情報が含まれる</li>
-</ul>
+<strong>定理</strong>: 外部ポテンシャル$V_{\text{ext}}(\mathbf{r})$は電子密度$n(\mathbf{r})$により一意に決定される（定数を除いて）。
 
-<p><h3>第2定理：変分原理</h3></p>
+<strong>物理的意味</strong>:
+- 電子密度$n(\mathbf{r})$が分かれば、ハミルトニアン$\hat{H}$が決まる
+- ハミルトニアンが決まれば、すべての物理量が決まる
+- つまり、$n(\mathbf{r})$だけですべての情報が含まれる
 
-<p><strong>定理</strong>: 基底状態エネルギー$E_0$は真の電子密度$n_0(\mathbf{r})$で最小値を取る。</p>
+<h3>第2定理：変分原理</h3>
 
-<p>$$</p>
-<p>E[n] \geq E[n_0] = E_0</p>
-<p>$$</p>
+<strong>定理</strong>: 基底状態エネルギー$E_0$は真の電子密度$n_0(\mathbf{r})$で最小値を取る。
 
-<p>任意の試行密度$n(\mathbf{r})$に対して、エネルギー汎関数$E[n]$を最小化すれば基底状態が得られる。</p>
+$$
+E[n] \geq E[n_0] = E_0
+$$
 
-<p><h3>エネルギー汎関数</h3></p>
+任意の試行密度$n(\mathbf{r})$に対して、エネルギー汎関数$E[n]$を最小化すれば基底状態が得られる。
 
-<p>$$</p>
-<p>E[n] = T[n] + V_{\text{ext}}[n] + V_{\text{ee}}[n]</p>
-<p>$$</p>
+<h3>エネルギー汎関数</h3>
 
-<ul>
-<li>$T[n]$: 運動エネルギー汎関数</li>
-<li>$V_{\text{ext}}[n] = \int V_{\text{ext}}(\mathbf{r}) n(\mathbf{r}) d\mathbf{r}$: 外部ポテンシャル</li>
-<li>$V_{\text{ee}}[n]$: 電子間相互作用汎関数</li>
-</ul>
+$$
+E[n] = T[n] + V_{\text{ext}}[n] + V_{\text{ee}}[n]
+$$
 
-<p><strong>問題</strong>: $T[n]$と$V_{\text{ee}}[n]$の正確な形が分からない！</p>
+- $T[n]$: 運動エネルギー汎関数
+- $V_{\text{ext}}[n] = \int V_{\text{ext}}(\mathbf{r}) n(\mathbf{r}) d\mathbf{r}$: 外部ポテンシャル
+- $V_{\text{ee}}[n]$: 電子間相互作用汎関数
 
-<p>---</p>
+<strong>問題</strong>: $T[n]$と$V_{\text{ee}}[n]$の正確な形が分からない！
 
-<p><h2>2.3 Kohn-Sham方程式（1965年）</h2></p>
+---
 
-<p><h3>Kohn-Shamの天才的アイデア</h3></p>
+<h2>2.3 Kohn-Sham方程式（1965年）</h2>
 
-<p><strong>仮想的な非相互作用系</strong>を導入：</p>
-<ul>
-<li>実際の相互作用する電子系と<strong>同じ電子密度</strong>を持つ</li>
-<li>しかし電子間相互作用は<strong>ゼロ</strong>（独立粒子系）</li>
-</ul>
+<h3>Kohn-Shamの天才的アイデア</h3>
 
-<p>この非相互作用系のシュレーディンガー方程式：</p>
+<strong>仮想的な非相互作用系</strong>を導入：
+- 実際の相互作用する電子系と<strong>同じ電子密度</strong>を持つ
+- しかし電子間相互作用は<strong>ゼロ</strong>（独立粒子系）
 
-<p>$$</p>
-<p>\left[-\frac{\hbar^2}{2m_e}\nabla^2 + V_{\text{KS}}(\mathbf{r})\right] \psi_i(\mathbf{r}) = \epsilon_i \psi_i(\mathbf{r})</p>
-<p>$$</p>
+この非相互作用系のシュレーディンガー方程式：
 
-<ul>
-<li>$\psi_i(\mathbf{r})$: Kohn-Sham軌道（$i = 1, 2, \ldots, N$）</li>
-<li>$\epsilon_i$: Kohn-Shamエネルギー固有値</li>
-<li>$V_{\text{KS}}(\mathbf{r})$: <strong>Kohn-Shamポテンシャル</strong>（effective potential）</li>
-</ul>
+$$
+\left[-\frac{\hbar^2}{2m_e}\nabla^2 + V_{\text{KS}}(\mathbf{r})\right] \psi_i(\mathbf{r}) = \epsilon_i \psi_i(\mathbf{r})
+$$
 
-<p><h3>電子密度</h3></p>
+- $\psi_i(\mathbf{r})$: Kohn-Sham軌道（$i = 1, 2, \ldots, N$）
+- $\epsilon_i$: Kohn-Shamエネルギー固有値
+- $V_{\text{KS}}(\mathbf{r})$: <strong>Kohn-Shamポテンシャル</strong>（effective potential）
 
-<p>$$</p>
-<p>n(\mathbf{r}) = \sum_{i=1}^N f_i |\psi_i(\mathbf{r})|^2</p>
-<p>$$</p>
+<h3>電子密度</h3>
 
-<p>$f_i$は占有数（基底状態では$f_i = 1$、スピンを考慮すると$f_i \leq 2$）</p>
+$$
+n(\mathbf{r}) = \sum_{i=1}^N f_i |\psi_i(\mathbf{r})|^2
+$$
 
-<p><h3>Kohn-Shamポテンシャル</h3></p>
+$f_i$は占有数（基底状態では$f_i = 1$、スピンを考慮すると$f_i \leq 2$）
 
-<p>$$</p>
-<p>V_{\text{KS}}(\mathbf{r}) = V_{\text{ext}}(\mathbf{r}) + V_{\text{Hartree}}(\mathbf{r}) + V_{\text{xc}}(\mathbf{r})</p>
-<p>$$</p>
+<h3>Kohn-Shamポテンシャル</h3>
 
-<p><strong>Hartreeポテンシャル</strong>（古典的クーロン相互作用）:</p>
+$$
+V_{\text{KS}}(\mathbf{r}) = V_{\text{ext}}(\mathbf{r}) + V_{\text{Hartree}}(\mathbf{r}) + V_{\text{xc}}(\mathbf{r})
+$$
 
-<p>$$</p>
-<p>V_{\text{Hartree}}(\mathbf{r}) = e^2 \int \frac{n(\mathbf{r}')}{|\mathbf{r} - \mathbf{r}'|} d\mathbf{r}'</p>
-<p>$$</p>
+<strong>Hartreeポテンシャル</strong>（古典的クーロン相互作用）:
 
-<p><strong>交換相関ポテンシャル</strong>（量子効果を含む）:</p>
+$$
+V_{\text{Hartree}}(\mathbf{r}) = e^2 \int \frac{n(\mathbf{r}')}{|\mathbf{r} - \mathbf{r}'|} d\mathbf{r}'
+$$
 
-<p>$$</p>
-<p>V_{\text{xc}}(\mathbf{r}) = \frac{\delta E_{\text{xc}}[n]}{\delta n(\mathbf{r})}</p>
-<p>$$</p>
+<strong>交換相関ポテンシャル</strong>（量子効果を含む）:
 
-<p>$E_{\text{xc}}[n]$は交換相関エネルギー汎関数。</p>
+$$
+V_{\text{xc}}(\mathbf{r}) = \frac{\delta E_{\text{xc}}[n]}{\delta n(\mathbf{r})}
+$$
 
-<p><h3>自己無撞着場（SCF）計算</h3></p>
+$E_{\text{xc}}[n]$は交換相関エネルギー汎関数。
 
-<p>Kohn-Sham方程式は自己無撞着に解く必要があります：</p>
+<h3>自己無撞着場（SCF）計算</h3>
 
-<p><pre><code class="language-mermaid">graph TD</p>
-<p>    A[初期密度 n⁰r を仮定] --> B[V_KSr を計算]</p>
-<p>    B --> C[Kohn-Sham方程式を解く: ψᵢr, εᵢ]</p>
-<p>    C --> D[新しい密度 n¹r = Σfᵢ|ψᵢr|²]</p>
-<p>    D --> E{収束判定: |n¹-n⁰| < tol?}</p>
-<p>    E -->|No| F[密度を混合: n⁰ = αn¹ + 1-αn⁰]</p>
-<p>    F --> B</p>
-<p>    E -->|Yes| G[基底状態エネルギーE₀, 電子構造を得る]</p>
+Kohn-Sham方程式は自己無撞着に解く必要があります：
 
-<p>    style A fill:#e3f2fd</p>
-<p>    style G fill:#c8e6c9</p>
-<p></code></pre></p>
+<div class="mermaid">graph TD
+    A[初期密度 n⁰r を仮定] --> B[V_KSr を計算]
+    B --> C[Kohn-Sham方程式を解く: ψᵢr, εᵢ]
+    C --> D[新しい密度 n¹r = Σfᵢ|ψᵢr|²]
+    D --> E{収束判定: |n¹-n⁰| < tol?}
+    E -->|No| F[密度を混合: n⁰ = αn¹ + 1-αn⁰]
+    F --> B
+    E -->|Yes| G[基底状態エネルギーE₀, 電子構造を得る]
 
-<p>---</p>
+    style A fill:#e3f2fd
+    style G fill:#c8e6c9</div>
 
-<p><h2>2.4 交換相関汎関数</h2></p>
+---
 
-<p>DFTの精度は$E_{\text{xc}}[n]$の近似に依存します。</p>
+<h2>2.4 交換相関汎関数</h2>
 
-<p><h3>LDA（Local Density Approximation）</h3></p>
+DFTの精度は$E_{\text{xc}}[n]$の近似に依存します。
 
-<p><strong>仮定</strong>: 各点$\mathbf{r}$での交換相関エネルギーは、その点の電子密度$n(\mathbf{r})$のみに依存する。</p>
+<h3>LDA（Local Density Approximation）</h3>
 
-<p>$$</p>
-<p>E_{\text{xc}}^{\text{LDA}}[n] = \int n(\mathbf{r}) \epsilon_{\text{xc}}^{\text{unif}}(n(\mathbf{r})) d\mathbf{r}</p>
-<p>$$</p>
+<strong>仮定</strong>: 各点$\mathbf{r}$での交換相関エネルギーは、その点の電子密度$n(\mathbf{r})$のみに依存する。
 
-<p>$\epsilon_{\text{xc}}^{\text{unif}}(n)$は一様電子ガスの交換相関エネルギー密度（量子モンテカルロ計算で精密に求められている）。</p>
+$$
+E_{\text{xc}}^{\text{LDA}}[n] = \int n(\mathbf{r}) \epsilon_{\text{xc}}^{\text{unif}}(n(\mathbf{r})) d\mathbf{r}
+$$
 
-<p><strong>特徴</strong>:</p>
-<ul>
-<li>✅ 計算が高速</li>
-<li>✅ 結晶構造、格子定数に良い精度</li>
-<li>❌ バンドギャップを過小評価（~30-50%）</li>
-<li>❌ 弱い結合（van der Waals）を記述できない</li>
-</ul>
+$\epsilon_{\text{xc}}^{\text{unif}}(n)$は一様電子ガスの交換相関エネルギー密度（量子モンテカルロ計算で精密に求められている）。
 
-<p><h3>GGA（Generalized Gradient Approximation）</h3></p>
+<strong>特徴</strong>:
+- ✅ 計算が高速
+- ✅ 結晶構造、格子定数に良い精度
+- ❌ バンドギャップを過小評価（~30-50%）
+- ❌ 弱い結合（van der Waals）を記述できない
 
-<p>密度$n(\mathbf{r})$だけでなく、その勾配$\nabla n(\mathbf{r})$も考慮：</p>
+<h3>GGA（Generalized Gradient Approximation）</h3>
 
-<p>$$</p>
-<p>E_{\text{xc}}^{\text{GGA}}[n] = \int n(\mathbf{r}) \epsilon_{\text{xc}}^{\text{GGA}}(n(\mathbf{r}), |\nabla n(\mathbf{r})|) d\mathbf{r}</p>
-<p>$$</p>
+密度$n(\mathbf{r})$だけでなく、その勾配$\nabla n(\mathbf{r})$も考慮：
 
-<p><strong>代表的なGGA汎関数</strong>:</p>
-<ul>
-<li><strong>PBE</strong>（Perdew-Burke-Ernzerhof, 1996）: 最も広く使われる</li>
-<li><strong>PW91</strong>（Perdew-Wang 1991）: PBEの前身</li>
-<li><strong>BLYP</strong>（Becke-Lee-Yang-Parr）: 量子化学で人気</li>
-</ul>
+$$
+E_{\text{xc}}^{\text{GGA}}[n] = \int n(\mathbf{r}) \epsilon_{\text{xc}}^{\text{GGA}}(n(\mathbf{r}), |\nabla n(\mathbf{r})|) d\mathbf{r}
+$$
 
-<p><strong>特徴</strong>:</p>
-<ul>
-<li>✅ LDAより構造、結合エネルギーの精度向上</li>
-<li>✅ 分子の結合距離・角度が改善</li>
-<li>❌ バンドギャップ問題はLDAと同程度</li>
-<li>❌ van der Waals相互作用は依然不十分</li>
-</ul>
+<strong>代表的なGGA汎関数</strong>:
+- <strong>PBE</strong>（Perdew-Burke-Ernzerhof, 1996）: 最も広く使われる
+- <strong>PW91</strong>（Perdew-Wang 1991）: PBEの前身
+- <strong>BLYP</strong>（Becke-Lee-Yang-Parr）: 量子化学で人気
 
-<p><h3>比較表</h3></p>
+<strong>特徴</strong>:
+- ✅ LDAより構造、結合エネルギーの精度向上
+- ✅ 分子の結合距離・角度が改善
+- ❌ バンドギャップ問題はLDAと同程度
+- ❌ van der Waals相互作用は依然不十分
 
-<p>| 項目 | LDA | GGA（PBE） | 実験値 |</p>
-<p>|------|-----|-----------|--------|</p>
-<p>| Si格子定数 [Å] | 5.40 | 5.47 | 5.43 |</p>
-<p>| Siバンドギャップ [eV] | 0.5 | 0.6 | 1.17 |</p>
-<p>| H₂結合長 [Å] | 0.76 | 0.75 | 0.74 |</p>
-<p>| H₂結合エネルギー [eV] | -4.8 | -4.6 | -4.75 |</p>
+<h3>比較表</h3>
 
-<p>---</p>
+| 項目 | LDA | GGA（PBE） | 実験値 |
+|------|-----|-----------|--------|
+| Si格子定数 [Å] | 5.40 | 5.47 | 5.43 |
+| Siバンドギャップ [eV] | 0.5 | 0.6 | 1.17 |
+| H₂結合長 [Å] | 0.76 | 0.75 | 0.74 |
+| H₂結合エネルギー [eV] | -4.8 | -4.6 | -4.75 |
 
-<p><h2>2.5 ASE + GPAWによるDFT計算の実践</h2></p>
+---
 
-<p><h3>環境構築</h3></p>
+<h2>2.5 ASE + GPAWによるDFT計算の実践</h2>
 
-<p><pre><code class="language-bash"><h1>Anaconda環境での推奨インストール</h1></p>
-<p>conda create -n dft python=3.11</p>
-<p>conda activate dft</p>
-<p>conda install -c conda-forge ase gpaw</p>
-<p>pip install matplotlib numpy scipy</p>
-<p></code></pre></p>
+<h3>環境構築</h3>
 
-<p><h3>Example 1: 水素分子（H₂）の構造最適化</h3></p>
+<pre><code class="language-bash"><h1>Anaconda環境での推奨インストール</h1>
+conda create -n dft python=3.11
+conda activate dft
+conda install -c conda-forge ase gpaw
+pip install matplotlib numpy scipy</code></pre>
 
-<p><pre><code class="language-python">from ase import Atoms</p>
-<p>from ase.optimize import BFGS</p>
-<p>from gpaw import GPAW, PW</p>
+<h3>Example 1: 水素分子（H₂）の構造最適化</h3>
 
-<p><h1>水素分子の初期構造</h1></p>
-<p>atoms = Atoms('H2',</p>
-<p>              positions=[[0, 0, 0], [0, 0, 0.8]],  <h1>初期結合長0.8Å</h1></p>
-<p>              cell=[6, 6, 6],  <h1>セルサイズ</h1></p>
-<p>              pbc=False)  <h1>周期境界条件なし</h1></p>
+<pre><code class="language-python">from ase import Atoms
+from ase.optimize import BFGS
+from gpaw import GPAW, PW
 
-<p><h1>計算機を設定</h1></p>
-<p>calc = GPAW(mode=PW(400),  <h1>平面波基底、カットオフエネルギー400eV</h1></p>
-<p>            xc='PBE',  <h1>GGA汎関数（PBE）</h1></p>
-<p>            txt='h2_opt.txt')  <h1>ログファイル</h1></p>
+<h1>水素分子の初期構造</h1>
+atoms = Atoms('H2',
+              positions=[[0, 0, 0], [0, 0, 0.8]],  # 初期結合長0.8Å
+              cell=[6, 6, 6],  # セルサイズ
+              pbc=False)  # 周期境界条件なし
 
-<p>atoms.calc = calc</p>
+<h1>計算機を設定</h1>
+calc = GPAW(mode=PW(400),  # 平面波基底、カットオフエネルギー400eV
+            xc='PBE',  # GGA汎関数（PBE）
+            txt='h2_opt.txt')  # ログファイル
 
-<p><h1>構造最適化</h1></p>
-<p>opt = BFGS(atoms, trajectory='h2_opt.traj')</p>
-<p>opt.run(fmax=0.01)  <h1>力が0.01 eV/Å以下まで最適化</h1></p>
+atoms.calc = calc
 
-<p><h1>結果の表示</h1></p>
-<p>print(f"最適化後の結合長: {atoms.get_distance(0, 1):.3f} Å")</p>
-<p>print(f"総エネルギー: {atoms.get_potential_energy():.3f} eV")</p>
-<p></code></pre></p>
+<h1>構造最適化</h1>
+opt = BFGS(atoms, trajectory='h2_opt.traj')
+opt.run(fmax=0.01)  # 力が0.01 eV/Å以下まで最適化
 
-<p><strong>実行結果</strong>:</p>
-<p><pre><code class="language-">最適化後の結合長: 0.748 Å</p>
-<p>総エネルギー: -6.873 eV</p>
-<p></code></pre></p>
+<h1>結果の表示</h1>
+print(f"最適化後の結合長: {atoms.get_distance(0, 1):.3f} Å")
+print(f"総エネルギー: {atoms.get_potential_energy():.3f} eV")</code></pre>
 
-<p><strong>実験値との比較</strong>: 0.741 Å（実験値）→ 誤差約1%</p>
+<strong>実行結果</strong>:
+<pre><code>最適化後の結合長: 0.748 Å
+総エネルギー: -6.873 eV</code></pre>
 
-<p>---</p>
+<strong>実験値との比較</strong>: 0.741 Å（実験値）→ 誤差約1%
 
-<p><h3>Example 2: Siのバンド構造計算</h3></p>
+---
 
-<p><pre><code class="language-python">from ase.build import bulk</p>
-<p>from gpaw import GPAW, PW</p>
-<p>from gpaw.utilities.kpoints import get_bandpath</p>
-<p>import matplotlib.pyplot as plt</p>
+<h3>Example 2: Siのバンド構造計算</h3>
 
-<p><h1>Si結晶の作成</h1></p>
-<p>si = bulk('Si', 'diamond', a=5.43)</p>
+<pre><code class="language-python">from ase.build import bulk
+from gpaw import GPAW, PW
+from gpaw.utilities.kpoints import get_bandpath
+import matplotlib.pyplot as plt
 
-<p><h1>SCF計算（密な k点メッシュ）</h1></p>
-<p>calc = GPAW(mode=PW(400),</p>
-<p>            xc='PBE',</p>
-<p>            kpts=(8, 8, 8),  <h1>Monkhorst-Pack メッシュ</h1></p>
-<p>            txt='si_scf.txt')</p>
+<h1>Si結晶の作成</h1>
+si = bulk('Si', 'diamond', a=5.43)
 
-<p>si.calc = calc</p>
-<p>si.get_potential_energy()  <h1>SCF計算を実行</h1></p>
-<p>calc.write('si_groundstate.gpw')  <h1>波動関数を保存</h1></p>
+<h1>SCF計算（密な k点メッシュ）</h1>
+calc = GPAW(mode=PW(400),
+            xc='PBE',
+            kpts=(8, 8, 8),  # Monkhorst-Pack メッシュ
+            txt='si_scf.txt')
 
-<p><h1>バンド構造計算</h1></p>
-<p>calc_bands = calc.fixed_density(</p>
-<p>    kpts={'path': 'LGXULK', 'npoints': 60},  <h1>高対称点経路</h1></p>
-<p>    txt='si_bands.txt'</p>
-<p>)</p>
+si.calc = calc
+si.get_potential_energy()  # SCF計算を実行
+calc.write('si_groundstate.gpw')  # 波動関数を保存
 
-<p><h1>バンド構造の取得</h1></p>
-<p>ef = calc_bands.get_fermi_level()</p>
-<p>energies, k_distances = calc_bands.band_structure().get_bands()</p>
+<h1>バンド構造計算</h1>
+calc_bands = calc.fixed_density(
+    kpts={'path': 'LGXULK', 'npoints': 60},  # 高対称点経路
+    txt='si_bands.txt'
+)
 
-<p><h1>プロット</h1></p>
-<p>plt.figure(figsize=(8, 6))</p>
-<p>for n in range(energies.shape[1]):</p>
-<p>    plt.plot(k_distances, energies[:, n] - ef, 'b-', linewidth=1)</p>
+<h1>バンド構造の取得</h1>
+ef = calc_bands.get_fermi_level()
+energies, k_distances = calc_bands.band_structure().get_bands()
 
-<p>plt.axhline(0, color='red', linestyle='--', linewidth=1)</p>
-<p>plt.ylabel('Energy [eV]', fontsize=12)</p>
-<p>plt.xlabel('k-path', fontsize=12)</p>
-<p>plt.title('Si Band Structure (PBE)', fontsize=14)</p>
-<p>plt.ylim(-6, 6)</p>
-<p>plt.grid(alpha=0.3)</p>
-<p>plt.savefig('si_bandstructure.png', dpi=150)</p>
-<p>plt.show()</p>
+<h1>プロット</h1>
+plt.figure(figsize=(8, 6))
+for n in range(energies.shape[1]):
+    plt.plot(k_distances, energies[:, n] - ef, 'b-', linewidth=1)
 
-<p><h1>バンドギャップ計算</h1></p>
-<p>vbm = energies[:, :4].max() - ef  <h1>Valence Band Maximum</h1></p>
-<p>cbm = energies[:, 4:].min() - ef  <h1>Conduction Band Minimum</h1></p>
-<p>print(f"バンドギャップ (Indirect): {cbm - vbm:.3f} eV")</p>
-<p>print(f"実験値: 1.17 eV")</p>
-<p></code></pre></p>
+plt.axhline(0, color='red', linestyle='--', linewidth=1)
+plt.ylabel('Energy [eV]', fontsize=12)
+plt.xlabel('k-path', fontsize=12)
+plt.title('Si Band Structure (PBE)', fontsize=14)
+plt.ylim(-6, 6)
+plt.grid(alpha=0.3)
+plt.savefig('si_bandstructure.png', dpi=150)
+plt.show()
 
-<p><strong>実行結果</strong>:</p>
-<p><pre><code class="language-">バンドギャップ (Indirect): 0.614 eV</p>
-<p>実験値: 1.17 eV</p>
-<p></code></pre></p>
+<h1>バンドギャップ計算</h1>
+vbm = energies[:, :4].max() - ef  # Valence Band Maximum
+cbm = energies[:, 4:].min() - ef  # Conduction Band Minimum
+print(f"バンドギャップ (Indirect): {cbm - vbm:.3f} eV")
+print(f"実験値: 1.17 eV")</code></pre>
 
-<p><strong>バンドギャップ過小評価</strong>: DFTの既知の問題（次のセクションで解説）</p>
+<strong>実行結果</strong>:
+<pre><code>バンドギャップ (Indirect): 0.614 eV
+実験値: 1.17 eV</code></pre>
 
-<p>---</p>
+<strong>バンドギャップ過小評価</strong>: DFTの既知の問題（次のセクションで解説）
 
-<p><h3>Example 3: 状態密度（DOS）の計算</h3></p>
+---
 
-<p><pre><code class="language-python">from gpaw import GPAW</p>
-<p>import matplotlib.pyplot as plt</p>
+<h3>Example 3: 状態密度（DOS）の計算</h3>
 
-<p><h1>既に計算済みの基底状態を読み込み</h1></p>
-<p>calc = GPAW('si_groundstate.gpw', txt=None)</p>
+<pre><code class="language-python">from gpaw import GPAW
+import matplotlib.pyplot as plt
 
-<p><h1>状態密度の計算</h1></p>
-<p>energies, dos = calc.get_dos(spin=0, npts=1000, width=0.1)</p>
-<p>ef = calc.get_fermi_level()</p>
+<h1>既に計算済みの基底状態を読み込み</h1>
+calc = GPAW('si_groundstate.gpw', txt=None)
 
-<p><h1>プロット</h1></p>
-<p>plt.figure(figsize=(8, 6))</p>
-<p>plt.plot(energies - ef, dos, linewidth=2)</p>
-<p>plt.axvline(0, color='red', linestyle='--', linewidth=1, label='Fermi level')</p>
-<p>plt.fill_between(energies - ef, dos, where=(energies <= ef), alpha=0.3, label='Occupied states')</p>
-<p>plt.xlabel('Energy [eV]', fontsize=12)</p>
-<p>plt.ylabel('DOS [states/eV]', fontsize=12)</p>
-<p>plt.title('Si Density of States (PBE)', fontsize=14)</p>
-<p>plt.xlim(-15, 10)</p>
-<p>plt.legend()</p>
-<p>plt.grid(alpha=0.3)</p>
-<p>plt.savefig('si_dos.png', dpi=150)</p>
-<p>plt.show()</p>
-<p></code></pre></p>
+<h1>状態密度の計算</h1>
+energies, dos = calc.get_dos(spin=0, npts=1000, width=0.1)
+ef = calc.get_fermi_level()
 
-<p>---</p>
+<h1>プロット</h1>
+plt.figure(figsize=(8, 6))
+plt.plot(energies - ef, dos, linewidth=2)
+plt.axvline(0, color='red', linestyle='--', linewidth=1, label='Fermi level')
+plt.fill_between(energies - ef, dos, where=(energies <= ef), alpha=0.3, label='Occupied states')
+plt.xlabel('Energy [eV]', fontsize=12)
+plt.ylabel('DOS [states/eV]', fontsize=12)
+plt.title('Si Density of States (PBE)', fontsize=14)
+plt.xlim(-15, 10)
+plt.legend()
+plt.grid(alpha=0.3)
+plt.savefig('si_dos.png', dpi=150)
+plt.show()</code></pre>
 
-<p><h3>Example 4: 構造最適化と力の計算</h3></p>
+---
 
-<p><pre><code class="language-python">from ase.build import molecule</p>
-<p>from ase.optimize import BFGS</p>
-<p>from gpaw import GPAW, PW</p>
+<h3>Example 4: 構造最適化と力の計算</h3>
 
-<p><h1>水分子の初期構造（ゆがんだ構造）</h1></p>
-<p>h2o = molecule('H2O')</p>
-<p>h2o.positions[0] += [0.1, 0.1, 0]  <h1>わざと歪ませる</h1></p>
-<p>h2o.center(vacuum=4.0)  <h1>真空領域を追加</h1></p>
+<pre><code class="language-python">from ase.build import molecule
+from ase.optimize import BFGS
+from gpaw import GPAW, PW
 
-<p><h1>計算機の設定</h1></p>
-<p>calc = GPAW(mode=PW(400),</p>
-<p>            xc='PBE',</p>
-<p>            txt='h2o_opt.txt')</p>
+<h1>水分子の初期構造（ゆがんだ構造）</h1>
+h2o = molecule('H2O')
+h2o.positions[0] += [0.1, 0.1, 0]  # わざと歪ませる
+h2o.center(vacuum=4.0)  # 真空領域を追加
 
-<p>h2o.calc = calc</p>
+<h1>計算機の設定</h1>
+calc = GPAW(mode=PW(400),
+            xc='PBE',
+            txt='h2o_opt.txt')
 
-<p>print("初期構造:")</p>
-<p>print(f"O-H1距離: {h2o.get_distance(0, 1):.3f} Å")</p>
-<p>print(f"O-H2距離: {h2o.get_distance(0, 2):.3f} Å")</p>
-<p>print(f"H-O-H角度: {h2o.get_angle(1, 0, 2):.1f}°")</p>
+h2o.calc = calc
 
-<p><h1>構造最適化</h1></p>
-<p>opt = BFGS(h2o, trajectory='h2o_opt.traj')</p>
-<p>opt.run(fmax=0.02)</p>
+print("初期構造:")
+print(f"O-H1距離: {h2o.get_distance(0, 1):.3f} Å")
+print(f"O-H2距離: {h2o.get_distance(0, 2):.3f} Å")
+print(f"H-O-H角度: {h2o.get_angle(1, 0, 2):.1f}°")
 
-<p>print("\n最適化後:")</p>
-<p>print(f"O-H1距離: {h2o.get_distance(0, 1):.3f} Å")</p>
-<p>print(f"O-H2距離: {h2o.get_distance(0, 2):.3f} Å")</p>
-<p>print(f"H-O-H角度: {h2o.get_angle(1, 0, 2):.1f}°")</p>
-<p>print(f"\n実験値: O-H = 0.958 Å, H-O-H = 104.5°")</p>
-<p></code></pre></p>
+<h1>構造最適化</h1>
+opt = BFGS(h2o, trajectory='h2o_opt.traj')
+opt.run(fmax=0.02)
 
-<p><strong>実行結果</strong>:</p>
-<p><pre><code class="language-">初期構造:</p>
-<p>O-H1距離: 1.071 Å</p>
-<p>O-H2距離: 0.969 Å</p>
-<p>H-O-H角度: 104.5°</p>
+print("\n最適化後:")
+print(f"O-H1距離: {h2o.get_distance(0, 1):.3f} Å")
+print(f"O-H2距離: {h2o.get_distance(0, 2):.3f} Å")
+print(f"H-O-H角度: {h2o.get_angle(1, 0, 2):.1f}°")
+print(f"\n実験値: O-H = 0.958 Å, H-O-H = 104.5°")</code></pre>
 
-<p>最適化後:</p>
-<p>O-H1距離: 0.972 Å</p>
-<p>O-H2距離: 0.972 Å</p>
-<p>H-O-H角度: 104.0°</p>
+<strong>実行結果</strong>:
+<pre><code>初期構造:
+O-H1距離: 1.071 Å
+O-H2距離: 0.969 Å
+H-O-H角度: 104.5°
 
-<p>実験値: O-H = 0.958 Å, H-O-H = 104.5°</p>
-<p></code></pre></p>
-
-<p>---</p>
+最適化後:
+O-H1距離: 0.972 Å
+O-H2距離: 0.972 Å
+H-O-H角度: 104.0°
 
-<p><h2>2.6 DFTの限界と対策</h2></p>
+実験値: O-H = 0.958 Å, H-O-H = 104.5°</code></pre>
 
-<p><h3>限界1: バンドギャップの過小評価</h3></p>
+---
 
-<p><strong>原因</strong>: Kohn-Sham固有値$\epsilon_i$は厳密には準粒子エネルギーではない。交換相関ポテンシャルの不正確さ。</p>
+<h2>2.6 DFTの限界と対策</h2>
 
-<p><strong>典型的な誤差</strong>: 実験値の30-50%過小評価</p>
+<h3>限界1: バンドギャップの過小評価</h3>
 
-<p>| 材料 | 実験値 [eV] | LDA [eV] | GGA [eV] |</p>
-<p>|------|------------|---------|---------|</p>
-<p>| Si | 1.17 | 0.5 | 0.6 |</p>
-<p>| GaAs | 1.52 | 0.3 | 0.5 |</p>
-<p>| Diamond | 5.48 | 4.1 | 4.3 |</p>
+<strong>原因</strong>: Kohn-Sham固有値$\epsilon_i$は厳密には準粒子エネルギーではない。交換相関ポテンシャルの不正確さ。
 
-<p><strong>対策</strong>:</p>
-<ol>
-<li><strong>GW近似</strong>（多体摂動論）: 準粒子エネルギーを計算</li>
-<li><strong>ハイブリッド汎関数</strong>（HSE, B3LYP）: Hartree-Fock交換の混合</li>
-<li><strong>Scissors操作</strong>（経験的補正）: バンドギャップを実験値にシフト</li>
-</ol>
-
-<p><h3>限界2: van der Waals相互作用</h3></p>
-
-<p><strong>問題</strong>: LDA/GGAはvan der Waals（分散力）を記述できない。</p>
-
-<p><strong>影響を受ける系</strong>:</p>
-<ul>
-<li>グラファイト層間</li>
-<li>分子結晶</li>
-<li>タンパク質の折りたたみ</li>
-</ul>
+<strong>典型的な誤差</strong>: 実験値の30-50%過小評価
 
-<p><strong>対策</strong>:</p>
-<ol>
-<li><strong>DFT-D3</strong>（Grimmeの分散補正）: 経験的補正項を追加</li>
-<li><strong>vdW-DF</strong>（van der Waals density functional）: 非局所相関汎関数</li>
-<li><strong>GPAWでの実装</strong>:</li>
-</ol>
-
-<p><pre><code class="language-python">calc = GPAW(mode=PW(400),</p>
-<p>            xc='vdW-DF',  <h1>van der Waals汎関数</h1></p>
-<p>            txt='graphite_vdw.txt')</p>
-<p></code></pre></p>
-
-<p><h3>限界3: 強相関系</h3></p>
-
-<p><strong>問題</strong>: LDA/GGAは強い電子相関を記述できない。</p>
-
-<p><strong>影響を受ける系</strong>:</p>
-<ul>
-<li>遷移金属酸化物（NiO, FeO）</li>
-<li>f電子系（希土類、アクチノイド）</li>
-</ul>
-
-<p><strong>対策</strong>:</p>
-<ol>
-<li><strong>DFT+U</strong>: Hubbard Uパラメータを導入</li>
-<li><strong>DMFT</strong>（Dynamical Mean-Field Theory）</li>
-<li><strong>Hybrid functionals</strong></li>
-</ol>
-
-<p>---</p>
-
-<p><h2>2.7 収束テスト</h2></p>
-
-<p>DFT計算では以下のパラメータを収束させる必要があります。</p>
-
-<p><h3>k点メッシュの収束</h3></p>
+| 材料 | 実験値 [eV] | LDA [eV] | GGA [eV] |
+|------|------------|---------|---------|
+| Si | 1.17 | 0.5 | 0.6 |
+| GaAs | 1.52 | 0.3 | 0.5 |
+| Diamond | 5.48 | 4.1 | 4.3 |
 
-<p><pre><code class="language-python">from ase.build import bulk</p>
-<p>from gpaw import GPAW, PW</p>
-<p>import numpy as np</p>
-<p>import matplotlib.pyplot as plt</p>
+<strong>対策</strong>:
+1. <strong>GW近似</strong>（多体摂動論）: 準粒子エネルギーを計算
+2. <strong>ハイブリッド汎関数</strong>（HSE, B3LYP）: Hartree-Fock交換の混合
+3. <strong>Scissors操作</strong>（経験的補正）: バンドギャップを実験値にシフト
 
-<p>si = bulk('Si', 'diamond', a=5.43)</p>
+<h3>限界2: van der Waals相互作用</h3>
 
-<p>k_grids = [(2,2,2), (4,4,4), (6,6,6), (8,8,8), (10,10,10), (12,12,12)]</p>
-<p>energies = []</p>
+<strong>問題</strong>: LDA/GGAはvan der Waals（分散力）を記述できない。
 
-<p>for kpts in k_grids:</p>
-<p>    calc = GPAW(mode=PW(400), xc='PBE', kpts=kpts, txt=None)</p>
-<p>    si.calc = calc</p>
-<p>    E = si.get_potential_energy()</p>
-<p>    energies.append(E)</p>
-<p>    print(f"k-grid {kpts}: E = {E:.6f} eV")</p>
+<strong>影響を受ける系</strong>:
+- グラファイト層間
+- 分子結晶
+- タンパク質の折りたたみ
 
-<p><h1>プロット</h1></p>
-<p>k_total = [k[0]**3 for k in k_grids]</p>
-<p>plt.figure(figsize=(8, 6))</p>
-<p>plt.plot(k_total, energies, 'o-', linewidth=2, markersize=8)</p>
-<p>plt.xlabel('Total k-points', fontsize=12)</p>
-<p>plt.ylabel('Total Energy [eV]', fontsize=12)</p>
-<p>plt.title('k-point Convergence Test', fontsize=14)</p>
-<p>plt.grid(alpha=0.3)</p>
-<p>plt.savefig('k_convergence.png', dpi=150)</p>
-<p>plt.show()</p>
-<p></code></pre></p>
+<strong>対策</strong>:
+1. <strong>DFT-D3</strong>（Grimmeの分散補正）: 経験的補正項を追加
+2. <strong>vdW-DF</strong>（van der Waals density functional）: 非局所相関汎関数
+3. <strong>GPAWでの実装</strong>:
 
-<p><strong>収束判定</strong>: エネルギー差 < 1 meV/atom</p>
+<pre><code class="language-python">calc = GPAW(mode=PW(400),
+            xc='vdW-DF',  # van der Waals汎関数
+            txt='graphite_vdw.txt')</code></pre>
 
-<p><h3>カットオフエネルギーの収束</h3></p>
+<h3>限界3: 強相関系</h3>
 
-<p><pre><code class="language-python">cutoffs = [200, 300, 400, 500, 600, 700]</p>
-<p>energies = []</p>
+<strong>問題</strong>: LDA/GGAは強い電子相関を記述できない。
 
-<p>for ecut in cutoffs:</p>
-<p>    calc = GPAW(mode=PW(ecut), xc='PBE', kpts=(8,8,8), txt=None)</p>
-<p>    si.calc = calc</p>
-<p>    E = si.get_potential_energy()</p>
-<p>    energies.append(E)</p>
-<p>    print(f"Cutoff {ecut} eV: E = {E:.6f} eV")</p>
+<strong>影響を受ける系</strong>:
+- 遷移金属酸化物（NiO, FeO）
+- f電子系（希土類、アクチノイド）
 
-<p><h1>プロット</h1></p>
-<p>plt.figure(figsize=(8, 6))</p>
-<p>plt.plot(cutoffs, energies, 'o-', linewidth=2, markersize=8)</p>
-<p>plt.xlabel('Cutoff Energy [eV]', fontsize=12)</p>
-<p>plt.ylabel('Total Energy [eV]', fontsize=12)</p>
-<p>plt.title('Plane Wave Cutoff Convergence Test', fontsize=14)</p>
-<p>plt.grid(alpha=0.3)</p>
-<p>plt.savefig('cutoff_convergence.png', dpi=150)</p>
-<p>plt.show()</p>
-<p></code></pre></p>
+<strong>対策</strong>:
+1. <strong>DFT+U</strong>: Hubbard Uパラメータを導入
+2. <strong>DMFT</strong>（Dynamical Mean-Field Theory）
+3. <strong>Hybrid functionals</strong>
 
-<p>---</p>
+---
 
-<p><h2>2.8 本章のまとめ</h2></p>
+<h2>2.7 収束テスト</h2>
 
-<p><h3>学んだこと</h3></p>
+DFT計算では以下のパラメータを収束させる必要があります。
 
-<ol>
-<li><strong>DFTの基本原理</strong></li>
-</ol>
-<p>   - Hohenberg-Kohn定理: 電子密度ですべてが決まる</p>
-<p>   - Kohn-Sham方程式: 非相互作用系への変換</p>
-<p>   - 交換相関汎関数: LDA、GGA</p>
+<h3>k点メッシュの収束</h3>
 
-<ol>
-<li><strong>ASE + GPAWによる実践</strong></li>
-</ol>
-<p>   - 構造最適化</p>
-<p>   - バンド構造計算</p>
-<p>   - 状態密度（DOS）計算</p>
-<p>   - 収束テスト</p>
+<pre><code class="language-python">from ase.build import bulk
+from gpaw import GPAW, PW
+import numpy as np
+import matplotlib.pyplot as plt
 
-<ol>
-<li><strong>DFTの限界</strong></li>
-</ol>
-<p>   - バンドギャップの過小評価</p>
-<p>   - van der Waals相互作用の欠如</p>
-<p>   - 強相関系への不適用</p>
+si = bulk('Si', 'diamond', a=5.43)
 
-<p><h3>重要なポイント</h3></p>
+k_grids = [(2,2,2), (4,4,4), (6,6,6), (8,8,8), (10,10,10), (12,12,12)]
+energies = []
 
-<ul>
-<li>DFTは第一原理計算の実用的手法</li>
-<li>計算精度は交換相関汎関数の選択に依存</li>
-<li>収束テストは必須</li>
-<li>系に応じて適切な補正が必要</li>
-</ul>
+for kpts in k_grids:
+    calc = GPAW(mode=PW(400), xc='PBE', kpts=kpts, txt=None)
+    si.calc = calc
+    E = si.get_potential_energy()
+    energies.append(E)
+    print(f"k-grid {kpts}: E = {E:.6f} eV")
 
-<p><h3>次の章へ</h3></p>
+<h1>プロット</h1>
+k_total = [k[0]**3 for k in k_grids]
+plt.figure(figsize=(8, 6))
+plt.plot(k_total, energies, 'o-', linewidth=2, markersize=8)
+plt.xlabel('Total k-points', fontsize=12)
+plt.ylabel('Total Energy [eV]', fontsize=12)
+plt.title('k-point Convergence Test', fontsize=14)
+plt.grid(alpha=0.3)
+plt.savefig('k_convergence.png', dpi=150)
+plt.show()</code></pre>
 
-<p>第3章では、原子核の運動を扱う<strong>分子動力学（MD）シミュレーション</strong>を学びます。</p>
+<strong>収束判定</strong>: エネルギー差 < 1 meV/atom
 
-<p>---</p>
+<h3>カットオフエネルギーの収束</h3>
 
-<p><h2>演習問題</h2></p>
+<pre><code class="language-python">cutoffs = [200, 300, 400, 500, 600, 700]
+energies = []
 
-<p><h3>問題1（難易度：easy）</h3></p>
+for ecut in cutoffs:
+    calc = GPAW(mode=PW(ecut), xc='PBE', kpts=(8,8,8), txt=None)
+    si.calc = calc
+    E = si.get_potential_energy()
+    energies.append(E)
+    print(f"Cutoff {ecut} eV: E = {E:.6f} eV")
 
-<p>Hohenberg-Kohn第1定理の物理的意味を自分の言葉で説明してください。</p>
+<h1>プロット</h1>
+plt.figure(figsize=(8, 6))
+plt.plot(cutoffs, energies, 'o-', linewidth=2, markersize=8)
+plt.xlabel('Cutoff Energy [eV]', fontsize=12)
+plt.ylabel('Total Energy [eV]', fontsize=12)
+plt.title('Plane Wave Cutoff Convergence Test', fontsize=14)
+plt.grid(alpha=0.3)
+plt.savefig('cutoff_convergence.png', dpi=150)
+plt.show()</code></pre>
 
-<p><details></p>
-<p><summary>解答例</summary></p>
+---
 
-<p>電子密度$n(\mathbf{r})$が与えられれば、外部ポテンシャル$V_{\text{ext}}(\mathbf{r})$が決まります。外部ポテンシャルが決まれば、ハミルトニアン$\hat{H}$が決まり、シュレーディンガー方程式が解けます。つまり、<strong>電子密度だけで系のすべての性質が決定される</strong>ということです。これにより、$3N$次元の波動関数の代わりに、3次元の電子密度で多電子系を記述できます。</p>
+<h2>2.8 本章のまとめ</h2>
 
-<p></details></p>
+<h3>学んだこと</h3>
 
-<p><h3>問題2（難易度：medium）</h3></p>
+1. <strong>DFTの基本原理</strong>
+   - Hohenberg-Kohn定理: 電子密度ですべてが決まる
+   - Kohn-Sham方程式: 非相互作用系への変換
+   - 交換相関汎関数: LDA、GGA
 
-<p>SiのバンドギャップがDFT-GGA（PBE）で0.6 eV、実験値が1.17 eVです。このバンドギャップ過小評価の原因を説明してください。</p>
+2. <strong>ASE + GPAWによる実践</strong>
+   - 構造最適化
+   - バンド構造計算
+   - 状態密度（DOS）計算
+   - 収束テスト
 
-<p><details></p>
-<p><summary>解答例</summary></p>
+3. <strong>DFTの限界</strong>
+   - バンドギャップの過小評価
+   - van der Waals相互作用の欠如
+   - 強相関系への不適用
 
-<p>DFTのバンドギャップ過小評価の主な原因は以下の2つです：</p>
+<h3>重要なポイント</h3>
 
-<ol>
-<li><strong>Kohn-Sham固有値の解釈の問題</strong>: Kohn-Sham固有値$\epsilon_i$は厳密には準粒子エネルギーではありません。Kohn-Sham方程式は形式的には1電子シュレーディンガー方程式ですが、これは数学的な便宜のためのもので、$\epsilon_i$は物理的な励起エネルギーではありません。</li>
-</ol>
+- DFTは第一原理計算の実用的手法
+- 計算精度は交換相関汎関数の選択に依存
+- 収束テストは必須
+- 系に応じて適切な補正が必要
 
-<ol>
-<li><strong>交換相関汎関数の不正確さ</strong>: LDA/GGAの交換相関汎関数は、電子の自己相互作用（self-interaction）を完全には打ち消しません。この誤差により、占有準位が上がり（浅くなり）、非占有準位が下がる（浅くなる）ため、バンドギャップが過小評価されます。</li>
-</ol>
+<h3>次の章へ</h3>
 
-<p><strong>対策</strong>:</p>
-<ul>
-<li>GW近似: 準粒子エネルギーを正確に計算（計算コスト大）</li>
-<li>ハイブリッド汎関数（HSE, B3LYP）: Hartree-Fock交換を混合</li>
-<li>DFT+U: 強相関系向け</li>
-<li>Scissors操作: 経験的にバンドギャップを補正</li>
-</ul>
+第3章では、原子核の運動を扱う<strong>分子動力学（MD）シミュレーション</strong>を学びます。
 
-<p></details></p>
+---
 
-<p><h3>問題3（難易度：hard）</h3></p>
+<h2>演習問題</h2>
 
-<p>グラファイト層間距離をDFT-GGA（PBE）で計算すると実験値より大きく過大評価されます。この理由と対策を説明してください。</p>
+<h3>問題1（難易度：easy）</h3>
 
-<p><details></p>
-<p><summary>解答例</summary></p>
+Hohenberg-Kohn第1定理の物理的意味を自分の言葉で説明してください。
 
-<p><strong>理由</strong>: LDA/GGAはvan der Waals（分散力）相互作用を記述できないためです。</p>
+<details>
+<summary>解答例</summary>
 
-<p>グラファイトの層間は共有結合やイオン結合ではなく、<strong>van der Waals力</strong>（London分散力）で結合しています。この力は電子密度の揺らぎによる瞬間双極子間の相互作用で、非局所的な効果です。</p>
+電子密度$n(\mathbf{r})$が与えられれば、外部ポテンシャル$V_{\text{ext}}(\mathbf{r})$が決まります。外部ポテンシャルが決まれば、ハミルトニアン$\hat{H}$が決まり、シュレーディンガー方程式が解けます。つまり、<strong>電子密度だけで系のすべての性質が決定される</strong>ということです。これにより、$3N$次元の波動関数の代わりに、3次元の電子密度で多電子系を記述できます。
 
-<p>LDA/GGAの交換相関汎関数は<strong>局所的</strong>（または準局所的）であり、密度$n(\mathbf{r})$とその勾配$\nabla n(\mathbf{r})$だけで決まります。このため、遠距離の電子相関（van der Waals力）を記述できません。</p>
+</details>
 
-<p>結果として：</p>
-<ul>
-<li>層間の引力が過小評価される</li>
-<li>層間距離が実験値より大きくなる</li>
-<li>結合エネルギーが過小評価される</li>
-</ul>
+<h3>問題2（難易度：medium）</h3>
 
-<p><strong>対策</strong>:</p>
+SiのバンドギャップがDFT-GGA（PBE）で0.6 eV、実験値が1.17 eVです。このバンドギャップ過小評価の原因を説明してください。
 
-<ol>
-<li><strong>DFT-D3</strong>（Grimmeの分散補正）:</li>
-</ol>
-<p>   - 経験的な$C_6/r^6$項を追加</p>
-<p>   - パラメータは元素ごとに決定</p>
-<p>   - GPAWでの実装: <code>xc='PBE+D3'</code></p>
+<details>
+<summary>解答例</summary>
 
-<ol>
-<li><strong>vdW-DF</strong>（van der Waals density functional）:</li>
-</ol>
-<p>   - 非局所相関汎関数</p>
-<p>   - 第一原理的（経験パラメータなし）</p>
-<p>   - GPAWでの実装: <code>xc='vdW-DF'</code> or <code>xc='vdW-DF2'</code></p>
+DFTのバンドギャップ過小評価の主な原因は以下の2つです：
 
-<ol>
-<li><strong>計算例</strong>:</li>
-</ol>
-<p><pre><code class="language-python">from ase.build import graphite</p>
-<p>from gpaw import GPAW, PW</p>
+1. <strong>Kohn-Sham固有値の解釈の問題</strong>: Kohn-Sham固有値$\epsilon_i$は厳密には準粒子エネルギーではありません。Kohn-Sham方程式は形式的には1電子シュレーディンガー方程式ですが、これは数学的な便宜のためのもので、$\epsilon_i$は物理的な励起エネルギーではありません。
 
-<p>graphite = graphite(a=2.46, c=6.70)  <h1>初期構造</h1></p>
+2. <strong>交換相関汎関数の不正確さ</strong>: LDA/GGAの交換相関汎関数は、電子の自己相互作用（self-interaction）を完全には打ち消しません。この誤差により、占有準位が上がり（浅くなり）、非占有準位が下がる（浅くなる）ため、バンドギャップが過小評価されます。
 
-<p><h1>PBEのみ</h1></p>
-<p>calc_pbe = GPAW(mode=PW(400), xc='PBE', kpts=(8,8,4), txt='gr_pbe.txt')</p>
-<p>graphite.calc = calc_pbe</p>
-<p>E_pbe = graphite.get_potential_energy()</p>
+<strong>対策</strong>:
+- GW近似: 準粒子エネルギーを正確に計算（計算コスト大）
+- ハイブリッド汎関数（HSE, B3LYP）: Hartree-Fock交換を混合
+- DFT+U: 強相関系向け
+- Scissors操作: 経験的にバンドギャップを補正
 
-<p><h1>PBE + D3</h1></p>
-<p>calc_d3 = GPAW(mode=PW(400), xc='PBE+D3', kpts=(8,8,4), txt='gr_d3.txt')</p>
-<p>graphite.calc = calc_d3</p>
-<p>E_d3 = graphite.get_potential_energy()</p>
+</details>
 
-<p>print(f"PBE: E = {E_pbe:.3f} eV")</p>
-<p>print(f"PBE+D3: E = {E_d3:.3f} eV")</p>
-<p>print(f"vdW補正: {E_d3 - E_pbe:.3f} eV")</p>
-<p></code></pre></p>
+<h3>問題3（難易度：hard）</h3>
 
-<p>vdW補正により層間距離が実験値（3.35 Å）に近づきます。</p>
+グラファイト層間距離をDFT-GGA（PBE）で計算すると実験値より大きく過大評価されます。この理由と対策を説明してください。
 
-<p></details></p>
+<details>
+<summary>解答例</summary>
 
-<p>---</p>
+<strong>理由</strong>: LDA/GGAはvan der Waals（分散力）相互作用を記述できないためです。
 
-<p><h2>参考文献</h2></p>
+グラファイトの層間は共有結合やイオン結合ではなく、<strong>van der Waals力</strong>（London分散力）で結合しています。この力は電子密度の揺らぎによる瞬間双極子間の相互作用で、非局所的な効果です。
 
-<ol>
-<li>Hohenberg, P., & Kohn, W. (1964). "Inhomogeneous Electron Gas." <em>Physical Review</em>, 136(3B), B864-B871.</li>
-</ol>
-<p>   DOI: <a href="https://doi.org/10.1103/PhysRev.136.B864">10.1103/PhysRev.136.B864</a></p>
+LDA/GGAの交換相関汎関数は<strong>局所的</strong>（または準局所的）であり、密度$n(\mathbf{r})$とその勾配$\nabla n(\mathbf{r})$だけで決まります。このため、遠距離の電子相関（van der Waals力）を記述できません。
 
-<ol>
-<li>Kohn, W., & Sham, L. J. (1965). "Self-Consistent Equations Including Exchange and Correlation Effects." <em>Physical Review</em>, 140(4A), A1133-A1138.</li>
-</ol>
-<p>   DOI: <a href="https://doi.org/10.1103/PhysRev.140.A1133">10.1103/PhysRev.140.A1133</a></p>
+結果として：
+- 層間の引力が過小評価される
+- 層間距離が実験値より大きくなる
+- 結合エネルギーが過小評価される
 
-<ol>
-<li>Perdew, J. P., Burke, K., & Ernzerhof, M. (1996). "Generalized Gradient Approximation Made Simple." <em>Physical Review Letters</em>, 77(18), 3865-3868.</li>
-</ol>
-<p>   DOI: <a href="https://doi.org/10.1103/PhysRevLett.77.3865">10.1103/PhysRevLett.77.3865</a></p>
+<strong>対策</strong>:
 
-<ol>
-<li>Martin, R. M. (2004). <em>Electronic Structure: Basic Theory and Practical Methods</em>. Cambridge University Press.</li>
-</ol>
+1. <strong>DFT-D3</strong>（Grimmeの分散補正）:
+   - 経験的な$C_6/r^6$項を追加
+   - パラメータは元素ごとに決定
+   - GPAWでの実装: <code>xc='PBE+D3'</code>
 
-<ol>
-<li>ASE Documentation: https://wiki.fysik.dtu.dk/ase/</li>
-<li>GPAW Documentation: https://wiki.fysik.dtu.dk/gpaw/</li>
-</ol>
+2. <strong>vdW-DF</strong>（van der Waals density functional）:
+   - 非局所相関汎関数
+   - 第一原理的（経験パラメータなし）
+   - GPAWでの実装: <code>xc='vdW-DF'</code> or <code>xc='vdW-DF2'</code>
 
-<p>---</p>
+3. <strong>計算例</strong>:
+<pre><code class="language-python">from ase.build import graphite
+from gpaw import GPAW, PW
 
-<p><h2>著者情報</h2></p>
+graphite = graphite(a=2.46, c=6.70)  # 初期構造
 
-<p><strong>作成者</strong>: MI Knowledge Hub Content Team</p>
-<p><strong>監修</strong>: Dr. Yusuke Hashimoto（東北大学）</p>
-<p><strong>作成日</strong>: 2025-10-17</p>
-<p><strong>バージョン</strong>: 1.0</p>
-<p><strong>シリーズ</strong>: 計算材料科学基礎入門 v1.0</p>
+<h1>PBEのみ</h1>
+calc_pbe = GPAW(mode=PW(400), xc='PBE', kpts=(8,8,4), txt='gr_pbe.txt')
+graphite.calc = calc_pbe
+E_pbe = graphite.get_potential_energy()
 
-<p><strong>ライセンス</strong>: Creative Commons BY-NC-SA 4.0</p>
+<h1>PBE + D3</h1>
+calc_d3 = GPAW(mode=PW(400), xc='PBE+D3', kpts=(8,8,4), txt='gr_d3.txt')
+graphite.calc = calc_d3
+E_d3 = graphite.get_potential_energy()
 
+print(f"PBE: E = {E_pbe:.3f} eV")
+print(f"PBE+D3: E = {E_d3:.3f} eV")
+print(f"vdW補正: {E_d3 - E_pbe:.3f} eV")</code></pre>
 
-        
-        <div class="navigation">
-            <a href="chapter-3.html" class="nav-button">次章: 第3章 →</a>
-            <a href="index.html" class="nav-button">← シリーズ目次に戻る</a>
-            <a href="chapter-1.html" class="nav-button">← 前章: 第1章</a>
-        </div>
-    
+vdW補正により層間距離が実験値（3.35 Å）に近づきます。
+
+</details>
+
+---
+
+<h2>参考文献</h2>
+
+1. Hohenberg, P., & Kohn, W. (1964). "Inhomogeneous Electron Gas." *Physical Review*, 136(3B), B864-B871.
+   DOI: [10.1103/PhysRev.136.B864](https://doi.org/10.1103/PhysRev.136.B864)
+
+2. Kohn, W., & Sham, L. J. (1965). "Self-Consistent Equations Including Exchange and Correlation Effects." *Physical Review*, 140(4A), A1133-A1138.
+   DOI: [10.1103/PhysRev.140.A1133](https://doi.org/10.1103/PhysRev.140.A1133)
+
+3. Perdew, J. P., Burke, K., & Ernzerhof, M. (1996). "Generalized Gradient Approximation Made Simple." *Physical Review Letters*, 77(18), 3865-3868.
+   DOI: [10.1103/PhysRevLett.77.3865](https://doi.org/10.1103/PhysRevLett.77.3865)
+
+4. Martin, R. M. (2004). *Electronic Structure: Basic Theory and Practical Methods*. Cambridge University Press.
+
+5. ASE Documentation: https://wiki.fysik.dtu.dk/ase/
+6. GPAW Documentation: https://wiki.fysik.dtu.dk/gpaw/
+
+---
+
+<h2>著者情報</h2>
+
+<strong>作成者</strong>: MI Knowledge Hub Content Team
+<strong>監修</strong>: Dr. Yusuke Hashimoto（東北大学）
+<strong>作成日</strong>: 2025-10-17
+<strong>バージョン</strong>: 1.0
+<strong>シリーズ</strong>: 計算材料科学基礎入門 v1.0
+
+<strong>ライセンス</strong>: Creative Commons BY-NC-SA 4.0
+<div class="navigation">
+    <a href="chapter-1.html" class="nav-button">← 第1章</a>
+    <a href="index.html" class="nav-button">シリーズ目次に戻る</a>
+    <a href="chapter-3.html" class="nav-button">第3章 →</a>
+</div>
     </main>
 
     <footer>
         <p><strong>作成者</strong>: AI Terakoya Content Team</p>
-        <p><strong>監修</strong>: Dr. Yusuke Hashimoto(東北大学)</p>
+        <p><strong>監修</strong>: Dr. Yusuke Hashimoto（東北大学）</p>
         <p><strong>バージョン</strong>: 1.0 | <strong>作成日</strong>: 2025-10-17</p>
         <p><strong>ライセンス</strong>: Creative Commons BY 4.0</p>
         <p>© 2025 AI Terakoya. All rights reserved.</p>

@@ -319,182 +319,193 @@
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         mermaid.initialize({ startOnLoad: true, theme: 'default' });
     </script>
+
+    <!-- MathJax for LaTeX equation rendering -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\(', '\)']],
+                displayMath: [['$$', '$$'], ['\[', '\]']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
 </head>
 <body>
     <header>
         <div class="header-content">
             <h1>第3章：ジョブスケジューリングと並列化（SLURM, PBS）</h1>
-            
+            <p class="subtitle"></p>
             <div class="meta">
                 <span class="meta-item">📖 読了時間: 25-30分</span>
-<span class="meta-item">📊 難易度: 上級</span>
+                <span class="meta-item">📊 難易度: 上級</span>
+                <span class="meta-item">💻 コード例: 5-6個</span>
+                <span class="meta-item">📝 演習問題: 0問</span>
             </div>
         </div>
     </header>
 
     <main class="container">
-        <h1>第3章：ジョブスケジューリングと並列化（SLURM, PBS）</h1>
+
+<h1>第3章：ジョブスケジューリングと並列化（SLURM, PBS）</h1>
 
 <h2>学習目標</h2>
 
-<p>この章を読むことで、以下を習得できます：</p>
+この章を読むことで、以下を習得できます：
 
-<ul>
-<li>✅ SLURMスクリプトを作成してジョブを投入できる</li>
-<li>✅ MPI並列計算の効率を評価できる</li>
-<li>✅ Pythonでジョブ管理スクリプトを書ける</li>
-<li>✅ 1000材料規模の並列計算を設計できる</li>
-<li>✅ ベンチマークによるチューニングができる</li>
-</ul>
+- ✅ SLURMスクリプトを作成してジョブを投入できる
+- ✅ MPI並列計算の効率を評価できる
+- ✅ Pythonでジョブ管理スクリプトを書ける
+- ✅ 1000材料規模の並列計算を設計できる
+- ✅ ベンチマークによるチューニングができる
 
-<p>---</p>
+---
 
 <h2>3.1 ジョブスケジューラの基礎</h2>
 
 <h3>SLURM vs PBS vs Torque</h3>
 
-<p>| 特徴 | SLURM | PBS Pro | Torque |</p>
-<p>|-----|-------|---------|--------|</p>
-<p>| 開発元 | SchedMD | Altair | Adaptive Computing |</p>
-<p>| ライセンス | GPL（一部商用） | 商用 | オープンソース |</p>
-<p>| 採用例 | TSUBAME、TOP500の多く | NASA、DOE国立研究所 | 多くの大学 |</p>
-<p>| コマンド | <code>sbatch</code>, <code>squeue</code> | <code>qsub</code>, <code>qstat</code> | <code>qsub</code>, <code>qstat</code> |</p>
-<p>| 推奨用途 | 大規模HPC | エンタープライズ | 中小規模HPC |</p>
+| 特徴 | SLURM | PBS Pro | Torque |
+|-----|-------|---------|--------|
+| 開発元 | SchedMD | Altair | Adaptive Computing |
+| ライセンス | GPL（一部商用） | 商用 | オープンソース |
+| 採用例 | TSUBAME、TOP500の多く | NASA、DOE国立研究所 | 多くの大学 |
+| コマンド | <code>sbatch</code>, <code>squeue</code> | <code>qsub</code>, <code>qstat</code> | <code>qsub</code>, <code>qstat</code> |
+| 推奨用途 | 大規模HPC | エンタープライズ | 中小規模HPC |
 
 <h3>SLURMの基本概念</h3>
 
-<pre><code class="language-mermaid">graph TD
-<p>A[ユーザー] -->|sbatch| B[ジョブキュー]</p>
-<p>B --> C{スケジューラ}</p>
-<p>C -->|リソース割当| D[計算ノード1]</p>
-<p>C -->|リソース割当| E[計算ノード2]</p>
-<p>C -->|リソース割当| F[計算ノードN]</p>
+<div class="mermaid">graph TD
+    A[ユーザー] -->|sbatch| B[ジョブキュー]
+    B --> C{スケジューラ}
+    C -->|リソース割当| D[計算ノード1]
+    C -->|リソース割当| E[計算ノード2]
+    C -->|リソース割当| F[計算ノードN]
 
-<p>D --> G[ジョブ完了]</p>
-<p>E --> G</p>
-<p>F --> G</p>
+    D --> G[ジョブ完了]
+    E --> G
+    F --> G
 
-<p>style C fill:#4ecdc4</p>
-</code></pre>
+    style C fill:#4ecdc4</div>
 
 <strong>主要コマンド</strong>:
 
 <pre><code class="language-bash"><h1>ジョブ投入</h1>
-<p>sbatch job.sh</p>
+sbatch job.sh
 
 <h1>ジョブ状態確認</h1>
-<p>squeue -u username</p>
+squeue -u username
 
 <h1>ジョブキャンセル</h1>
-<p>scancel job_id</p>
+scancel job_id
 
 <h1>ノード情報</h1>
-<p>sinfo</p>
+sinfo
 
 <h1>ジョブ詳細</h1>
-<p>scontrol show job job_id</p>
-</code></pre>
+scontrol show job job_id</code></pre>
 
-<p>---</p>
+---
 
 <h2>3.2 SLURMスクリプト作成</h2>
 
 <h3>基本的なSLURMスクリプト</h3>
 
 <pre><code class="language-bash">#!/bin/bash
-<p>#SBATCH --job-name=vasp_relax       # ジョブ名</p>
-<p>#SBATCH --output=slurm-%j.out       # 標準出力（%j=ジョブID）</p>
-<p>#SBATCH --error=slurm-%j.err        # 標準エラー</p>
-<p>#SBATCH --nodes=1                   # ノード数</p>
-<p>#SBATCH --ntasks-per-node=48        # ノードあたりMPIプロセス数</p>
-<p>#SBATCH --cpus-per-task=1           # タスクあたりスレッド数</p>
-<p>#SBATCH --time=24:00:00             # 時間制限（24時間）</p>
-<p>#SBATCH --partition=standard        # パーティション（キュー）</p>
-<p>#SBATCH --account=project_name      # プロジェクト名</p>
+#SBATCH --job-name=vasp_relax       # ジョブ名
+#SBATCH --output=slurm-%j.out       # 標準出力（%j=ジョブID）
+#SBATCH --error=slurm-%j.err        # 標準エラー
+#SBATCH --nodes=1                   # ノード数
+#SBATCH --ntasks-per-node=48        # ノードあたりMPIプロセス数
+#SBATCH --cpus-per-task=1           # タスクあたりスレッド数
+#SBATCH --time=24:00:00             # 時間制限（24時間）
+#SBATCH --partition=standard        # パーティション（キュー）
+#SBATCH --account=project_name      # プロジェクト名
 
 <h1>環境設定</h1>
-<p>module purge</p>
-<p>module load intel/2021.2</p>
-<p>module load vasp/6.3.0</p>
+module purge
+module load intel/2021.2
+module load vasp/6.3.0
 
 <h1>作業ディレクトリ</h1>
-<p>cd $SLURM_SUBMIT_DIR</p>
+cd $SLURM_SUBMIT_DIR
 
 <h1>VASP実行</h1>
-<p>echo "ジョブ開始: $(date)"</p>
-<p>echo "ホスト: $(hostname)"</p>
-<p>echo "ノード数: $SLURM_JOB_NUM_NODES"</p>
-<p>echo "プロセス数: $SLURM_NTASKS"</p>
+echo "ジョブ開始: $(date)"
+echo "ホスト: $(hostname)"
+echo "ノード数: $SLURM_JOB_NUM_NODES"
+echo "プロセス数: $SLURM_NTASKS"
 
-<p>mpirun -np $SLURM_NTASKS vasp_std</p>
+mpirun -np $SLURM_NTASKS vasp_std
 
-<p>echo "ジョブ終了: $(date)"</p>
-</code></pre>
+echo "ジョブ終了: $(date)"</code></pre>
 
 <h3>アレイジョブによる並列実行</h3>
 
 <strong>100材料を並列計算</strong>:
 
 <pre><code class="language-bash">#!/bin/bash
-<p>#SBATCH --job-name=vasp_array</p>
-<p>#SBATCH --output=logs/slurm-%A_%a.out  # %A=アレイジョブID, %a=タスクID</p>
-<p>#SBATCH --error=logs/slurm-%A_%a.err</p>
-<p>#SBATCH --nodes=1</p>
-<p>#SBATCH --ntasks-per-node=48</p>
-<p>#SBATCH --time=24:00:00</p>
-<p>#SBATCH --array=1-100%10              # 1-100のタスク、同時10個まで</p>
+#SBATCH --job-name=vasp_array
+#SBATCH --output=logs/slurm-%A_%a.out  # %A=アレイジョブID, %a=タスクID
+#SBATCH --error=logs/slurm-%A_%a.err
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=48
+#SBATCH --time=24:00:00
+#SBATCH --array=1-100%10              # 1-100のタスク、同時10個まで
 
 <h1>環境設定</h1>
-<p>module load vasp/6.3.0</p>
+module load vasp/6.3.0
 
 <h1>材料リスト読み込み</h1>
-<p>MATERIAL_LIST="materials.txt"</p>
-<p>MATERIAL=$(sed -n "${SLURM_ARRAY_TASK_ID}p" $MATERIAL_LIST)</p>
+MATERIAL_LIST="materials.txt"
+MATERIAL=$(sed -n "${SLURM_ARRAY_TASK_ID}p" $MATERIAL_LIST)
 
-<p>echo "処理中: タスクID=${SLURM_ARRAY_TASK_ID}, 材料=${MATERIAL}"</p>
+echo "処理中: タスクID=${SLURM_ARRAY_TASK_ID}, 材料=${MATERIAL}"
 
 <h1>作業ディレクトリ</h1>
-<p>WORK_DIR="calculations/${MATERIAL}"</p>
-<p>cd $WORK_DIR</p>
+WORK_DIR="calculations/${MATERIAL}"
+cd $WORK_DIR
 
 <h1>VASP実行</h1>
-<p>mpirun -np 48 vasp_std</p>
+mpirun -np 48 vasp_std
 
 <h1>収束チェック</h1>
-<p>if grep -q "reached required accuracy" OUTCAR; then</p>
-<p>echo "SUCCESS: ${MATERIAL}" >> ../completed.log</p>
-<p>else</p>
-<p>echo "FAILED: ${MATERIAL}" >> ../failed.log</p>
-<p>fi</p>
-</code></pre>
+if grep -q "reached required accuracy" OUTCAR; then
+    echo "SUCCESS: ${MATERIAL}" >> ../completed.log
+else
+    echo "FAILED: ${MATERIAL}" >> ../failed.log
+fi</code></pre>
 
 <strong>materials.txt</strong>の例:
-<pre><code class="language-">LiCoO2
-<p>LiNiO2</p>
-<p>LiMnO2</p>
-<p>LiFePO4</p>
-<p>...（100行）</p>
-</code></pre>
+<pre><code>LiCoO2
+LiNiO2
+LiMnO2
+LiFePO4
+...（100行）</code></pre>
 
 <h3>依存関係のあるジョブチェーン</h3>
 
 <pre><code class="language-bash"><h1>Step 1: 構造最適化</h1>
-<p>JOB1=$(sbatch --parsable relax.sh)</p>
-<p>echo "構造最適化ジョブID: $JOB1"</p>
+JOB1=$(sbatch --parsable relax.sh)
+echo "構造最適化ジョブID: $JOB1"
 
 <h1>Step 2: 静的計算（構造最適化後に実行）</h1>
-<p>JOB2=$(sbatch --parsable --dependency=afterok:$JOB1 static.sh)</p>
-<p>echo "静的計算ジョブID: $JOB2"</p>
+JOB2=$(sbatch --parsable --dependency=afterok:$JOB1 static.sh)
+echo "静的計算ジョブID: $JOB2"
 
 <h1>Step 3: バンド構造（静的計算後に実行）</h1>
-<p>JOB3=$(sbatch --parsable --dependency=afterok:$JOB2 band.sh)</p>
-<p>echo "バンド構造ジョブID: $JOB3"</p>
+JOB3=$(sbatch --parsable --dependency=afterok:$JOB2 band.sh)
+echo "バンド構造ジョブID: $JOB3"
 
 <h1>Step 4: データ解析（全て完了後）</h1>
-<p>sbatch --dependency=afterok:$JOB3 analysis.sh</p>
-</code></pre>
+sbatch --dependency=afterok:$JOB3 analysis.sh</code></pre>
 
-<p>---</p>
+---
 
 <h2>3.3 MPIによる並列計算</h2>
 
@@ -506,346 +517,341 @@
 
 <h1>2. データ並列（VASP: KPAR設定）</h1>
 <h1>k-pointを4グループに分割</h1>
-<p>INCAR: KPAR = 4</p>
+INCAR: KPAR = 4
 <h1>スケーリング効率: 80-90%</h1>
 
 <h1>3. MPI並列（プロセス間通信）</h1>
 <h1>1計算を48コアで分散</h1>
-<p>mpirun -np 48 vasp_std</p>
-<h1>スケーリング効率: 50-70%</h1>
-</code></pre>
+mpirun -np 48 vasp_std
+<h1>スケーリング効率: 50-70%</h1></code></pre>
 
 <h3>スケーリング効率の測定</h3>
 
 <pre><code class="language-python">import subprocess
-<p>import time</p>
-<p>import numpy as np</p>
-<p>import matplotlib.pyplot as plt</p>
+import time
+import numpy as np
+import matplotlib.pyplot as plt
 
-<p>def benchmark_scaling(structure, core_counts=[1, 2, 4, 8, 16, 32, 48]):</p>
-<p>"""</p>
-<p>並列化効率をベンチマーク</p>
+def benchmark_scaling(structure, core_counts=[1, 2, 4, 8, 16, 32, 48]):
+    """
+    並列化効率をベンチマーク
 
-<p>Parameters:</p>
-<p>-----------</p>
-<p>structure : str</p>
-<p>テスト構造</p>
-<p>core_counts : list</p>
-<p>テストするコア数</p>
+    Parameters:
+    -----------
+    structure : str
+        テスト構造
+    core_counts : list
+        テストするコア数
 
-<p>Returns:</p>
-<p>--------</p>
-<p>efficiency : dict</p>
-<p>コア数ごとの効率</p>
-<p>"""</p>
-<p>timings = {}</p>
+    Returns:
+    --------
+    efficiency : dict
+        コア数ごとの効率
+    """
+    timings = {}
 
-<p>for n_cores in core_counts:</p>
-<p># VASP実行</p>
-<p>start = time.time()</p>
+    for n_cores in core_counts:
+        # VASP実行
+        start = time.time()
 
-<p>result = subprocess.run(</p>
-<p>[f"mpirun -np {n_cores} vasp_std"],</p>
-<p>shell=True,</p>
-<p>cwd=f"benchmark_{n_cores}cores"</p>
-<p>)</p>
+        result = subprocess.run(
+            [f"mpirun -np {n_cores} vasp_std"],
+            shell=True,
+            cwd=f"benchmark_{n_cores}cores"
+        )
 
-<p>elapsed = time.time() - start</p>
-<p>timings[n_cores] = elapsed</p>
+        elapsed = time.time() - start
+        timings[n_cores] = elapsed
 
-<p>print(f"{n_cores}コア: {elapsed:.1f}秒")</p>
+        print(f"{n_cores}コア: {elapsed:.1f}秒")
 
-<p># 効率計算</p>
-<p>base_time = timings[1]</p>
-<p>efficiency = {}</p>
+    # 効率計算
+    base_time = timings[1]
+    efficiency = {}
 
-<p>for n_cores, t in timings.items():</p>
-<p>ideal_time = base_time / n_cores</p>
-<p>actual_speedup = base_time / t</p>
-<p>ideal_speedup = n_cores</p>
+    for n_cores, t in timings.items():
+        ideal_time = base_time / n_cores
+        actual_speedup = base_time / t
+        ideal_speedup = n_cores
 
-<p>eff = (actual_speedup / ideal_speedup) * 100</p>
-<p>efficiency[n_cores] = eff</p>
+        eff = (actual_speedup / ideal_speedup) * 100
+        efficiency[n_cores] = eff
 
-<p>return efficiency, timings</p>
+    return efficiency, timings
 
 <h1>結果プロット</h1>
-<p>def plot_scaling(efficiency, timings):</p>
-<p>fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))</p>
+def plot_scaling(efficiency, timings):
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
 
-<p>cores = list(timings.keys())</p>
-<p>times = list(timings.values())</p>
-<p>effs = [efficiency[c] for c in cores]</p>
+    cores = list(timings.keys())
+    times = list(timings.values())
+    effs = [efficiency[c] for c in cores]
 
-<p># スピードアップ</p>
-<p>ax1.plot(cores, [timings[1]/t for t in times], 'o-', label='実測')</p>
-<p>ax1.plot(cores, cores, '--', label='理想（線形）')</p>
-<p>ax1.set_xlabel('コア数')</p>
-<p>ax1.set_ylabel('スピードアップ')</p>
-<p>ax1.set_xscale('log', base=2)</p>
-<p>ax1.set_yscale('log', base=2)</p>
-<p>ax1.legend()</p>
-<p>ax1.grid(True)</p>
+    # スピードアップ
+    ax1.plot(cores, [timings[1]/t for t in times], 'o-', label='実測')
+    ax1.plot(cores, cores, '--', label='理想（線形）')
+    ax1.set_xlabel('コア数')
+    ax1.set_ylabel('スピードアップ')
+    ax1.set_xscale('log', base=2)
+    ax1.set_yscale('log', base=2)
+    ax1.legend()
+    ax1.grid(True)
 
-<p># 効率</p>
-<p>ax2.plot(cores, effs, 'o-', color='green')</p>
-<p>ax2.axhline(y=80, color='red', linestyle='--', label='80%目標')</p>
-<p>ax2.set_xlabel('コア数')</p>
-<p>ax2.set_ylabel('並列化効率 (%)')</p>
-<p>ax2.set_xscale('log', base=2)</p>
-<p>ax2.legend()</p>
-<p>ax2.grid(True)</p>
+    # 効率
+    ax2.plot(cores, effs, 'o-', color='green')
+    ax2.axhline(y=80, color='red', linestyle='--', label='80%目標')
+    ax2.set_xlabel('コア数')
+    ax2.set_ylabel('並列化効率 (%)')
+    ax2.set_xscale('log', base=2)
+    ax2.legend()
+    ax2.grid(True)
 
-<p>plt.tight_layout()</p>
-<p>plt.savefig('scaling_benchmark.png', dpi=300)</p>
-<p>plt.show()</p>
-</code></pre>
+    plt.tight_layout()
+    plt.savefig('scaling_benchmark.png', dpi=300)
+    plt.show()</code></pre>
 
 <h3>VASPの並列化パラメータ最適化</h3>
 
 <pre><code class="language-python">def optimize_vasp_parallelization(n_kpoints, n_bands, n_cores=48):
-<p>"""</p>
-<p>VASP並列化パラメータの最適化</p>
+    """
+    VASP並列化パラメータの最適化
 
-<p>Parameters:</p>
-<p>-----------</p>
-<p>n_kpoints : int</p>
-<p>k-point数</p>
-<p>n_bands : int</p>
-<p>バンド数</p>
-<p>n_cores : int</p>
-<p>利用可能なコア数</p>
+    Parameters:
+    -----------
+    n_kpoints : int
+        k-point数
+    n_bands : int
+        バンド数
+    n_cores : int
+        利用可能なコア数
 
-<p>Returns:</p>
-<p>--------</p>
-<p>params : dict</p>
-<p>最適パラメータ</p>
-<p>"""</p>
-<p># KPAR: k-point並列（最も効率的）</p>
-<p># 2の累乗で、k-point数の約数</p>
-<p>kpar_options = [1, 2, 4, 8, 16]</p>
-<p>valid_kpar = [k for k in kpar_options if n_kpoints % k == 0 and k <= n_cores]</p>
+    Returns:
+    --------
+    params : dict
+        最適パラメータ
+    """
+    # KPAR: k-point並列（最も効率的）
+    # 2の累乗で、k-point数の約数
+    kpar_options = [1, 2, 4, 8, 16]
+    valid_kpar = [k for k in kpar_options if n_kpoints % k == 0 and k <= n_cores]
 
-<p># NCORE: バンド並列</p>
-<p># 通常4-8が最適</p>
-<p>ncore = min(4, n_cores // max(valid_kpar))</p>
+    # NCORE: バンド並列
+    # 通常4-8が最適
+    ncore = min(4, n_cores // max(valid_kpar))
 
-<p># 推奨設定</p>
-<p>recommended = {</p>
-<p>'KPAR': max(valid_kpar),</p>
-<p>'NCORE': ncore,</p>
-<p>'cores_per_kpar_group': n_cores // max(valid_kpar),</p>
-<p>}</p>
+    # 推奨設定
+    recommended = {
+        'KPAR': max(valid_kpar),
+        'NCORE': ncore,
+        'cores_per_kpar_group': n_cores // max(valid_kpar),
+    }
 
-<p>print("並列化パラメータ推奨値:")</p>
-<p>print(f"  KPAR = {recommended['KPAR']} (k-point並列)")</p>
-<p>print(f"  NCORE = {recommended['NCORE']} (バンド並列)")</p>
-<p>print(f"  1 KPARグループあたり{recommended['cores_per_kpar_group']}コア")</p>
+    print("並列化パラメータ推奨値:")
+    print(f"  KPAR = {recommended['KPAR']} (k-point並列)")
+    print(f"  NCORE = {recommended['NCORE']} (バンド並列)")
+    print(f"  1 KPARグループあたり{recommended['cores_per_kpar_group']}コア")
 
-<p>return recommended</p>
+    return recommended
 
 <h1>使用例</h1>
-<p>params = optimize_vasp_parallelization(n_kpoints=64, n_bands=200, n_cores=48)</p>
+params = optimize_vasp_parallelization(n_kpoints=64, n_bands=200, n_cores=48)
 <h1>推奨:</h1>
 <h1>  KPAR = 16 (k-point並列)</h1>
 <h1>  NCORE = 3 (バンド並列)</h1>
-<h1>  1 KPARグループあたり3コア</h1>
-</code></pre>
+<h1>  1 KPARグループあたり3コア</h1></code></pre>
 
-<p>---</p>
+---
 
 <h2>3.4 Pythonによるジョブ管理</h2>
 
 <h3>ジョブ投入と監視</h3>
 
 <pre><code class="language-python">import subprocess
-<p>import time</p>
-<p>import re</p>
+import time
+import re
 
-<p>class SLURMJobManager:</p>
-<p>"""SLURMジョブ管理クラス"""</p>
+class SLURMJobManager:
+    """SLURMジョブ管理クラス"""
 
-<p>def submit_job(self, script_path):</p>
-<p>"""</p>
-<p>ジョブを投入</p>
+    def submit_job(self, script_path):
+        """
+        ジョブを投入
 
-<p>Returns:</p>
-<p>--------</p>
-<p>job_id : int</p>
-<p>ジョブID</p>
-<p>"""</p>
-<p>result = subprocess.run(</p>
-<p>['sbatch', script_path],</p>
-<p>capture_output=True,</p>
-<p>text=True</p>
-<p>)</p>
+        Returns:
+        --------
+        job_id : int
+            ジョブID
+        """
+        result = subprocess.run(
+            ['sbatch', script_path],
+            capture_output=True,
+            text=True
+        )
 
-<p># "Submitted batch job 12345"からIDを抽出</p>
-<p>match = re.search(r'(\d+)', result.stdout)</p>
-<p>if match:</p>
-<p>job_id = int(match.group(1))</p>
-<p>print(f"ジョブ投入: ID={job_id}")</p>
-<p>return job_id</p>
-<p>else:</p>
-<p>raise RuntimeError(f"ジョブ投入失敗: {result.stderr}")</p>
+        # "Submitted batch job 12345"からIDを抽出
+        match = re.search(r'(\d+)', result.stdout)
+        if match:
+            job_id = int(match.group(1))
+            print(f"ジョブ投入: ID={job_id}")
+            return job_id
+        else:
+            raise RuntimeError(f"ジョブ投入失敗: {result.stderr}")
 
-<p>def get_job_status(self, job_id):</p>
-<p>"""</p>
-<p>ジョブ状態を取得</p>
+    def get_job_status(self, job_id):
+        """
+        ジョブ状態を取得
 
-<p>Returns:</p>
-<p>--------</p>
-<p>status : str</p>
-<p>'PENDING', 'RUNNING', 'COMPLETED', 'FAILED', 'CANCELLED'</p>
-<p>"""</p>
-<p>result = subprocess.run(</p>
-<p>['squeue', '-j', str(job_id), '-h', '-o', '%T'],</p>
-<p>capture_output=True,</p>
-<p>text=True</p>
-<p>)</p>
+        Returns:
+        --------
+        status : str
+            'PENDING', 'RUNNING', 'COMPLETED', 'FAILED', 'CANCELLED'
+        """
+        result = subprocess.run(
+            ['squeue', '-j', str(job_id), '-h', '-o', '%T'],
+            capture_output=True,
+            text=True
+        )
 
-<p>if result.stdout.strip():</p>
-<p>return result.stdout.strip()</p>
-<p>else:</p>
-<p># キューにない → 完了または失敗</p>
-<p>result = subprocess.run(</p>
-<p>['sacct', '-j', str(job_id), '-X', '-n', '-o', 'State'],</p>
-<p>capture_output=True,</p>
-<p>text=True</p>
-<p>)</p>
-<p>return result.stdout.strip()</p>
+        if result.stdout.strip():
+            return result.stdout.strip()
+        else:
+            # キューにない → 完了または失敗
+            result = subprocess.run(
+                ['sacct', '-j', str(job_id), '-X', '-n', '-o', 'State'],
+                capture_output=True,
+                text=True
+            )
+            return result.stdout.strip()
 
-<p>def wait_for_completion(self, job_id, check_interval=60):</p>
-<p>"""</p>
-<p>ジョブ完了を待機</p>
+    def wait_for_completion(self, job_id, check_interval=60):
+        """
+        ジョブ完了を待機
 
-<p>Parameters:</p>
-<p>-----------</p>
-<p>job_id : int</p>
-<p>ジョブID</p>
-<p>check_interval : int</p>
-<p>チェック間隔（秒）</p>
-<p>"""</p>
-<p>while True:</p>
-<p>status = self.get_job_status(job_id)</p>
+        Parameters:
+        -----------
+        job_id : int
+            ジョブID
+        check_interval : int
+            チェック間隔（秒）
+        """
+        while True:
+            status = self.get_job_status(job_id)
 
-<p>if status in ['COMPLETED', 'FAILED', 'CANCELLED']:</p>
-<p>print(f"ジョブ{job_id}: {status}")</p>
-<p>return status</p>
+            if status in ['COMPLETED', 'FAILED', 'CANCELLED']:
+                print(f"ジョブ{job_id}: {status}")
+                return status
 
-<p>print(f"ジョブ{job_id}: {status}...待機中")</p>
-<p>time.sleep(check_interval)</p>
+            print(f"ジョブ{job_id}: {status}...待機中")
+            time.sleep(check_interval)
 
-<p>def submit_array_job(self, script_path, n_tasks, max_concurrent=10):</p>
-<p>"""</p>
-<p>アレイジョブを投入</p>
+    def submit_array_job(self, script_path, n_tasks, max_concurrent=10):
+        """
+        アレイジョブを投入
 
-<p>Parameters:</p>
-<p>-----------</p>
-<p>n_tasks : int</p>
-<p>タスク数</p>
-<p>max_concurrent : int</p>
-<p>同時実行数</p>
-<p>"""</p>
-<p>result = subprocess.run(</p>
-<p>['sbatch', f'--array=1-{n_tasks}%{max_concurrent}', script_path],</p>
-<p>capture_output=True,</p>
-<p>text=True</p>
-<p>)</p>
+        Parameters:
+        -----------
+        n_tasks : int
+            タスク数
+        max_concurrent : int
+            同時実行数
+        """
+        result = subprocess.run(
+            ['sbatch', f'--array=1-{n_tasks}%{max_concurrent}', script_path],
+            capture_output=True,
+            text=True
+        )
 
-<p>match = re.search(r'(\d+)', result.stdout)</p>
-<p>if match:</p>
-<p>job_id = int(match.group(1))</p>
-<p>print(f"アレイジョブ投入: ID={job_id}, タスク数={n_tasks}")</p>
-<p>return job_id</p>
-<p>else:</p>
-<p>raise RuntimeError(f"投入失敗: {result.stderr}")</p>
+        match = re.search(r'(\d+)', result.stdout)
+        if match:
+            job_id = int(match.group(1))
+            print(f"アレイジョブ投入: ID={job_id}, タスク数={n_tasks}")
+            return job_id
+        else:
+            raise RuntimeError(f"投入失敗: {result.stderr}")
 
 <h1>使用例</h1>
-<p>manager = SLURMJobManager()</p>
+manager = SLURMJobManager()
 
 <h1>単一ジョブ</h1>
-<p>job_id = manager.submit_job('relax.sh')</p>
-<p>status = manager.wait_for_completion(job_id)</p>
+job_id = manager.submit_job('relax.sh')
+status = manager.wait_for_completion(job_id)
 
 <h1>アレイジョブ</h1>
-<p>array_id = manager.submit_array_job('array_job.sh', n_tasks=100, max_concurrent=20)</p>
-</code></pre>
+array_id = manager.submit_array_job('array_job.sh', n_tasks=100, max_concurrent=20)</code></pre>
 
 <h3>大規模ジョブ管理（1000材料）</h3>
 
 <pre><code class="language-python">import os
-<p>from pathlib import Path</p>
-<p>import json</p>
+from pathlib import Path
+import json
 
-<p>def manage_large_scale_calculation(materials, batch_size=100):</p>
-<p>"""</p>
-<p>1000材料を効率的に管理</p>
+def manage_large_scale_calculation(materials, batch_size=100):
+    """
+    1000材料を効率的に管理
 
-<p>Parameters:</p>
-<p>-----------</p>
-<p>materials : list</p>
-<p>材料のリスト</p>
-<p>batch_size : int</p>
-<p>バッチサイズ</p>
-<p>"""</p>
-<p>manager = SLURMJobManager()</p>
-<p>n_materials = len(materials)</p>
+    Parameters:
+    -----------
+    materials : list
+        材料のリスト
+    batch_size : int
+        バッチサイズ
+    """
+    manager = SLURMJobManager()
+    n_materials = len(materials)
 
-<p>print(f"総材料数: {n_materials}")</p>
-<p>print(f"バッチサイズ: {batch_size}")</p>
+    print(f"総材料数: {n_materials}")
+    print(f"バッチサイズ: {batch_size}")
 
-<p># バッチに分割</p>
-<p>n_batches = (n_materials + batch_size - 1) // batch_size</p>
-<p>print(f"バッチ数: {n_batches}")</p>
+    # バッチに分割
+    n_batches = (n_materials + batch_size - 1) // batch_size
+    print(f"バッチ数: {n_batches}")
 
-<p>job_ids = []</p>
+    job_ids = []
 
-<p>for batch_idx in range(n_batches):</p>
-<p>start_idx = batch_idx * batch_size</p>
-<p>end_idx = min((batch_idx + 1) * batch_size, n_materials)</p>
-<p>batch_materials = materials[start_idx:end_idx]</p>
+    for batch_idx in range(n_batches):
+        start_idx = batch_idx * batch_size
+        end_idx = min((batch_idx + 1) * batch_size, n_materials)
+        batch_materials = materials[start_idx:end_idx]
 
-<p>print(f"\nバッチ {batch_idx+1}/{n_batches}")</p>
-<p>print(f"  材料数: {len(batch_materials)}")</p>
+        print(f"\nバッチ {batch_idx+1}/{n_batches}")
+        print(f"  材料数: {len(batch_materials)}")
 
-<p># バッチ用材料リスト作成</p>
-<p>list_file = f"batch_{batch_idx+1}_materials.txt"</p>
-<p>with open(list_file, 'w') as f:</p>
-<p>for mat in batch_materials:</p>
-<p>f.write(f"{mat}\n")</p>
+        # バッチ用材料リスト作成
+        list_file = f"batch_{batch_idx+1}_materials.txt"
+        with open(list_file, 'w') as f:
+            for mat in batch_materials:
+                f.write(f"{mat}\n")
 
-<p># アレイジョブ投入</p>
-<p>job_id = manager.submit_array_job(</p>
-<p>'vasp_array.sh',</p>
-<p>n_tasks=len(batch_materials),</p>
-<p>max_concurrent=20</p>
-<p>)</p>
+        # アレイジョブ投入
+        job_id = manager.submit_array_job(
+            'vasp_array.sh',
+            n_tasks=len(batch_materials),
+            max_concurrent=20
+        )
 
-<p>job_ids.append(job_id)</p>
+        job_ids.append(job_id)
 
-<p># 進捗監視</p>
-<p>print("\n進捗監視中...")</p>
-<p>completed = 0</p>
+    # 進捗監視
+    print("\n進捗監視中...")
+    completed = 0
 
-<p>while completed < len(job_ids):</p>
-<p>time.sleep(300)  # 5分ごとにチェック</p>
+    while completed < len(job_ids):
+        time.sleep(300)  # 5分ごとにチェック
 
-<p>for i, job_id in enumerate(job_ids):</p>
-<p>status = manager.get_job_status(job_id)</p>
+        for i, job_id in enumerate(job_ids):
+            status = manager.get_job_status(job_id)
 
-<p>if status == 'COMPLETED' and i not in completed_jobs:</p>
-<p>completed += 1</p>
-<p>print(f"バッチ {i+1} 完了 ({completed}/{len(job_ids)})")</p>
+            if status == 'COMPLETED' and i not in completed_jobs:
+                completed += 1
+                print(f"バッチ {i+1} 完了 ({completed}/{len(job_ids)})")
 
-<p>print("全バッチ完了！")</p>
+    print("全バッチ完了！")
 
 <h1>使用例</h1>
-<p>materials = [f"material_{i:04d}" for i in range(1, 1001)]</p>
-<p>manage_large_scale_calculation(materials, batch_size=100)</p>
-</code></pre>
+materials = [f"material_{i:04d}" for i in range(1, 1001)]
+manage_large_scale_calculation(materials, batch_size=100)</code></pre>
 
-<p>---</p>
+---
 
 <h2>3.5 演習問題</h2>
 
@@ -853,32 +859,29 @@
 
 <strong>問題</strong>: 以下の条件でSLURMスクリプトを作成してください：
 
-<ul>
-<li>ジョブ名: <code>si_bandgap</code></li>
-<li>ノード数: 2</li>
-<li>ノードあたりプロセス数: 24</li>
-<li>時間制限: 12時間</li>
-<li>パーティション: <code>gpu</code></li>
-</ul>
+- ジョブ名: <code>si_bandgap</code>
+- ノード数: 2
+- ノードあたりプロセス数: 24
+- 時間制限: 12時間
+- パーティション: <code>gpu</code>
 
 <details>
 <summary>解答例</summary>
 
 <pre><code class="language-bash">#!/bin/bash
-<p>#SBATCH --job-name=si_bandgap</p>
-<p>#SBATCH --output=slurm-%j.out</p>
-<p>#SBATCH --error=slurm-%j.err</p>
-<p>#SBATCH --nodes=2</p>
-<p>#SBATCH --ntasks-per-node=24</p>
-<p>#SBATCH --time=12:00:00</p>
-<p>#SBATCH --partition=gpu</p>
+#SBATCH --job-name=si_bandgap
+#SBATCH --output=slurm-%j.out
+#SBATCH --error=slurm-%j.err
+#SBATCH --nodes=2
+#SBATCH --ntasks-per-node=24
+#SBATCH --time=12:00:00
+#SBATCH --partition=gpu
 
-<p>module load vasp/6.3.0</p>
+module load vasp/6.3.0
 
-<p>cd $SLURM_SUBMIT_DIR</p>
+cd $SLURM_SUBMIT_DIR
 
-<p>mpirun -np 48 vasp_std</p>
-</code></pre>
+mpirun -np 48 vasp_std</code></pre>
 
 </details>
 
@@ -890,22 +893,21 @@
 <summary>解答例</summary>
 
 <pre><code class="language-bash">#!/bin/bash
-<p>#SBATCH --job-name=relax_array</p>
-<p>#SBATCH --output=logs/slurm-%A_%a.out</p>
-<p>#SBATCH --error=logs/slurm-%A_%a.err</p>
-<p>#SBATCH --nodes=1</p>
-<p>#SBATCH --ntasks-per-node=48</p>
-<p>#SBATCH --time=24:00:00</p>
-<p>#SBATCH --array=1-50%10</p>
+#SBATCH --job-name=relax_array
+#SBATCH --output=logs/slurm-%A_%a.out
+#SBATCH --error=logs/slurm-%A_%a.err
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=48
+#SBATCH --time=24:00:00
+#SBATCH --array=1-50%10
 
-<p>module load vasp/6.3.0</p>
+module load vasp/6.3.0
 
-<p>MATERIAL=$(sed -n "${SLURM_ARRAY_TASK_ID}p" materials.txt)</p>
+MATERIAL=$(sed -n "${SLURM_ARRAY_TASK_ID}p" materials.txt)
 
-<p>cd calculations/${MATERIAL}</p>
+cd calculations/${MATERIAL}
 
-<p>mpirun -np 48 vasp_std</p>
-</code></pre>
+mpirun -np 48 vasp_std</code></pre>
 
 </details>
 
@@ -913,149 +915,143 @@
 
 <strong>問題</strong>: Pythonで、1000材料のVASP計算を管理するスクリプトを作成してください。要件：
 
-<ol>
-<li>50材料ずつバッチ処理</li>
-<li>各バッチは20タスク同時実行</li>
-<li>完了・失敗をログ記録</li>
-<li>失敗したタスクを自動リトライ</li>
-</ol>
+1. 50材料ずつバッチ処理
+2. 各バッチは20タスク同時実行
+3. 完了・失敗をログ記録
+4. 失敗したタスクを自動リトライ
 
 <details>
 <summary>解答例</summary>
 
 <pre><code class="language-python">import os
-<p>import time</p>
-<p>import json</p>
-<p>from pathlib import Path</p>
+import time
+import json
+from pathlib import Path
 
-<p>class HighThroughputManager:</p>
-<p>def __init__(self, materials, batch_size=50, max_concurrent=20):</p>
-<p>self.materials = materials</p>
-<p>self.batch_size = batch_size</p>
-<p>self.max_concurrent = max_concurrent</p>
-<p>self.manager = SLURMJobManager()</p>
+class HighThroughputManager:
+    def __init__(self, materials, batch_size=50, max_concurrent=20):
+        self.materials = materials
+        self.batch_size = batch_size
+        self.max_concurrent = max_concurrent
+        self.manager = SLURMJobManager()
 
-<p>self.results = {</p>
-<p>'completed': [],</p>
-<p>'failed': [],</p>
-<p>'retry': []</p>
-<p>}</p>
+        self.results = {
+            'completed': [],
+            'failed': [],
+            'retry': []
+        }
 
-<p>def run_batch(self, batch_materials, batch_id):</p>
-<p>"""バッチ実行"""</p>
-<p># 材料リスト作成</p>
-<p>list_file = f"batch_{batch_id}.txt"</p>
-<p>with open(list_file, 'w') as f:</p>
-<p>for mat in batch_materials:</p>
-<p>f.write(f"{mat}\n")</p>
+    def run_batch(self, batch_materials, batch_id):
+        """バッチ実行"""
+        # 材料リスト作成
+        list_file = f"batch_{batch_id}.txt"
+        with open(list_file, 'w') as f:
+            for mat in batch_materials:
+                f.write(f"{mat}\n")
 
-<p># ジョブ投入</p>
-<p>job_id = self.manager.submit_array_job(</p>
-<p>'vasp_array.sh',</p>
-<p>n_tasks=len(batch_materials),</p>
-<p>max_concurrent=self.max_concurrent</p>
-<p>)</p>
+        # ジョブ投入
+        job_id = self.manager.submit_array_job(
+            'vasp_array.sh',
+            n_tasks=len(batch_materials),
+            max_concurrent=self.max_concurrent
+        )
 
-<p># 完了待ち</p>
-<p>status = self.manager.wait_for_completion(job_id)</p>
+        # 完了待ち
+        status = self.manager.wait_for_completion(job_id)
 
-<p># 結果チェック</p>
-<p>self.check_results(batch_materials, batch_id)</p>
+        # 結果チェック
+        self.check_results(batch_materials, batch_id)
 
-<p>def check_results(self, batch_materials, batch_id):</p>
-<p>"""結果確認"""</p>
-<p>for mat in batch_materials:</p>
-<p>outcar = f"calculations/{mat}/OUTCAR"</p>
+    def check_results(self, batch_materials, batch_id):
+        """結果確認"""
+        for mat in batch_materials:
+            outcar = f"calculations/{mat}/OUTCAR"
 
-<p>if not os.path.exists(outcar):</p>
-<p>self.results['failed'].append(mat)</p>
-<p>continue</p>
+            if not os.path.exists(outcar):
+                self.results['failed'].append(mat)
+                continue
 
-<p>with open(outcar, 'r') as f:</p>
-<p>content = f.read()</p>
-<p>if 'reached required accuracy' in content:</p>
-<p>self.results['completed'].append(mat)</p>
-<p>else:</p>
-<p>self.results['failed'].append(mat)</p>
+            with open(outcar, 'r') as f:
+                content = f.read()
+                if 'reached required accuracy' in content:
+                    self.results['completed'].append(mat)
+                else:
+                    self.results['failed'].append(mat)
 
-<p># ログ保存</p>
-<p>with open(f'batch_{batch_id}_results.json', 'w') as f:</p>
-<p>json.dump(self.results, f, indent=2)</p>
+        # ログ保存
+        with open(f'batch_{batch_id}_results.json', 'w') as f:
+            json.dump(self.results, f, indent=2)
 
-<p>def retry_failed(self, max_retries=2):</p>
-<p>"""失敗タスクをリトライ"""</p>
-<p>for retry_count in range(max_retries):</p>
-<p>if not self.results['failed']:</p>
-<p>break</p>
+    def retry_failed(self, max_retries=2):
+        """失敗タスクをリトライ"""
+        for retry_count in range(max_retries):
+            if not self.results['failed']:
+                break
 
-<p>print(f"\nリトライ {retry_count+1}/{max_retries}")</p>
-<p>print(f"  失敗タスク数: {len(self.results['failed'])}")</p>
+            print(f"\nリトライ {retry_count+1}/{max_retries}")
+            print(f"  失敗タスク数: {len(self.results['failed'])}")
 
-<p>failed_materials = self.results['failed'].copy()</p>
-<p>self.results['failed'] = []</p>
+            failed_materials = self.results['failed'].copy()
+            self.results['failed'] = []
 
-<p>self.run_batch(failed_materials, f'retry_{retry_count+1}')</p>
+            self.run_batch(failed_materials, f'retry_{retry_count+1}')
 
-<p>def execute_all(self):</p>
-<p>"""全材料を実行"""</p>
-<p>n_batches = (len(self.materials) + self.batch_size - 1) // self.batch_size</p>
+    def execute_all(self):
+        """全材料を実行"""
+        n_batches = (len(self.materials) + self.batch_size - 1) // self.batch_size
 
-<p>for batch_idx in range(n_batches):</p>
-<p>start = batch_idx * self.batch_size</p>
-<p>end = min((batch_idx + 1) * self.batch_size, len(self.materials))</p>
-<p>batch_materials = self.materials[start:end]</p>
+        for batch_idx in range(n_batches):
+            start = batch_idx * self.batch_size
+            end = min((batch_idx + 1) * self.batch_size, len(self.materials))
+            batch_materials = self.materials[start:end]
 
-<p>print(f"\nバッチ {batch_idx+1}/{n_batches}")</p>
-<p>self.run_batch(batch_materials, batch_idx+1)</p>
+            print(f"\nバッチ {batch_idx+1}/{n_batches}")
+            self.run_batch(batch_materials, batch_idx+1)
 
-<p># リトライ</p>
-<p>self.retry_failed(max_retries=2)</p>
+        # リトライ
+        self.retry_failed(max_retries=2)
 
-<p># 最終レポート</p>
-<p>print("\n最終結果:")</p>
-<p>print(f"  成功: {len(self.results['completed'])}")</p>
-<p>print(f"  失敗: {len(self.results['failed'])}")</p>
+        # 最終レポート
+        print("\n最終結果:")
+        print(f"  成功: {len(self.results['completed'])}")
+        print(f"  失敗: {len(self.results['failed'])}")
 
-<p>return self.results</p>
+        return self.results
 
 <h1>実行</h1>
-<p>materials = [f"material_{i:04d}" for i in range(1, 1001)]</p>
-<p>manager = HighThroughputManager(materials, batch_size=50, max_concurrent=20)</p>
-<p>results = manager.execute_all()</p>
-</code></pre>
+materials = [f"material_{i:04d}" for i in range(1, 1001)]
+manager = HighThroughputManager(materials, batch_size=50, max_concurrent=20)
+results = manager.execute_all()</code></pre>
 
 </details>
 
-<p>---</p>
+---
 
 <h2>3.6 まとめ</h2>
 
 <strong>キーポイント</strong>:
 
-<ol>
-<li><strong>SLURM</strong>: 大規模HPCで広く使用されるジョブスケジューラ</li>
-<li><strong>アレイジョブ</strong>: 多数の材料を効率的に並列実行</li>
-<li><strong>MPI並列</strong>: スケーリング効率を測定・最適化</li>
-<li><strong>Python管理</strong>: 大規模計算の自動化と監視</li>
-</ol>
+1. <strong>SLURM</strong>: 大規模HPCで広く使用されるジョブスケジューラ
+2. <strong>アレイジョブ</strong>: 多数の材料を効率的に並列実行
+3. <strong>MPI並列</strong>: スケーリング効率を測定・最適化
+4. <strong>Python管理</strong>: 大規模計算の自動化と監視
 
 <strong>次のステップ</strong>:
 
-<p>第4章では、<strong>FireWorksとAiiDAによるワークフロー管理</strong>を学びます。</p>
+第4章では、<strong>FireWorksとAiiDAによるワークフロー管理</strong>を学びます。
 
-<strong><a href="./chapter-4.md">第4章: データ管理とポストプロセス →</a></strong>
+<strong>[第4章: データ管理とポストプロセス →](./chapter-4.md)</strong>
 
-<p>---</p>
+---
 
 <strong>ライセンス</strong>: CC BY 4.0
 <strong>作成日</strong>: 2025-10-17
 <strong>作成者</strong>: Dr. Yusuke Hashimoto, Tohoku University
-
-
-        <div class="navigation">
-            <a href="chapter-2.html" class="nav-button">← 前章: 第2章</a>
-<a href="chapter-4.html" class="nav-button">次章: 第4章 →</a>
-        </div>
+<div class="navigation">
+    <a href="chapter-2.html" class="nav-button">← 第2章</a>
+    <a href="index.html" class="nav-button">シリーズ目次に戻る</a>
+    <a href="chapter-4.html" class="nav-button">第4章 →</a>
+</div>
     </main>
 
     <footer>

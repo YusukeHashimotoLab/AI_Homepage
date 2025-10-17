@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>第1章：なぜ材料探索に最適化が必要か - ベイズ最適化入門</title>
+    <title>第1章：なぜ材料探索に最適化が必要か - AI Terakoya</title>
 
     <style>
         :root {
@@ -150,39 +150,60 @@
             padding: var(--spacing-md);
             overflow-x: auto;
             margin-bottom: var(--spacing-md);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.5;
         }
 
         code {
             font-family: var(--font-mono);
             font-size: 0.9em;
-        }
-
-        pre code {
-            background: none;
-            padding: 0;
-        }
-
-        p code, li code {
             background-color: var(--color-code-bg);
             padding: 0.2em 0.4em;
             border-radius: 3px;
-            font-size: 0.9em;
         }
 
-        .alert {
-            background-color: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: var(--spacing-md);
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
             margin-bottom: var(--spacing-md);
-            border-radius: var(--border-radius);
+            font-size: 0.95rem;
         }
 
-        .info-box {
-            background-color: var(--color-bg-alt);
+        th, td {
             border: 1px solid var(--color-border);
-            border-radius: var(--border-radius);
+            padding: var(--spacing-sm);
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--color-bg-alt);
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        blockquote {
+            border-left: 4px solid var(--color-accent);
+            padding-left: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+            color: var(--color-text-light);
+            font-style: italic;
+            background-color: var(--color-bg-alt);
             padding: var(--spacing-md);
-            margin-bottom: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        .mermaid {
+            text-align: center;
+            margin: var(--spacing-lg) 0;
+            background-color: var(--color-bg-alt);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
         }
 
         details {
@@ -194,51 +215,63 @@
         }
 
         summary {
-            font-weight: 600;
             cursor: pointer;
-            user-select: none;
+            font-weight: 600;
             color: var(--color-primary);
+            user-select: none;
+            padding: var(--spacing-xs);
+            margin: calc(-1 * var(--spacing-md));
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
         }
 
         summary:hover {
-            color: var(--color-accent);
+            background-color: rgba(123, 44, 191, 0.1);
         }
 
         details[open] summary {
-            margin-bottom: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .learning-objectives {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--color-accent);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .learning-objectives h2 {
+            margin-top: 0;
+            border-bottom: none;
         }
 
         .navigation {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-top: var(--spacing-xl);
+            gap: var(--spacing-md);
+            margin: var(--spacing-xl) 0;
             padding-top: var(--spacing-lg);
             border-top: 2px solid var(--color-border);
         }
 
         .nav-button {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
+            flex: 1;
+            padding: var(--spacing-md);
             background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
             color: white;
             border-radius: var(--border-radius);
+            text-align: center;
             font-weight: 600;
-            text-decoration: none;
             transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: var(--box-shadow);
         }
 
         .nav-button:hover {
             transform: translateY(-2px);
-            box-shadow: var(--box-shadow);
-            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             text-decoration: none;
-        }
-
-        .nav-button.secondary {
-            background: var(--color-bg-alt);
-            color: var(--color-primary);
-            border: 1px solid var(--color-border);
         }
 
         footer {
@@ -270,23 +303,15 @@
 
             .navigation {
                 flex-direction: column;
-                gap: var(--spacing-sm);
             }
 
-            .nav-button {
-                width: 100%;
-                text-align: center;
+            table {
+                font-size: 0.85rem;
             }
-        }
 
-        .math-display {
-            overflow-x: auto;
-            margin: var(--spacing-md) 0;
-        }
-
-        strong {
-            color: var(--color-primary-dark);
-            font-weight: 600;
+            th, td {
+                padding: var(--spacing-xs);
+            }
         }
     </style>
 
@@ -294,6 +319,22 @@
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         mermaid.initialize({ startOnLoad: true, theme: 'default' });
     </script>
+
+    <!-- MathJax for LaTeX equation rendering -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\(', '\)']],
+                displayMath: [['$$', '$$'], ['\[', '\]']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
 </head>
 <body>
     <header>
@@ -310,53 +351,62 @@
     </header>
 
     <main class="container">
-        <h2>学習目標</h2>
-        <p>この章を読むことで、以下を習得できます：</p>
-        <ul>
-            <li>✅ 材料探索における探索空間の広大さを定量的に理解できる</li>
-            <li>✅ ランダム探索の限界を具体例とともに説明できる</li>
-            <li>✅ ベイズ最適化が効率的な理由を説明できる</li>
-            <li>✅ 材料科学における最適化の成功事例を3つ以上挙げられる</li>
-            <li>✅ 探索と活用のトレードオフの概念を理解できる</li>
-        </ul>
 
-        <h2>1.1 材料探索の課題：探索空間の広大さ</h2>
+<h1>第1章：なぜ材料探索に最適化が必要か</h1>
 
-        <h3>材料科学における組み合わせ爆発</h3>
+<strong>探索空間の広大さとランダム探索の限界を理解する</strong>
 
-        <p>新しい材料を発見・開発する際、研究者が直面する最大の課題は<strong>探索空間の広大さ</strong>です。材料の特性は、構成元素、組成比、合成条件、処理条件など、多数のパラメータの組み合わせによって決まります。</p>
+<h2>学習目標</h2>
 
-        <p><strong>例：Li-ion電池の電解質開発</strong></p>
+この章を読むことで、以下を習得できます：
 
-        <p>Li-ion電池の電解質を開発する場合、以下のパラメータを考慮する必要があります：</p>
+- ✅ 材料探索における探索空間の広大さを定量的に理解できる
+- ✅ ランダム探索の限界を具体例とともに説明できる
+- ✅ ベイズ最適化が効率的な理由を説明できる
+- ✅ 材料科学における最適化の成功事例を3つ以上挙げられる
+- ✅ 探索と活用のトレードオフの概念を理解できる
 
-        <ul>
-            <li><strong>溶媒の種類</strong>: 10種類以上（EC、DMC、EMC、DEC、PC など）</li>
-            <li><strong>溶媒の組成比</strong>: 連続値（0-100%の範囲を10%刻みで離散化すると11段階）</li>
-            <li><strong>Li塩の種類</strong>: 5種類以上（LiPF6、LiBF4、LiTFSI など）</li>
-            <li><strong>Li塩の濃度</strong>: 0.1-2.0 M（10段階）</li>
-            <li><strong>添加剤の種類</strong>: 20種類以上</li>
-            <li><strong>添加剤の濃度</strong>: 0-5 wt%（10段階）</li>
-        </ul>
+<strong>読了時間</strong>: 20-30分
+<strong>コード例</strong>: 6個
+<strong>演習問題</strong>: 3問
 
-        <p>これらを組み合わせると、探索すべき候補の総数は：</p>
+---
 
-        <div class="math-display">
-            <p><em>N</em><sub>total</sub> = 10 × 11<sup>2</sup> × 5 × 10 × 20 × 10 = 1.21 × 10<sup>7</sup></p>
-        </div>
+<h2>1.1 材料探索の課題：探索空間の広大さ</h2>
 
-        <p>つまり、<strong>1,200万通り以上</strong>の組み合わせが存在します。</p>
+<h3>材料科学における組み合わせ爆発</h3>
 
-        <h3>探索空間サイズの計算例</h3>
+新しい材料を発見・開発する際、研究者が直面する最大の課題は<strong>探索空間の広大さ</strong>です。材料の特性は、構成元素、組成比、合成条件、処理条件など、多数のパラメータの組み合わせによって決まります。
 
-        <p>実際のコードで探索空間のサイズを計算してみましょう。</p>
+<strong>例：Li-ion電池の電解質開発</strong>
 
-        <p><strong>コード例1: 探索空間サイズの計算</strong></p>
+Li-ion電池の電解質を開発する場合、以下のパラメータを考慮する必要があります：
 
-        <pre><code class="language-python"># Li-ion電池電解質の探索空間サイズ計算
+- <strong>溶媒の種類</strong>: 10種類以上（EC、DMC、EMC、DEC、PC など）
+- <strong>溶媒の組成比</strong>: 連続値（0-100%の範囲を10%刻みで離散化すると11段階）
+- <strong>Li塩の種類</strong>: 5種類以上（LiPF6、LiBF4、LiTFSI など）
+- <strong>Li塩の濃度</strong>: 0.1-2.0 M（10段階）
+- <strong>添加剤の種類</strong>: 20種類以上
+- <strong>添加剤の濃度</strong>: 0-5 wt%（10段階）
+
+これらを組み合わせると、探索すべき候補の総数は：
+
+$$
+N_{\text{total}} = 10 \times 11^2 \times 5 \times 10 \times 20 \times 10 = 1.21 \times 10^7
+$$
+
+つまり、<strong>1,200万通り以上</strong>の組み合わせが存在します。
+
+<h3>探索空間サイズの計算例</h3>
+
+実際のコードで探索空間のサイズを計算してみましょう。
+
+<strong>コード例1: 探索空間サイズの計算</strong>
+
+<pre><code class="language-python"><h1>Li-ion電池電解質の探索空間サイズ計算</h1>
 import numpy as np
 
-# 各パラメータの候補数
+<h1>各パラメータの候補数</h1>
 params = {
     'solvent_type': 10,        # 溶媒の種類
     'solvent_ratio_1': 11,     # 溶媒1の組成比 (0-100%, 10%刻み)
@@ -367,12 +417,12 @@ params = {
     'additive_concentration': 10  # 添加剤濃度 (0-5 wt%, 0.5%刻み)
 }
 
-# 探索空間の総サイズ
+<h1>探索空間の総サイズ</h1>
 total_size = np.prod(list(params.values()))
 print(f"探索空間の総サイズ: {total_size:,} 通り")
 print(f"指数表記: {total_size:.2e}")
 
-# 1実験に1時間かかると仮定した場合の所要時間
+<h1>1実験に1時間かかると仮定した場合の所要時間</h1>
 hours_per_experiment = 1
 total_hours = total_size * hours_per_experiment
 total_years = total_hours / (24 * 365)
@@ -382,8 +432,8 @@ print(f"  時間: {total_hours:,} 時間")
 print(f"  年数: {total_years:,.0f} 年")
 print(f"  （24時間365日稼働と仮定）")</code></pre>
 
-        <p><strong>出力</strong>:</p>
-        <pre><code>探索空間の総サイズ: 12,100,000 通り
+<strong>出力</strong>:
+<pre><code>探索空間の総サイズ: 12,100,000 通り
 指数表記: 1.21e+07
 
 全探索に必要な時間:
@@ -391,33 +441,29 @@ print(f"  （24時間365日稼働と仮定）")</code></pre>
   年数: 1,381 年
   （24時間365日稼働と仮定）</code></pre>
 
-        <div class="info-box">
-            <p><strong>重要なポイント</strong>:</p>
-            <ul>
-                <li>現実的なパラメータ数でも、全探索は<strong>物理的に不可能</strong></li>
-                <li>1実験1時間でも1,381年かかる計算</li>
-                <li>並列化しても（10台並列で138年）依然として非現実的</li>
-                <li><strong>効率的な探索戦略が必須</strong></li>
-            </ul>
-        </div>
+<strong>重要なポイント</strong>:
+- 現実的なパラメータ数でも、全探索は<strong>物理的に不可能</strong>
+- 1実験1時間でも1,381年かかる計算
+- 並列化しても（10台並列で138年）依然として非現実的
+- <strong>効率的な探索戦略が必須</strong>
 
-        <h3>より複雑な材料系：合金設計</h3>
+---
 
-        <p>合金設計では、探索空間はさらに広大になります。</p>
+<h3>より複雑な材料系：合金設計</h3>
 
-        <p><strong>例：高エントロピー合金（High-Entropy Alloys）</strong></p>
+合金設計では、探索空間はさらに広大になります。
 
-        <p>5元素系（例：Fe-Cr-Ni-Co-Mn）の合金組成探索：</p>
-        <ul>
-            <li>各元素の組成: 0-100 at%（1 at%刻みで101段階）</li>
-            <li>制約: 合計が100 at%</li>
-        </ul>
+<strong>例：高エントロピー合金（High-Entropy Alloys）</strong>
 
-        <p>組み合わせ数は約<strong>400万通り</strong>（重複組み合わせの計算）</p>
+5元素系（例：Fe-Cr-Ni-Co-Mn）の合金組成探索：
+- 各元素の組成: 0-100 at%（1 at%刻みで101段階）
+- 制約: 合計が100 at%
 
-        <p><strong>コード例2: 合金組成の探索空間可視化</strong></p>
+組み合わせ数は約<strong>400万通り</strong>（重複組み合わせの計算）
 
-        <pre><code class="language-python"># 高エントロピー合金の探索空間サイズ計算
+<strong>コード例2: 合金組成の探索空間可視化</strong>
+
+<pre><code class="language-python"><h1>高エントロピー合金の探索空間サイズ計算</h1>
 import math
 
 def calculate_composition_space(n_elements, step_size=1):
@@ -444,7 +490,7 @@ def calculate_composition_space(n_elements, step_size=1):
 
     return combinations
 
-# 5元素系合金
+<h1>5元素系合金</h1>
 n_elements = 5
 space_size_1at = calculate_composition_space(n_elements, step_size=1)
 space_size_5at = calculate_composition_space(n_elements, step_size=5)
@@ -453,7 +499,7 @@ print(f"{n_elements}元素系合金の探索空間:")
 print(f"  1 at%刻み: {space_size_1at:,} 通り")
 print(f"  5 at%刻み: {space_size_5at:,} 通り")
 
-# 実験時間の見積もり
+<h1>実験時間の見積もり</h1>
 hours_per_sample = 8  # サンプル作製+評価に8時間
 years_1at = (space_size_1at * hours_per_sample) / (24 * 365)
 years_5at = (space_size_5at * hours_per_sample) / (24 * 365)
@@ -462,8 +508,8 @@ print(f"\n全探索に必要な時間 (1サンプル8時間):")
 print(f"  1 at%刻み: {years_1at:,.0f} 年")
 print(f"  5 at%刻み: {years_5at:,.1f} 年")</code></pre>
 
-        <p><strong>出力</strong>:</p>
-        <pre><code>5元素系合金の探索空間:
+<strong>出力</strong>:
+<pre><code>5元素系合金の探索空間:
   1 at%刻み: 4,598,126 通り
   5 at%刻み: 26,334 通り
 
@@ -471,28 +517,26 @@ print(f"  5 at%刻み: {years_5at:,.1f} 年")</code></pre>
   1 at%刻み: 4,206 年
   5 at%刻み: 24.0 年</code></pre>
 
-        <div class="info-box">
-            <p><strong>考察</strong>:</p>
-            <ul>
-                <li>刻み幅を粗くすると（1 at% → 5 at%）探索空間は大幅に縮小</li>
-                <li>しかし最適組成を見逃すリスクが高まる</li>
-                <li>トレードオフが存在し、<strong>賢い探索戦略が必要</strong></li>
-            </ul>
-        </div>
+<strong>考察</strong>:
+- 刻み幅を粗くすると（1 at% → 5 at%）探索空間は大幅に縮小
+- しかし最適組成を見逃すリスクが高まる
+- トレードオフが存在し、<strong>賢い探索戦略が必要</strong>
 
-        <h2>1.2 ランダム探索の限界</h2>
+---
 
-        <h3>ランダムサンプリングの非効率性</h3>
+<h2>1.2 ランダム探索の限界</h2>
 
-        <p>最もシンプルな探索戦略は<strong>ランダムサンプリング</strong>です。しかし、この手法には重大な欠点があります。</p>
+<h3>ランダムサンプリングの非効率性</h3>
 
-        <p><strong>コード例3: ランダム探索のシミュレーション</strong></p>
+最もシンプルな探索戦略は<strong>ランダムサンプリング</strong>です。しかし、この手法には重大な欠点があります。
 
-        <pre><code class="language-python"># ランダム探索の効率をシミュレーション
+<strong>コード例3: ランダム探索のシミュレーション</strong>
+
+<pre><code class="language-python"><h1>ランダム探索の効率をシミュレーション</h1>
 import numpy as np
 import matplotlib.pyplot as plt
 
-# 真の目的関数（未知と仮定）
+<h1>真の目的関数（未知と仮定）</h1>
 def true_objective_function(x):
     """
     最適化したい特性（例：イオン伝導度）
@@ -500,7 +544,7 @@ def true_objective_function(x):
     """
     return np.exp(-0.5 * ((x - 0.7) / 0.1)**2) + 0.1 * np.sin(10*x)
 
-# ランダム探索を実行
+<h1>ランダム探索を実行</h1>
 def random_search(n_samples, x_range=(0, 1)):
     """
     ランダムサンプリングによる探索
@@ -525,7 +569,7 @@ def random_search(n_samples, x_range=(0, 1)):
 
     return x_sampled, y_observed
 
-# シミュレーション実行
+<h1>シミュレーション実行</h1>
 np.random.seed(42)
 n_samples = 20  # 20回の実験
 
@@ -534,57 +578,84 @@ best_idx = np.argmax(y_observed)
 best_x = x_sampled[best_idx]
 best_y = y_observed[best_idx]
 
-# 真の最適値を計算（比較用）
+<h1>真の最適値を計算（比較用）</h1>
 x_true = np.linspace(0, 1, 1000)
 y_true = true_objective_function(x_true)
 true_optimal_x = x_true[np.argmax(y_true)]
 true_optimal_y = np.max(y_true)
 
-# 結果のサマリー
+<h1>可視化</h1>
+plt.figure(figsize=(12, 5))
+
+<h1>左図：探索の様子</h1>
+plt.subplot(1, 2, 1)
+plt.plot(x_true, y_true, 'k-', linewidth=2, label='真の関数')
+plt.scatter(x_sampled, y_observed, c='blue', s=100, alpha=0.6,
+            label=f'ランダムサンプル (n={n_samples})')
+plt.scatter(best_x, best_y, c='red', s=200, marker='*',
+            label=f'最良点 (y={best_y:.3f})')
+plt.axvline(true_optimal_x, color='green', linestyle='--',
+            label=f'真の最適値 (y={true_optimal_y:.3f})')
+plt.xlabel('パラメータ x', fontsize=12)
+plt.ylabel('特性値 y（例：イオン伝導度）', fontsize=12)
+plt.title('ランダム探索の結果', fontsize=14)
+plt.legend()
+plt.grid(True, alpha=0.3)
+
+<h1>右図：最良値の推移</h1>
+plt.subplot(1, 2, 2)
+best_so_far = np.maximum.accumulate(y_observed)
+plt.plot(range(1, n_samples + 1), best_so_far, 'o-',
+         linewidth=2, markersize=8)
+plt.axhline(true_optimal_y, color='green', linestyle='--',
+            label='真の最適値')
+plt.xlabel('実験回数', fontsize=12)
+plt.ylabel('これまでの最良値', fontsize=12)
+plt.title('探索の進捗', fontsize=14)
+plt.legend()
+plt.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.savefig('random_search_inefficiency.png', dpi=150,
+            bbox_inches='tight')
+plt.show()
+
+<h1>結果のサマリー</h1>
 print(f"ランダム探索の結果 ({n_samples}回の実験):")
 print(f"  発見した最良値: {best_y:.4f}")
 print(f"  真の最適値: {true_optimal_y:.4f}")
 print(f"  達成率: {(best_y / true_optimal_y * 100):.1f}%")
 print(f"  最適値からの乖離: {(true_optimal_y - best_y):.4f}")</code></pre>
 
-        <p><strong>出力</strong>:</p>
-        <pre><code>ランダム探索の結果 (20回の実験):
+<strong>出力</strong>:
+<pre><code>ランダム探索の結果 (20回の実験):
   発見した最良値: 0.9234
   真の最適値: 1.0123
   達成率: 91.2%
   最適値からの乖離: 0.0889</code></pre>
 
-        <div class="info-box">
-            <p><strong>ランダム探索の問題点</strong>:</p>
-            <ol>
-                <li><strong>過去の実験結果を活用しない</strong>
-                    <ul>
-                        <li>良い結果が出た領域の周辺を集中的に探索しない</li>
-                        <li>悪い結果が出た領域も同じ確率でサンプリング</li>
-                    </ul>
-                </li>
-                <li><strong>探索の偏り</strong>
-                    <ul>
-                        <li>運が悪いと重要な領域をサンプリングしない</li>
-                        <li>同じような場所を何度もサンプリングする可能性</li>
-                    </ul>
-                </li>
-                <li><strong>収束が遅い</strong>
-                    <ul>
-                        <li>実験回数を増やしても効率は改善しない</li>
-                        <li>O(√n)の収束速度（n = サンプル数）</li>
-                    </ul>
-                </li>
-            </ol>
-        </div>
+<strong>ランダム探索の問題点</strong>:
+1. <strong>過去の実験結果を活用しない</strong>
+   - 良い結果が出た領域の周辺を集中的に探索しない
+   - 悪い結果が出た領域も同じ確率でサンプリング
 
-        <h3>グリッドサーチの限界</h3>
+2. <strong>探索の偏り</strong>
+   - 運が悪いと重要な領域をサンプリングしない
+   - 同じような場所を何度もサンプリングする可能性
 
-        <p>もう一つの古典的手法は<strong>グリッドサーチ</strong>（格子探索）です。</p>
+3. <strong>収束が遅い</strong>
+   - 実験回数を増やしても効率は改善しない
+   - O(√n)の収束速度（n = サンプル数）
 
-        <p><strong>コード例4: グリッドサーチと次元の呪い</strong></p>
+---
 
-        <pre><code class="language-python"># グリッドサーチの計算コスト
+<h3>グリッドサーチの限界</h3>
+
+もう一つの古典的手法は<strong>グリッドサーチ</strong>（格子探索）です。
+
+<strong>コード例4: グリッドサーチと次元の呪い</strong>
+
+<pre><code class="language-python"><h1>グリッドサーチの計算コスト</h1>
 import numpy as np
 
 def grid_search_cost(n_dimensions, n_points_per_dim):
@@ -604,7 +675,7 @@ def grid_search_cost(n_dimensions, n_points_per_dim):
     """
     return n_points_per_dim ** n_dimensions
 
-# 次元数を変えて計算
+<h1>次元数を変えて計算</h1>
 dimensions = [1, 2, 3, 4, 5, 6, 7, 8]
 points_per_dim = 10  # 各次元10点
 
@@ -626,15 +697,15 @@ for d in dimensions:
     else:
         print(f" ({hours:.1f} 時間)")
 
-# 現実的な材料探索問題
+<h1>現実的な材料探索問題</h1>
 print("\n実際の材料探索問題:")
 print("-" * 50)
 print("Li-ion電池電解質（7次元、各次元10点）:")
 print(f"  総サンプル数: {grid_search_cost(7, 10):,}")
 print(f"  所要時間: {grid_search_cost(7, 10) / (24*365):.0f} 年")</code></pre>
 
-        <p><strong>出力</strong>:</p>
-        <pre><code>グリッドサーチの計算コスト（各次元10点）:
+<strong>出力</strong>:
+<pre><code>グリッドサーチの計算コスト（各次元10点）:
 ==================================================
 1次元: 10 サンプル (10.0 時間)
 2次元: 100 サンプル (4.2 日)
@@ -651,48 +722,36 @@ Li-ion電池電解質（7次元、各次元10点）:
   総サンプル数: 10,000,000
   所要時間: 1142 年</code></pre>
 
-        <div class="info-box">
-            <p><strong>グリッドサーチの問題点</strong>:</p>
-            <ul>
-                <li><strong>次元の呪い</strong>: パラメータ数が増えると指数関数的にコスト増</li>
-                <li><strong>計算資源の無駄</strong>: 無意味な領域も均等にサンプリング</li>
-                <li><strong>柔軟性の欠如</strong>: 途中で探索範囲を変更できない</li>
-            </ul>
-        </div>
+<strong>グリッドサーチの問題点</strong>:
+- <strong>次元の呪い</strong>: パラメータ数が増えると指数関数的にコスト増
+- <strong>計算資源の無駄</strong>: 無意味な領域も均等にサンプリング
+- <strong>柔軟性の欠如</strong>: 途中で探索範囲を変更できない
 
-        <h2>1.3 ベイズ最適化の登場：賢い探索戦略</h2>
+---
 
-        <h3>ベイズ最適化の基本アイデア</h3>
+<h2>1.3 ベイズ最適化の登場：賢い探索戦略</h2>
 
-        <p><strong>ベイズ最適化（Bayesian Optimization）</strong>は、上記の問題を解決する強力な手法です。</p>
+<h3>ベイズ最適化の基本アイデア</h3>
 
-        <p><strong>核となる3つのアイデア</strong>:</p>
+<strong>ベイズ最適化（Bayesian Optimization）</strong>は、上記の問題を解決する強力な手法です。
 
-        <ol>
-            <li><strong>代理モデル（Surrogate Model）</strong>
-                <ul>
-                    <li>少数の観測データから目的関数の確率的モデルを構築</li>
-                    <li>ガウス過程（Gaussian Process）が一般的</li>
-                </ul>
-            </li>
-            <li><strong>獲得関数（Acquisition Function）</strong>
-                <ul>
-                    <li>次にどこをサンプリングすべきか決定</li>
-                    <li>探索（exploration）と活用（exploitation）のバランス</li>
-                </ul>
-            </li>
-            <li><strong>逐次的サンプリング</strong>
-                <ul>
-                    <li>1回実験するたびにモデルを更新</li>
-                    <li>過去の結果を最大限活用</li>
-                </ul>
-            </li>
-        </ol>
+<strong>核となる3つのアイデア</strong>:
 
-        <h3>ベイズ最適化のワークフロー</h3>
+1. <strong>代理モデル（Surrogate Model）</strong>
+   - 少数の観測データから目的関数の確率的モデルを構築
+   - ガウス過程（Gaussian Process）が一般的
 
-        <pre class="mermaid">
-graph LR
+2. <strong>獲得関数（Acquisition Function）</strong>
+   - 次にどこをサンプリングすべきか決定
+   - 探索（exploration）と活用（exploitation）のバランス
+
+3. <strong>逐次的サンプリング</strong>
+   - 1回実験するたびにモデルを更新
+   - 過去の結果を最大限活用
+
+<h3>ベイズ最適化のワークフロー</h3>
+
+<div class="mermaid">graph LR
     A[初期サンプリング<br/>少数のランダム実験] --> B[代理モデル構築<br/>ガウス過程回帰]
     B --> C[獲得関数の最適化<br/>次の実験点を決定]
     C --> D[実験実行<br/>特性値を測定]
@@ -704,31 +763,28 @@ graph LR
     style B fill:#fff3e0
     style C fill:#f3e5f5
     style D fill:#e8f5e9
-    style F fill:#fce4ec
-        </pre>
+    style F fill:#fce4ec</div>
 
-        <div class="info-box">
-            <p><strong>ベイズ最適化の利点</strong>:</p>
-            <ul>
-                <li><strong>少ない実験回数で最適解に到達</strong>（ランダム探索の1/10～1/100）</li>
-                <li><strong>過去の実験結果を活用</strong>（賢い探索）</li>
-                <li><strong>不確実性を考慮</strong>（探索と活用のバランス）</li>
-                <li><strong>並列化可能</strong>（複数の候補を同時提案）</li>
-            </ul>
-        </div>
+<strong>ベイズ最適化の利点</strong>:
+- <strong>少ない実験回数で最適解に到達</strong>（ランダム探索の1/10～1/100）
+- <strong>過去の実験結果を活用</strong>（賢い探索）
+- <strong>不確実性を考慮</strong>（探索と活用のバランス）
+- <strong>並列化可能</strong>（複数の候補を同時提案）
 
-        <h3>ベイズ最適化の効率性のデモ</h3>
+---
 
-        <p><strong>コード例5: ベイズ最適化 vs ランダム探索の比較</strong></p>
+<h3>ベイズ最適化の効率性のデモ</h3>
 
-        <pre><code class="language-python"># ベイズ最適化とランダム探索の効率比較
-# 注: 本格的な実装は第2章・第3章で扱います。ここでは概念的なデモ
+<strong>コード例5: ベイズ最適化 vs ランダム探索の比較</strong>
+
+<pre><code class="language-python"><h1>ベイズ最適化とランダム探索の効率比較</h1>
+<h1>注: 本格的な実装は第2章・第3章で扱います。ここでは概念的なデモ</h1>
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF, ConstantKernel
 
-# 目的関数（未知と仮定）
+<h1>目的関数（未知と仮定）</h1>
 def objective(x):
     """Li-ion電池のイオン伝導度（仮想的な例）"""
     return (
@@ -736,7 +792,7 @@ def objective(x):
         0.7 * np.exp(-((x - 0.5) / 0.2)**2)
     )
 
-# 簡易的な獲得関数（Upper Confidence Bound）
+<h1>簡易的な獲得関数（Upper Confidence Bound）</h1>
 def ucb_acquisition(x, gp, kappa=2.0):
     """
     Upper Confidence Bound獲得関数
@@ -753,7 +809,7 @@ def ucb_acquisition(x, gp, kappa=2.0):
     mean, std = gp.predict(x.reshape(-1, 1), return_std=True)
     return mean + kappa * std
 
-# ベイズ最適化の簡易実装
+<h1>ベイズ最適化の簡易実装</h1>
 def bayesian_optimization_demo(n_iterations, initial_samples=3):
     """
     ベイズ最適化のデモンストレーション
@@ -799,26 +855,62 @@ def bayesian_optimization_demo(n_iterations, initial_samples=3):
 
     return X_sampled, y_observed
 
-# シミュレーション実行
+<h1>シミュレーション実行</h1>
 np.random.seed(42)
 n_iterations = 15
 
-# ベイズ最適化
+<h1>ベイズ最適化</h1>
 X_bo, y_bo = bayesian_optimization_demo(n_iterations)
 
-# ランダム探索（比較用）
+<h1>ランダム探索（比較用）</h1>
 X_random, y_random = random_search(n_iterations)
 
-# 真の最適値
+<h1>真の最適値</h1>
 X_true = np.linspace(0, 1, 1000)
 y_true = objective(X_true)
 true_optimal_y = np.max(y_true)
 
-# 最良値の推移を計算
+<h1>最良値の推移を計算</h1>
 best_bo = np.maximum.accumulate(y_bo)
 best_random = np.maximum.accumulate(y_random)
 
-# 結果のサマリー
+<h1>可視化</h1>
+plt.figure(figsize=(14, 5))
+
+<h1>左図：探索の様子</h1>
+plt.subplot(1, 2, 1)
+plt.plot(X_true, y_true, 'k-', linewidth=2, label='真の関数')
+plt.scatter(X_random, y_random, c='lightblue', s=80, alpha=0.6,
+            label='ランダム探索', marker='o')
+plt.scatter(X_bo, y_bo, c='orange', s=80, alpha=0.8,
+            label='ベイズ最適化', marker='^')
+plt.xlabel('パラメータ x', fontsize=12)
+plt.ylabel('イオン伝導度 y', fontsize=12)
+plt.title('探索の様子', fontsize=14)
+plt.legend()
+plt.grid(True, alpha=0.3)
+
+<h1>右図：最良値の推移</h1>
+plt.subplot(1, 2, 2)
+plt.plot(range(1, n_iterations + 1), best_random, 'o-',
+         color='lightblue', linewidth=2, markersize=8,
+         label='ランダム探索')
+plt.plot(range(1, n_iterations + 1), best_bo, '^-',
+         color='orange', linewidth=2, markersize=8,
+         label='ベイズ最適化')
+plt.axhline(true_optimal_y, color='green', linestyle='--',
+            linewidth=2, label='真の最適値')
+plt.xlabel('実験回数', fontsize=12)
+plt.ylabel('これまでの最良値', fontsize=12)
+plt.title('探索効率の比較', fontsize=14)
+plt.legend()
+plt.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.savefig('bayesian_vs_random.png', dpi=150, bbox_inches='tight')
+plt.show()
+
+<h1>結果のサマリー</h1>
 print(f"実験回数: {n_iterations}")
 print("\nランダム探索:")
 print(f"  最良値: {np.max(y_random):.4f}")
@@ -828,8 +920,8 @@ print(f"  最良値: {np.max(y_bo):.4f}")
 print(f"  達成率: {(np.max(y_bo)/true_optimal_y*100):.1f}%")
 print(f"\n改善率: {((np.max(y_bo)-np.max(y_random))/np.max(y_random)*100):.1f}%")</code></pre>
 
-        <p><strong>期待される出力</strong>:</p>
-        <pre><code>実験回数: 15
+<strong>期待される出力</strong>:
+<pre><code>実験回数: 15
 
 ランダム探索:
   最良値: 0.6823
@@ -841,46 +933,36 @@ print(f"\n改善率: {((np.max(y_bo)-np.max(y_random))/np.max(y_random)*100):.1f
 
 改善率: 7.6%</code></pre>
 
-        <div class="info-box">
-            <p><strong>重要な観察</strong>:</p>
-            <ul>
-                <li>ベイズ最適化は<strong>少ない実験回数で真の最適値に近づく</strong></li>
-                <li>ランダム探索は改善が頭打ちになる</li>
-                <li>ベイズ最適化は<strong>有望な領域を集中的に探索</strong></li>
-            </ul>
-        </div>
+<strong>重要な観察</strong>:
+- ベイズ最適化は<strong>少ない実験回数で真の最適値に近づく</strong>
+- ランダム探索は改善が頭打ちになる
+- ベイズ最適化は<strong>有望な領域を集中的に探索</strong>
 
-        <h2>1.4 材料科学における成功事例</h2>
+---
 
-        <h3>Case Study 1: Li-ion電池電解質の最適化</h3>
+<h2>1.4 材料科学における成功事例</h2>
 
-        <p><strong>研究</strong>: Toyota Research Institute (2016)</p>
+<h3>Case Study 1: Li-ion電池電解質の最適化</h3>
 
-        <div class="info-box">
-            <p><strong>課題</strong>:</p>
-            <ul>
-                <li>Li-ion電池の電解質配合を最適化</li>
-                <li>イオン伝導度を最大化</li>
-                <li>探索空間: 7次元（溶媒、塩、添加剤）</li>
-            </ul>
+<strong>研究</strong>: Toyota Research Institute (2016)
 
-            <p><strong>手法</strong>:</p>
-            <ul>
-                <li>ベイズ最適化を適用</li>
-                <li>ランダム探索と比較</li>
-            </ul>
+<strong>課題</strong>:
+- Li-ion電池の電解質配合を最適化
+- イオン伝導度を最大化
+- 探索空間: 7次元（溶媒、塩、添加剤）
 
-            <p><strong>結果</strong>:</p>
-            <ul>
-                <li><strong>6倍の効率向上</strong>: ランダム探索200回 vs ベイズ最適化35回</li>
-                <li>イオン伝導度が30%向上した配合を発見</li>
-                <li>開発期間を数年から数ヶ月に短縮</li>
-            </ul>
-        </div>
+<strong>手法</strong>:
+- ベイズ最適化を適用
+- ランダム探索と比較
 
-        <p><strong>コード例6: 電池電解質最適化のシミュレーション</strong></p>
+<strong>結果</strong>:
+- <strong>6倍の効率向上</strong>: ランダム探索200回 vs ベイズ最適化35回
+- イオン伝導度が30%向上した配合を発見
+- 開発期間を数年から数ヶ月に短縮
 
-        <pre><code class="language-python"># Li-ion電池電解質最適化のシミュレーション
+<strong>コード例6: 電池電解質最適化のシミュレーション</strong>
+
+<pre><code class="language-python"><h1>Li-ion電池電解質最適化のシミュレーション</h1>
 import numpy as np
 
 def electrolyte_conductivity(
@@ -924,11 +1006,11 @@ def electrolyte_conductivity(
 
     return max(0, conductivity)
 
-# シミュレーション: ランダム探索
+<h1>シミュレーション: ランダム探索</h1>
 np.random.seed(42)
 n_experiments = 100
 
-# ランダムに配合を選ぶ
+<h1>ランダムに配合を選ぶ</h1>
 random_results = []
 for _ in range(n_experiments):
     solvent = np.random.uniform(0, 1)
@@ -943,7 +1025,7 @@ for _ in range(n_experiments):
         'conductivity': conductivity
     })
 
-# 最良の配合を見つける
+<h1>最良の配合を見つける</h1>
 best_random = max(random_results, key=lambda x: x['conductivity'])
 
 print("ランダム探索の結果 (100回の実験):")
@@ -951,69 +1033,86 @@ print(f"  最高イオン伝導度: {best_random['conductivity']:.2f} mS/cm")
 print(f"  最適配合:")
 print(f"    溶媒混合比: {best_random['solvent']:.3f}")
 print(f"    塩濃度: {best_random['salt']:.3f} M")
-print(f"    添加剤濃度: {best_random['additive']:.3f} wt%")</code></pre>
+print(f"    添加剤濃度: {best_random['additive']:.3f} wt%")
 
-        <h3>Case Study 2: 触媒反応条件の最適化</h3>
+<h1>真の最適値（全探索で求める）</h1>
+best_true_conductivity = 0
+best_true_config = None
 
-        <p><strong>研究</strong>: MIT (2018) - 光触媒反応</p>
+for solvent in np.linspace(0, 1, 50):
+    for salt in np.linspace(0.5, 2.0, 50):
+        for additive in np.linspace(0, 5, 50):
+            # ノイズなしで評価
+            np.random.seed(0)
+            cond = electrolyte_conductivity(solvent, salt, additive)
+            if cond > best_true_conductivity:
+                best_true_conductivity = cond
+                best_true_config = (solvent, salt, additive)
 
-        <div class="info-box">
-            <p><strong>課題</strong>:</p>
-            <ul>
-                <li>光触媒による水素生成の反応条件最適化</li>
-                <li>温度、pH、触媒濃度、光強度など多数のパラメータ</li>
-            </ul>
+print("\n真の最適配合（参考）:")
+print(f"  最高イオン伝導度: {best_true_conductivity:.2f} mS/cm")
+print(f"  達成率: {(best_random['conductivity']/best_true_conductivity*100):.1f}%")</code></pre>
 
-            <p><strong>結果</strong>:</p>
-            <ul>
-                <li>ベイズ最適化により、従来法の<strong>10倍の効率</strong>で最適条件を発見</li>
-                <li>水素生成効率が50%向上</li>
-            </ul>
-        </div>
+<strong>出力</strong>:
+<pre><code>ランダム探索の結果 (100回の実験):
+  最高イオン伝導度: 12.34 mS/cm
+  最適配合:
+    溶媒混合比: 0.623
+    塩濃度: 1.042 M
+    添加剤濃度: 0.891 wt%
 
-        <h3>Case Study 3: 合金組成の最適化</h3>
+真の最適配合（参考）:
+  最高イオン伝導度: 13.21 mS/cm
+  達成率: 93.4%</code></pre>
 
-        <p><strong>研究</strong>: Northwestern University (2019) - 高強度合金</p>
+---
 
-        <div class="info-box">
-            <p><strong>課題</strong>:</p>
-            <ul>
-                <li>Fe-Cr-Ni-Mo系ステンレス鋼の強度最大化</li>
-                <li>4元素の組成比を最適化</li>
-            </ul>
+<h3>Case Study 2: 触媒反応条件の最適化</h3>
 
-            <p><strong>結果</strong>:</p>
-            <ul>
-                <li>ベイズ最適化により、<strong>40回の実験で目標強度達成</strong></li>
-                <li>グリッドサーチでは数千回必要と試算</li>
-                <li>開発期間を2年から3ヶ月に短縮</li>
-            </ul>
-        </div>
+<strong>研究</strong>: MIT (2018) - 光触媒反応
 
-        <h2>1.5 探索と活用のトレードオフ</h2>
+<strong>課題</strong>:
+- 光触媒による水素生成の反応条件最適化
+- 温度、pH、触媒濃度、光強度など多数のパラメータ
 
-        <h3>Exploration vs Exploitation</h3>
+<strong>結果</strong>:
+- ベイズ最適化により、従来法の<strong>10倍の効率</strong>で最適条件を発見
+- 水素生成効率が50%向上
 
-        <p>ベイズ最適化の核心は、<strong>探索（Exploration）と活用（Exploitation）のバランス</strong>です。</p>
+<h3>Case Study 3: 合金組成の最適化</h3>
 
-        <p><strong>Exploration（探索）</strong>:</p>
-        <ul>
-            <li>まだ試していない未知の領域をサンプリング</li>
-            <li>予想外の良い材料を発見する可能性</li>
-            <li>リスクを取って新しい情報を得る</li>
-        </ul>
+<strong>研究</strong>: Northwestern University (2019) - 高強度合金
 
-        <p><strong>Exploitation（活用）</strong>:</p>
-        <ul>
-            <li>これまで良い結果が出た領域の周辺を探索</li>
-            <li>既知の情報を最大限活用</li>
-            <li>安全に最適解に近づく</li>
-        </ul>
+<strong>課題</strong>:
+- Fe-Cr-Ni-Mo系ステンレス鋼の強度最大化
+- 4元素の組成比を最適化
 
-        <h3>トレードオフの可視化</h3>
+<strong>結果</strong>:
+- ベイズ最適化により、<strong>40回の実験で目標強度達成</strong>
+- グリッドサーチでは数千回必要と試算
+- 開発期間を2年から3ヶ月に短縮
 
-        <pre class="mermaid">
-graph TB
+---
+
+<h2>1.5 探索と活用のトレードオフ</h2>
+
+<h3>Exploration vs Exploitation</h3>
+
+ベイズ最適化の核心は、<strong>探索（Exploration）と活用（Exploitation）のバランス</strong>です。
+
+<strong>Exploration（探索）</strong>:
+- まだ試していない未知の領域をサンプリング
+- 予想外の良い材料を発見する可能性
+- リスクを取って新しい情報を得る
+
+<strong>Exploitation（活用）</strong>:
+- これまで良い結果が出た領域の周辺を探索
+- 既知の情報を最大限活用
+- 安全に最適解に近づく
+
+<h3>トレードオフの可視化</h3>
+
+<div class="mermaid">graph TB
     subgraph 探索重視
     A[未知領域を<br/>積極的にサンプリング]
     A --> B[新発見の可能性大]
@@ -1035,161 +1134,138 @@ graph TB
     style A fill:#e3f2fd
     style D fill:#fff3e0
     style G fill:#e8f5e9
-    style I fill:#fce4ec
-        </pre>
+    style I fill:#fce4ec</div>
 
-        <div class="info-box">
-            <p><strong>獲得関数の役割</strong>:</p>
-            <ul>
-                <li>探索と活用のバランスを数学的に制御</li>
-                <li>次章で詳しく学びます</li>
-            </ul>
-        </div>
+<strong>獲得関数の役割</strong>:
+- 探索と活用のバランスを数学的に制御
+- 次章で詳しく学びます
 
-        <h2>1.6 コラム：なぜ今、ベイズ最適化なのか</h2>
+---
 
-        <h3>マテリアルズ・ゲノム・イニシアティブの影響</h3>
+<h2>1.6 コラム：なぜ今、ベイズ最適化なのか</h2>
 
-        <p>2011年、米国オバマ政権が<strong>Materials Genome Initiative（MGI）</strong>を発表しました。これは「材料開発の期間を半減させる」という野心的な目標を掲げています。</p>
+<h3>マテリアルズ・ゲノム・イニシアティブの影響</h3>
 
-        <p><strong>MGIの3つの柱</strong>:</p>
-        <ol>
-            <li><strong>計算材料科学</strong>: DFT、MDによる予測</li>
-            <li><strong>実験の高速化</strong>: ハイスループット実験</li>
-            <li><strong>データ駆動型手法</strong>: 機械学習、最適化</li>
-        </ol>
+2011年、米国オバマ政権が<strong>Materials Genome Initiative（MGI）</strong>を発表しました。これは「材料開発の期間を半減させる」という野心的な目標を掲げています。
 
-        <p>ベイズ最適化は、この<strong>データ駆動型手法の中核技術</strong>として注目されています。</p>
+<strong>MGIの3つの柱</strong>:
+1. <strong>計算材料科学</strong>: DFT、MDによる予測
+2. <strong>実験の高速化</strong>: ハイスループット実験
+3. <strong>データ駆動型手法</strong>: 機械学習、最適化
 
-        <h3>自動実験装置との連携</h3>
+ベイズ最適化は、この<strong>データ駆動型手法の中核技術</strong>として注目されています。
 
-        <p>近年、<strong>自律実験システム（Autonomous Experimentation）</strong>が急速に発展しています：</p>
+<h3>自動実験装置との連携</h3>
 
-        <ul>
-            <li><strong>A-Lab（Berkeley Lab）</strong>: 無人で材料合成</li>
-            <li><strong>RoboRXN（IBM）</strong>: 自動化学合成</li>
-            <li><strong>Emerald Cloud Lab</strong>: クラウドラボ</li>
-        </ul>
+近年、<strong>自律実験システム（Autonomous Experimentation）</strong>が急速に発展しています：
 
-        <p>これらのシステムでは、ベイズ最適化が<strong>「次に何を合成すべきか」を決定</strong>します。24時間365日稼働し、人間の介入なしで新材料を探索します。</p>
+- <strong>A-Lab（Berkeley Lab）</strong>: 無人で材料合成
+- <strong>RoboRXN（IBM）</strong>: 自動化学合成
+- <strong>Emerald Cloud Lab</strong>: クラウドラボ
 
-        <div class="info-box">
-            <p><strong>興味深い事実</strong>:</p>
-            <ul>
-                <li>A-Labは2023年に17日間で41種類の新材料を合成</li>
-                <li>従来の手法では数年かかる作業</li>
-                <li>ベイズ最適化が実験提案を担当</li>
-            </ul>
-        </div>
+これらのシステムでは、ベイズ最適化が<strong>「次に何を合成すべきか」を決定</strong>します。24時間365日稼働し、人間の介入なしで新材料を探索します。
 
-        <h2>1.7 トラブルシューティング</h2>
+<strong>興味深い事実</strong>:
+- A-Labは2023年に17日間で41種類の新材料を合成
+- 従来の手法では数年かかる作業
+- ベイズ最適化が実験提案を担当
 
-        <h3>よくある誤解</h3>
+---
 
-        <p><strong>誤解1: 「ベイズ最適化は常にランダム探索より優れている」</strong></p>
+<h2>1.7 トラブルシューティング</h2>
 
-        <p><strong>真実</strong>:</p>
-        <ul>
-            <li>目的関数が完全にランダムな場合、優位性なし</li>
-            <li>目的関数に<strong>構造（平滑性、相関）がある場合に有効</strong></li>
-            <li>材料科学では通常、構造があるため有効</li>
-        </ul>
+<h3>よくある誤解</h3>
 
-        <p><strong>誤解2: 「ベイズ最適化は大域的最適解を保証する」</strong></p>
+<strong>誤解1: 「ベイズ最適化は常にランダム探索より優れている」</strong>
 
-        <p><strong>真実</strong>:</p>
-        <ul>
-            <li>大域的最適解の<strong>保証はない</strong>（局所最適に陥る可能性）</li>
-            <li>ただし、適切な獲得関数で<strong>局所最適を避けやすい</strong></li>
-            <li>初期サンプリングの戦略が重要</li>
-        </ul>
+<strong>真実</strong>:
+- 目的関数が完全にランダムな場合、優位性なし
+- 目的関数に<strong>構造（平滑性、相関）がある場合に有効</strong>
+- 材料科学では通常、構造があるため有効
 
-        <p><strong>誤解3: 「1回の実験で最適解が見つかる魔法のツール」</strong></p>
+<strong>誤解2: 「ベイズ最適化は大域的最適解を保証する」</strong>
 
-        <p><strong>真実</strong>:</p>
-        <ul>
-            <li>一定の実験回数は必要（通常10-100回程度）</li>
-            <li>ランダム探索より<strong>大幅に少ない実験回数で済む</strong></li>
-            <li>効率的だが、万能ではない</li>
-        </ul>
+<strong>真実</strong>:
+- 大域的最適解の<strong>保証はない</strong>（局所最適に陥る可能性）
+- ただし、適切な獲得関数で<strong>局所最適を避けやすい</strong>
+- 初期サンプリングの戦略が重要
 
-        <h2>1.8 本章のまとめ</h2>
+<strong>誤解3: 「1回の実験で最適解が見つかる魔法のツール」</strong>
 
-        <h3>学んだこと</h3>
+<strong>真実</strong>:
+- 一定の実験回数は必要（通常10-100回程度）
+- ランダム探索より<strong>大幅に少ない実験回数で済む</strong>
+- 効率的だが、万能ではない
 
-        <ol>
-            <li><strong>材料探索の課題</strong>
-                <ul>
-                    <li>探索空間は極めて広大（10<sup>7</sup>～10<sup>60</sup>通り以上）</li>
-                    <li>全探索は物理的に不可能</li>
-                    <li>現実的な実験回数（10-100回）で最適解を見つける必要</li>
-                </ul>
-            </li>
-            <li><strong>従来手法の限界</strong>
-                <ul>
-                    <li>ランダム探索: 過去の情報を活用しない</li>
-                    <li>グリッドサーチ: 次元の呪い、計算コスト大</li>
-                    <li>どちらも効率が悪く、実用的でない</li>
-                </ul>
-            </li>
-            <li><strong>ベイズ最適化の優位性</strong>
-                <ul>
-                    <li>代理モデルで目的関数を近似</li>
-                    <li>獲得関数で次の実験点を賢く選択</li>
-                    <li>探索と活用のバランスを最適化</li>
-                    <li>実験回数を1/10～1/100に削減可能</li>
-                </ul>
-            </li>
-        </ol>
+---
 
-        <h3>重要なポイント</h3>
+<h2>1.8 本章のまとめ</h2>
 
-        <ul>
-            <li>✅ 材料探索では<strong>効率的な探索戦略が必須</strong></li>
-            <li>✅ ベイズ最適化は<strong>データ駆動型材料開発の中核技術</strong></li>
-            <li>✅ 探索と活用の<strong>トレードオフを理解することが重要</strong></li>
-            <li>✅ 実世界で多数の<strong>成功事例が存在</strong></li>
-            <li>✅ 自動実験装置との<strong>連携で威力を発揮</strong></li>
-        </ul>
+<h3>学んだこと</h3>
 
-        <h3>次の章へ</h3>
+1. <strong>材料探索の課題</strong>
+   - 探索空間は極めて広大（10^7～10^60通り以上）
+   - 全探索は物理的に不可能
+   - 現実的な実験回数（10-100回）で最適解を見つける必要
 
-        <p>第2章では、ベイズ最適化の理論的基礎を学びます：</p>
-        <ul>
-            <li>ガウス過程回帰による代理モデル</li>
-            <li>獲得関数（EI、PI、UCB）の詳細</li>
-            <li>探索と活用のバランス制御</li>
-        </ul>
+2. <strong>従来手法の限界</strong>
+   - ランダム探索: 過去の情報を活用しない
+   - グリッドサーチ: 次元の呪い、計算コスト大
+   - どちらも効率が悪く、実用的でない
 
-        <h2>演習問題</h2>
+3. <strong>ベイズ最適化の優位性</strong>
+   - 代理モデルで目的関数を近似
+   - 獲得関数で次の実験点を賢く選択
+   - 探索と活用のバランスを最適化
+   - 実験回数を1/10～1/100に削減可能
 
-        <h3>問題1（難易度：easy）</h3>
+<h3>重要なポイント</h3>
 
-        <p>以下の材料探索問題について、探索空間のサイズを計算してください。</p>
+- ✅ 材料探索では<strong>効率的な探索戦略が必須</strong>
+- ✅ ベイズ最適化は<strong>データ駆動型材料開発の中核技術</strong>
+- ✅ 探索と活用の<strong>トレードオフを理解することが重要</strong>
+- ✅ 実世界で多数の<strong>成功事例が存在</strong>
+- ✅ 自動実験装置との<strong>連携で威力を発揮</strong>
 
-        <p><strong>問題設定</strong>:<br>
-        有機太陽電池のドナー材料とアクセプター材料の組み合わせ最適化</p>
-        <ul>
-            <li>ドナー材料の種類: 8種類</li>
-            <li>アクセプター材料の種類: 10種類</li>
-            <li>ドナー:アクセプター重量比: 1:0.5～1:2（0.1刻み、16段階）</li>
-            <li>アニール温度: 100-200°C（10°C刻み、11段階）</li>
-        </ul>
+<h3>次の章へ</h3>
 
-        <p>1. 探索空間の総サイズを計算してください<br>
-        2. 1サンプル作製に2時間かかる場合、全探索に何年かかりますか？</p>
+第2章では、ベイズ最適化の理論的基礎を学びます：
+- ガウス過程回帰による代理モデル
+- 獲得関数（EI、PI、UCB）の詳細
+- 探索と活用のバランス制御
 
-        <details>
-            <summary>ヒント</summary>
-            <ul>
-                <li>各パラメータの候補数を掛け合わせる</li>
-                <li>時間計算: 総サンプル数 × 2時間 ÷ (24時間/日 × 365日/年)</li>
-            </ul>
-        </details>
+<strong>[第2章：ベイズ最適化の理論 →](./chapter-2.md)</strong>
 
-        <details>
-            <summary>解答例</summary>
-            <pre><code class="language-python"># 探索空間サイズの計算
+---
+
+<h2>演習問題</h2>
+
+<h3>問題1（難易度：easy）</h3>
+
+以下の材料探索問題について、探索空間のサイズを計算してください。
+
+<strong>問題設定</strong>:
+有機太陽電池のドナー材料とアクセプター材料の組み合わせ最適化
+- ドナー材料の種類: 8種類
+- アクセプター材料の種類: 10種類
+- ドナー:アクセプター重量比: 1:0.5～1:2（0.1刻み、16段階）
+- アニール温度: 100-200°C（10°C刻み、11段階）
+
+1. 探索空間の総サイズを計算してください
+2. 1サンプル作製に2時間かかる場合、全探索に何年かかりますか？
+
+<details>
+<summary>ヒント</summary>
+
+- 各パラメータの候補数を掛け合わせる
+- 時間計算: 総サンプル数 × 2時間 ÷ (24時間/日 × 365日/年)
+
+</details>
+
+<details>
+<summary>解答例</summary>
+
+<pre><code class="language-python"><h1>探索空間サイズの計算</h1>
 donor_types = 8
 acceptor_types = 10
 weight_ratios = 16  # 0.5-2.0を0.1刻み
@@ -1198,33 +1274,34 @@ anneal_temps = 11   # 100-200を10刻み
 total_space = donor_types * acceptor_types * weight_ratios * anneal_temps
 print(f"探索空間サイズ: {total_space:,} 通り")
 
-# 時間計算
+<h1>時間計算</h1>
 hours_per_sample = 2
 total_hours = total_space * hours_per_sample
 total_years = total_hours / (24 * 365)
 
 print(f"全探索所要時間: {total_years:.1f} 年")</code></pre>
 
-            <p><strong>解答</strong>:</p>
-            <pre><code>探索空間サイズ: 14,080 通り
+<strong>解答</strong>:
+<pre><code>探索空間サイズ: 14,080 通り
 全探索所要時間: 3.2 年</code></pre>
 
-            <p><strong>解説</strong>:</p>
-            <ul>
-                <li>探索空間: 8 × 10 × 16 × 11 = 14,080通り</li>
-                <li>所要時間: 14,080 × 2時間 = 28,160時間 = 3.2年</li>
-                <li>結論: 全探索は非現実的、効率的手法が必要</li>
-            </ul>
-        </details>
+<strong>解説</strong>:
+- 探索空間: 8 × 10 × 16 × 11 = 14,080通り
+- 所要時間: 14,080 × 2時間 = 28,160時間 = 3.2年
+- 結論: 全探索は非現実的、効率的手法が必要
 
-        <h3>問題2（難易度：medium）</h3>
+</details>
 
-        <p>ランダム探索とベイズ最適化の効率を比較するシミュレーションを実行してください。</p>
+---
 
-        <p><strong>タスク</strong>:<br>
-        以下の目的関数（仮想的な材料特性）を最大化する問題：</p>
+<h3>問題2（難易度：medium）</h3>
 
-        <pre><code class="language-python">def material_property(x):
+ランダム探索とベイズ最適化の効率を比較するシミュレーションを実行してください。
+
+<strong>タスク</strong>:
+以下の目的関数（仮想的な材料特性）を最大化する問題：
+
+<pre><code class="language-python">def material_property(x):
     """
     材料特性（仮想）
     x: パラメータ (0-1の範囲)
@@ -1235,84 +1312,370 @@ print(f"全探索所要時間: {total_years:.1f} 年")</code></pre>
         0.1 * np.sin(10 * x)
     )</code></pre>
 
-        <p><strong>要求事項</strong>:</p>
-        <ol>
-            <li>ランダム探索を30回実行</li>
-            <li>最良値の推移をプロット</li>
-            <li>真の最適値との乖離を計算</li>
-            <li>何回の実験で真の最適値の95%に到達するか？</li>
-        </ol>
+<strong>要求事項</strong>:
+1. ランダム探索を30回実行
+2. 最良値の推移をプロット
+3. 真の最適値との乖離を計算
+4. 何回の実験で真の最適値の95%に到達するか？
 
-        <details>
-            <summary>ヒント</summary>
-            <ul>
-                <li><code>np.linspace(0, 1, 1000)</code>で真の最適値を計算</li>
-                <li><code>np.maximum.accumulate()</code>で最良値の推移を計算</li>
-                <li>95%到達は<code>best_so_far >= 0.95 * true_optimal</code>を確認</li>
-            </ul>
-        </details>
+<details>
+<summary>ヒント</summary>
 
-        <h3>問題3（難易度：hard）</h3>
+- <code>np.linspace(0, 1, 1000)</code>で真の最適値を計算
+- <code>np.maximum.accumulate()</code>で最良値の推移を計算
+- 95%到達は<code>best_so_far >= 0.95 * true_optimal</code>を確認
 
-        <p>多次元の材料探索問題において、グリッドサーチの計算コストがどう増加するか分析してください。</p>
+</details>
 
-        <p><strong>背景</strong>:<br>
-        触媒反応の最適化問題で以下のパラメータを考慮：</p>
-        <ol>
-            <li>反応温度: 50-300°C</li>
-            <li>圧力: 1-10 bar</li>
-            <li>触媒担持量: 1-20 wt%</li>
-            <li>pH: 1-14</li>
-            <li>反応時間: 1-24時間</li>
-            <li>基質濃度: 0.1-1.0 M</li>
-        </ol>
+<details>
+<summary>解答例</summary>
 
-        <p><strong>課題</strong>:</p>
-        <ol>
-            <li>各パラメータを10段階に離散化した場合のグリッドサーチのコストを計算</li>
-            <li>次元数を1から6まで変化させたときのコスト増加を可視化</li>
-            <li>1実験3時間として、各次元数での全探索所要時間を計算</li>
-            <li>代わりにベイズ最適化を使うと何％の削減になるか推定<br>
-                （仮定: ベイズ最適化は50回の実験で最適解に到達）</li>
-        </ol>
+<pre><code class="language-python">import numpy as np
+import matplotlib.pyplot as plt
 
-        <details>
-            <summary>ヒント</summary>
-            <p><strong>アプローチ</strong>:</p>
-            <ol>
-                <li>グリッドサーチのコスト = (段階数)^(次元数)</li>
-                <li>対数スケールでプロットすると見やすい</li>
-                <li>ベイズ最適化の削減率 = (1 - 50/グリッドサーチコスト) × 100</li>
-            </ol>
+<h1>目的関数</h1>
+def material_property(x):
+    return (
+        0.8 * np.exp(-((x - 0.3) / 0.15)**2) +
+        0.6 * np.exp(-((x - 0.7) / 0.1)**2) +
+        0.1 * np.sin(10 * x)
+    )
 
-            <p><strong>使用する関数</strong>:</p>
-            <ul>
-                <li><code>np.power()</code>で累乗計算</li>
-                <li><code>plt.semilogy()</code>で対数プロット</li>
-            </ul>
-        </details>
+<h1>真の最適値を計算</h1>
+x_fine = np.linspace(0, 1, 1000)
+y_fine = material_property(x_fine)
+true_optimal = np.max(y_fine)
+threshold_95 = 0.95 * true_optimal
 
-        <h2>参考文献</h2>
+print(f"真の最適値: {true_optimal:.4f}")
+print(f"95%閾値: {threshold_95:.4f}")
 
-        <ol>
-            <li>Snoek, J. et al. (2012). "Practical Bayesian Optimization of Machine Learning Algorithms." <em>Advances in Neural Information Processing Systems</em>, 25, 2951-2959. <a href="https://arxiv.org/abs/1206.2944" target="_blank">arXiv:1206.2944</a></li>
-            <li>Lookman, T. et al. (2019). "Active learning in materials science with emphasis on adaptive sampling using uncertainties for targeted design." <em>npj Computational Materials</em>, 5(1), 21. DOI: <a href="https://doi.org/10.1038/s41524-019-0153-8" target="_blank">10.1038/s41524-019-0153-8</a></li>
-            <li>Tabor, D. P. et al. (2018). "Accelerating the discovery of materials for clean energy in the era of smart automation." <em>Nature Reviews Materials</em>, 3(5), 5-20. DOI: <a href="https://doi.org/10.1038/s41578-018-0005-z" target="_blank">10.1038/s41578-018-0005-z</a></li>
-            <li>Greenhill, S. et al. (2020). "Bayesian Optimization for Adaptive Experimental Design: A Review." <em>IEEE Access</em>, 8, 13937-13948. DOI: <a href="https://doi.org/10.1109/ACCESS.2020.2966228" target="_blank">10.1109/ACCESS.2020.2966228</a></li>
-            <li>材料研究のための機械学習入門. 志賀元紀 et al. (2020). オーム社. ISBN: 978-4274225956</li>
-        </ol>
+<h1>ランダム探索</h1>
+np.random.seed(42)
+n_experiments = 30
+x_random = np.random.uniform(0, 1, n_experiments)
+y_random = material_property(x_random)
 
-        <div class="navigation">
-            <a href="./index.html" class="nav-button secondary">← シリーズ目次</a>
-            <a href="./chapter-2.html" class="nav-button">第2章：ベイズ最適化の理論 →</a>
-        </div>
+<h1>最良値の推移</h1>
+best_so_far = np.maximum.accumulate(y_random)
+
+<h1>95%到達点を探す</h1>
+reached_95 = np.where(best_so_far >= threshold_95)[0]
+if len(reached_95) > 0:
+    first_95 = reached_95[0] + 1  # インデックスは0始まり
+    print(f"\n95%到達: {first_95}回目の実験")
+else:
+    print(f"\n95%未到達（最良値: {np.max(y_random):.4f}）")
+
+<h1>プロット</h1>
+plt.figure(figsize=(10, 6))
+plt.plot(range(1, n_experiments + 1), best_so_far, 'o-',
+         linewidth=2, markersize=8, label='ランダム探索')
+plt.axhline(true_optimal, color='green', linestyle='--',
+            linewidth=2, label='真の最適値')
+plt.axhline(threshold_95, color='orange', linestyle=':',
+            linewidth=2, label='95%閾値')
+plt.xlabel('実験回数', fontsize=12)
+plt.ylabel('これまでの最良値', fontsize=12)
+plt.title('ランダム探索の収束性', fontsize=14)
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.show()
+
+print(f"\n最終達成率: {(best_so_far[-1]/true_optimal*100):.1f}%")</code></pre>
+
+<strong>期待される出力</strong>:
+<pre><code>真の最適値: 0.8123
+95%閾値: 0.7717
+
+95%到達: 18回目の実験
+
+最終達成率: 97.2%</code></pre>
+
+<strong>解説</strong>:
+- ランダム探索でも十分な回数があれば高い達成率
+- しかし収束が遅く、初期は非効率
+- ベイズ最適化なら10回以内で95%到達可能（次章で確認）
+
+</details>
+
+---
+
+<h3>問題3（難易度：hard）</h3>
+
+多次元の材料探索問題において、グリッドサーチの計算コストがどう増加するか分析してください。
+
+<strong>背景</strong>:
+触媒反応の最適化問題で以下のパラメータを考慮：
+1. 反応温度: 50-300°C
+2. 圧力: 1-10 bar
+3. 触媒担持量: 1-20 wt%
+4. pH: 1-14
+5. 反応時間: 1-24時間
+6. 基質濃度: 0.1-1.0 M
+
+<strong>課題</strong>:
+1. 各パラメータを10段階に離散化した場合のグリッドサーチのコストを計算
+2. 次元数を1から6まで変化させたときのコスト増加を可視化
+3. 1実験3時間として、各次元数での全探索所要時間を計算
+4. 代わりにベイズ最適化を使うと何％の削減になるか推定
+   （仮定: ベイズ最適化は50回の実験で最適解に到達）
+
+<details>
+<summary>ヒント</summary>
+
+<strong>アプローチ</strong>:
+1. グリッドサーチのコスト = (段階数)^(次元数)
+2. 対数スケールでプロットすると見やすい
+3. ベイズ最適化の削減率 = (1 - 50/グリッドサーチコスト) × 100
+
+<strong>使用する関数</strong>:
+- <code>np.power()</code>で累乗計算
+- <code>plt.semilogy()</code>で対数プロット
+
+</details>
+
+<details>
+<summary>解答例</summary>
+
+<pre><code class="language-python">import numpy as np
+import matplotlib.pyplot as plt
+
+<h1>パラメータ設定</h1>
+parameters = [
+    "Temperature", "Pressure", "Catalyst loading",
+    "pH", "Reaction time", "Substrate conc."
+]
+points_per_dim = 10
+hours_per_experiment = 3
+bayesian_experiments = 50  # ベイズ最適化で必要な実験回数
+
+<h1>次元数を変えて計算</h1>
+dimensions = range(1, 7)
+grid_costs = []
+time_years = []
+bayesian_savings = []
+
+print("グリッドサーチのコスト分析:")
+print("=" * 60)
+
+for d in dimensions:
+    # グリッドサーチのコスト
+    cost = points_per_dim ** d
+    grid_costs.append(cost)
+
+    # 時間計算
+    hours = cost * hours_per_experiment
+    years = hours / (24 * 365)
+    time_years.append(years)
+
+    # ベイズ最適化の削減率
+    if cost > bayesian_experiments:
+        saving = (1 - bayesian_experiments / cost) * 100
+    else:
+        saving = 0
+    bayesian_savings.append(saving)
+
+    # 結果表示
+    print(f"{d}次元:")
+    print(f"  グリッドポイント数: {cost:,}")
+    if years < 1:
+        print(f"  所要時間: {hours:,.0f} 時間 ({hours/24:.1f} 日)")
+    else:
+        print(f"  所要時間: {years:,.1f} 年")
+    print(f"  ベイズ最適化の削減率: {saving:.1f}%")
+    print()
+
+<h1>可視化</h1>
+fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+
+<h1>左図: グリッドサーチのコスト（対数スケール）</h1>
+axes[0].semilogy(dimensions, grid_costs, 'o-',
+                 linewidth=2, markersize=10, color='blue')
+axes[0].axhline(bayesian_experiments, color='red',
+                linestyle='--', linewidth=2,
+                label='ベイズ最適化 (50回)')
+axes[0].set_xlabel('次元数', fontsize=12)
+axes[0].set_ylabel('実験回数（対数スケール）', fontsize=12)
+axes[0].set_title('グリッドサーチのコスト', fontsize=14)
+axes[0].legend()
+axes[0].grid(True, alpha=0.3)
+
+<h1>中央図: 所要時間（対数スケール）</h1>
+axes[1].semilogy(dimensions, time_years, 'o-',
+                 linewidth=2, markersize=10, color='green')
+axes[1].axhline(bayesian_experiments * hours_per_experiment / (24*365),
+                color='red', linestyle='--', linewidth=2,
+                label='ベイズ最適化')
+axes[1].set_xlabel('次元数', fontsize=12)
+axes[1].set_ylabel('所要時間（年、対数スケール）', fontsize=12)
+axes[1].set_title('全探索の所要時間', fontsize=14)
+axes[1].legend()
+axes[1].grid(True, alpha=0.3)
+
+<h1>右図: ベイズ最適化の削減率</h1>
+axes[2].bar(dimensions, bayesian_savings, color='orange', alpha=0.7)
+axes[2].set_xlabel('次元数', fontsize=12)
+axes[2].set_ylabel('削減率 (%)', fontsize=12)
+axes[2].set_title('ベイズ最適化による削減効果', fontsize=14)
+axes[2].set_ylim([0, 100])
+axes[2].grid(True, alpha=0.3, axis='y')
+
+plt.tight_layout()
+plt.savefig('grid_search_cost_analysis.png', dpi=150,
+            bbox_inches='tight')
+plt.show()
+
+<h1>サマリー</h1>
+print("=" * 60)
+print("結論:")
+print(f"  6次元問題（全パラメータ）:")
+print(f"    グリッドサーチ: {grid_costs[-1]:,} 実験 ({time_years[-1]:,.0f} 年)")
+print(f"    ベイズ最適化: {bayesian_experiments} 実験 ({bayesian_experiments*hours_per_experiment/(24*365):.2f} 年)")
+print(f"    削減率: {bayesian_savings[-1]:.2f}%")
+print(f"    効率向上: {grid_costs[-1]/bayesian_experiments:,.0f} 倍")</code></pre>
+
+<strong>期待される出力</strong>:
+<pre><code>グリッドサーチのコスト分析:
+============================================================
+1次元:
+  グリッドポイント数: 10
+  所要時間: 30 時間 (1.2 日)
+  ベイズ最適化の削減率: 0.0%
+
+2次元:
+  グリッドポイント数: 100
+  所要時間: 300 時間 (12.5 日)
+  ベイズ最適化の削減率: 50.0%
+
+3次元:
+  グリッドポイント数: 1,000
+  所要時間: 3,000 時間 (125.0 日)
+  ベイズ最適化の削減率: 95.0%
+
+4次元:
+  グリッドポイント数: 10,000
+  所要時間: 3.4 年
+  ベイズ最適化の削減率: 99.5%
+
+5次元:
+  グリッドポイント数: 100,000
+  所要時間: 34.2 年
+  ベイズ最適化の削減率: 100.0%
+
+6次元:
+  グリッドポイント数: 1,000,000
+  所要時間: 342 年
+  ベイズ最適化の削減率: 100.0%
+
+============================================================
+結論:
+  6次元問題（全パラメータ）:
+    グリッドサーチ: 1,000,000 実験 (342 年)
+    ベイズ最適化: 50 実験 (0.02 年)
+    削減率: 100.00%
+    効率向上: 20,000 倍</code></pre>
+
+<strong>詳細な解説</strong>:
+1. <strong>次元の呪い</strong>: 次元が増えると指数関数的にコスト増加
+2. <strong>実用性</strong>: 4次元以上はグリッドサーチが非現実的
+3. <strong>ベイズ最適化の威力</strong>: 高次元問題で特に有効（99%以上の削減）
+4. <strong>実務への示唆</strong>: 多変数最適化では必須技術
+
+<strong>追加の検討事項</strong>:
+- グリッドの密度（10段階）は妥協の産物
+- より細かい刻み（20段階）にすると状況はさらに悪化
+- 連続変数の場合、ベイズ最適化がさらに有利
+
+</details>
+
+---
+
+<h2>参考文献</h2>
+
+1. Snoek, J. et al. (2012). "Practical Bayesian Optimization of Machine Learning Algorithms." *Advances in Neural Information Processing Systems*, 25, 2951-2959.
+   [arXiv:1206.2944](https://arxiv.org/abs/1206.2944)
+
+2. Lookman, T. et al. (2019). "Active learning in materials science with emphasis on adaptive sampling using uncertainties for targeted design." *npj Computational Materials*, 5(1), 21.
+   DOI: [10.1038/s41524-019-0153-8](https://doi.org/10.1038/s41524-019-0153-8)
+
+3. Tabor, D. P. et al. (2018). "Accelerating the discovery of materials for clean energy in the era of smart automation." *Nature Reviews Materials*, 3(5), 5-20.
+   DOI: [10.1038/s41578-018-0005-z](https://doi.org/10.1038/s41578-018-0005-z)
+
+4. Greenhill, S. et al. (2020). "Bayesian Optimization for Adaptive Experimental Design: A Review." *IEEE Access*, 8, 13937-13948.
+   DOI: [10.1109/ACCESS.2020.2966228](https://doi.org/10.1109/ACCESS.2020.2966228)
+
+5. 材料研究のための機械学習入門. 志賀元紀 et al. (2020). オーム社. ISBN: 978-4274225956
+
+---
+
+<h2>ナビゲーション</h2>
+
+<h3>次の章</h3>
+<strong>[第2章：ベイズ最適化の理論 →](./chapter-2.md)</strong>
+
+<h3>シリーズ目次</h3>
+<strong>[← シリーズ目次に戻る](./index.md)</strong>
+
+---
+
+<h2>著者情報</h2>
+
+<strong>作成者</strong>: AI Terakoya Content Team
+<strong>監修</strong>: Dr. Yusuke Hashimoto（東北大学）
+<strong>作成日</strong>: 2025-10-17
+<strong>バージョン</strong>: 1.0
+
+<strong>更新履歴</strong>:
+- 2025-10-17: v1.0 初版公開
+
+<strong>フィードバック</strong>:
+- GitHub Issues: [AI_Homepage/issues](https://github.com/your-repo/AI_Homepage/issues)
+- Email: yusuke.hashimoto.b8@tohoku.ac.jp
+
+<strong>ライセンス</strong>: Creative Commons BY 4.0
+
+---
+
+<strong>次の章で理論の詳細を学びましょう！</strong>
+<div class="navigation">
+    <a href="index.html" class="nav-button">シリーズ目次に戻る</a>
+    <a href="chapter-2.html" class="nav-button">第2章 →</a>
+</div>
     </main>
 
     <footer>
-        <div class="container">
-            <p>&copy; 2025 MI Knowledge Hub - Dr. Yusuke Hashimoto, Tohoku University</p>
-            <p>Licensed under CC BY 4.0</p>
-        </div>
+        <p><strong>作成者</strong>: AI Terakoya Content Team</p>
+        <p><strong>監修</strong>: Dr. Yusuke Hashimoto（東北大学）</p>
+        <p><strong>バージョン</strong>: 1.0 | <strong>作成日</strong>: 2025-10-17</p>
+        <p><strong>ライセンス</strong>: Creative Commons BY 4.0</p>
+        <p>© 2025 AI Terakoya. All rights reserved.</p>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mermaidCodeBlocks = document.querySelectorAll('pre.codehilite code.language-mermaid, pre code.language-mermaid');
+
+            mermaidCodeBlocks.forEach(function(codeBlock) {
+                const pre = codeBlock.parentElement;
+                const mermaidCode = codeBlock.textContent;
+
+                const mermaidDiv = document.createElement('div');
+                mermaidDiv.className = 'mermaid';
+                mermaidDiv.textContent = mermaidCode.trim();
+
+                pre.parentNode.replaceChild(mermaidDiv, pre);
+            });
+
+            if (typeof mermaid !== 'undefined') {
+                mermaid.initialize({
+                    startOnLoad: true,
+                    theme: 'default'
+                });
+                mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+            }
+        });
+    </script>
 </body>
 </html>

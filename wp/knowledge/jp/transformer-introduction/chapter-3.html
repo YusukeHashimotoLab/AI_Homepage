@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Untitled - AI Terakoya</title>
+    <title>Chapter - AI Terakoya</title>
 
     <style>
         :root {
@@ -198,6 +198,55 @@
             border-radius: var(--border-radius);
         }
 
+        .mermaid {
+            text-align: center;
+            margin: var(--spacing-lg) 0;
+            background-color: var(--color-bg-alt);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        details {
+            background-color: var(--color-bg-alt);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--color-primary);
+            user-select: none;
+            padding: var(--spacing-xs);
+            margin: calc(-1 * var(--spacing-md));
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        summary:hover {
+            background-color: rgba(123, 44, 191, 0.1);
+        }
+
+        details[open] summary {
+            margin-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .learning-objectives {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--color-accent);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .learning-objectives h2 {
+            margin-top: 0;
+            border-bottom: none;
+        }
+
         .navigation {
             display: flex;
             justify-content: space-between;
@@ -270,794 +319,763 @@
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         mermaid.initialize({ startOnLoad: true, theme: 'default' });
     </script>
+
+    <!-- MathJax for LaTeX equation rendering -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\(', '\)']],
+                displayMath: [['$$', '$$'], ['\[', '\]']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
 </head>
 <body>
     <header>
         <div class="header-content">
-            <h1>Untitled</h1>
-            
+            <h1>Chapter</h1>
+            <p class="subtitle"></p>
             <div class="meta">
-                <span class="meta-item">📖 読了時間: 20-30分</span>
-                <span class="meta-item">📊 難易度: 中級</span>
-                <span class="meta-item">💻 コード例: 5個</span>
+                <span class="meta-item">📖 読了時間: 20-25分</span>
+                <span class="meta-item">📊 難易度: 初級</span>
+                <span class="meta-item">💻 コード例: 0個</span>
+                <span class="meta-item">📝 演習問題: 0問</span>
             </div>
         </div>
     </header>
 
     <main class="container">
-        <p><h1>第3章: 事前学習モデルと転移学習</h1></p>
-
-<p><strong>学習時間</strong>: 25-30分 | <strong>難易度</strong>: 中級〜上級</p>
-
-<p><h2>📋 この章で学ぶこと</h2></p>
-
-<ul>
-<li>事前学習（Pre-training）の重要性と原理</li>
-<li>MatBERT、MolBERTなど材料科学向け事前学習モデル</li>
-<li>ファインチューニング（Fine-tuning）の戦略</li>
-<li>Few-shot学習とプロンプトエンジニアリング</li>
-<li>ドメイン適応（Domain Adaptation）</li>
-</ul>
-
-<p>---</p>
-
-<p><h2>3.1 事前学習の重要性</h2></p>
-
-<p><h3>なぜ事前学習が必要か</h3></p>
-
-<p><strong>材料科学の課題</strong>:</p>
-<ul>
-<li>❌ ラベル付きデータが少ない（実験データは高コスト）</li>
-<li>❌ ドメイン固有の知識が必要</li>
-<li>❌ ゼロから学習すると時間とコストがかかる</li>
-</ul>
-
-<p><strong>事前学習の利点</strong>:</p>
-<ul>
-<li>✅ 大規模な<strong>ラベルなしデータ</strong>で一般的な知識を獲得</li>
-<li>✅ 少量のラベル付きデータで<strong>高精度</strong>を実現</li>
-<li>✅ 開発期間の<strong>大幅短縮</strong>（数週間→数時間）</li>
-</ul>
-
-<p><pre><code class="language-mermaid">graph LR</p>
-<p>    A[大規模ラベルなしデータ] --> B[事前学習]</p>
-<p>    B --> C[汎用表現モデル]</p>
-<p>    C --> D[ファインチューニング]</p>
-<p>    E[少量ラベル付きデータ] --> D</p>
-<p>    D --> F[タスク特化モデル]</p>
-
-<p>    style B fill:#e1f5ff</p>
-<p>    style D fill:#ffe1e1</p>
-<p></code></pre></p>
-
-<p><h3>事前学習のタスク</h3></p>
-
-<p><strong>自然言語処理での例</strong>:</p>
-<ul>
-<li><strong>Masked Language Model (MLM)</strong>: 一部の単語をマスクして予測</li>
-<li><strong>Next Sentence Prediction (NSP)</strong>: 2文の連続性を予測</li>
-</ul>
-
-<p><strong>材料科学での応用</strong>:</p>
-<ul>
-<li><strong>Masked Atom Prediction</strong>: 一部の原子をマスクして予測</li>
-<li><strong>Property Prediction</strong>: 複数の材料特性を同時予測</li>
-<li><strong>Contrastive Learning</strong>: 類似材料を近く、異なる材料を遠くに配置</li>
-</ul>
-
-<p>---</p>
-
-<p><h2>3.2 MatBERT: Materials BERT</h2></p>
-
-<p><h3>概要</h3></p>
-
-<p><strong>MatBERT</strong>は、材料の組成式をBERTで学習したモデルです。</p>
-
-<p><strong>特徴</strong>:</p>
-<ul>
-<li><strong>500k材料</strong>の組成式で事前学習</li>
-<li><strong>マスク原子予測</strong>タスク</li>
-<li>転移学習で様々な特性予測に適用可能</li>
-</ul>
-
-<p><h3>組成式のトークン化</h3></p>
-
-<p><pre><code class="language-python">import torch</p>
-<p>import torch.nn as nn</p>
-<p>from transformers import BertTokenizer, BertModel</p>
-
-<p>class CompositionTokenizer:</p>
-<p>    def __init__(self):</p>
-<p>        <h1>カスタム語彙（周期表の元素）</h1></p>
-<p>        self.vocab = ['[PAD]', '[CLS]', '[SEP]', '[MASK]'] + [</p>
-<p>            'H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne',</p>
-<p>            'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'Ar', 'K', 'Ca',</p>
-<p>            <h1>... 全元素</h1></p>
-<p>        ]</p>
-<p>        self.token_to_id = {token: i for i, token in enumerate(self.vocab)}</p>
-<p>        self.id_to_token = {i: token for i, token in enumerate(self.vocab)}</p>
-
-<p>    def tokenize(self, composition):</p>
-<p>        """</p>
-<p>        組成式をトークン化</p>
-
-<p>        Args:</p>
-<p>            composition: 'Fe2O3' のような組成式</p>
-<p>        Returns:</p>
-<p>            tokens: トークンのリスト</p>
-<p>        """</p>
-<p>        import re</p>
-<p>        <h1>元素と数字を分割</h1></p>
-<p>        pattern = r'([A-Z][a-z]?)(\d<em>\.?\d</em>)'</p>
-<p>        matches = re.findall(pattern, composition)</p>
-
-<p>        tokens = ['[CLS]']</p>
-<p>        for element, count in matches:</p>
-<p>            if element in self.vocab:</p>
-<p>                <h1>元素を追加</h1></p>
-<p>                tokens.append(element)</p>
-<p>                <h1>数が1より大きい場合、その回数だけ繰り返す（簡略化）</h1></p>
-<p>                if count and float(count) > 1:</p>
-<p>                    for _ in range(int(float(count)) - 1):</p>
-<p>                        tokens.append(element)</p>
-<p>        tokens.append('[SEP]')</p>
-
-<p>        return tokens</p>
-
-<p>    def encode(self, compositions, max_length=32):</p>
-<p>        """</p>
-<p>        組成式をIDに変換</p>
-
-<p>        Args:</p>
-<p>            compositions: 組成式のリスト</p>
-<p>            max_length: 最大長</p>
-<p>        Returns:</p>
-<p>            input_ids: (batch_size, max_length)</p>
-<p>            attention_mask: (batch_size, max_length)</p>
-<p>        """</p>
-<p>        batch_input_ids = []</p>
-<p>        batch_attention_mask = []</p>
-
-<p>        for comp in compositions:</p>
-<p>            tokens = self.tokenize(comp)</p>
-<p>            ids = [self.token_to_id.get(token, 0) for token in tokens]</p>
-
-<p>            <h1>パディング</h1></p>
-<p>            attention_mask = [1] * len(ids)</p>
-<p>            while len(ids) < max_length:</p>
-<p>                ids.append(0)  <h1>[PAD]</h1></p>
-<p>                attention_mask.append(0)</p>
-
-<p>            <h1>トランケーション</h1></p>
-<p>            ids = ids[:max_length]</p>
-<p>            attention_mask = attention_mask[:max_length]</p>
-
-<p>            batch_input_ids.append(ids)</p>
-<p>            batch_attention_mask.append(attention_mask)</p>
-
-<p>        return torch.tensor(batch_input_ids), torch.tensor(batch_attention_mask)</p>
-
-<p><h1>使用例</h1></p>
-<p>tokenizer = CompositionTokenizer()</p>
-
-<p>compositions = [</p>
-<p>    'Fe2O3',     <h1>酸化鉄</h1></p>
-<p>    'LiCoO2',    <h1>リチウムコバルト酸化物（電池材料）</h1></p>
-<p>    'BaTiO3'     <h1>チタン酸バリウム（誘電体）</h1></p>
-<p>]</p>
-
-<p>input_ids, attention_mask = tokenizer.encode(compositions)</p>
-<p>print(f"Input IDs shape: {input_ids.shape}")</p>
-<p>print(f"First composition tokens: {input_ids[0][:10]}")</p>
-<p></code></pre></p>
-
-<p><h3>MatBERTモデル</h3></p>
-
-<p><pre><code class="language-python">class MatBERT(nn.Module):</p>
-<p>    def __init__(self, vocab_size, d_model=512, num_layers=6, num_heads=8):</p>
-<p>        super(MatBERT, self).__init__()</p>
-
-<p>        <h1>Embedding</h1></p>
-<p>        self.embedding = nn.Embedding(vocab_size, d_model)</p>
-<p>        self.position_embedding = nn.Embedding(512, d_model)</p>
-
-<p>        <h1>Transformer Encoder</h1></p>
-<p>        encoder_layer = nn.TransformerEncoderLayer(</p>
-<p>            d_model=d_model,</p>
-<p>            nhead=num_heads,</p>
-<p>            dim_feedforward=2048,</p>
-<p>            batch_first=True</p>
-<p>        )</p>
-<p>        self.transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers)</p>
-
-<p>        self.d_model = d_model</p>
-
-<p>    def forward(self, input_ids, attention_mask):</p>
-<p>        """</p>
-<p>        Args:</p>
-<p>            input_ids: (batch_size, seq_len)</p>
-<p>            attention_mask: (batch_size, seq_len)</p>
-<p>        Returns:</p>
-<p>            embeddings: (batch_size, seq_len, d_model)</p>
-<p>        """</p>
-<p>        batch_size, seq_len = input_ids.shape</p>
-
-<p>        <h1>Token embedding</h1></p>
-<p>        token_embeddings = self.embedding(input_ids)</p>
-
-<p>        <h1>Positional embedding</h1></p>
-<p>        positions = torch.arange(seq_len, device=input_ids.device).unsqueeze(0).expand(batch_size, -1)</p>
-<p>        position_embeddings = self.position_embedding(positions)</p>
-
-<p>        <h1>合計</h1></p>
-<p>        embeddings = token_embeddings + position_embeddings</p>
-
-<p>        <h1>Transformer</h1></p>
-<p>        <h1>attention_maskをTransformer用に変換（0→-inf, 1→0）</h1></p>
-<p>        transformer_mask = (1 - attention_mask).bool()</p>
-<p>        output = self.transformer_encoder(embeddings, src_key_padding_mask=transformer_mask)</p>
-
-<p>        return output</p>
-
-<p><h1>使用例</h1></p>
-<p>vocab_size = len(tokenizer.vocab)</p>
-<p>model = MatBERT(vocab_size, d_model=512, num_layers=6, num_heads=8)</p>
-
-<p>embeddings = model(input_ids, attention_mask)</p>
-<p>print(f"Embeddings shape: {embeddings.shape}")  <h1>(3, 32, 512)</h1></p>
-<p></code></pre></p>
-
-<p><h3>事前学習: Masked Atom Prediction</h3></p>
-
-<p><pre><code class="language-python">def masked_atom_prediction_loss(model, input_ids, attention_mask, mask_prob=0.15):</p>
-<p>    """</p>
-<p>    マスク原子予測による事前学習</p>
-
-<p>    Args:</p>
-<p>        model: MatBERTモデル</p>
-<p>        input_ids: (batch_size, seq_len)</p>
-<p>        attention_mask: (batch_size, seq_len)</p>
-<p>        mask_prob: マスクする確率</p>
-<p>    Returns:</p>
-<p>        loss: 損失</p>
-<p>    """</p>
-<p>    batch_size, seq_len = input_ids.shape</p>
-
-<p>    <h1>ランダムにマスク</h1></p>
-<p>    mask_token_id = tokenizer.token_to_id['[MASK]']</p>
-<p>    mask = torch.rand(batch_size, seq_len) < mask_prob</p>
-<p>    mask = mask & (attention_mask == 1)  <h1>パディング部分は除外</h1></p>
-
-<p>    <h1>元のトークンを保存</h1></p>
-<p>    original_input_ids = input_ids.clone()</p>
-
-<p>    <h1>マスクを適用</h1></p>
-<p>    input_ids[mask] = mask_token_id</p>
-
-<p>    <h1>Forward</h1></p>
-<p>    embeddings = model(input_ids, attention_mask)</p>
-
-<p>    <h1>予測ヘッド</h1></p>
-<p>    prediction_head = nn.Linear(model.d_model, vocab_size)</p>
-<p>    logits = prediction_head(embeddings)</p>
-
-<p>    <h1>損失計算（マスクされた位置のみ）</h1></p>
-<p>    criterion = nn.CrossEntropyLoss(ignore_index=-100)</p>
-<p>    labels = original_input_ids.clone()</p>
-<p>    labels[~mask] = -100  <h1>マスクされていない部分は無視</h1></p>
-
-<p>    loss = criterion(logits.view(-1, vocab_size), labels.view(-1))</p>
-
-<p>    return loss</p>
-
-<p><h1>事前学習ループ（簡略版）</h1></p>
-<p>def pretrain_matbert(model, dataloader, epochs=10):</p>
-<p>    optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)</p>
-
-<p>    model.train()</p>
-<p>    for epoch in range(epochs):</p>
-<p>        total_loss = 0</p>
-<p>        for input_ids, attention_mask in dataloader:</p>
-<p>            loss = masked_atom_prediction_loss(model, input_ids, attention_mask)</p>
-
-<p>            optimizer.zero_grad()</p>
-<p>            loss.backward()</p>
-<p>            optimizer.step()</p>
-
-<p>            total_loss += loss.item()</p>
-
-<p>        avg_loss = total_loss / len(dataloader)</p>
-<p>        print(f"Epoch {epoch+1}, Pretraining Loss: {avg_loss:.4f}")</p>
-
-<p>    return model</p>
-<p></code></pre></p>
-
-<p>---</p>
-
-<p><h2>3.3 ファインチューニング戦略</h2></p>
-
-<p><h3>ファインチューニングとは</h3></p>
-
-<p><strong>定義</strong>: 事前学習モデルを特定タスクに適応させる追加学習</p>
-
-<p><strong>戦略</strong>:</p>
-<ol>
-<li><strong>Full Fine-tuning</strong>: すべてのパラメータを更新</li>
-<li><strong>Feature Extraction</strong>: 埋め込み層のみ使用、予測ヘッドのみ学習</li>
-<li><strong>Partial Fine-tuning</strong>: 一部の層のみ更新</li>
-</ol>
-
-<p><pre><code class="language-mermaid">graph TD</p>
-<p>    A[事前学習済みMatBERT] --> B{ファインチューニング戦略}</p>
-<p>    B --> C[Full Fine-tuning]</p>
-<p>    B --> D[Feature Extraction]</p>
-<p>    B --> E[Partial Fine-tuning]</p>
-
-<p>    C --> F[全層を更新]</p>
-<p>    D --> G[埋め込み固定、予測ヘッドのみ学習]</p>
-<p>    E --> H[上位層のみ更新]</p>
-
-<p>    style C fill:#ffe1e1</p>
-<p>    style D fill:#e1f5ff</p>
-<p>    style E fill:#f5ffe1</p>
-<p></code></pre></p>
-
-<p><h3>実装: バンドギャップ予測</h3></p>
-
-<p><pre><code class="language-python">class MatBERTForBandgap(nn.Module):</p>
-<p>    def __init__(self, matbert_model, d_model=512):</p>
-<p>        super(MatBERTForBandgap, self).__init__()</p>
-<p>        self.matbert = matbert_model</p>
-
-<p>        <h1>予測ヘッド</h1></p>
-<p>        self.bandgap_predictor = nn.Sequential(</p>
-<p>            nn.Linear(d_model, 256),</p>
-<p>            nn.ReLU(),</p>
-<p>            nn.Dropout(0.2),</p>
-<p>            nn.Linear(256, 1)</p>
-<p>        )</p>
-
-<p>    def forward(self, input_ids, attention_mask):</p>
-<p>        <h1>MatBERT埋め込み</h1></p>
-<p>        embeddings = self.matbert(input_ids, attention_mask)</p>
-
-<p>        <h1>[CLS]トークンの埋め込みを使用</h1></p>
-<p>        cls_embedding = embeddings[:, 0, :]</p>
-
-<p>        <h1>バンドギャップ予測</h1></p>
-<p>        bandgap = self.bandgap_predictor(cls_embedding)</p>
-<p>        return bandgap</p>
-
-<p><h1>ファインチューニング</h1></p>
-<p>def finetune_for_bandgap(pretrained_model, train_loader, val_loader, strategy='full'):</p>
-<p>    """</p>
-<p>    バンドギャップ予測へのファインチューニング</p>
-
-<p>    Args:</p>
-<p>        pretrained_model: 事前学習済みMatBERT</p>
-<p>        train_loader: 訓練データローダー</p>
-<p>        val_loader: 検証データローダー</p>
-<p>        strategy: 'full', 'feature', 'partial'</p>
-<p>    """</p>
-<p>    model = MatBERTForBandgap(pretrained_model)</p>
-
-<p>    <h1>戦略に応じてパラメータの固定</h1></p>
-<p>    if strategy == 'feature':</p>
-<p>        <h1>MatBERTを固定</h1></p>
-<p>        for param in model.matbert.parameters():</p>
-<p>            param.requires_grad = False</p>
-<p>    elif strategy == 'partial':</p>
-<p>        <h1>下位層を固定、上位層のみ更新</h1></p>
-<p>        for i, layer in enumerate(model.matbert.transformer_encoder.layers):</p>
-<p>            if i < 3:  <h1>下位3層を固定</h1></p>
-<p>                for param in layer.parameters():</p>
-<p>                    param.requires_grad = False</p>
-
-<p>    <h1>最適化</h1></p>
-<p>    optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=1e-5)</p>
-<p>    criterion = nn.MSELoss()</p>
-
-<p>    <h1>訓練ループ</h1></p>
-<p>    best_val_loss = float('inf')</p>
-<p>    for epoch in range(20):</p>
-<p>        model.train()</p>
-<p>        train_loss = 0</p>
-<p>        for input_ids, attention_mask, bandgaps in train_loader:</p>
-<p>            predictions = model(input_ids, attention_mask)</p>
-<p>            loss = criterion(predictions, bandgaps)</p>
-
-<p>            optimizer.zero_grad()</p>
-<p>            loss.backward()</p>
-<p>            optimizer.step()</p>
-
-<p>            train_loss += loss.item()</p>
-
-<p>        <h1>検証</h1></p>
-<p>        model.eval()</p>
-<p>        val_loss = 0</p>
-<p>        with torch.no_grad():</p>
-<p>            for input_ids, attention_mask, bandgaps in val_loader:</p>
-<p>                predictions = model(input_ids, attention_mask)</p>
-<p>                loss = criterion(predictions, bandgaps)</p>
-<p>                val_loss += loss.item()</p>
-
-<p>        train_loss /= len(train_loader)</p>
-<p>        val_loss /= len(val_loader)</p>
-
-<p>        print(f"Epoch {epoch+1}, Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}")</p>
-
-<p>        if val_loss < best_val_loss:</p>
-<p>            best_val_loss = val_loss</p>
-<p>            torch.save(model.state_dict(), 'best_matbert_bandgap.pt')</p>
-
-<p>    return model</p>
-<p></code></pre></p>
-
-<p>---</p>
-
-<p><h2>3.4 Few-shot学習</h2></p>
-
-<p><h3>概要</h3></p>
-
-<p><strong>Few-shot学習</strong>: 少量のサンプル（数個〜数十個）で新しいタスクを学習</p>
-
-<p><strong>材料科学での重要性</strong>:</p>
-<ul>
-<li>新規材料のデータは非常に少ない</li>
-<li>実験データの取得は高コスト</li>
-<li>迅速なプロトタイピングが必要</li>
-</ul>
-
-<p><h3>Prototypical Networks</h3></p>
-
-<p><pre><code class="language-python">class PrototypicalNetwork(nn.Module):</p>
-<p>    def __init__(self, matbert_model, d_model=512):</p>
-<p>        super(PrototypicalNetwork, self).__init__()</p>
-<p>        self.encoder = matbert_model</p>
-
-<p>    def forward(self, support_ids, support_mask, query_ids, query_mask, support_labels):</p>
-<p>        """</p>
-<p>        Prototypical Networksによる分類</p>
-
-<p>        Args:</p>
-<p>            support_ids: サポートセット入力 (n_support, seq_len)</p>
-<p>            support_mask: サポートセットマスク</p>
-<p>            query_ids: クエリ入力 (n_query, seq_len)</p>
-<p>            query_mask: クエリマスク</p>
-<p>            support_labels: サポートセットラベル (n_support,)</p>
-<p>        Returns:</p>
-<p>            predictions: クエリの予測ラベル</p>
-<p>        """</p>
-<p>        <h1>サポートセットとクエリの埋め込み</h1></p>
-<p>        support_embeddings = self.encoder(support_ids, support_mask)[:, 0, :]  <h1>[CLS]</h1></p>
-<p>        query_embeddings = self.encoder(query_ids, query_mask)[:, 0, :]</p>
-
-<p>        <h1>各クラスのプロトタイプ（平均埋め込み）を計算</h1></p>
-<p>        unique_labels = torch.unique(support_labels)</p>
-<p>        prototypes = []</p>
-<p>        for label in unique_labels:</p>
-<p>            mask = (support_labels == label)</p>
-<p>            prototype = support_embeddings[mask].mean(dim=0)</p>
-<p>            prototypes.append(prototype)</p>
-
-<p>        prototypes = torch.stack(prototypes)  <h1>(num_classes, d_model)</h1></p>
-
-<p>        <h1>クエリとプロトタイプ間の距離</h1></p>
-<p>        distances = torch.cdist(query_embeddings, prototypes)  <h1>(n_query, num_classes)</h1></p>
-
-<p>        <h1>最も近いプロトタイプのクラスを予測</h1></p>
-<p>        predictions = torch.argmin(distances, dim=1)</p>
-
-<p>        return predictions</p>
-
-<p><h1>使用例: 3-way 5-shot分類</h1></p>
-<p><h1>3クラス、各クラス5サンプル</h1></p>
-<p>n_classes = 3</p>
-<p>n_support_per_class = 5</p>
-<p>n_query = 10</p>
-
-<p>support_ids = torch.randint(0, vocab_size, (n_classes * n_support_per_class, 32))</p>
-<p>support_mask = torch.ones_like(support_ids)</p>
-<p>support_labels = torch.arange(n_classes).repeat_interleave(n_support_per_class)</p>
-
-<p>query_ids = torch.randint(0, vocab_size, (n_query, 32))</p>
-<p>query_mask = torch.ones_like(query_ids)</p>
-
-<p>proto_net = PrototypicalNetwork(model)</p>
-<p>predictions = proto_net(support_ids, support_mask, query_ids, query_mask, support_labels)</p>
-<p>print(f"Predictions: {predictions}")</p>
-<p></code></pre></p>
-
-<p>---</p>
-
-<p><h2>3.5 プロンプトエンジニアリング</h2></p>
-
-<p><h3>材料科学でのプロンプト</h3></p>
-
-<p><strong>プロンプト</strong>: モデルに追加情報を与えて性能を向上</p>
-
-<p><strong>例</strong>:</p>
-<p><pre><code class="language-python"><h1>通常: 'Fe2O3'</h1></p>
-<p><h1>プロンプト付き: '[OXIDE] Fe2O3 [BANDGAP]'</h1></p>
-<p></code></pre></p>
-
-<p><h3>実装</h3></p>
-
-<p><pre><code class="language-python">class PromptedMatBERT(nn.Module):</p>
-<p>    def __init__(self, matbert_model, d_model=512):</p>
-<p>        super(PromptedMatBERT, self).__init__()</p>
-<p>        self.matbert = matbert_model</p>
-
-<p>        <h1>タスク別プロンプト埋め込み（学習可能）</h1></p>
-<p>        self.task_prompts = nn.Parameter(torch.randn(10, d_model))  <h1>10種類のタスク</h1></p>
-
-<p>    def forward(self, input_ids, attention_mask, task_id=0):</p>
-<p>        """</p>
-<p>        Args:</p>
-<p>            input_ids: (batch_size, seq_len)</p>
-<p>            attention_mask: (batch_size, seq_len)</p>
-<p>            task_id: タスクID (0-9)</p>
-<p>        """</p>
-<p>        batch_size = input_ids.size(0)</p>
-
-<p>        <h1>通常の埋め込み</h1></p>
-<p>        embeddings = self.matbert(input_ids, attention_mask)</p>
-
-<p>        <h1>タスクプロンプトを先頭に追加</h1></p>
-<p>        task_prompt = self.task_prompts[task_id].unsqueeze(0).expand(batch_size, -1, -1)</p>
-<p>        embeddings = torch.cat([task_prompt, embeddings], dim=1)</p>
-
-<p>        return embeddings</p>
-
-<p><h1>使用例</h1></p>
-<p>prompted_model = PromptedMatBERT(model)</p>
-
-<p><h1>タスク0: バンドギャップ予測</h1></p>
-<p>embeddings_task0 = prompted_model(input_ids, attention_mask, task_id=0)</p>
-
-<p><h1>タスク1: 形成エネルギー予測</h1></p>
-<p>embeddings_task1 = prompted_model(input_ids, attention_mask, task_id=1)</p>
-
-<p>print(f"Embeddings with prompt shape: {embeddings_task0.shape}")</p>
-<p></code></pre></p>
-
-<p>---</p>
-
-<p><h2>3.6 ドメイン適応</h2></p>
-
-<p><h3>概要</h3></p>
-
-<p><strong>ドメイン適応</strong>: ソースドメインで訓練したモデルをターゲットドメインに適応</p>
-
-<p><strong>例</strong>:</p>
-<ul>
-<li>ソース: 無機材料データ</li>
-<li>ターゲット: 有機分子データ</li>
-</ul>
-
-<p><h3>Adversarial Domain Adaptation</h3></p>
-
-<p><pre><code class="language-python">class DomainClassifier(nn.Module):</p>
-<p>    def __init__(self, d_model=512):</p>
-<p>        super(DomainClassifier, self).__init__()</p>
-<p>        self.classifier = nn.Sequential(</p>
-<p>            nn.Linear(d_model, 256),</p>
-<p>            nn.ReLU(),</p>
-<p>            nn.Linear(256, 2)  <h1>ソース or ターゲット</h1></p>
-<p>        )</p>
-
-<p>    def forward(self, embeddings):</p>
-<p>        return self.classifier(embeddings)</p>
-
-<p>class DomainAdaptiveMatBERT(nn.Module):</p>
-<p>    def __init__(self, matbert_model):</p>
-<p>        super(DomainAdaptiveMatBERT, self).__init__()</p>
-<p>        self.matbert = matbert_model</p>
-<p>        self.domain_classifier = DomainClassifier()</p>
-<p>        self.task_predictor = nn.Linear(512, 1)  <h1>例: バンドギャップ予測</h1></p>
-
-<p>    def forward(self, input_ids, attention_mask, alpha=1.0):</p>
-<p>        """</p>
-<p>        Args:</p>
-<p>            alpha: ドメイン適応の強さ</p>
-<p>        """</p>
-<p>        embeddings = self.matbert(input_ids, attention_mask)[:, 0, :]</p>
-
-<p>        <h1>タスク予測</h1></p>
-<p>        task_output = self.task_predictor(embeddings)</p>
-
-<p>        <h1>ドメイン予測（勾配反転層を使用）</h1></p>
-<p>        <h1>ここでは簡略化のため省略</h1></p>
-<p>        domain_output = self.domain_classifier(embeddings)</p>
-
-<p>        return task_output, domain_output</p>
-
-<p><h1>訓練ループ（簡略版）</h1></p>
-<p>def train_domain_adaptive(model, source_loader, target_loader, epochs=20):</p>
-<p>    optimizer = torch.optim.Adam(model.parameters(), lr=1e-5)</p>
-<p>    task_criterion = nn.MSELoss()</p>
-<p>    domain_criterion = nn.CrossEntropyLoss()</p>
-
-<p>    for epoch in range(epochs):</p>
-<p>        for (source_ids, source_mask, source_labels), (target_ids, target_mask, _) in zip(source_loader, target_loader):</p>
-<p>            <h1>ソースドメイン</h1></p>
-<p>            source_task, source_domain = model(source_ids, source_mask)</p>
-<p>            source_domain_labels = torch.zeros(source_ids.size(0), dtype=torch.long)  <h1>ソース = 0</h1></p>
-
-<p>            <h1>ターゲットドメイン</h1></p>
-<p>            target_task, target_domain = model(target_ids, target_mask)</p>
-<p>            target_domain_labels = torch.ones(target_ids.size(0), dtype=torch.long)  <h1>ターゲット = 1</h1></p>
-
-<p>            <h1>損失</h1></p>
-<p>            task_loss = task_criterion(source_task, source_labels)</p>
-<p>            domain_loss = domain_criterion(source_domain, source_domain_labels) + \</p>
-<p>                          domain_criterion(target_domain, target_domain_labels)</p>
-
-<p>            total_loss = task_loss + 0.1 * domain_loss</p>
-
-<p>            optimizer.zero_grad()</p>
-<p>            total_loss.backward()</p>
-<p>            optimizer.step()</p>
-
-<p>        print(f"Epoch {epoch+1}, Task Loss: {task_loss.item():.4f}, Domain Loss: {domain_loss.item():.4f}")</p>
-<p></code></pre></p>
-
-<p>---</p>
-
-<p><h2>3.7 まとめ</h2></p>
-
-<p><h3>重要ポイント</h3></p>
-
-<ol>
-<li><strong>事前学習</strong>: 大規模ラベルなしデータで一般的知識を獲得</li>
-<li><strong>ファインチューニング</strong>: 少量データでタスク特化</li>
-<li><strong>Few-shot学習</strong>: 数個のサンプルで新タスク学習</li>
-<li><strong>プロンプトエンジニアリング</strong>: タスク情報を埋め込みで表現</li>
-<li><strong>ドメイン適応</strong>: 異なるドメイン間で知識転移</li>
-</ol>
-
-<p><h3>次章への準備</h3></p>
-
-<p>第4章では、拡散モデルによる分子生成と材料逆設計を学びます。</p>
-
-<p>---</p>
-
-<p><h2>📝 演習問題</h2></p>
-
-<p><h3>問題1: 概念理解</h3></p>
-<p>ファインチューニングの3つの戦略（Full、Feature Extraction、Partial）について、それぞれどのような場合に適しているか説明してください。</p>
-
-<p><details></p>
-<p><summary>解答例</summary></p>
-
-<ol>
-<li><strong>Full Fine-tuning</strong>:</li>
-</ol>
-<p>   - <strong>適用場面</strong>: ターゲットドメインのデータが比較的多い（数千サンプル以上）</p>
-<p>   - <strong>利点</strong>: 最高精度を達成可能</p>
-<p>   - <strong>欠点</strong>: 過学習リスク、計算コスト大</p>
-
-<ol>
-<li><strong>Feature Extraction</strong>:</li>
-</ol>
-<p>   - <strong>適用場面</strong>: データが非常に少ない（数十〜数百サンプル）</p>
-<p>   - <strong>利点</strong>: 過学習を防ぎやすい、高速</p>
-<p>   - <strong>欠点</strong>: ドメインが大きく異なる場合は精度低下</p>
-
-<ol>
-<li><strong>Partial Fine-tuning</strong>:</li>
-</ol>
-<p>   - <strong>適用場面</strong>: 中程度のデータ量、ドメインが類似</p>
-<p>   - <strong>利点</strong>: バランスの取れた性能とコスト</p>
-<p>   - <strong>欠点</strong>: どの層を更新するか選択が難しい</p>
-<p></details></p>
-
-<p><h3>問題2: 実装</h3></p>
-<p>以下のコードの空欄を埋めて、事前学習済みモデルをロードしてファインチューニングする関数を完成させてください。</p>
-
-<p><pre><code class="language-python">def load_and_finetune(pretrained_path, train_loader, val_loader):</p>
-<p>    <h1>事前学習済みモデルをロード</h1></p>
-<p>    matbert = MatBERT(vocab_size=______, d_model=512)</p>
-<p>    matbert.load_state_dict(torch.load(______))</p>
-
-<p>    <h1>ファインチューニング用モデルを構築</h1></p>
-<p>    model = MatBERTForBandgap(______)</p>
-
-<p>    <h1>最適化</h1></p>
-<p>    optimizer = torch.optim.Adam(______.parameters(), lr=1e-5)</p>
-<p>    criterion = nn.MSELoss()</p>
-
-<p>    <h1>訓練ループ</h1></p>
-<p>    for epoch in range(10):</p>
-<p>        model.train()</p>
-<p>        for input_ids, attention_mask, targets in train_loader:</p>
-<p>            predictions = model(______, ______)</p>
-<p>            loss = ______(predictions, targets)</p>
-
-<p>            optimizer.zero_grad()</p>
-<p>            ______.backward()</p>
-<p>            optimizer.step()</p>
-
-<p>    return model</p>
-<p></code></pre></p>
-
-<p><details></p>
-<p><summary>解答例</summary></p>
-
-<p><pre><code class="language-python">def load_and_finetune(pretrained_path, train_loader, val_loader):</p>
-<p>    <h1>事前学習済みモデルをロード</h1></p>
-<p>    matbert = MatBERT(vocab_size=len(tokenizer.vocab), d_model=512)</p>
-<p>    matbert.load_state_dict(torch.load(pretrained_path))</p>
-
-<p>    <h1>ファインチューニング用モデルを構築</h1></p>
-<p>    model = MatBERTForBandgap(matbert)</p>
-
-<p>    <h1>最適化</h1></p>
-<p>    optimizer = torch.optim.Adam(model.parameters(), lr=1e-5)</p>
-<p>    criterion = nn.MSELoss()</p>
-
-<p>    <h1>訓練ループ</h1></p>
-<p>    for epoch in range(10):</p>
-<p>        model.train()</p>
-<p>        for input_ids, attention_mask, targets in train_loader:</p>
-<p>            predictions = model(input_ids, attention_mask)</p>
-<p>            loss = criterion(predictions, targets)</p>
-
-<p>            optimizer.zero_grad()</p>
-<p>            loss.backward()</p>
-<p>            optimizer.step()</p>
-
-<p>    return model</p>
-<p></code></pre></p>
-<p></details></p>
-
-<p><h3>問題3: 応用</h3></p>
-<p>材料科学で Few-shot学習が特に有用な3つのシナリオを挙げ、それぞれの理由を説明してください。</p>
-
-<p><details></p>
-<p><summary>解答例</summary></p>
-
-<ol>
-<li><strong>新規材料の迅速評価</strong>:</li>
-</ol>
-<p>   - <strong>シナリオ</strong>: 新しいクラスの材料（例: 新型ペロブスカイト）</p>
-<p>   - <strong>理由</strong>: 実験データがまだ少なく、数サンプルで特性予測が必要</p>
-
-<ol>
-<li><strong>実験計画の効率化</strong>:</li>
-</ol>
-<p>   - <strong>シナリオ</strong>: 高コストな実験（単結晶成長、高圧合成）</p>
-<p>   - <strong>理由</strong>: 少数の実験結果から次の実験条件を提案</p>
-
-<ol>
-<li><strong>企業の独自材料開発</strong>:</li>
-</ol>
-<p>   - <strong>シナリオ</strong>: 競合に公開できない独自材料</p>
-<p>   - <strong>理由</strong>: 社内データのみで学習、外部データは使えない</p>
-<p></details></p>
-
-<p>---</p>
-
-<p><strong>次章</strong>: <strong><a href="chapter-4.md">第4章: 生成モデルと逆設計</a></strong></p>
-
-<p>---</p>
-
-<p><strong>作成者</strong>: 橋本佑介（東北大学）</p>
-<p><strong>最終更新</strong>: 2025年10月17日</p>
-
-
-        
-        <div class="navigation">
-            <a href="chapter-4.html" class="nav-button">次章: 第4章 →</a>
-            <a href="index.html" class="nav-button">← シリーズ目次に戻る</a>
-            <a href="chapter-2.html" class="nav-button">← 前章: 第2章</a>
-        </div>
-    
+<h1>第3章: 事前学習モデルと転移学習</h1>
+
+<strong>学習時間</strong>: 25-30分 | <strong>難易度</strong>: 中級〜上級
+
+<h2>📋 この章で学ぶこと</h2>
+
+- 事前学習（Pre-training）の重要性と原理
+- MatBERT、MolBERTなど材料科学向け事前学習モデル
+- ファインチューニング（Fine-tuning）の戦略
+- Few-shot学習とプロンプトエンジニアリング
+- ドメイン適応（Domain Adaptation）
+
+---
+
+<h2>3.1 事前学習の重要性</h2>
+
+<h3>なぜ事前学習が必要か</h3>
+
+<strong>材料科学の課題</strong>:
+- ❌ ラベル付きデータが少ない（実験データは高コスト）
+- ❌ ドメイン固有の知識が必要
+- ❌ ゼロから学習すると時間とコストがかかる
+
+<strong>事前学習の利点</strong>:
+- ✅ 大規模な<strong>ラベルなしデータ</strong>で一般的な知識を獲得
+- ✅ 少量のラベル付きデータで<strong>高精度</strong>を実現
+- ✅ 開発期間の<strong>大幅短縮</strong>（数週間→数時間）
+
+<div class="mermaid">graph LR
+    A[大規模ラベルなしデータ] --> B[事前学習]
+    B --> C[汎用表現モデル]
+    C --> D[ファインチューニング]
+    E[少量ラベル付きデータ] --> D
+    D --> F[タスク特化モデル]
+
+    style B fill:#e1f5ff
+    style D fill:#ffe1e1</div>
+
+<h3>事前学習のタスク</h3>
+
+<strong>自然言語処理での例</strong>:
+- <strong>Masked Language Model (MLM)</strong>: 一部の単語をマスクして予測
+- <strong>Next Sentence Prediction (NSP)</strong>: 2文の連続性を予測
+
+<strong>材料科学での応用</strong>:
+- <strong>Masked Atom Prediction</strong>: 一部の原子をマスクして予測
+- <strong>Property Prediction</strong>: 複数の材料特性を同時予測
+- <strong>Contrastive Learning</strong>: 類似材料を近く、異なる材料を遠くに配置
+
+---
+
+<h2>3.2 MatBERT: Materials BERT</h2>
+
+<h3>概要</h3>
+
+<strong>MatBERT</strong>は、材料の組成式をBERTで学習したモデルです。
+
+<strong>特徴</strong>:
+- <strong>500k材料</strong>の組成式で事前学習
+- <strong>マスク原子予測</strong>タスク
+- 転移学習で様々な特性予測に適用可能
+
+<h3>組成式のトークン化</h3>
+
+<pre><code class="language-python">import torch
+import torch.nn as nn
+from transformers import BertTokenizer, BertModel
+
+class CompositionTokenizer:
+    def __init__(self):
+        # カスタム語彙（周期表の元素）
+        self.vocab = ['[PAD]', '[CLS]', '[SEP]', '[MASK]'] + [
+            'H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne',
+            'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'Ar', 'K', 'Ca',
+            # ... 全元素
+        ]
+        self.token_to_id = {token: i for i, token in enumerate(self.vocab)}
+        self.id_to_token = {i: token for i, token in enumerate(self.vocab)}
+
+    def tokenize(self, composition):
+        """
+        組成式をトークン化
+
+        Args:
+            composition: 'Fe2O3' のような組成式
+        Returns:
+            tokens: トークンのリスト
+        """
+        import re
+        # 元素と数字を分割
+        pattern = r'([A-Z][a-z]?)(\d*\.?\d*)'
+        matches = re.findall(pattern, composition)
+
+        tokens = ['[CLS]']
+        for element, count in matches:
+            if element in self.vocab:
+                # 元素を追加
+                tokens.append(element)
+                # 数が1より大きい場合、その回数だけ繰り返す（簡略化）
+                if count and float(count) > 1:
+                    for _ in range(int(float(count)) - 1):
+                        tokens.append(element)
+        tokens.append('[SEP]')
+
+        return tokens
+
+    def encode(self, compositions, max_length=32):
+        """
+        組成式をIDに変換
+
+        Args:
+            compositions: 組成式のリスト
+            max_length: 最大長
+        Returns:
+            input_ids: (batch_size, max_length)
+            attention_mask: (batch_size, max_length)
+        """
+        batch_input_ids = []
+        batch_attention_mask = []
+
+        for comp in compositions:
+            tokens = self.tokenize(comp)
+            ids = [self.token_to_id.get(token, 0) for token in tokens]
+
+            # パディング
+            attention_mask = [1] * len(ids)
+            while len(ids) < max_length:
+                ids.append(0)  # [PAD]
+                attention_mask.append(0)
+
+            # トランケーション
+            ids = ids[:max_length]
+            attention_mask = attention_mask[:max_length]
+
+            batch_input_ids.append(ids)
+            batch_attention_mask.append(attention_mask)
+
+        return torch.tensor(batch_input_ids), torch.tensor(batch_attention_mask)
+
+<h1>使用例</h1>
+tokenizer = CompositionTokenizer()
+
+compositions = [
+    'Fe2O3',     # 酸化鉄
+    'LiCoO2',    # リチウムコバルト酸化物（電池材料）
+    'BaTiO3'     # チタン酸バリウム（誘電体）
+]
+
+input_ids, attention_mask = tokenizer.encode(compositions)
+print(f"Input IDs shape: {input_ids.shape}")
+print(f"First composition tokens: {input_ids[0][:10]}")</code></pre>
+
+<h3>MatBERTモデル</h3>
+
+<pre><code class="language-python">class MatBERT(nn.Module):
+    def __init__(self, vocab_size, d_model=512, num_layers=6, num_heads=8):
+        super(MatBERT, self).__init__()
+
+        # Embedding
+        self.embedding = nn.Embedding(vocab_size, d_model)
+        self.position_embedding = nn.Embedding(512, d_model)
+
+        # Transformer Encoder
+        encoder_layer = nn.TransformerEncoderLayer(
+            d_model=d_model,
+            nhead=num_heads,
+            dim_feedforward=2048,
+            batch_first=True
+        )
+        self.transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers)
+
+        self.d_model = d_model
+
+    def forward(self, input_ids, attention_mask):
+        """
+        Args:
+            input_ids: (batch_size, seq_len)
+            attention_mask: (batch_size, seq_len)
+        Returns:
+            embeddings: (batch_size, seq_len, d_model)
+        """
+        batch_size, seq_len = input_ids.shape
+
+        # Token embedding
+        token_embeddings = self.embedding(input_ids)
+
+        # Positional embedding
+        positions = torch.arange(seq_len, device=input_ids.device).unsqueeze(0).expand(batch_size, -1)
+        position_embeddings = self.position_embedding(positions)
+
+        # 合計
+        embeddings = token_embeddings + position_embeddings
+
+        # Transformer
+        # attention_maskをTransformer用に変換（0→-inf, 1→0）
+        transformer_mask = (1 - attention_mask).bool()
+        output = self.transformer_encoder(embeddings, src_key_padding_mask=transformer_mask)
+
+        return output
+
+<h1>使用例</h1>
+vocab_size = len(tokenizer.vocab)
+model = MatBERT(vocab_size, d_model=512, num_layers=6, num_heads=8)
+
+embeddings = model(input_ids, attention_mask)
+print(f"Embeddings shape: {embeddings.shape}")  # (3, 32, 512)</code></pre>
+
+<h3>事前学習: Masked Atom Prediction</h3>
+
+<pre><code class="language-python">def masked_atom_prediction_loss(model, input_ids, attention_mask, mask_prob=0.15):
+    """
+    マスク原子予測による事前学習
+
+    Args:
+        model: MatBERTモデル
+        input_ids: (batch_size, seq_len)
+        attention_mask: (batch_size, seq_len)
+        mask_prob: マスクする確率
+    Returns:
+        loss: 損失
+    """
+    batch_size, seq_len = input_ids.shape
+
+    # ランダムにマスク
+    mask_token_id = tokenizer.token_to_id['[MASK]']
+    mask = torch.rand(batch_size, seq_len) < mask_prob
+    mask = mask & (attention_mask == 1)  # パディング部分は除外
+
+    # 元のトークンを保存
+    original_input_ids = input_ids.clone()
+
+    # マスクを適用
+    input_ids[mask] = mask_token_id
+
+    # Forward
+    embeddings = model(input_ids, attention_mask)
+
+    # 予測ヘッド
+    prediction_head = nn.Linear(model.d_model, vocab_size)
+    logits = prediction_head(embeddings)
+
+    # 損失計算（マスクされた位置のみ）
+    criterion = nn.CrossEntropyLoss(ignore_index=-100)
+    labels = original_input_ids.clone()
+    labels[~mask] = -100  # マスクされていない部分は無視
+
+    loss = criterion(logits.view(-1, vocab_size), labels.view(-1))
+
+    return loss
+
+<h1>事前学習ループ（簡略版）</h1>
+def pretrain_matbert(model, dataloader, epochs=10):
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
+
+    model.train()
+    for epoch in range(epochs):
+        total_loss = 0
+        for input_ids, attention_mask in dataloader:
+            loss = masked_atom_prediction_loss(model, input_ids, attention_mask)
+
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            total_loss += loss.item()
+
+        avg_loss = total_loss / len(dataloader)
+        print(f"Epoch {epoch+1}, Pretraining Loss: {avg_loss:.4f}")
+
+    return model</code></pre>
+
+---
+
+<h2>3.3 ファインチューニング戦略</h2>
+
+<h3>ファインチューニングとは</h3>
+
+<strong>定義</strong>: 事前学習モデルを特定タスクに適応させる追加学習
+
+<strong>戦略</strong>:
+1. <strong>Full Fine-tuning</strong>: すべてのパラメータを更新
+2. <strong>Feature Extraction</strong>: 埋め込み層のみ使用、予測ヘッドのみ学習
+3. <strong>Partial Fine-tuning</strong>: 一部の層のみ更新
+
+<div class="mermaid">graph TD
+    A[事前学習済みMatBERT] --> B{ファインチューニング戦略}
+    B --> C[Full Fine-tuning]
+    B --> D[Feature Extraction]
+    B --> E[Partial Fine-tuning]
+
+    C --> F[全層を更新]
+    D --> G[埋め込み固定、予測ヘッドのみ学習]
+    E --> H[上位層のみ更新]
+
+    style C fill:#ffe1e1
+    style D fill:#e1f5ff
+    style E fill:#f5ffe1</div>
+
+<h3>実装: バンドギャップ予測</h3>
+
+<pre><code class="language-python">class MatBERTForBandgap(nn.Module):
+    def __init__(self, matbert_model, d_model=512):
+        super(MatBERTForBandgap, self).__init__()
+        self.matbert = matbert_model
+
+        # 予測ヘッド
+        self.bandgap_predictor = nn.Sequential(
+            nn.Linear(d_model, 256),
+            nn.ReLU(),
+            nn.Dropout(0.2),
+            nn.Linear(256, 1)
+        )
+
+    def forward(self, input_ids, attention_mask):
+        # MatBERT埋め込み
+        embeddings = self.matbert(input_ids, attention_mask)
+
+        # [CLS]トークンの埋め込みを使用
+        cls_embedding = embeddings[:, 0, :]
+
+        # バンドギャップ予測
+        bandgap = self.bandgap_predictor(cls_embedding)
+        return bandgap
+
+<h1>ファインチューニング</h1>
+def finetune_for_bandgap(pretrained_model, train_loader, val_loader, strategy='full'):
+    """
+    バンドギャップ予測へのファインチューニング
+
+    Args:
+        pretrained_model: 事前学習済みMatBERT
+        train_loader: 訓練データローダー
+        val_loader: 検証データローダー
+        strategy: 'full', 'feature', 'partial'
+    """
+    model = MatBERTForBandgap(pretrained_model)
+
+    # 戦略に応じてパラメータの固定
+    if strategy == 'feature':
+        # MatBERTを固定
+        for param in model.matbert.parameters():
+            param.requires_grad = False
+    elif strategy == 'partial':
+        # 下位層を固定、上位層のみ更新
+        for i, layer in enumerate(model.matbert.transformer_encoder.layers):
+            if i < 3:  # 下位3層を固定
+                for param in layer.parameters():
+                    param.requires_grad = False
+
+    # 最適化
+    optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=1e-5)
+    criterion = nn.MSELoss()
+
+    # 訓練ループ
+    best_val_loss = float('inf')
+    for epoch in range(20):
+        model.train()
+        train_loss = 0
+        for input_ids, attention_mask, bandgaps in train_loader:
+            predictions = model(input_ids, attention_mask)
+            loss = criterion(predictions, bandgaps)
+
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            train_loss += loss.item()
+
+        # 検証
+        model.eval()
+        val_loss = 0
+        with torch.no_grad():
+            for input_ids, attention_mask, bandgaps in val_loader:
+                predictions = model(input_ids, attention_mask)
+                loss = criterion(predictions, bandgaps)
+                val_loss += loss.item()
+
+        train_loss /= len(train_loader)
+        val_loss /= len(val_loader)
+
+        print(f"Epoch {epoch+1}, Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}")
+
+        if val_loss < best_val_loss:
+            best_val_loss = val_loss
+            torch.save(model.state_dict(), 'best_matbert_bandgap.pt')
+
+    return model</code></pre>
+
+---
+
+<h2>3.4 Few-shot学習</h2>
+
+<h3>概要</h3>
+
+<strong>Few-shot学習</strong>: 少量のサンプル（数個〜数十個）で新しいタスクを学習
+
+<strong>材料科学での重要性</strong>:
+- 新規材料のデータは非常に少ない
+- 実験データの取得は高コスト
+- 迅速なプロトタイピングが必要
+
+<h3>Prototypical Networks</h3>
+
+<pre><code class="language-python">class PrototypicalNetwork(nn.Module):
+    def __init__(self, matbert_model, d_model=512):
+        super(PrototypicalNetwork, self).__init__()
+        self.encoder = matbert_model
+
+    def forward(self, support_ids, support_mask, query_ids, query_mask, support_labels):
+        """
+        Prototypical Networksによる分類
+
+        Args:
+            support_ids: サポートセット入力 (n_support, seq_len)
+            support_mask: サポートセットマスク
+            query_ids: クエリ入力 (n_query, seq_len)
+            query_mask: クエリマスク
+            support_labels: サポートセットラベル (n_support,)
+        Returns:
+            predictions: クエリの予測ラベル
+        """
+        # サポートセットとクエリの埋め込み
+        support_embeddings = self.encoder(support_ids, support_mask)[:, 0, :]  # [CLS]
+        query_embeddings = self.encoder(query_ids, query_mask)[:, 0, :]
+
+        # 各クラスのプロトタイプ（平均埋め込み）を計算
+        unique_labels = torch.unique(support_labels)
+        prototypes = []
+        for label in unique_labels:
+            mask = (support_labels == label)
+            prototype = support_embeddings[mask].mean(dim=0)
+            prototypes.append(prototype)
+
+        prototypes = torch.stack(prototypes)  # (num_classes, d_model)
+
+        # クエリとプロトタイプ間の距離
+        distances = torch.cdist(query_embeddings, prototypes)  # (n_query, num_classes)
+
+        # 最も近いプロトタイプのクラスを予測
+        predictions = torch.argmin(distances, dim=1)
+
+        return predictions
+
+<h1>使用例: 3-way 5-shot分類</h1>
+<h1>3クラス、各クラス5サンプル</h1>
+n_classes = 3
+n_support_per_class = 5
+n_query = 10
+
+support_ids = torch.randint(0, vocab_size, (n_classes * n_support_per_class, 32))
+support_mask = torch.ones_like(support_ids)
+support_labels = torch.arange(n_classes).repeat_interleave(n_support_per_class)
+
+query_ids = torch.randint(0, vocab_size, (n_query, 32))
+query_mask = torch.ones_like(query_ids)
+
+proto_net = PrototypicalNetwork(model)
+predictions = proto_net(support_ids, support_mask, query_ids, query_mask, support_labels)
+print(f"Predictions: {predictions}")</code></pre>
+
+---
+
+<h2>3.5 プロンプトエンジニアリング</h2>
+
+<h3>材料科学でのプロンプト</h3>
+
+<strong>プロンプト</strong>: モデルに追加情報を与えて性能を向上
+
+<strong>例</strong>:
+<pre><code class="language-python"><h1>通常: 'Fe2O3'</h1>
+<h1>プロンプト付き: '[OXIDE] Fe2O3 [BANDGAP]'</h1></code></pre>
+
+<h3>実装</h3>
+
+<pre><code class="language-python">class PromptedMatBERT(nn.Module):
+    def __init__(self, matbert_model, d_model=512):
+        super(PromptedMatBERT, self).__init__()
+        self.matbert = matbert_model
+
+        # タスク別プロンプト埋め込み（学習可能）
+        self.task_prompts = nn.Parameter(torch.randn(10, d_model))  # 10種類のタスク
+
+    def forward(self, input_ids, attention_mask, task_id=0):
+        """
+        Args:
+            input_ids: (batch_size, seq_len)
+            attention_mask: (batch_size, seq_len)
+            task_id: タスクID (0-9)
+        """
+        batch_size = input_ids.size(0)
+
+        # 通常の埋め込み
+        embeddings = self.matbert(input_ids, attention_mask)
+
+        # タスクプロンプトを先頭に追加
+        task_prompt = self.task_prompts[task_id].unsqueeze(0).expand(batch_size, -1, -1)
+        embeddings = torch.cat([task_prompt, embeddings], dim=1)
+
+        return embeddings
+
+<h1>使用例</h1>
+prompted_model = PromptedMatBERT(model)
+
+<h1>タスク0: バンドギャップ予測</h1>
+embeddings_task0 = prompted_model(input_ids, attention_mask, task_id=0)
+
+<h1>タスク1: 形成エネルギー予測</h1>
+embeddings_task1 = prompted_model(input_ids, attention_mask, task_id=1)
+
+print(f"Embeddings with prompt shape: {embeddings_task0.shape}")</code></pre>
+
+---
+
+<h2>3.6 ドメイン適応</h2>
+
+<h3>概要</h3>
+
+<strong>ドメイン適応</strong>: ソースドメインで訓練したモデルをターゲットドメインに適応
+
+<strong>例</strong>:
+- ソース: 無機材料データ
+- ターゲット: 有機分子データ
+
+<h3>Adversarial Domain Adaptation</h3>
+
+<pre><code class="language-python">class DomainClassifier(nn.Module):
+    def __init__(self, d_model=512):
+        super(DomainClassifier, self).__init__()
+        self.classifier = nn.Sequential(
+            nn.Linear(d_model, 256),
+            nn.ReLU(),
+            nn.Linear(256, 2)  # ソース or ターゲット
+        )
+
+    def forward(self, embeddings):
+        return self.classifier(embeddings)
+
+class DomainAdaptiveMatBERT(nn.Module):
+    def __init__(self, matbert_model):
+        super(DomainAdaptiveMatBERT, self).__init__()
+        self.matbert = matbert_model
+        self.domain_classifier = DomainClassifier()
+        self.task_predictor = nn.Linear(512, 1)  # 例: バンドギャップ予測
+
+    def forward(self, input_ids, attention_mask, alpha=1.0):
+        """
+        Args:
+            alpha: ドメイン適応の強さ
+        """
+        embeddings = self.matbert(input_ids, attention_mask)[:, 0, :]
+
+        # タスク予測
+        task_output = self.task_predictor(embeddings)
+
+        # ドメイン予測（勾配反転層を使用）
+        # ここでは簡略化のため省略
+        domain_output = self.domain_classifier(embeddings)
+
+        return task_output, domain_output
+
+<h1>訓練ループ（簡略版）</h1>
+def train_domain_adaptive(model, source_loader, target_loader, epochs=20):
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-5)
+    task_criterion = nn.MSELoss()
+    domain_criterion = nn.CrossEntropyLoss()
+
+    for epoch in range(epochs):
+        for (source_ids, source_mask, source_labels), (target_ids, target_mask, _) in zip(source_loader, target_loader):
+            # ソースドメイン
+            source_task, source_domain = model(source_ids, source_mask)
+            source_domain_labels = torch.zeros(source_ids.size(0), dtype=torch.long)  # ソース = 0
+
+            # ターゲットドメイン
+            target_task, target_domain = model(target_ids, target_mask)
+            target_domain_labels = torch.ones(target_ids.size(0), dtype=torch.long)  # ターゲット = 1
+
+            # 損失
+            task_loss = task_criterion(source_task, source_labels)
+            domain_loss = domain_criterion(source_domain, source_domain_labels) + \
+                          domain_criterion(target_domain, target_domain_labels)
+
+            total_loss = task_loss + 0.1 * domain_loss
+
+            optimizer.zero_grad()
+            total_loss.backward()
+            optimizer.step()
+
+        print(f"Epoch {epoch+1}, Task Loss: {task_loss.item():.4f}, Domain Loss: {domain_loss.item():.4f}")</code></pre>
+
+---
+
+<h2>3.7 まとめ</h2>
+
+<h3>重要ポイント</h3>
+
+1. <strong>事前学習</strong>: 大規模ラベルなしデータで一般的知識を獲得
+2. <strong>ファインチューニング</strong>: 少量データでタスク特化
+3. <strong>Few-shot学習</strong>: 数個のサンプルで新タスク学習
+4. <strong>プロンプトエンジニアリング</strong>: タスク情報を埋め込みで表現
+5. <strong>ドメイン適応</strong>: 異なるドメイン間で知識転移
+
+<h3>次章への準備</h3>
+
+第4章では、拡散モデルによる分子生成と材料逆設計を学びます。
+
+---
+
+<h2>📝 演習問題</h2>
+
+<h3>問題1: 概念理解</h3>
+ファインチューニングの3つの戦略（Full、Feature Extraction、Partial）について、それぞれどのような場合に適しているか説明してください。
+
+<details>
+<summary>解答例</summary>
+
+1. <strong>Full Fine-tuning</strong>:
+   - <strong>適用場面</strong>: ターゲットドメインのデータが比較的多い（数千サンプル以上）
+   - <strong>利点</strong>: 最高精度を達成可能
+   - <strong>欠点</strong>: 過学習リスク、計算コスト大
+
+2. <strong>Feature Extraction</strong>:
+   - <strong>適用場面</strong>: データが非常に少ない（数十〜数百サンプル）
+   - <strong>利点</strong>: 過学習を防ぎやすい、高速
+   - <strong>欠点</strong>: ドメインが大きく異なる場合は精度低下
+
+3. <strong>Partial Fine-tuning</strong>:
+   - <strong>適用場面</strong>: 中程度のデータ量、ドメインが類似
+   - <strong>利点</strong>: バランスの取れた性能とコスト
+   - <strong>欠点</strong>: どの層を更新するか選択が難しい
+</details>
+
+<h3>問題2: 実装</h3>
+以下のコードの空欄を埋めて、事前学習済みモデルをロードしてファインチューニングする関数を完成させてください。
+
+<pre><code class="language-python">def load_and_finetune(pretrained_path, train_loader, val_loader):
+    # 事前学習済みモデルをロード
+    matbert = MatBERT(vocab_size=______, d_model=512)
+    matbert.load_state_dict(torch.load(______))
+
+    # ファインチューニング用モデルを構築
+    model = MatBERTForBandgap(______)
+
+    # 最適化
+    optimizer = torch.optim.Adam(______.parameters(), lr=1e-5)
+    criterion = nn.MSELoss()
+
+    # 訓練ループ
+    for epoch in range(10):
+        model.train()
+        for input_ids, attention_mask, targets in train_loader:
+            predictions = model(______, ______)
+            loss = ______(predictions, targets)
+
+            optimizer.zero_grad()
+            ______.backward()
+            optimizer.step()
+
+    return model</code></pre>
+
+<details>
+<summary>解答例</summary>
+
+<pre><code class="language-python">def load_and_finetune(pretrained_path, train_loader, val_loader):
+    # 事前学習済みモデルをロード
+    matbert = MatBERT(vocab_size=len(tokenizer.vocab), d_model=512)
+    matbert.load_state_dict(torch.load(pretrained_path))
+
+    # ファインチューニング用モデルを構築
+    model = MatBERTForBandgap(matbert)
+
+    # 最適化
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-5)
+    criterion = nn.MSELoss()
+
+    # 訓練ループ
+    for epoch in range(10):
+        model.train()
+        for input_ids, attention_mask, targets in train_loader:
+            predictions = model(input_ids, attention_mask)
+            loss = criterion(predictions, targets)
+
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+    return model</code></pre>
+</details>
+
+<h3>問題3: 応用</h3>
+材料科学で Few-shot学習が特に有用な3つのシナリオを挙げ、それぞれの理由を説明してください。
+
+<details>
+<summary>解答例</summary>
+
+1. <strong>新規材料の迅速評価</strong>:
+   - <strong>シナリオ</strong>: 新しいクラスの材料（例: 新型ペロブスカイト）
+   - <strong>理由</strong>: 実験データがまだ少なく、数サンプルで特性予測が必要
+
+2. <strong>実験計画の効率化</strong>:
+   - <strong>シナリオ</strong>: 高コストな実験（単結晶成長、高圧合成）
+   - <strong>理由</strong>: 少数の実験結果から次の実験条件を提案
+
+3. <strong>企業の独自材料開発</strong>:
+   - <strong>シナリオ</strong>: 競合に公開できない独自材料
+   - <strong>理由</strong>: 社内データのみで学習、外部データは使えない
+</details>
+
+---
+
+<strong>次章</strong>: <strong>[第4章: 生成モデルと逆設計](chapter-4.md)</strong>
+
+---
+
+<strong>作成者</strong>: 橋本佑介（東北大学）
+<strong>最終更新</strong>: 2025年10月17日
+<div class="navigation">
+    <a href="chapter-2.html" class="nav-button">← 第2章</a>
+    <a href="index.html" class="nav-button">シリーズ目次に戻る</a>
+    <a href="chapter-4.html" class="nav-button">第4章 →</a>
+</div>
     </main>
 
     <footer>
         <p><strong>作成者</strong>: AI Terakoya Content Team</p>
-        <p><strong>監修</strong>: Dr. Yusuke Hashimoto(東北大学)</p>
+        <p><strong>監修</strong>: Dr. Yusuke Hashimoto（東北大学）</p>
         <p><strong>バージョン</strong>: 1.0 | <strong>作成日</strong>: 2025-10-17</p>
         <p><strong>ライセンス</strong>: Creative Commons BY 4.0</p>
         <p>© 2025 AI Terakoya. All rights reserved.</p>

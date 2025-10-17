@@ -319,6 +319,22 @@
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         mermaid.initialize({ startOnLoad: true, theme: 'default' });
     </script>
+
+    <!-- MathJax for LaTeX equation rendering -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\(', '\)']],
+                displayMath: [['$$', '$$'], ['\[', '\]']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
 </head>
 <body>
     <header>
@@ -328,49 +344,61 @@
             <div class="meta">
                 <span class="meta-item">📖 読了時間: 20-25分</span>
                 <span class="meta-item">📊 難易度: 上級</span>
-                <span class="meta-item">💻 コード例: 10個</span>
-                <span class="meta-item">📝 演習問題: 3問</span>
+                <span class="meta-item">💻 コード例: 0個</span>
+                <span class="meta-item">📝 演習問題: 0問</span>
             </div>
         </div>
     </header>
 
     <main class="container">
-        <h1>第4章：高度なGNN技術 - 最先端アーキテクチャと解釈可能性</h1>
+
+<h1>第4章：高度なGNN技術 - 最先端アーキテクチャと解釈可能性</h1>
+
 <h2>学習目標</h2>
-<p>この章を読むことで、以下を習得できます：
+
+この章を読むことで、以下を習得できます：
 - グラフプーリングによる階層的表現学習を理解できる
 - エッジ特徴量を活用した高度なGNNを実装できる
 - 3D幾何情報を考慮したSchNet、DimeNetを使いこなせる
 - 等変GNN（E(3)-equivariant）の原理を理解できる
-- GNNExplainerで予測の根拠を可視化できる</p>
-<p><strong>読了時間</strong>: 20-25分
+- GNNExplainerで予測の根拠を可視化できる
+
+<strong>読了時間</strong>: 20-25分
 <strong>コード例</strong>: 8個
-<strong>演習問題</strong>: 3問</p>
-<hr />
+<strong>演習問題</strong>: 3問
+
+---
+
 <h2>4.1 グラフプーリング：階層的表現学習</h2>
+
 <h3>4.1.1 グラフプーリングとは</h3>
-<p><strong>グラフプーリング</strong>は、グラフの構造を保ちながらノード数を削減し、階層的な表現を学習する手法です。</p>
-<p><strong>重要性</strong>:
+
+<strong>グラフプーリング</strong>は、グラフの構造を保ちながらノード数を削減し、階層的な表現を学習する手法です。
+
+<strong>重要性</strong>:
 - 🔍 <strong>多段階の特徴抽出</strong>: 局所→中域→大域の順に特徴を学習
 - 📉 <strong>計算コスト削減</strong>: ノード数を削減して計算効率化
-- 🎯 <strong>重要なノードの選択</strong>: 予測に重要な原子・構造を自動識別</p>
-<p><strong>代表的な手法</strong>:
+- 🎯 <strong>重要なノードの選択</strong>: 予測に重要な原子・構造を自動識別
+
+<strong>代表的な手法</strong>:
 1. <strong>Top-K Pooling</strong>: スコアの上位K個のノードを選択
 2. <strong>SAGPooling</strong>: Self-Attention Graph Pooling（注意機構で重要度を計算）
-3. <strong>DiffPool</strong>: 微分可能なソフトクラスタリング</p>
+3. <strong>DiffPool</strong>: 微分可能なソフトクラスタリング
+
 <h3>4.1.2 Top-K Poolingの実装</h3>
-<pre class="codehilite"><code class="language-python">import torch
+
+<pre><code class="language-python">import torch
 import torch.nn.functional as F
 from torch_geometric.nn import GCNConv, TopKPooling, global_mean_pool
 from torch_geometric.data import Data, DataLoader
 
 class GNN_with_Pooling(torch.nn.Module):
-    &quot;&quot;&quot;
+    """
     Top-K Poolingを使用したGNN
 
     Architecture:
     - GCN層 → Pooling → GCN層 → Global Pool → 全結合層
-    &quot;&quot;&quot;
+    """
     def __init__(self, num_node_features, num_classes, hidden_channels=64, pool_ratio=0.5):
         super().__init__()
 
@@ -411,7 +439,7 @@ class GNN_with_Pooling(torch.nn.Module):
 
         return x
 
-# モデルのインスタンス化
+<h1>モデルのインスタンス化</h1>
 model = GNN_with_Pooling(
     num_node_features=7,
     num_classes=1,
@@ -419,28 +447,28 @@ model = GNN_with_Pooling(
     pool_ratio=0.5  # ノードを50%に削減
 )
 
-print(&quot;===== Top-K Pooling GNN =====&quot;)
+print("===== Top-K Pooling GNN =====")
 print(model)
-print(f&quot;\nパラメータ数: {sum(p.numel() for p in model.parameters()):,}&quot;)
+print(f"\nパラメータ数: {sum(p.numel() for p in model.parameters()):,}")
 
-# サンプルデータでテスト
+<h1>サンプルデータでテスト</h1>
 x = torch.randn(20, 7)  # 20ノード、7次元特徴量
 edge_index = torch.randint(0, 20, (2, 40))
 batch = torch.zeros(20, dtype=torch.long)
 
 with torch.no_grad():
     out = model(x, edge_index, batch)
-    print(f&quot;\n入力: {x.shape[0]}ノード&quot;)
-    print(f&quot;出力: {out.shape}&quot;)
-</code></pre>
+    print(f"\n入力: {x.shape[0]}ノード")
+    print(f"出力: {out.shape}")</code></pre>
 
 <h3>4.1.3 SAGPooling（Self-Attention Graph Pooling）</h3>
-<pre class="codehilite"><code class="language-python">from torch_geometric.nn import SAGPooling
+
+<pre><code class="language-python">from torch_geometric.nn import SAGPooling
 
 class GNN_with_SAGPool(torch.nn.Module):
-    &quot;&quot;&quot;
+    """
     SAGPoolingを使用したGNN（注意機構でノード重要度を学習）
-    &quot;&quot;&quot;
+    """
     def __init__(self, num_node_features, num_classes, hidden_channels=64, pool_ratio=0.5):
         super().__init__()
 
@@ -487,21 +515,21 @@ class GNN_with_SAGPool(torch.nn.Module):
 
         return x, (perm1, score1, perm2, score2)  # 重要度スコアも返す
 
-# 使用例
+<h1>使用例</h1>
 model_sag = GNN_with_SAGPool(num_node_features=7, num_classes=1)
 
 with torch.no_grad():
     out, (perm1, score1, perm2, score2) = model_sag(x, edge_index, batch)
-    print(&quot;\n===== SAGPooling =====&quot;)
-    print(f&quot;第1プーリング: {x.shape[0]}ノード → {perm1.shape[0]}ノード&quot;)
-    print(f&quot;重要度スコア: {score1[:5].squeeze()}&quot;)  # 上位5ノードのスコア
-</code></pre>
+    print("\n===== SAGPooling =====")
+    print(f"第1プーリング: {x.shape[0]}ノード → {perm1.shape[0]}ノード")
+    print(f"重要度スコア: {score1[:5].squeeze()}")  # 上位5ノードのスコア</code></pre>
 
 <h3>4.1.4 プーリング手法の比較</h3>
-<pre class="codehilite"><code class="language-python">import matplotlib.pyplot as plt
+
+<pre><code class="language-python">import matplotlib.pyplot as plt
 import numpy as np
 
-# 各プーリング手法の性能比較（模擬データ）
+<h1>各プーリング手法の性能比較（模擬データ）</h1>
 pooling_methods = {
     'No Pooling': {'MAE': 0.35, 'Time': 42.3, 'Memory': 1200},
     'Top-K Pooling': {'MAE': 0.32, 'Time': 38.5, 'Memory': 980},
@@ -511,7 +539,7 @@ pooling_methods = {
 
 fig, axes = plt.subplots(1, 3, figsize=(15, 4))
 
-# MAE比較
+<h1>MAE比較</h1>
 methods = list(pooling_methods.keys())
 mae_values = [pooling_methods[m]['MAE'] for m in methods]
 axes[0].bar(methods, mae_values, color=['gray', 'steelblue', 'forestgreen', 'coral'])
@@ -520,7 +548,7 @@ axes[0].set_title('予測精度（低いほど良い）', fontsize=13)
 axes[0].tick_params(axis='x', rotation=15)
 axes[0].grid(True, alpha=0.3, axis='y')
 
-# 計算時間比較
+<h1>計算時間比較</h1>
 time_values = [pooling_methods[m]['Time'] for m in methods]
 axes[1].bar(methods, time_values, color=['gray', 'steelblue', 'forestgreen', 'coral'])
 axes[1].set_ylabel('訓練時間 (秒)', fontsize=12)
@@ -528,7 +556,7 @@ axes[1].set_title('計算コスト', fontsize=13)
 axes[1].tick_params(axis='x', rotation=15)
 axes[1].grid(True, alpha=0.3, axis='y')
 
-# メモリ使用量比較
+<h1>メモリ使用量比較</h1>
 memory_values = [pooling_methods[m]['Memory'] for m in methods]
 axes[2].bar(methods, memory_values, color=['gray', 'steelblue', 'forestgreen', 'coral'])
 axes[2].set_ylabel('メモリ使用量 (MB)', fontsize=12)
@@ -537,28 +565,35 @@ axes[2].tick_params(axis='x', rotation=15)
 axes[2].grid(True, alpha=0.3, axis='y')
 
 plt.tight_layout()
-plt.show()
-</code></pre>
+plt.show()</code></pre>
 
-<hr />
+---
+
 <h2>4.2 3D幾何情報を考慮したGNN：SchNet</h2>
+
 <h3>4.2.1 SchNetの原理</h3>
-<p><strong>SchNet</strong>（Schütt et al., 2017）は、原子間距離を考慮した3D分子表現学習のための連続フィルター畳み込みGNNです。</p>
-<p><strong>特徴</strong>:
+
+<strong>SchNet</strong>（Schütt et al., 2017）は、原子間距離を考慮した3D分子表現学習のための連続フィルター畳み込みGNNです。
+
+<strong>特徴</strong>:
 - 📐 <strong>3D座標を利用</strong>: 原子間距離を直接入力
 - 🌊 <strong>連続フィルター</strong>: ガウス基底関数で距離をエンコード
-- 🔄 <strong>回転不変性</strong>: 3D回転に対して不変な予測</p>
-<p><strong>数式</strong>:
+- 🔄 <strong>回転不変性</strong>: 3D回転に対して不変な予測
+
+<strong>数式</strong>:
 $$
 h_i^{(t+1)} = h_i^{(t)} + \sum_{j \in \mathcal{N}(i)} W(r_{ij}) \odot h_j^{(t)}
-$$</p>
-<p>ここで、$W(r_{ij})$は原子間距離$r_{ij}$の関数（連続フィルター）。</p>
+$$
+
+ここで、$W(r_{ij})$は原子間距離$r_{ij}$の関数（連続フィルター）。
+
 <h3>4.2.2 SchNetの実装</h3>
-<pre class="codehilite"><code class="language-python">import torch
+
+<pre><code class="language-python">import torch
 import torch.nn as nn
 from torch_geometric.nn import SchNet
 
-# PyTorch GeometricのSchNetを使用
+<h1>PyTorch GeometricのSchNetを使用</h1>
 model_schnet = SchNet(
     hidden_channels=128,
     num_filters=128,
@@ -569,12 +604,12 @@ model_schnet = SchNet(
     readout='add'        # グローバルプーリング（sum）
 )
 
-print(&quot;===== SchNet =====&quot;)
+print("===== SchNet =====")
 print(model_schnet)
-print(f&quot;\nパラメータ数: {sum(p.numel() for p in model_schnet.parameters()):,}&quot;)
+print(f"\nパラメータ数: {sum(p.numel() for p in model_schnet.parameters()):,}")
 
-# サンプルデータ（メタン分子：CH4）
-# C: (0, 0, 0), H: 4つの頂点位置
+<h1>サンプルデータ（メタン分子：CH4）</h1>
+<h1>C: (0, 0, 0), H: 4つの頂点位置</h1>
 z = torch.tensor([6, 1, 1, 1, 1])  # 原子番号（C=6, H=1）
 pos = torch.tensor([
     [0.0, 0.0, 0.0],   # C
@@ -586,41 +621,41 @@ pos = torch.tensor([
 
 batch = torch.zeros(5, dtype=torch.long)
 
-# 順伝播（エネルギー予測）
+<h1>順伝播（エネルギー予測）</h1>
 with torch.no_grad():
     energy = model_schnet(z, pos, batch)
-    print(f&quot;\n入力: {z.shape[0]}原子（メタン分子）&quot;)
-    print(f&quot;予測エネルギー: {energy.item():.4f} eV&quot;)
-</code></pre>
+    print(f"\n入力: {z.shape[0]}原子（メタン分子）")
+    print(f"予測エネルギー: {energy.item():.4f} eV")</code></pre>
 
 <h3>4.2.3 SchNetの訓練（QM9データセット）</h3>
-<pre class="codehilite"><code class="language-python">from torch_geometric.datasets import QM9
+
+<pre><code class="language-python">from torch_geometric.datasets import QM9
 from torch_geometric.loader import DataLoader
 
-# QM9データセットをロード（ロギングを無効化）
+<h1>QM9データセットをロード（ロギングを無効化）</h1>
 import warnings
 warnings.filterwarnings('ignore')
 
 dataset = QM9(root='./data/QM9')
 
-# 内部エネルギー（U0）のみを目的変数に設定
+<h1>内部エネルギー（U0）のみを目的変数に設定</h1>
 target_idx = 7  # U0のインデックス
 
 for data in dataset:
     data.y = data.y[:, target_idx:target_idx+1]
 
-# データ分割
+<h1>データ分割</h1>
 train_dataset = dataset[:10000]
 test_dataset = dataset[10000:11000]
 
 train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
-# デバイス設定
+<h1>デバイス設定</h1>
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model_schnet = model_schnet.to(device)
 
-# 訓練の準備
+<h1>訓練の準備</h1>
 optimizer = torch.optim.Adam(model_schnet.parameters(), lr=0.001)
 criterion = torch.nn.MSELoss()
 
@@ -643,33 +678,39 @@ def train_schnet(model, loader, optimizer, criterion, device):
 
     return total_loss / len(loader.dataset)
 
-# 訓練ループ（簡略版）
-print(&quot;\n===== SchNet訓練開始 =====&quot;)
+<h1>訓練ループ（簡略版）</h1>
+print("\n===== SchNet訓練開始 =====")
 for epoch in range(1, 21):
     train_loss = train_schnet(model_schnet, train_loader, optimizer, criterion, device)
 
     if epoch % 5 == 0:
-        print(f&quot;Epoch {epoch:03d}, Train Loss: {train_loss:.4f}&quot;)
+        print(f"Epoch {epoch:03d}, Train Loss: {train_loss:.4f}")
 
-print(&quot;訓練完了!&quot;)
-</code></pre>
+print("訓練完了!")</code></pre>
 
-<hr />
+---
+
 <h2>4.3 DimeNet：方向性を考慮したGNN</h2>
+
 <h3>4.3.1 DimeNetの特徴</h3>
-<p><strong>DimeNet</strong>（Directional Message Passing Neural Network）は、原子間距離だけでなく<strong>結合角度</strong>も考慮します。</p>
-<p><strong>重要な要素</strong>:
+
+<strong>DimeNet</strong>（Directional Message Passing Neural Network）は、原子間距離だけでなく<strong>結合角度</strong>も考慮します。
+
+<strong>重要な要素</strong>:
 - 📐 <strong>3つの原子の関係</strong>: i-j-k の角度 $\theta_{ijk}$
 - 🎯 <strong>球面調和関数</strong>: 角度をエンコード
-- 🔬 <strong>高精度</strong>: QM9でSchNetを上回る性能</p>
-<p><strong>数式</strong>（簡略版）:
+- 🔬 <strong>高精度</strong>: QM9でSchNetを上回る性能
+
+<strong>数式</strong>（簡略版）:
 $$
 m_{ij} = \sum_{k \in \mathcal{N}(j)} W(\theta_{ijk}, r_{ij}, r_{jk}) h_k
-$$</p>
-<h3>4.3.2 DimeNetの使用</h3>
-<pre class="codehilite"><code class="language-python">from torch_geometric.nn import DimeNet
+$$
 
-# DimeNetモデルのインスタンス化
+<h3>4.3.2 DimeNetの使用</h3>
+
+<pre><code class="language-python">from torch_geometric.nn import DimeNet
+
+<h1>DimeNetモデルのインスタンス化</h1>
 model_dimenet = DimeNet(
     hidden_channels=128,
     out_channels=1,
@@ -685,20 +726,20 @@ model_dimenet = DimeNet(
     num_output_layers=3
 )
 
-print(&quot;===== DimeNet =====&quot;)
-print(f&quot;パラメータ数: {sum(p.numel() for p in model_dimenet.parameters()):,}&quot;)
+print("===== DimeNet =====")
+print(f"パラメータ数: {sum(p.numel() for p in model_dimenet.parameters()):,}")
 
-# サンプルデータで順伝播
+<h1>サンプルデータで順伝播</h1>
 with torch.no_grad():
     energy = model_dimenet(z, pos, batch)
-    print(f&quot;\n予測エネルギー（DimeNet）: {energy.item():.4f} eV&quot;)
-</code></pre>
+    print(f"\n予測エネルギー（DimeNet）: {energy.item():.4f} eV")</code></pre>
 
 <h3>4.3.3 SchNet vs DimeNet 性能比較</h3>
-<pre class="codehilite"><code class="language-python">import pandas as pd
+
+<pre><code class="language-python">import pandas as pd
 import matplotlib.pyplot as plt
 
-# QM9ベンチマーク結果（文献値）
+<h1>QM9ベンチマーク結果（文献値）</h1>
 results = {
     'Model': ['GCN', 'SchNet', 'DimeNet', 'DimeNet++'],
     'U0 MAE (meV)': [230, 14, 6.3, 4.4],
@@ -711,14 +752,14 @@ df = pd.DataFrame(results)
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
-# MAE比較（U0）
+<h1>MAE比較（U0）</h1>
 axes[0].bar(df['Model'], df['U0 MAE (meV)'], color=['gray', 'steelblue', 'forestgreen', 'coral'])
 axes[0].set_ylabel('MAE (meV)', fontsize=12)
 axes[0].set_title('内部エネルギー（U0）予測精度', fontsize=13)
 axes[0].set_ylim(0, 250)
 axes[0].grid(True, alpha=0.3, axis='y')
 
-# パラメータ数比較
+<h1>パラメータ数比較</h1>
 axes[1].bar(df['Model'], df['Params (M)'], color=['gray', 'steelblue', 'forestgreen', 'coral'])
 axes[1].set_ylabel('パラメータ数 (百万)', fontsize=12)
 axes[1].set_title('モデルサイズ', fontsize=13)
@@ -727,50 +768,59 @@ axes[1].grid(True, alpha=0.3, axis='y')
 plt.tight_layout()
 plt.show()
 
-print(&quot;===== QM9ベンチマーク =====&quot;)
-print(df.to_string(index=False))
-</code></pre>
+print("===== QM9ベンチマーク =====")
+print(df.to_string(index=False))</code></pre>
 
-<hr />
+---
+
 <h2>4.4 等変GNN（E(3)-Equivariant）</h2>
+
 <h3>4.4.1 等変性とは</h3>
-<p><strong>等変性（Equivariance）</strong>は、入力の変換（回転、平行移動）が出力にも同じ変換として反映される性質です。</p>
-<p><strong>数学的定義</strong>:
+
+<strong>等変性（Equivariance）</strong>は、入力の変換（回転、平行移動）が出力にも同じ変換として反映される性質です。
+
+<strong>数学的定義</strong>:
 $$
 f(R \cdot x) = R \cdot f(x)
-$$</p>
-<p>ここで、$R$は回転行列、$x$は3D座標。</p>
-<p><strong>重要性</strong>:
+$$
+
+ここで、$R$は回転行列、$x$は3D座標。
+
+<strong>重要性</strong>:
 - 🔄 <strong>物理法則の遵守</strong>: 分子の向きに依存しない
 - 🎯 <strong>データ効率</strong>: 回転拡張が不要
-- 🚀 <strong>汎化性能</strong>: 学習データ以外の向きでも高精度</p>
+- 🚀 <strong>汎化性能</strong>: 学習データ以外の向きでも高精度
+
 <h3>4.4.2 等変GNNの例：NequIP</h3>
-<p><strong>NequIP</strong>（Neural Equivariant Interatomic Potentials）は、E(3)等変性を持つGNNです。</p>
-<p><strong>特徴</strong>:
+
+<strong>NequIP</strong>（Neural Equivariant Interatomic Potentials）は、E(3)等変性を持つGNNです。
+
+<strong>特徴</strong>:
 - テンソル積による等変メッセージパッシング
 - 球面調和関数による角度エンコーディング
-- 力場（Force Field）の学習に最適</p>
-<pre class="codehilite"><code class="language-mermaid">graph TD
-    A[3D原子座標] --&gt; B[E3等変埋め込み]
-    B --&gt; C[テンソル積メッセージパッシング]
-    C --&gt; D[球面調和関数フィルター]
-    D --&gt; E[等変更新]
-    E --&gt; F[エネルギー・力予測]
+- 力場（Force Field）の学習に最適
+
+<div class="mermaid">graph TD
+    A[3D原子座標] --> B[E3等変埋め込み]
+    B --> C[テンソル積メッセージパッシング]
+    C --> D[球面調和関数フィルター]
+    D --> E[等変更新]
+    E --> F[エネルギー・力予測]
 
     style A fill:#e3f2fd
     style B fill:#fff3e0
     style C fill:#f3e5f5
     style D fill:#e8f5e9
     style E fill:#fff9c4
-    style F fill:#ffccbc
-</code></pre>
+    style F fill:#ffccbc</div>
 
 <h3>4.4.3 等変性の検証</h3>
-<pre class="codehilite"><code class="language-python">import torch
+
+<pre><code class="language-python">import torch
 import numpy as np
 
 def rotate_coordinates(pos, axis='z', angle=np.pi/4):
-    &quot;&quot;&quot;
+    """
     座標を回転させる
 
     Parameters:
@@ -786,7 +836,7 @@ def rotate_coordinates(pos, axis='z', angle=np.pi/4):
     --------
     rotated_pos : torch.Tensor (num_atoms, 3)
         回転後の座標
-    &quot;&quot;&quot;
+    """
     cos_a = np.cos(angle)
     sin_a = np.sin(angle)
 
@@ -811,7 +861,7 @@ def rotate_coordinates(pos, axis='z', angle=np.pi/4):
 
     return pos @ R.T
 
-# メタン分子を回転
+<h1>メタン分子を回転</h1>
 pos_original = torch.tensor([
     [0.0, 0.0, 0.0],
     [1.09, 0.0, 0.0],
@@ -822,7 +872,7 @@ pos_original = torch.tensor([
 
 pos_rotated = rotate_coordinates(pos_original, axis='z', angle=np.pi/2)
 
-# SchNetで予測（回転不変性を検証）
+<h1>SchNetで予測（回転不変性を検証）</h1>
 model_schnet.eval()
 z = torch.tensor([6, 1, 1, 1, 1])
 batch = torch.zeros(5, dtype=torch.long)
@@ -831,31 +881,35 @@ with torch.no_grad():
     energy_original = model_schnet(z, pos_original, batch)
     energy_rotated = model_schnet(z, pos_rotated, batch)
 
-print(&quot;===== 回転不変性の検証 =====&quot;)
-print(f&quot;元の座標での予測エネルギー: {energy_original.item():.4f} eV&quot;)
-print(f&quot;回転後の座標での予測エネルギー: {energy_rotated.item():.4f} eV&quot;)
-print(f&quot;差: {abs(energy_original.item() - energy_rotated.item()):.6f} eV&quot;)
+print("===== 回転不変性の検証 =====")
+print(f"元の座標での予測エネルギー: {energy_original.item():.4f} eV")
+print(f"回転後の座標での予測エネルギー: {energy_rotated.item():.4f} eV")
+print(f"差: {abs(energy_original.item() - energy_rotated.item()):.6f} eV")
 
-if abs(energy_original.item() - energy_rotated.item()) &lt; 1e-4:
-    print(&quot;✅ 回転不変性を満たしています！&quot;)
+if abs(energy_original.item() - energy_rotated.item()) < 1e-4:
+    print("✅ 回転不変性を満たしています！")
 else:
-    print(&quot;❌ 回転不変性が不完全です。&quot;)
-</code></pre>
+    print("❌ 回転不変性が不完全です。")</code></pre>
 
-<hr />
+---
+
 <h2>4.5 注意機構（Attention）とTransformer統合</h2>
+
 <h3>4.5.1 Graph Attention Networks（GAT）</h3>
-<p><strong>GAT</strong>は、注意機構により重要なノードを重点的に学習します。</p>
-<p><strong>注意係数の計算</strong>:
+
+<strong>GAT</strong>は、注意機構により重要なノードを重点的に学習します。
+
+<strong>注意係数の計算</strong>:
 $$
-\alpha_{ij} = \frac{\exp(\text{LeakyReLU}(a^T [Wh_i | Wh_j]))}{\sum_{k \in \mathcal{N}(i)} \exp(\text{LeakyReLU}(a^T [Wh_i | Wh_k]))}
-$$</p>
-<pre class="codehilite"><code class="language-python">from torch_geometric.nn import GATConv
+\alpha_{ij} = \frac{\exp(\text{LeakyReLU}(a^T [Wh_i \| Wh_j]))}{\sum_{k \in \mathcal{N}(i)} \exp(\text{LeakyReLU}(a^T [Wh_i \| Wh_k]))}
+$$
+
+<pre><code class="language-python">from torch_geometric.nn import GATConv
 
 class GAT_Model(torch.nn.Module):
-    &quot;&quot;&quot;
+    """
     Graph Attention Network
-    &quot;&quot;&quot;
+    """
     def __init__(self, num_node_features, num_classes, hidden_channels=64, heads=8):
         super().__init__()
 
@@ -894,20 +948,20 @@ class GAT_Model(torch.nn.Module):
         else:
             return x
 
-# モデルのインスタンス化
+<h1>モデルのインスタンス化</h1>
 model_gat = GAT_Model(num_node_features=7, num_classes=1, heads=8)
 
-print(&quot;===== Graph Attention Network =====&quot;)
+print("===== Graph Attention Network =====")
 print(model_gat)
-print(f&quot;\nパラメータ数: {sum(p.numel() for p in model_gat.parameters()):,}&quot;)
-</code></pre>
+print(f"\nパラメータ数: {sum(p.numel() for p in model_gat.parameters()):,}")</code></pre>
 
 <h3>4.5.2 注意重みの可視化</h3>
-<pre class="codehilite"><code class="language-python">import matplotlib.pyplot as plt
+
+<pre><code class="language-python">import matplotlib.pyplot as plt
 import networkx as nx
 
 def visualize_attention(edge_index, attention_weights, node_labels=None, figsize=(10, 8)):
-    &quot;&quot;&quot;
+    """
     注意重みをグラフ上に可視化
 
     Parameters:
@@ -918,7 +972,7 @@ def visualize_attention(edge_index, attention_weights, node_labels=None, figsize
         注意重み
     node_labels : list
         ノードのラベル（原子記号など）
-    &quot;&quot;&quot;
+    """
     # NetworkXグラフを作成
     G = nx.Graph()
 
@@ -960,36 +1014,42 @@ def visualize_attention(edge_index, attention_weights, node_labels=None, figsize
     plt.tight_layout()
     plt.show()
 
-# 使用例（サンプルデータ）
+<h1>使用例（サンプルデータ）</h1>
 edge_index_sample = torch.tensor([[0, 1, 1, 2, 2, 3, 3, 0],
                                    [1, 0, 2, 1, 3, 2, 0, 3]], dtype=torch.long)
 attention_weights_sample = torch.rand(8, 8)  # 8エッジ × 8ヘッド
 
 node_labels_sample = ['C', 'H', 'H', 'H']
 
-visualize_attention(edge_index_sample, attention_weights_sample, node_labels_sample)
-</code></pre>
+visualize_attention(edge_index_sample, attention_weights_sample, node_labels_sample)</code></pre>
 
-<hr />
+---
+
 <h2>4.6 GNNExplainer：予測の解釈可能性</h2>
+
 <h3>4.6.1 GNNExplainerとは</h3>
-<p><strong>GNNExplainer</strong>は、GNNの予測根拠を説明するための手法です。</p>
-<p><strong>主な機能</strong>:
+
+<strong>GNNExplainer</strong>は、GNNの予測根拠を説明するための手法です。
+
+<strong>主な機能</strong>:
 - 🔍 <strong>重要な部分構造の特定</strong>: どの原子・結合が予測に寄与したか
 - 📊 <strong>視覚化</strong>: 注意マップとしてグラフ上に表示
-- 🎯 <strong>信頼性向上</strong>: ブラックボックスではなく説明可能なAI</p>
-<p><strong>原理</strong>:
+- 🎯 <strong>信頼性向上</strong>: ブラックボックスではなく説明可能なAI
+
+<strong>原理</strong>:
 重要なサブグラフ $G_S$ を以下の最適化問題で見つける：
 $$
 \max_{G_S} \text{Mutual Information}(Y, G_S)
-$$</p>
-<h3>4.6.2 GNNExplainerの実装</h3>
-<pre class="codehilite"><code class="language-python">from torch_geometric.explain import Explainer, GNNExplainer as GNNExplainerAlgo
+$$
 
-# 訓練済みモデルを使用
+<h3>4.6.2 GNNExplainerの実装</h3>
+
+<pre><code class="language-python">from torch_geometric.explain import Explainer, GNNExplainer as GNNExplainerAlgo
+
+<h1>訓練済みモデルを使用</h1>
 model_gat.eval()
 
-# GNNExplainerの設定
+<h1>GNNExplainerの設定</h1>
 explainer = Explainer(
     model=model_gat,
     algorithm=GNNExplainerAlgo(epochs=200),
@@ -1003,31 +1063,31 @@ explainer = Explainer(
     ),
 )
 
-# サンプルグラフで説明を生成
+<h1>サンプルグラフで説明を生成</h1>
 x_sample = torch.randn(10, 7)
 edge_index_sample = torch.randint(0, 10, (2, 20))
 batch_sample = torch.zeros(10, dtype=torch.long)
 
-# 説明の生成
+<h1>説明の生成</h1>
 explanation = explainer(x_sample, edge_index_sample, batch=batch_sample)
 
-print(&quot;===== GNNExplainer =====&quot;)
-print(f&quot;ノード重要度: {explanation.node_mask}&quot;)
-print(f&quot;エッジ重要度: {explanation.edge_mask}&quot;)
+print("===== GNNExplainer =====")
+print(f"ノード重要度: {explanation.node_mask}")
+print(f"エッジ重要度: {explanation.edge_mask}")
 
-# 重要度の可視化
+<h1>重要度の可視化</h1>
 import matplotlib.pyplot as plt
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
-# ノード重要度
+<h1>ノード重要度</h1>
 axes[0].bar(range(len(explanation.node_mask)), explanation.node_mask.detach().numpy())
 axes[0].set_xlabel('ノードID', fontsize=12)
 axes[0].set_ylabel('重要度', fontsize=12)
 axes[0].set_title('ノード重要度（高いほど予測に寄与）', fontsize=13)
 axes[0].grid(True, alpha=0.3, axis='y')
 
-# エッジ重要度
+<h1>エッジ重要度</h1>
 axes[1].bar(range(len(explanation.edge_mask)), explanation.edge_mask.detach().numpy())
 axes[1].set_xlabel('エッジID', fontsize=12)
 axes[1].set_ylabel('重要度', fontsize=12)
@@ -1035,17 +1095,17 @@ axes[1].set_title('エッジ重要度（高いほど予測に寄与）', fontsiz
 axes[1].grid(True, alpha=0.3, axis='y')
 
 plt.tight_layout()
-plt.show()
-</code></pre>
+plt.show()</code></pre>
 
 <h3>4.6.3 実世界での活用例</h3>
-<pre class="codehilite"><code class="language-python"># 分子の毒性予測で重要な部分構造を特定
 
-# 例: ベンゼン環の毒性評価
-# GNNが「どの部分が毒性に寄与するか」を説明
+<pre><code class="language-python"><h1>分子の毒性予測で重要な部分構造を特定</h1>
+
+<h1>例: ベンゼン環の毒性評価</h1>
+<h1>GNNが「どの部分が毒性に寄与するか」を説明</h1>
 
 def explain_toxicity(model, smiles, explainer):
-    &quot;&quot;&quot;
+    """
     分子の毒性予測を説明
 
     Parameters:
@@ -1061,7 +1121,7 @@ def explain_toxicity(model, smiles, explainer):
     --------
     explanation : Explanation
         重要度マスク
-    &quot;&quot;&quot;
+    """
     from rdkit import Chem
 
     # SMILESからグラフに変換
@@ -1072,79 +1132,75 @@ def explain_toxicity(model, smiles, explainer):
     # explanation = explainer(x, edge_index, batch)
 
     # 重要な官能基を特定
-    # important_atoms = torch.where(explanation.node_mask &gt; 0.5)[0]
+    # important_atoms = torch.where(explanation.node_mask > 0.5)[0]
 
-    print(f&quot;SMILES: {smiles}&quot;)
-    print(f&quot;毒性予測: {'高' if predicted_toxicity &gt; 0.5 else '低'}&quot;)
-    print(f&quot;重要な原子: {important_atoms.tolist()}&quot;)
+    print(f"SMILES: {smiles}")
+    print(f"毒性予測: {'高' if predicted_toxicity > 0.5 else '低'}")
+    print(f"重要な原子: {important_atoms.tolist()}")
 
     return explanation
 
-# 使用例（概念的）
-# explanation = explain_toxicity(model, &quot;c1ccccc1&quot;, explainer)
-</code></pre>
+<h1>使用例（概念的）</h1>
+<h1>explanation = explain_toxicity(model, "c1ccccc1", explainer)</h1></code></pre>
 
-<hr />
+---
+
 <h2>4.7 本章のまとめ</h2>
+
 <h3>学んだこと</h3>
-<ol>
-<li><strong>グラフプーリング</strong></li>
-<li>Top-K Pooling: スコア上位K個のノード選択</li>
-<li>SAGPooling: 注意機構による学習可能なプーリング</li>
-<li>
-<p>階層的表現学習で予測精度向上</p>
-</li>
-<li>
-<p><strong>3D幾何情報を考慮したGNN</strong></p>
-</li>
-<li>SchNet: 連続フィルター畳み込みで原子間距離を利用</li>
-<li>DimeNet: 結合角度も考慮（SOTA性能）</li>
-<li>
-<p>QM9でMAE 4-6 meV（最先端）</p>
-</li>
-<li>
-<p><strong>等変GNN</strong></p>
-</li>
-<li>E(3)等変性: 回転・平行移動に対する不変性</li>
-<li>NequIP: 力場学習に最適</li>
-<li>
-<p>物理法則を遵守した高精度予測</p>
-</li>
-<li>
-<p><strong>注意機構</strong></p>
-</li>
-<li>GAT: マルチヘッド注意機構で重要なノードを重点学習</li>
-<li>注意重みの可視化で解釈性向上</li>
-<li>
-<p>Transformerとの統合</p>
-</li>
-<li>
-<p><strong>解釈可能性</strong></p>
-</li>
-<li>GNNExplainer: 予測根拠の説明</li>
-<li>重要な部分構造の特定</li>
-<li>信頼性の高いAIシステム構築</li>
-</ol>
+
+1. <strong>グラフプーリング</strong>
+   - Top-K Pooling: スコア上位K個のノード選択
+   - SAGPooling: 注意機構による学習可能なプーリング
+   - 階層的表現学習で予測精度向上
+
+2. <strong>3D幾何情報を考慮したGNN</strong>
+   - SchNet: 連続フィルター畳み込みで原子間距離を利用
+   - DimeNet: 結合角度も考慮（SOTA性能）
+   - QM9でMAE 4-6 meV（最先端）
+
+3. <strong>等変GNN</strong>
+   - E(3)等変性: 回転・平行移動に対する不変性
+   - NequIP: 力場学習に最適
+   - 物理法則を遵守した高精度予測
+
+4. <strong>注意機構</strong>
+   - GAT: マルチヘッド注意機構で重要なノードを重点学習
+   - 注意重みの可視化で解釈性向上
+   - Transformerとの統合
+
+5. <strong>解釈可能性</strong>
+   - GNNExplainer: 予測根拠の説明
+   - 重要な部分構造の特定
+   - 信頼性の高いAIシステム構築
+
 <h3>重要なポイント</h3>
-<ul>
-<li>✅ グラフプーリングは計算効率と精度の両方を向上</li>
-<li>✅ 3D情報（距離、角度）を使うと予測精度が劇的に改善</li>
-<li>✅ 等変性は物理的に正しいモデルを構築する鍵</li>
-<li>✅ 注意機構により解釈可能性が向上</li>
-<li>✅ GNNExplainerで「なぜその予測か」を説明可能</li>
-</ul>
+
+- ✅ グラフプーリングは計算効率と精度の両方を向上
+- ✅ 3D情報（距離、角度）を使うと予測精度が劇的に改善
+- ✅ 等変性は物理的に正しいモデルを構築する鍵
+- ✅ 注意機構により解釈可能性が向上
+- ✅ GNNExplainerで「なぜその予測か」を説明可能
+
 <h3>次の章へ</h3>
-<p>第5章では、実世界応用とキャリアパスを学びます：
+
+第5章では、実世界応用とキャリアパスを学びます：
 - 触媒設計（OC20 Challenge）
 - 結晶構造予測（CGCNN、Matformer）
 - 材料スクリーニング（Materials Project統合）
 - 産業応用事例
-- GNN専門家のキャリアパス</p>
-<p><strong><a href="./chapter-5.md">第5章：実世界応用とキャリア →</a></strong></p>
-<hr />
+- GNN専門家のキャリアパス
+
+<strong>[第5章：実世界応用とキャリア →](./chapter-5.md)</strong>
+
+---
+
 <h2>演習問題</h2>
+
 <h3>問題1（難易度：medium）</h3>
-<p>Top-K PoolingとSAGPoolingの違いを説明し、どのような状況で各手法を使うべきか提案してください。</p>
+
+Top-K PoolingとSAGPoolingの違いを説明し、どのような状況で各手法を使うべきか提案してください。
+
 <details>
 <summary>ヒント</summary>
 
@@ -1155,17 +1211,17 @@ def explain_toxicity(model, smiles, explainer):
 <details>
 <summary>解答例</summary>
 
-**Top-K Pooling**:
-- **特徴**: ノードのスコアを学習し、上位K個を選択（固定比率）
-- **計算コスト**: 低い（単純なソート操作）
-- **学習**: スコア関数のみを学習
+<strong>Top-K Pooling</strong>:
+- <strong>特徴</strong>: ノードのスコアを学習し、上位K個を選択（固定比率）
+- <strong>計算コスト</strong>: 低い（単純なソート操作）
+- <strong>学習</strong>: スコア関数のみを学習
 
-**SAGPooling（Self-Attention Graph Pooling）**:
-- **特徴**: 注意機構でノードの重要度を動的に学習
-- **計算コスト**: やや高い（注意機構の計算）
-- **学習**: 注意重みを含めて学習（より柔軟）
+<strong>SAGPooling（Self-Attention Graph Pooling）</strong>:
+- <strong>特徴</strong>: 注意機構でノードの重要度を動的に学習
+- <strong>計算コスト</strong>: やや高い（注意機構の計算）
+- <strong>学習</strong>: 注意重みを含めて学習（より柔軟）
 
-**使い分けのガイドライン**:
+<strong>使い分けのガイドライン</strong>:
 
 | 状況 | 推奨手法 | 理由 |
 |------|----------|------|
@@ -1175,29 +1231,28 @@ def explain_toxicity(model, smiles, explainer):
 | 解釈性が重要 | SAGPooling | 注意重みで重要なノードを可視化可能 |
 | 最高精度が必要 | SAGPooling | より柔軟な学習が可能 |
 
-**実装例**:
+<strong>実装例</strong>:
 
-
-<pre class="codehilite"><code class="language-python"># データ数に応じた選択
-if len(dataset) &lt; 1000:
+<pre><code class="language-python"><h1>データ数に応じた選択</h1>
+if len(dataset) < 1000:
     pooling = TopKPooling(hidden_channels, ratio=0.5)
 else:
-    pooling = SAGPooling(hidden_channels, ratio=0.5)
-</code></pre>
+    pooling = SAGPooling(hidden_channels, ratio=0.5)</code></pre>
 
-
-
-**性能比較**（QM9データセット）:
+<strong>性能比較</strong>（QM9データセット）:
 - Top-K Pooling: MAE 0.32 eV, 訓練時間 38秒
 - SAGPooling: MAE 0.28 eV, 訓練時間 46秒
 
-**結論**: SAGPoolingは精度が高いが計算コストがやや高い。小規模データや計算リソースが限られている場合はTop-K Poolingが適切。
+<strong>結論</strong>: SAGPoolingは精度が高いが計算コストがやや高い。小規模データや計算リソースが限られている場合はTop-K Poolingが適切。
 
 </details>
 
-<hr />
+---
+
 <h3>問題2（難易度：hard）</h3>
-<p>SchNetが回転不変性を持つ理由を、数式を用いて説明してください。</p>
+
+SchNetが回転不変性を持つ理由を、数式を用いて説明してください。
+
 <details>
 <summary>ヒント</summary>
 
@@ -1208,13 +1263,13 @@ else:
 <details>
 <summary>解答例</summary>
 
-**SchNetの回転不変性の証明**:
+<strong>SchNetの回転不変性の証明</strong>:
 
-**前提**:
+<strong>前提</strong>:
 - 分子の3D座標を $\mathbf{r}_i$ とする（原子 $i$ の位置ベクトル）
 - 回転行列を $R$ とする（$R^T R = I$、$\det(R) = 1$）
 
-**ステップ1: 原子間距離の不変性**
+<strong>ステップ1: 原子間距離の不変性</strong>
 
 回転前の原子間距離:
 $$
@@ -1236,9 +1291,9 @@ $$
 r'_{ij} = r_{ij}
 $$
 
-**原子間距離は回転に対して不変！**
+<strong>原子間距離は回転に対して不変！</strong>
 
-**ステップ2: SchNetのメッセージパッシング**
+<strong>ステップ2: SchNetのメッセージパッシング</strong>
 
 SchNetのメッセージは原子間距離 $r_{ij}$ の関数：
 $$
@@ -1250,14 +1305,14 @@ $$
 W(r_{ij}) = \sum_{k=1}^{K} w_k \exp\left(-\gamma (r_{ij} - \mu_k)^2\right)
 $$
 
-**ステップ3: 回転後のメッセージ**
+<strong>ステップ3: 回転後のメッセージ</strong>
 
 回転後も原子間距離は不変なので:
 $$
 m'_{ij} = W(r'_{ij}) \odot h'_j = W(r_{ij}) \odot h'_j
 $$
 
-**ステップ4: グローバル表現**
+<strong>ステップ4: グローバル表現</strong>
 
 SchNetの最終出力は各原子の特徴量を集約:
 $$
@@ -1269,38 +1324,37 @@ $$
 E' = \sum_{i=1}^{N} f(h'_i) = E
 $$
 
-**結論**:
-SchNetは原子間距離（回転不変量）のみを入力とするため、分子全体を回転させても予測結果は変わらない。これが**回転不変性**の数学的根拠。
+<strong>結論</strong>:
+SchNetは原子間距離（回転不変量）のみを入力とするため、分子全体を回転させても予測結果は変わらない。これが<strong>回転不変性</strong>の数学的根拠。
 
-**コードでの検証**:
+<strong>コードでの検証</strong>:
 
+<pre><code class="language-python">import torch
 
-<pre class="codehilite"><code class="language-python">import torch
-
-# 元の座標
+<h1>元の座標</h1>
 pos = torch.tensor([[0, 0, 0], [1, 0, 0], [0, 1, 0]], dtype=torch.float)
 
-# 回転行列（Z軸周りに90度）
+<h1>回転行列（Z軸周りに90度）</h1>
 R = torch.tensor([[0, -1, 0], [1, 0, 0], [0, 0, 1]], dtype=torch.float)
 pos_rotated = pos @ R.T
 
-# 原子間距離の計算
+<h1>原子間距離の計算</h1>
 dist_original = torch.norm(pos[0] - pos[1])
 dist_rotated = torch.norm(pos_rotated[0] - pos_rotated[1])
 
-print(f&quot;元の距離: {dist_original.item():.6f}&quot;)
-print(f&quot;回転後の距離: {dist_rotated.item():.6f}&quot;)
-print(f&quot;差: {abs(dist_original - dist_rotated).item():.10f}&quot;)
-# 出力: 差 ≈ 0（数値誤差の範囲内）
-</code></pre>
-
-
+print(f"元の距離: {dist_original.item():.6f}")
+print(f"回転後の距離: {dist_rotated.item():.6f}")
+print(f"差: {abs(dist_original - dist_rotated).item():.10f}")
+<h1>出力: 差 ≈ 0（数値誤差の範囲内）</h1></code></pre>
 
 </details>
 
-<hr />
+---
+
 <h3>問題3（難易度：hard）</h3>
-<p>GNNExplainerを使って、分子の毒性予測モデルで「ベンゼン環が毒性に寄与している」ことを示す完全なコードを書いてください。</p>
+
+GNNExplainerを使って、分子の毒性予測モデルで「ベンゼン環が毒性に寄与している」ことを示す完全なコードを書いてください。
+
 <details>
 <summary>ヒント</summary>
 
@@ -1311,8 +1365,7 @@ RDKitで分子をグラフに変換し、GNNExplainerで重要な原子を特定
 <details>
 <summary>解答例</summary>
 
-
-<pre class="codehilite"><code class="language-python">import torch
+<pre><code class="language-python">import torch
 import torch.nn.functional as F
 from torch_geometric.nn import GCNConv, global_mean_pool
 from torch_geometric.data import Data
@@ -1322,7 +1375,7 @@ from rdkit.Chem import Draw
 import matplotlib.pyplot as plt
 import numpy as np
 
-# ステップ1: 毒性予測モデルの定義
+<h1>ステップ1: 毒性予測モデルの定義</h1>
 class ToxicityGNN(torch.nn.Module):
     def __init__(self, num_node_features, hidden_channels=64):
         super().__init__()
@@ -1339,7 +1392,7 @@ class ToxicityGNN(torch.nn.Module):
         x = self.lin(x)
         return torch.sigmoid(x)  # 0-1のスコア
 
-# ステップ2: SMILESからグラフに変換
+<h1>ステップ2: SMILESからグラフに変換</h1>
 def smiles_to_graph(smiles):
     mol = Chem.MolFromSmiles(smiles)
     if mol is None:
@@ -1350,7 +1403,7 @@ def smiles_to_graph(smiles):
     for atom in mol.GetAtoms():
         features = [0] * 10  # 上位10元素
         atomic_num = atom.GetAtomicNum()
-        if atomic_num &lt; 10:
+        if atomic_num < 10:
             features[atomic_num] = 1
         else:
             features[9] = 1  # その他
@@ -1369,23 +1422,23 @@ def smiles_to_graph(smiles):
 
     return Data(x=x, edge_index=edge_index), mol
 
-# ステップ3: モデルの訓練（簡略版、実際は訓練データで学習）
+<h1>ステップ3: モデルの訓練（簡略版、実際は訓練データで学習）</h1>
 model = ToxicityGNN(num_node_features=10)
 model.eval()  # 訓練済みと仮定
 
-# ステップ4: ベンゼン含有分子で説明を生成
-smiles = &quot;c1ccccc1CC(=O)O&quot;  # フェニル酢酸（ベンゼン環 + 酢酸）
+<h1>ステップ4: ベンゼン含有分子で説明を生成</h1>
+smiles = "c1ccccc1CC(=O)O"  # フェニル酢酸（ベンゼン環 + 酢酸）
 data, mol = smiles_to_graph(smiles)
 
 batch = torch.zeros(data.num_nodes, dtype=torch.long)
 
-# 毒性予測
+<h1>毒性予測</h1>
 with torch.no_grad():
     toxicity_score = model(data.x, data.edge_index, batch)
-    print(f&quot;SMILES: {smiles}&quot;)
-    print(f&quot;予測毒性スコア: {toxicity_score.item():.4f}&quot;)
+    print(f"SMILES: {smiles}")
+    print(f"予測毒性スコア: {toxicity_score.item():.4f}")
 
-# ステップ5: GNNExplainerで説明を生成
+<h1>ステップ5: GNNExplainerで説明を生成</h1>
 explainer = Explainer(
     model=model,
     algorithm=GNNExplainerAlgo(epochs=200),
@@ -1401,35 +1454,35 @@ explainer = Explainer(
 
 explanation = explainer(data.x, data.edge_index, batch=batch)
 
-# ステップ6: 重要な原子を特定
+<h1>ステップ6: 重要な原子を特定</h1>
 node_importance = explanation.node_mask.detach().numpy()
-important_atoms = np.where(node_importance &gt; node_importance.mean())[0]
+important_atoms = np.where(node_importance > node_importance.mean())[0]
 
-print(f&quot;\n重要な原子（インデックス）: {important_atoms.tolist()}&quot;)
+print(f"\n重要な原子（インデックス）: {important_atoms.tolist()}")
 
-# ベンゼン環の原子（0-5）が重要かチェック
+<h1>ベンゼン環の原子（0-5）が重要かチェック</h1>
 benzene_ring = [0, 1, 2, 3, 4, 5]
 benzene_importance = np.mean([node_importance[i] for i in benzene_ring])
 other_importance = np.mean([node_importance[i] for i in range(6, data.num_nodes)])
 
-print(f&quot;\nベンゼン環の平均重要度: {benzene_importance:.4f}&quot;)
-print(f&quot;その他の原子の平均重要度: {other_importance:.4f}&quot;)
+print(f"\nベンゼン環の平均重要度: {benzene_importance:.4f}")
+print(f"その他の原子の平均重要度: {other_importance:.4f}")
 
-if benzene_importance &gt; other_importance:
-    print(&quot;✅ ベンゼン環が毒性に強く寄与しています！&quot;)
+if benzene_importance > other_importance:
+    print("✅ ベンゼン環が毒性に強く寄与しています！")
 else:
-    print(&quot;❌ ベンゼン環の寄与は他の部分より低いです。&quot;)
+    print("❌ ベンゼン環の寄与は他の部分より低いです。")
 
-# ステップ7: 可視化
+<h1>ステップ7: 可視化</h1>
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
-# 分子構造
+<h1>分子構造</h1>
 img = Draw.MolToImage(mol, size=(400, 400))
 axes[0].imshow(img)
 axes[0].set_title(f'分子構造\n{smiles}', fontsize=12)
 axes[0].axis('off')
 
-# 原子重要度
+<h1>原子重要度</h1>
 axes[1].bar(range(data.num_nodes), node_importance, color='steelblue')
 axes[1].axhline(y=node_importance.mean(), color='r', linestyle='--', label='平均')
 axes[1].set_xlabel('原子インデックス', fontsize=12)
@@ -1439,26 +1492,19 @@ axes[1].legend()
 axes[1].grid(True, alpha=0.3, axis='y')
 
 plt.tight_layout()
-plt.show()
-</code></pre>
+plt.show()</code></pre>
 
-
-
-**期待される出力**:
-
-<pre class="codehilite"><code>SMILES: c1ccccc1CC(=O)O
+<strong>期待される出力</strong>:
+<pre><code>SMILES: c1ccccc1CC(=O)O
 予測毒性スコア: 0.7234
 
 重要な原子（インデックス）: [0, 1, 2, 3, 4, 5]
 
 ベンゼン環の平均重要度: 0.8523
 その他の原子の平均重要度: 0.3241
-✅ ベンゼン環が毒性に強く寄与しています！
-</code></pre>
+✅ ベンゼン環が毒性に強く寄与しています！</code></pre>
 
-
-
-**解説**:
+<strong>解説</strong>:
 1. GNNExplainerは各原子の重要度を0-1のスコアで出力
 2. ベンゼン環の原子（0-5）のスコアが高い → 毒性予測に寄与
 3. 酢酸部分（6-10）のスコアは低い → 毒性への寄与は小さい
@@ -1467,51 +1513,45 @@ plt.show()
 
 </details>
 
-<hr />
+---
+
 <h2>参考文献</h2>
-<ol>
-<li>
-<p>Ying, Z., et al. (2018). "Hierarchical Graph Representation Learning with Differentiable Pooling." <em>NeurIPS 2018</em>.
+
+1. Ying, Z., et al. (2018). "Hierarchical Graph Representation Learning with Differentiable Pooling." *NeurIPS 2018*.
    URL: https://arxiv.org/abs/1806.08804
-   <em>DiffPool論文。微分可能なグラフプーリングの先駆的研究。</em></p>
-</li>
-<li>
-<p>Schütt, K., et al. (2017). "SchNet: A continuous-filter convolutional neural network for modeling quantum interactions." <em>NeurIPS 2017</em>.
-   DOI: <a href="https://dl.acm.org/doi/10.5555/3294771.3294866">10.5555/3294771.3294866</a>
-   <em>SchNet論文。3D情報を考慮したGNNの基礎。</em></p>
-</li>
-<li>
-<p>Klicpera, J., et al. (2020). "Directional Message Passing for Molecular Graphs." <em>ICLR 2020</em>.
+   *DiffPool論文。微分可能なグラフプーリングの先駆的研究。*
+
+2. Schütt, K., et al. (2017). "SchNet: A continuous-filter convolutional neural network for modeling quantum interactions." *NeurIPS 2017*.
+   DOI: [10.5555/3294771.3294866](https://dl.acm.org/doi/10.5555/3294771.3294866)
+   *SchNet論文。3D情報を考慮したGNNの基礎。*
+
+3. Klicpera, J., et al. (2020). "Directional Message Passing for Molecular Graphs." *ICLR 2020*.
    URL: https://arxiv.org/abs/2003.03123
-   <em>DimeNet論文。結合角度を考慮した高精度GNN。</em></p>
-</li>
-<li>
-<p>Batzner, S., et al. (2022). "E(3)-equivariant graph neural networks for data-efficient and accurate interatomic potentials." <em>Nature Communications</em>, 13, 2453.
-   DOI: <a href="https://doi.org/10.1038/s41467-022-29939-5">10.1038/s41467-022-29939-5</a>
-   <em>NequIP論文。等変GNNの最新研究。</em></p>
-</li>
-<li>
-<p>Veličković, P., et al. (2018). "Graph Attention Networks." <em>ICLR 2018</em>.
+   *DimeNet論文。結合角度を考慮した高精度GNN。*
+
+4. Batzner, S., et al. (2022). "E(3)-equivariant graph neural networks for data-efficient and accurate interatomic potentials." *Nature Communications*, 13, 2453.
+   DOI: [10.1038/s41467-022-29939-5](https://doi.org/10.1038/s41467-022-29939-5)
+   *NequIP論文。等変GNNの最新研究。*
+
+5. Veličković, P., et al. (2018). "Graph Attention Networks." *ICLR 2018*.
    URL: https://arxiv.org/abs/1710.10903
-   <em>GAT論文。注意機構をGNNに導入した先駆的研究。</em></p>
-</li>
-<li>
-<p>Ying, R., et al. (2019). "GNNExplainer: Generating Explanations for Graph Neural Networks." <em>NeurIPS 2019</em>.
+   *GAT論文。注意機構をGNNに導入した先駆的研究。*
+
+6. Ying, R., et al. (2019). "GNNExplainer: Generating Explanations for Graph Neural Networks." *NeurIPS 2019*.
    URL: https://arxiv.org/abs/1903.03894
-   <em>GNNExplainer論文。GNNの解釈可能性を実現。</em></p>
-</li>
-</ol>
-<hr />
-<p><strong>作成日</strong>: 2025-10-17
+   *GNNExplainer論文。GNNの解釈可能性を実現。*
+
+---
+
+<strong>作成日</strong>: 2025-10-17
 <strong>バージョン</strong>: 1.0
 <strong>テンプレート</strong>: chapter-template-v2.0
-<strong>著者</strong>: GNN入門シリーズプロジェクト</p>
-
-        <div class="navigation">
-            <a href="chapter-3.html" class="nav-button">← 前章: PyTorch Geometric実践</a>
-            <a href="chapter-5.html" class="nav-button">次章: 実世界応用とキャリア →</a>
-            <a href="index.html" class="nav-button">← シリーズ目次に戻る</a>
-        </div>
+<strong>著者</strong>: GNN入門シリーズプロジェクト
+<div class="navigation">
+    <a href="chapter-3.html" class="nav-button">← 第3章</a>
+    <a href="index.html" class="nav-button">シリーズ目次に戻る</a>
+    <a href="chapter-5.html" class="nav-button">第5章 →</a>
+</div>
     </main>
 
     <footer>
