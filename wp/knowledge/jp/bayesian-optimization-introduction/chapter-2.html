@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2章：ベイズ最適化の理論 - ベイズ最適化入門</title>
+
+    <style>
+        :root {
+            --color-primary: #2c3e50;
+            --color-primary-dark: #1a252f;
+            --color-accent: #7b2cbf;
+            --color-accent-light: #9d4edd;
+            --color-text: #2d3748;
+            --color-text-light: #4a5568;
+            --color-bg: #ffffff;
+            --color-bg-alt: #f7fafc;
+            --color-border: #e2e8f0;
+            --color-code-bg: #f8f9fa;
+            --color-link: #3182ce;
+            --color-link-hover: #2c5aa0;
+
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+
+            --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+
+            --border-radius: 8px;
+            --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            line-height: 1.7;
+            color: var(--color-text);
+            background-color: var(--color-bg);
+            font-size: 16px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+            color: white;
+            padding: var(--spacing-xl) var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--box-shadow);
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            font-weight: 400;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md) var(--spacing-xl);
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            color: var(--color-primary);
+            margin-top: var(--spacing-xl);
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-xs);
+            border-bottom: 3px solid var(--color-accent);
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            color: var(--color-primary);
+            margin-top: var(--spacing-lg);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            color: var(--color-primary-dark);
+            margin-top: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        p {
+            margin-bottom: var(--spacing-md);
+            color: var(--color-text);
+        }
+
+        a {
+            color: var(--color-link);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: var(--color-link-hover);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-left: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+        }
+
+        li {
+            margin-bottom: var(--spacing-xs);
+            color: var(--color-text);
+        }
+
+        pre {
+            background-color: var(--color-code-bg);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            overflow-x: auto;
+            margin-bottom: var(--spacing-md);
+        }
+
+        code {
+            font-family: var(--font-mono);
+            font-size: 0.9em;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        p code, li code {
+            background-color: var(--color-code-bg);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+
+        .info-box {
+            background-color: var(--color-bg-alt);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        details {
+            background-color: var(--color-bg-alt);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        summary {
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+            color: var(--color-primary);
+        }
+
+        summary:hover {
+            color: var(--color-accent);
+        }
+
+        details[open] summary {
+            margin-bottom: var(--spacing-sm);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: var(--spacing-md);
+        }
+
+        th, td {
+            border: 1px solid var(--color-border);
+            padding: var(--spacing-sm);
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--color-bg-alt);
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--spacing-xl);
+            padding-top: var(--spacing-lg);
+            border-top: 2px solid var(--color-border);
+        }
+
+        .nav-button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+            color: white;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow);
+            color: white;
+            text-decoration: none;
+        }
+
+        .nav-button.secondary {
+            background: var(--color-bg-alt);
+            color: var(--color-primary);
+            border: 1px solid var(--color-border);
+        }
+
+        footer {
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-lg) var(--spacing-md);
+            background-color: var(--color-bg-alt);
+            border-top: 1px solid var(--color-border);
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            h3 {
+                font-size: 1.2rem;
+            }
+
+            .meta {
+                font-size: 0.85rem;
+            }
+
+            .navigation {
+                flex-direction: column;
+                gap: var(--spacing-sm);
+            }
+
+            .nav-button {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        .math-display {
+            overflow-x: auto;
+            margin: var(--spacing-md) 0;
+            padding: var(--spacing-sm);
+            background-color: var(--color-bg-alt);
+            border-left: 3px solid var(--color-accent);
+        }
+
+        strong {
+            color: var(--color-primary-dark);
+            font-weight: 600;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--color-accent);
+            padding-left: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+            color: var(--color-text-light);
+            font-style: italic;
+        }
+    </style>
+
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>第2章：ベイズ最適化の理論</h1>
+            <p class="subtitle">ガウス過程と獲得関数で探索を最適化する</p>
+            <div class="meta">
+                <span class="meta-item">📖 読了時間: 25-30分</span>
+                <span class="meta-item">📊 難易度: 初級</span>
+                <span class="meta-item">💻 コード例: 10個</span>
+                <span class="meta-item">📝 演習問題: 3問</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <h2>学習目標</h2>
+        <p>この章を読むことで、以下を習得できます：</p>
+        <ul>
+            <li>✅ ガウス過程回帰の基本原理を理解できる</li>
+            <li>✅ 代理モデルの役割と構築方法を説明できる</li>
+            <li>✅ 3つの主要な獲得関数（EI、PI、UCB）を実装できる</li>
+            <li>✅ 探索と活用のトレードオフを数式で表現できる</li>
+            <li>✅ 不確実性の定量化とその重要性を理解できる</li>
+        </ul>
+
+        <h2>2.1 代理モデルとは</h2>
+
+        <h3>なぜ代理モデルが必要か</h3>
+
+        <p>材料探索において、真の目的関数（例：イオン伝導度、触媒活性）を評価するには<strong>実験が必要</strong>です。しかし、実験は：</p>
+
+        <ul>
+            <li><strong>時間がかかる</strong>: 1サンプル数時間～数日</li>
+            <li><strong>コストが高い</strong>: 材料費、装置費、人件費</li>
+            <li><strong>回数に制限</strong>: 予算・時間の制約</li>
+        </ul>
+
+        <p>そこで、<strong>少数の実験結果から目的関数を推定するモデル</strong>を構築します。これが<strong>代理モデル（Surrogate Model）</strong>です。</p>
+
+        <h3>代理モデルの役割</h3>
+
+        <pre class="mermaid">
+graph LR
+    A[少数の実験データ<br/>例: 10-20点] --> B[代理モデル構築<br/>ガウス過程回帰]
+    B --> C[未知領域の予測<br/>平均 + 不確実性]
+    C --> D[獲得関数の計算<br/>次の実験点を提案]
+    D --> E[実験実行<br/>新データ取得]
+    E --> B
+
+    style A fill:#e3f2fd
+    style B fill:#fff3e0
+    style C fill:#f3e5f5
+    style D fill:#e8f5e9
+    style E fill:#fce4ec
+        </pre>
+
+        <div class="info-box">
+            <p><strong>代理モデルの要件</strong>:</p>
+            <ol>
+                <li><strong>少数データでも機能</strong>: 10-20点程度で予測可能</li>
+                <li><strong>不確実性を定量化</strong>: 予測の信頼性を評価</li>
+                <li><strong>高速</strong>: 何千点でも瞬時に予測</li>
+                <li><strong>柔軟</strong>: 複雑な関数形状に対応</li>
+            </ol>
+            <p><strong>ガウス過程回帰（Gaussian Process Regression）</strong>は、これらの要件を満たす強力な手法です。</p>
+        </div>
+
+        <h2>2.2 ガウス過程回帰の基礎</h2>
+
+        <h3>ガウス過程とは</h3>
+
+        <p><strong>ガウス過程（Gaussian Process, GP）</strong>は、関数の確率分布を定義する手法です。</p>
+
+        <p><strong>定義</strong>:</p>
+        <blockquote>
+            ガウス過程とは、任意の有限個の点での関数値が<strong>多変量ガウス分布に従う</strong>ような確率過程である。
+        </blockquote>
+
+        <p><strong>直感的理解</strong>:</p>
+        <ul>
+            <li>1つの関数ではなく、<strong>無数の関数の分布</strong>を考える</li>
+            <li>観測データに基づいて、関数の分布を更新</li>
+            <li>各点での予測値は<strong>平均と分散</strong>で表現</li>
+        </ul>
+
+        <h3>ガウス過程の数学的定義</h3>
+
+        <p>ガウス過程は、<strong>平均関数</strong><em>m</em>(<em>x</em>)と<strong>カーネル関数（共分散関数）</strong><em>k</em>(<em>x</em>, <em>x'</em>)で完全に定義されます：</p>
+
+        <div class="math-display">
+            <p><em>f</em>(<em>x</em>) ~ GP(<em>m</em>(<em>x</em>), <em>k</em>(<em>x</em>, <em>x'</em>))</p>
+        </div>
+
+        <p><strong>平均関数</strong> <em>m</em>(<em>x</em>):</p>
+        <ul>
+            <li>通常は <em>m</em>(<em>x</em>) = 0 と仮定（データから学習）</li>
+        </ul>
+
+        <p><strong>カーネル関数</strong> <em>k</em>(<em>x</em>, <em>x'</em>):</p>
+        <ul>
+            <li>2点間の「類似度」を表す</li>
+            <li>入力が近いほど、出力も似ていると仮定</li>
+        </ul>
+
+        <h3>代表的なカーネル関数</h3>
+
+        <p><strong>1. RBF（Radial Basis Function）カーネル</strong></p>
+
+        <div class="math-display">
+            <p><em>k</em>(<em>x</em>, <em>x'</em>) = σ<sup>2</sup> exp(−||<em>x</em> − <em>x'</em>||<sup>2</sup> / 2ℓ<sup>2</sup>)</p>
+        </div>
+
+        <ul>
+            <li>σ<sup>2</sup>: 分散（出力のスケール）</li>
+            <li>ℓ: 長さスケール（どれだけ滑らかか）</li>
+        </ul>
+
+        <div class="info-box">
+            <p><strong>特徴</strong>:</p>
+            <ul>
+                <li>最も一般的</li>
+                <li>無限回微分可能（滑らかな関数）</li>
+                <li>材料特性予測に適している</li>
+            </ul>
+        </div>
+
+        <p><strong>コード例1: RBFカーネルの可視化</strong></p>
+
+        <pre><code class="language-python"># RBFカーネルの可視化
+import numpy as np
+import matplotlib.pyplot as plt
+
+def rbf_kernel(x1, x2, sigma=1.0, length_scale=1.0):
+    """
+    RBFカーネル関数
+
+    Parameters:
+    -----------
+    x1, x2 : array
+        入力点
+    sigma : float
+        標準偏差（出力のスケール）
+    length_scale : float
+        長さスケール（入力の相関距離）
+
+    Returns:
+    --------
+    float : カーネル値（類似度）
+    """
+    distance = np.abs(x1 - x2)
+    return sigma**2 * np.exp(-0.5 * (distance / length_scale)**2)
+
+# 異なる長さスケールでカーネルを可視化
+x_ref = 0.5  # 参照点
+x_range = np.linspace(0, 1, 100)
+
+plt.figure(figsize=(12, 4))
+
+# 左図: 長さスケールの影響
+plt.subplot(1, 3, 1)
+for length_scale in [0.05, 0.1, 0.2, 0.5]:
+    k_values = [rbf_kernel(x_ref, x, sigma=1.0,
+                           length_scale=length_scale)
+                for x in x_range]
+    plt.plot(x_range, k_values,
+             label=f'$\\ell$ = {length_scale}', linewidth=2)
+plt.axvline(x_ref, color='black', linestyle='--', alpha=0.5)
+plt.xlabel('x', fontsize=12)
+plt.ylabel('k(0.5, x)', fontsize=12)
+plt.title('長さスケールの影響', fontsize=14)
+plt.legend()
+plt.grid(True, alpha=0.3)</code></pre>
+
+        <div class="info-box">
+            <p><strong>重要なポイント</strong>:</p>
+            <ul>
+                <li><strong>長さスケール ℓ</strong>: 関数の滑らかさを制御
+                    <ul>
+                        <li>小さい ℓ → 急峻な変化を許容</li>
+                        <li>大きい ℓ → 滑らかな関数を仮定</li>
+                    </ul>
+                </li>
+                <li><strong>材料科学での意味</strong>: 組成や条件が近いと、特性も似ていると仮定</li>
+            </ul>
+        </div>
+
+        <h3>ガウス過程回帰の予測式</h3>
+
+        <p>観測データ D = {(<em>x</em><sub>1</sub>, <em>y</em><sub>1</sub>), ..., (<em>x<sub>n</sub></em>, <em>y<sub>n</sub></em>)} が与えられたとき、新しい点 <em>x</em><sub>*</sub> での予測は：</p>
+
+        <div class="math-display">
+            <p><strong>予測平均</strong>: μ(<em>x</em><sub>*</sub>) = <em>k</em><sub>*</sub> <em>K</em><sup>−1</sup> <strong>y</strong></p>
+            <p><strong>予測分散</strong>: σ<sup>2</sup>(<em>x</em><sub>*</sub>) = <em>k</em>(<em>x</em><sub>*</sub>, <em>x</em><sub>*</sub>) − <em>k</em><sub>*</sub><sup>T</sup> <em>K</em><sup>−1</sup> <em>k</em><sub>*</sub></p>
+        </div>
+
+        <p>ここで：</p>
+        <ul>
+            <li><em>K</em>: 観測点間のカーネル行列 <em>K</em><sub><em>ij</em></sub> = <em>k</em>(<em>x</em><sub><em>i</em></sub>, <em>x</em><sub><em>j</em></sub>)</li>
+            <li><em>k</em><sub>*</sub>: 新しい点と観測点間のカーネルベクトル</li>
+            <li><strong>y</strong>: 観測値のベクトル</li>
+        </ul>
+
+        <div class="math-display">
+            <p><strong>予測分布</strong>: <em>f</em>(<em>x</em><sub>*</sub>) | D ~ N(μ(<em>x</em><sub>*</sub>), σ<sup>2</sup>(<em>x</em><sub>*</sub>))</p>
+        </div>
+
+        <p><strong>コード例2: ガウス過程回帰の実装と可視化</strong></p>
+
+        <pre><code class="language-python"># ガウス過程回帰の実装
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.spatial.distance import cdist
+
+class GaussianProcessRegressor:
+    """
+    ガウス過程回帰の簡易実装
+
+    Parameters:
+    -----------
+    kernel : str
+        カーネル種類（'rbf'のみサポート）
+    sigma : float
+        カーネルの標準偏差
+    length_scale : float
+        カーネルの長さスケール
+    noise : float
+        観測ノイズの標準偏差
+    """
+
+    def __init__(self, kernel='rbf', sigma=1.0,
+                 length_scale=0.1, noise=0.01):
+        self.kernel = kernel
+        self.sigma = sigma
+        self.length_scale = length_scale
+        self.noise = noise
+        self.X_train = None
+        self.y_train = None
+        self.K_inv = None
+
+    def _kernel(self, X1, X2):
+        """カーネル行列の計算"""
+        if self.kernel == 'rbf':
+            dists = cdist(X1, X2, 'sqeuclidean')
+            K = self.sigma**2 * np.exp(-0.5 * dists /
+                                        self.length_scale**2)
+            return K
+        else:
+            raise ValueError(f"Unknown kernel: {self.kernel}")
+
+    def fit(self, X_train, y_train):
+        """ガウス過程モデルの学習"""
+        self.X_train = X_train
+        self.y_train = y_train
+
+        # カーネル行列を計算（ノイズ項を追加）
+        K = self._kernel(X_train, X_train)
+        K += self.noise**2 * np.eye(len(X_train))
+
+        # 逆行列を計算（予測で使用）
+        self.K_inv = np.linalg.inv(K)
+
+    def predict(self, X_test, return_std=False):
+        """予測を実行"""
+        # k_* = k(X_test, X_train)
+        k_star = self._kernel(X_test, self.X_train)
+
+        # 予測平均: μ(x_*) = k_* K^{-1} y
+        mean = k_star @ self.K_inv @ self.y_train
+
+        if return_std:
+            # k(x_*, x_*)
+            k_starstar = self._kernel(X_test, X_test)
+
+            # 予測分散: σ²(x_*) = k(x_*, x_*) - k_*^T K^{-1} k_*
+            variance = np.diag(k_starstar) - np.sum(
+                (k_star @ self.K_inv) * k_star, axis=1
+            )
+            std = np.sqrt(np.maximum(variance, 0))  # 数値誤差対策
+            return mean, std
+        else:
+            return mean
+
+# デモンストレーション: 材料のイオン伝導度予測
+np.random.seed(42)
+
+# 真の関数（未知と仮定）
+def true_function(x):
+    """Li-ion電池電解質のイオン伝導度（仮想）"""
+    return (
+        np.sin(3 * x) * np.exp(-x) +
+        0.7 * np.exp(-((x - 0.5) / 0.2)**2)
+    )
+
+# 観測データ（少数の実験結果）
+n_observations = 8
+X_train = np.random.uniform(0, 1, n_observations).reshape(-1, 1)
+y_train = true_function(X_train).ravel() + np.random.normal(0, 0.05,
+                                                             n_observations)
+
+# ガウス過程回帰モデルを学習
+gp = GaussianProcessRegressor(sigma=1.0, length_scale=0.15, noise=0.05)
+gp.fit(X_train, y_train)
+
+# 予測
+y_pred, y_std = gp.predict(X_test, return_std=True)
+
+print("ガウス過程回帰の結果:")
+print(f"  観測データ数: {n_observations}")
+print("\n特徴:")
+print("  - 観測点付近: 不確実性が小さい（信頼区間が狭い）")
+print("  - 未観測領域: 不確実性が大きい（信頼区間が広い）")
+print("  - この不確実性情報が獲得関数で活用される")</code></pre>
+
+        <div class="info-box">
+            <p><strong>重要な観察</strong>:</p>
+            <ol>
+                <li><strong>観測点の近く</strong>: 予測精度が高い（不確実性小）</li>
+                <li><strong>未観測領域</strong>: 不確実性が大きい</li>
+                <li><strong>データが増えるほど</strong>: 予測精度向上</li>
+                <li><strong>不確実性の定量化</strong>: ベイズ最適化の鍵</li>
+            </ol>
+        </div>
+
+        <h2>2.3 獲得関数：次の実験点をどう選ぶか</h2>
+
+        <h3>獲得関数の役割</h3>
+
+        <p><strong>獲得関数（Acquisition Function）</strong>は、「次にどこを実験すべきか」を数学的に決定します。</p>
+
+        <p><strong>設計思想</strong>:</p>
+        <ul>
+            <li><strong>高い予測値の場所</strong>を探索（Exploitation: 活用）</li>
+            <li><strong>不確実性が高い場所</strong>を探索（Exploration: 探索）</li>
+            <li>この<strong>2つのバランス</strong>を最適化</li>
+        </ul>
+
+        <h3>獲得関数のワークフロー</h3>
+
+        <pre class="mermaid">
+graph TB
+    A[ガウス過程モデル] --> B[予測平均 μ(x)]
+    A --> C[予測標準偏差 σ(x)]
+    B --> D[獲得関数 α(x)]
+    C --> D
+    D --> E[獲得関数を最大化]
+    E --> F[次の実験点 x_next]
+
+    style A fill:#e3f2fd
+    style D fill:#fff3e0
+    style F fill:#e8f5e9
+        </pre>
+
+        <h3>主要な獲得関数</h3>
+
+        <h4>1. Expected Improvement（EI）</h4>
+
+        <p><strong>定義</strong>:<br>
+        現在の最良値 <em>f</em><sub>best</sub> からの改善量の期待値を最大化</p>
+
+        <div class="math-display">
+            <p>EI(<em>x</em>) = E[max(0, <em>f</em>(<em>x</em>) − <em>f</em><sub>best</sub>)]</p>
+        </div>
+
+        <p><strong>解析解</strong>:</p>
+        <div class="math-display">
+            <p>EI(<em>x</em>) = (μ(<em>x</em>) − <em>f</em><sub>best</sub>) Φ(<em>Z</em>) + σ(<em>x</em>) φ(<em>Z</em>)  (if σ(<em>x</em>) > 0)</p>
+            <p>ここで <em>Z</em> = (μ(<em>x</em>) − <em>f</em><sub>best</sub>) / σ(<em>x</em>)</p>
+        </div>
+
+        <ul>
+            <li>Φ: 標準正規分布の累積分布関数</li>
+            <li>φ: 標準正規分布の確率密度関数</li>
+        </ul>
+
+        <div class="info-box">
+            <p><strong>特徴</strong>:</p>
+            <ul>
+                <li><strong>バランスが良い</strong>: 探索と活用を自動調整</li>
+                <li><strong>最も一般的</strong>: 材料科学で広く使用</li>
+                <li><strong>解析的</strong>: 計算が高速</li>
+            </ul>
+        </div>
+
+        <p><strong>コード例3: Expected Improvementの実装</strong></p>
+
+        <pre><code class="language-python"># Expected Improvementの実装
+from scipy.stats import norm
+
+def expected_improvement(X, gp, f_best, xi=0.01):
+    """
+    Expected Improvement獲得関数
+
+    Parameters:
+    -----------
+    X : array (n_samples, n_features)
+        評価点
+    gp : GaussianProcessRegressor
+        学習済みガウス過程モデル
+    f_best : float
+        現在の最良値
+    xi : float
+        探索の強さ（exploration parameter）
+
+    Returns:
+    --------
+    ei : array (n_samples,)
+        EI値
+    """
+    mu, sigma = gp.predict(X, return_std=True)
+
+    # 改善量
+    improvement = mu - f_best - xi
+
+    # 標準化
+    Z = improvement / (sigma + 1e-9)  # ゼロ除算回避
+
+    # Expected Improvement
+    ei = improvement * norm.cdf(Z) + sigma * norm.pdf(Z)
+
+    # σ = 0の場合はEI = 0
+    ei[sigma == 0.0] = 0.0
+
+    return ei
+
+print(f"Expected Improvementによる提案:")
+print(f"  次の実験点: x = {next_x[0]:.3f}")
+print(f"  EI値: {np.max(ei):.4f}")</code></pre>
+
+        <div class="info-box">
+            <p><strong>EIの解釈</strong>:</p>
+            <ul>
+                <li><strong>高い平均値</strong>の場所 → 活用（Exploitation）</li>
+                <li><strong>高い不確実性</strong>の場所 → 探索（Exploration）</li>
+                <li><strong>両方を考慮</strong>してバランス</li>
+            </ul>
+        </div>
+
+        <h4>2. Upper Confidence Bound（UCB）</h4>
+
+        <p><strong>定義</strong>:<br>
+        予測平均に不確実性を加えた「楽観的な推定値」を最大化</p>
+
+        <div class="math-display">
+            <p>UCB(<em>x</em>) = μ(<em>x</em>) + κ σ(<em>x</em>)</p>
+        </div>
+
+        <ul>
+            <li>κ: 探索の強さを制御するパラメータ（通常 κ = 2）</li>
+        </ul>
+
+        <div class="info-box">
+            <p><strong>特徴</strong>:</p>
+            <ul>
+                <li><strong>シンプル</strong>: 実装が容易</li>
+                <li><strong>直感的</strong>: 楽観主義の原則（Optimism in the Face of Uncertainty）</li>
+                <li><strong>調整可能</strong>: κで探索度合いを制御</li>
+            </ul>
+            <p><strong>κの影響</strong>:</p>
+            <ul>
+                <li>κが大きい → 探索重視（リスクを取る）</li>
+                <li>κが小さい → 活用重視（安全策）</li>
+            </ul>
+        </div>
+
+        <h4>3. Probability of Improvement（PI）</h4>
+
+        <p><strong>定義</strong>:<br>
+        現在の最良値を超える確率を最大化</p>
+
+        <div class="math-display">
+            <p>PI(<em>x</em>) = P(<em>f</em>(<em>x</em>) > <em>f</em><sub>best</sub>) = Φ((μ(<em>x</em>) − <em>f</em><sub>best</sub>) / σ(<em>x</em>))</p>
+        </div>
+
+        <div class="info-box">
+            <p><strong>特徴</strong>:</p>
+            <ul>
+                <li><strong>最もシンプル</strong>: 解釈が容易</li>
+                <li><strong>保守的</strong>: 大きな改善を期待しない</li>
+                <li><strong>実用的</strong>: 小さな改善を積み重ねる戦略</li>
+            </ul>
+        </div>
+
+        <h3>獲得関数の比較表</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>獲得関数</th>
+                    <th>特徴</th>
+                    <th>長所</th>
+                    <th>短所</th>
+                    <th>推奨用途</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>EI</strong></td>
+                    <td>改善量の期待値</td>
+                    <td>バランスが良い、実績豊富</td>
+                    <td>やや複雑</td>
+                    <td>一般的な最適化</td>
+                </tr>
+                <tr>
+                    <td><strong>UCB</strong></td>
+                    <td>楽観的推定</td>
+                    <td>シンプル、調整可能</td>
+                    <td>κの調整が必要</td>
+                    <td>探索度合い制御</td>
+                </tr>
+                <tr>
+                    <td><strong>PI</strong></td>
+                    <td>改善確率</td>
+                    <td>非常にシンプル</td>
+                    <td>保守的</td>
+                    <td>安全な探索</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="info-box">
+            <p><strong>材料科学での推奨</strong>:</p>
+            <ul>
+                <li><strong>初心者</strong>: EI（バランスが良く、デフォルトで優秀）</li>
+                <li><strong>探索重視</strong>: UCB（κ = 2-5）</li>
+                <li><strong>安全策</strong>: PI（小さな改善を確実に）</li>
+            </ul>
+        </div>
+
+        <h2>2.4 探索と活用のトレードオフ</h2>
+
+        <h3>数学的な定式化</h3>
+
+        <p>獲得関数は、以下の2つの項に分解できます：</p>
+
+        <div class="math-display">
+            <p>α(<em>x</em>) = μ(<em>x</em>) + λ σ(<em>x</em>)</p>
+            <p style="margin-left: 2rem;">↑ Exploitation  ↑ Exploration</p>
+        </div>
+
+        <ul>
+            <li><strong>Exploitation項</strong> μ(<em>x</em>): 予測平均が高い場所</li>
+            <li><strong>Exploration項</strong> λ σ(<em>x</em>): 不確実性が高い場所</li>
+        </ul>
+
+        <h3>トレードオフの可視化</h3>
+
+        <pre class="mermaid">
+graph LR
+    subgraph 活用Exploitation
+    A1[既知の良い領域]
+    A2[高い予測値 μ(x)]
+    A3[低い不確実性 σ(x)]
+    A1 --> A2
+    A1 --> A3
+    end
+
+    subgraph 探索Exploration
+    B1[未知の領域]
+    B2[未知の予測値 μ(x)]
+    B3[高い不確実性 σ(x)]
+    B1 --> B2
+    B1 --> B3
+    end
+
+    subgraph 最適なバランス
+    C1[獲得関数]
+    C2[μ(x) + λσ(x)]
+    C3[次の実験点]
+    C1 --> C2
+    C2 --> C3
+    end
+
+    A2 --> C1
+    A3 --> C1
+    B2 --> C1
+    B3 --> C1
+
+    style A1 fill:#fff3e0
+    style B1 fill:#e3f2fd
+    style C3 fill:#e8f5e9
+        </pre>
+
+        <h2>2.5 制約付き最適化と多目的最適化</h2>
+
+        <h3>制約付きベイズ最適化</h3>
+
+        <p>実際の材料開発では、<strong>制約条件</strong>が存在します：</p>
+
+        <p><strong>例：Li-ion電池電解質</strong></p>
+        <ul>
+            <li>イオン伝導度を最大化（目的関数）</li>
+            <li>粘度 &lt; 10 cP（制約1）</li>
+            <li>引火点 &gt; 100°C（制約2）</li>
+            <li>コスト &lt; $50/kg（制約3）</li>
+        </ul>
+
+        <p><strong>数学的定式化</strong>:</p>
+        <div class="math-display">
+            <p>max<sub><em>x</em></sub> <em>f</em>(<em>x</em>)</p>
+            <p>subject to: <em>g<sub>i</sub></em>(<em>x</em>) ≤ 0, <em>i</em> = 1, ..., <em>m</em></p>
+        </div>
+
+        <p><strong>アプローチ</strong>:</p>
+        <ol>
+            <li><strong>制約関数もガウス過程でモデル化</strong></li>
+            <li><strong>制約を満たす確率を獲得関数に組み込む</strong></li>
+        </ol>
+
+        <h3>多目的最適化</h3>
+
+        <p>材料開発では、<strong>複数の特性を同時に最適化</strong>したい場合があります。</p>
+
+        <p><strong>例：熱電材料</strong></p>
+        <ul>
+            <li>ゼーベック係数を最大化</li>
+            <li>電気抵抗率を最小化</li>
+            <li>熱伝導率を最小化</li>
+        </ul>
+
+        <p><strong>パレートフロンティア</strong>:</p>
+        <ul>
+            <li>トレードオフがある場合、単一の最適解は存在しない</li>
+            <li><strong>パレート最適解の集合</strong>を求める</li>
+        </ul>
+
+        <p><strong>アプローチ</strong>:</p>
+        <ol>
+            <li><strong>スカラー化</strong>: 重み付き和 <em>f</em>(<em>x</em>) = <em>w</em><sub>1</sub> <em>f</em><sub>1</sub>(<em>x</em>) + <em>w</em><sub>2</sub> <em>f</em><sub>2</sub>(<em>x</em>)</li>
+            <li><strong>ParEGO</strong>: ランダムな重みでスカラー化を繰り返す</li>
+            <li><strong>EHVI</strong>: Expected Hypervolume Improvement</li>
+        </ol>
+
+        <h2>2.6 コラム：カーネル選択の実務</h2>
+
+        <h3>カーネルの種類と特性</h3>
+
+        <p>RBF以外にも、多様なカーネルが存在します：</p>
+
+        <p><strong>Matérn カーネル</strong>:</p>
+        <div class="math-display">
+            <p><em>k</em>(<em>x</em>, <em>x'</em>) = σ<sup>2</sup> (2<sup>1−ν</sup>/Γ(ν)) (√(2ν)||<em>x</em> − <em>x'</em>||/ℓ)<sup>ν</sup> <em>K<sub>ν</sub></em>(...)</p>
+        </div>
+
+        <ul>
+            <li>ν: 滑らかさパラメータ</li>
+            <li>ν = 1/2: 指数カーネル（粗い関数）</li>
+            <li>ν = 3/2, 5/2: 中程度の滑らかさ</li>
+            <li>ν → ∞: RBFカーネル（非常に滑らか）</li>
+        </ul>
+
+        <div class="info-box">
+            <p><strong>材料科学での選択指針</strong>:</p>
+            <ul>
+                <li><strong>DFT計算結果</strong>: RBF（滑らか）</li>
+                <li><strong>実験データ</strong>: Matérn 3/2 or 5/2（ノイズ考慮）</li>
+                <li><strong>組成最適化</strong>: RBF</li>
+                <li><strong>プロセス条件</strong>: Matérn（急峻な変化あり）</li>
+            </ul>
+        </div>
+
+        <h2>2.7 本章のまとめ</h2>
+
+        <h3>学んだこと</h3>
+
+        <ol>
+            <li><strong>代理モデルの役割</strong>
+                <ul>
+                    <li>少数の実験データから目的関数を推定</li>
+                    <li>ガウス過程回帰が最も一般的</li>
+                    <li>不確実性の定量化が可能</li>
+                </ul>
+            </li>
+            <li><strong>ガウス過程回帰</strong>
+                <ul>
+                    <li>カーネル関数で点間の類似度を定義</li>
+                    <li>RBFカーネルが材料科学で標準的</li>
+                    <li>予測平均と予測分散を計算</li>
+                </ul>
+            </li>
+            <li><strong>獲得関数</strong>
+                <ul>
+                    <li>次の実験点を決定する数学的基準</li>
+                    <li>EI（Expected Improvement）: バランス型</li>
+                    <li>UCB（Upper Confidence Bound）: 調整可能</li>
+                    <li>PI（Probability of Improvement）: シンプル</li>
+                </ul>
+            </li>
+            <li><strong>探索と活用</strong>
+                <ul>
+                    <li>Exploitation: 既知の良い領域を活用</li>
+                    <li>Exploration: 未知の領域を探索</li>
+                    <li>獲得関数が自動的にバランス調整</li>
+                </ul>
+            </li>
+            <li><strong>発展的トピック</strong>
+                <ul>
+                    <li>制約付き最適化: 実務で重要</li>
+                    <li>多目的最適化: トレードオフの可視化</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h3>重要なポイント</h3>
+
+        <ul>
+            <li>✅ ガウス過程回帰は<strong>不確実性を定量化</strong>できる</li>
+            <li>✅ 獲得関数は<strong>探索と活用を数学的に最適化</strong></li>
+            <li>✅ EIが<strong>最も一般的で実績豊富</strong></li>
+            <li>✅ カーネルの選択が<strong>モデルの性能を左右</strong></li>
+            <li>✅ 制約・多目的への<strong>拡張が可能</strong></li>
+        </ul>
+
+        <h3>次の章へ</h3>
+
+        <p>第3章では、Pythonライブラリを使った実装を学びます：</p>
+        <ul>
+            <li>scikit-optimize（skopt）の使い方</li>
+            <li>BoTorch（PyTorch版）の実装</li>
+            <li>実データでの材料探索</li>
+            <li>ハイパーパラメータチューニング</li>
+        </ul>
+
+        <h2>演習問題</h2>
+
+        <h3>問題1（難易度：easy）</h3>
+
+        <p>RBFカーネルの長さスケール ℓ が、ガウス過程の予測に与える影響を調べてください。</p>
+
+        <p><strong>タスク</strong>:</p>
+        <ol>
+            <li>5点の観測データを生成</li>
+            <li>ℓ = 0.05, 0.1, 0.2, 0.5 でガウス過程を学習</li>
+            <li>予測平均と信頼区間をプロット</li>
+            <li>長さスケールの影響を説明</li>
+        </ol>
+
+        <details>
+            <summary>ヒント</summary>
+            <ul>
+                <li><code>GaussianProcessRegressor</code>の<code>length_scale</code>パラメータを変更</li>
+                <li><code>predict(return_std=True)</code>で標準偏差を取得</li>
+                <li>長さスケールが小さい → 局所的にフィット</li>
+                <li>長さスケールが大きい → 滑らかな曲線</li>
+            </ul>
+        </details>
+
+        <h3>問題2（難易度：medium）</h3>
+
+        <p>3つの獲得関数（EI、UCB、PI）を実装し、同じデータで比較してください。</p>
+
+        <p><strong>タスク</strong>:</p>
+        <ol>
+            <li>同じ観測データを使用</li>
+            <li>各獲得関数で次の実験点を提案</li>
+            <li>提案点の違いを可視化</li>
+            <li>それぞれの特徴を説明</li>
+        </ol>
+
+        <details>
+            <summary>ヒント</summary>
+            <ul>
+                <li>同じガウス過程モデルを3つの獲得関数で評価</li>
+                <li><code>np.argmax()</code>で最大値の位置を取得</li>
+                <li>UCBのκ = 2.0を使用</li>
+            </ul>
+        </details>
+
+        <h3>問題3（難易度：hard）</h3>
+
+        <p>制約付きベイズ最適化を実装し、制約がない場合と比較してください。</p>
+
+        <p><strong>背景</strong>:<br>
+        Li-ion電池電解質の最適化</p>
+        <ul>
+            <li>目的: イオン伝導度を最大化</li>
+            <li>制約: 粘度 &lt; 10 cP</li>
+        </ul>
+
+        <p><strong>タスク</strong>:</p>
+        <ol>
+            <li>目的関数と制約関数を定義</li>
+            <li>制約なしベイズ最適化を実行（10回）</li>
+            <li>制約付きベイズ最適化を実行（10回）</li>
+            <li>探索の軌跡を比較</li>
+            <li>最終的に見つかった解を評価</li>
+        </ol>
+
+        <details>
+            <summary>ヒント</summary>
+            <p><strong>アプローチ</strong>:</p>
+            <ol>
+                <li>初期ランダムサンプリング（3点）</li>
+                <li>ガウス過程モデルを2つ構築（目的関数用、制約関数用）</li>
+                <li>ループで逐次サンプリング</li>
+                <li>制約付きEIを使用</li>
+            </ol>
+        </details>
+
+        <h2>参考文献</h2>
+
+        <ol>
+            <li>Rasmussen, C. E. & Williams, C. K. I. (2006). <em>Gaussian Processes for Machine Learning</em>. MIT Press. <a href="http://gaussianprocess.org/gpml/" target="_blank">Online版</a></li>
+            <li>Brochu, E. et al. (2010). "A Tutorial on Bayesian Optimization of Expensive Cost Functions." <a href="https://arxiv.org/abs/1012.2599" target="_blank">arXiv:1012.2599</a></li>
+            <li>Mockus, J. (1974). "On Bayesian Methods for Seeking the Extremum." <em>Optimization Techniques IFIP Technical Conference</em>, 400-404.</li>
+            <li>Srinivas, N. et al. (2010). "Gaussian Process Optimization in the Bandit Setting: No Regret and Experimental Design." <a href="https://arxiv.org/abs/0912.3995" target="_blank">arXiv:0912.3995</a></li>
+            <li>Gelbart, M. A. et al. (2014). "Bayesian Optimization with Unknown Constraints." <em>UAI 2014</em>.</li>
+            <li>持橋大地・大羽成征 (2019). 『ガウス過程と機械学習』講談社. ISBN: 978-4061529267</li>
+        </ol>
+
+        <div class="navigation">
+            <a href="./chapter-1.html" class="nav-button secondary">← 第1章：なぜ材料探索に最適化が必要か</a>
+            <a href="./index.html" class="nav-button secondary">シリーズ目次</a>
+            <a href="./chapter-3.html" class="nav-button">第3章：実践：材料探索への応用 →</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 MI Knowledge Hub - Dr. Yusuke Hashimoto, Tohoku University</p>
+            <p>Licensed under CC BY 4.0</p>
+        </div>
+    </footer>
+</body>
+</html>

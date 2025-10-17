@@ -2,9 +2,9 @@
 title: "MI寺子屋 - Materials Informatics Knowledge Hub"
 subtitle: "データ駆動型材料開発の包括的学習プラットフォーム"
 description: "マテリアルズ・インフォマティクス(MI)、ナノ材料(NM)、プロセス・インフォマティクス(PI)、機械学習ポテンシャル(MLP)、グラフニューラルネットワーク(GNN)など、13の専門シリーズを提供する総合学習ハブ"
-version: "2.1"
+version: "2.2"
 total_series: 13
-completed_series: 5
+completed_series: 6
 total_chapters: 55
 total_reading_time: "1210-1530分"
 total_code_examples: 375
@@ -1101,7 +1101,7 @@ flowchart LR
 - 💻 **コード例**: 30-35個（全て実行可能、Google Colab対応）
 - 🔬 **応用例**: Li-ion電池電解質、触媒反応条件、合金組成、有機半導体、量子ドット発光
 - 📊 **ケーススタディ**: 5件以上（産業実例、実験回数削減率付き）
-- 🌟 **新規シリーズ**: 2025年10月リリース（準備中）
+- ✅ **シリーズステータス**: 2025年10月17日リリース（全4章公開済み）
 
 **主な学習内容**:
 
@@ -1330,7 +1330,7 @@ flowchart LR
 - [ ] クローズドループ最適化の設計ができる
 - [ ] 自分の研究テーマへの適用計画を立てられる
 
-**[📕 ベイズ最適化入門シリーズへ（準備中） →](#)**
+**[📕 ベイズ最適化入門シリーズへ →](./bayesian-optimization-introduction/index.html)**
 
 ---
 

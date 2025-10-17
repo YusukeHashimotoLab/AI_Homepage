@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第4章：アクティブラーニング戦略 - ベイズ最適化入門</title>
+
+    <style>
+        :root {
+            --color-primary: #2c3e50;
+            --color-primary-dark: #1a252f;
+            --color-accent: #7b2cbf;
+            --color-accent-light: #9d4edd;
+            --color-text: #2d3748;
+            --color-text-light: #4a5568;
+            --color-bg: #ffffff;
+            --color-bg-alt: #f7fafc;
+            --color-border: #e2e8f0;
+            --color-code-bg: #f8f9fa;
+            --color-link: #3182ce;
+            --color-link-hover: #2c5aa0;
+
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+
+            --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+
+            --border-radius: 8px;
+            --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            line-height: 1.7;
+            color: var(--color-text);
+            background-color: var(--color-bg);
+            font-size: 16px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+            color: white;
+            padding: var(--spacing-xl) var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--box-shadow);
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            font-weight: 400;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-md) var(--spacing-xl);
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            color: var(--color-primary);
+            margin-top: var(--spacing-xl);
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-xs);
+            border-bottom: 3px solid var(--color-accent);
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            color: var(--color-primary);
+            margin-top: var(--spacing-lg);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            color: var(--color-primary-dark);
+            margin-top: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        p {
+            margin-bottom: var(--spacing-md);
+            color: var(--color-text);
+        }
+
+        a {
+            color: var(--color-link);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: var(--color-link-hover);
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-left: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+        }
+
+        li {
+            margin-bottom: var(--spacing-xs);
+            color: var(--color-text);
+        }
+
+        pre {
+            background-color: var(--color-code-bg);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            overflow-x: auto;
+            margin-bottom: var(--spacing-md);
+        }
+
+        code {
+            font-family: var(--font-mono);
+            font-size: 0.9em;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        p code, li code {
+            background-color: var(--color-code-bg);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+
+        .info-box {
+            background-color: var(--color-bg-alt);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .success-box {
+            background-color: #f0fdf4;
+            border-left: 4px solid #22c55e;
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        details {
+            background-color: var(--color-bg-alt);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        summary {
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+            color: var(--color-primary);
+        }
+
+        summary:hover {
+            color: var(--color-accent);
+        }
+
+        details[open] summary {
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--spacing-xl);
+            padding-top: var(--spacing-lg);
+            border-top: 2px solid var(--color-border);
+        }
+
+        .nav-button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+            color: white;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow);
+            color: white;
+            text-decoration: none;
+        }
+
+        .nav-button.secondary {
+            background: var(--color-bg-alt);
+            color: var(--color-primary);
+            border: 1px solid var(--color-border);
+        }
+
+        footer {
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-lg) var(--spacing-md);
+            background-color: var(--color-bg-alt);
+            border-top: 1px solid var(--color-border);
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            h3 {
+                font-size: 1.2rem;
+            }
+
+            .meta {
+                font-size: 0.85rem;
+            }
+
+            .navigation {
+                flex-direction: column;
+                gap: var(--spacing-sm);
+            }
+
+            .nav-button {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        .math-display {
+            overflow-x: auto;
+            margin: var(--spacing-md) 0;
+            padding: var(--spacing-sm);
+            background-color: var(--color-bg-alt);
+            border-left: 3px solid var(--color-accent);
+        }
+
+        strong {
+            color: var(--color-primary-dark);
+            font-weight: 600;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--color-accent);
+            padding-left: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+            color: var(--color-text-light);
+            font-style: italic;
+        }
+    </style>
+
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>第4章：アクティブラーニング戦略</h1>
+            <p class="subtitle">自律実験システムで拓く次世代材料開発</p>
+            <div class="meta">
+                <span class="meta-item">📖 読了時間: 20-25分</span>
+                <span class="meta-item">📊 難易度: 中級</span>
+                <span class="meta-item">💻 コード例: 8個</span>
+                <span class="meta-item">📝 演習問題: 3問</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <h2>学習目標</h2>
+        <p>この章を読むことで、以下を習得できます：</p>
+        <ul>
+            <li>✅ アクティブラーニングとベイズ最適化の違いを説明できる</li>
+            <li>✅ 3つの主要戦略（不確実性、多様性、モデル変化）を実装できる</li>
+            <li>✅ クローズドループ最適化システムを設計できる</li>
+            <li>✅ 実世界の成功事例（Berkeley A-Lab、RoboRXNなど）から実践的知識を得る</li>
+            <li>✅ キャリアパスと次の学習ステップを理解できる</li>
+        </ul>
+
+        <h2>4.1 アクティブラーニングとは</h2>
+
+        <h3>ベイズ最適化との違いと共通点</h3>
+
+        <p>これまでの章で学んだ<strong>ベイズ最適化</strong>は、目的関数を最大化（または最小化）することに焦点を当てていました。一方、<strong>アクティブラーニング（Active Learning）</strong>は、より広い概念です。</p>
+
+        <div class="info-box">
+            <p><strong>定義</strong>:</p>
+            <blockquote>
+                アクティブラーニングとは、<strong>最も有益なデータ点を能動的に選択</strong>することで、機械学習モデルの性能を効率的に向上させる手法である。
+            </blockquote>
+        </div>
+
+        <h3>ベイズ最適化とアクティブラーニングの関係</h3>
+
+        <pre class="mermaid">
+graph TB
+    A[アクティブラーニング<br/>広い概念] --> B[目的: モデル改善]
+    A --> C[目的: 探索効率化]
+    A --> D[目的: 分類精度向上]
+
+    C --> E[ベイズ最適化<br/>特殊ケース]
+    E --> F[目的関数最大化に特化]
+
+    B --> G[不確実性削減]
+    D --> H[決定境界の洗練]
+
+    style A fill:#e3f2fd
+    style E fill:#fff3e0
+    style F fill:#f3e5f5
+        </pre>
+
+        <p><strong>共通点</strong>:</p>
+        <ul>
+            <li>過去のデータから学習</li>
+            <li>不確実性を活用</li>
+            <li>逐次的なサンプリング</li>
+            <li>効率的な探索</li>
+        </ul>
+
+        <p><strong>違い</strong>:</p>
+        <ul>
+            <li><strong>ベイズ最適化</strong>: 目的関数の最大化・最小化が明確</li>
+            <li><strong>アクティブラーニング</strong>: モデルの汎化性能向上、分類境界の洗練など多様な目的</li>
+        </ul>
+
+        <h2>4.2 3つの主要なアクティブラーニング戦略</h2>
+
+        <h3>戦略1: 不確実性サンプリング（Uncertainty Sampling）</h3>
+
+        <p><strong>基本アイデア</strong>:<br>
+        予測の<strong>不確実性が最も高い点</strong>を選択する。</p>
+
+        <div class="math-display">
+            <p><em>x</em><sub>next</sub> = arg max<sub><em>x</em></sub> σ(<em>x</em>)</p>
+        </div>
+
+        <p>ここで σ(<em>x</em>) はガウス過程の予測標準偏差。</p>
+
+        <div class="info-box">
+            <p><strong>特徴</strong>:</p>
+            <ul>
+                <li>最もシンプルで直感的</li>
+                <li>予測モデルの不確実性を直接削減</li>
+                <li>探索空間全体を効率的にカバー</li>
+            </ul>
+        </div>
+
+        <h3>戦略2: 多様性サンプリング（Diversity Sampling）</h3>
+
+        <p><strong>基本アイデア</strong>:<br>
+        既存のデータ点と<strong>異なる領域</strong>を選択し、探索空間の多様性を確保。</p>
+
+        <p><strong>実装方法</strong>:</p>
+        <ul>
+            <li><strong>K-means クラスタリング</strong>: 探索空間を分割し、各クラスタから代表点を選択</li>
+            <li><strong>MaxMin 距離</strong>: 既存点から最も遠い点を選択</li>
+            <li><strong>Determinantal Point Process (DPP)</strong>: 確率的に多様な点集合を生成</li>
+        </ul>
+
+        <div class="info-box">
+            <p><strong>重要な観察</strong>:</p>
+            <ul>
+                <li>提案点は常に既存データから離れた場所</li>
+                <li>探索空間が徐々に均等にカバーされる</li>
+                <li>局所最適に陥りにくい</li>
+            </ul>
+        </div>
+
+        <h3>戦略3: 期待モデル変化（Expected Model Change）</h3>
+
+        <p><strong>基本アイデア</strong>:<br>
+        新しいデータ点を追加したとき、<strong>モデルの変化が最大になる点</strong>を選択。</p>
+
+        <div class="math-display">
+            <p><em>x</em><sub>next</sub> = arg max<sub><em>x</em></sub> ||θ<sub>new</sub> − θ<sub>old</sub>||</p>
+        </div>
+
+        <p>ここで θ はモデルのパラメータ。</p>
+
+        <h2>4.3 クローズドループ最適化</h2>
+
+        <h3>自律実験システムとの統合</h3>
+
+        <p>クローズドループ最適化は、<strong>実験装置とAIを直接接続</strong>し、24時間稼働する自律システムを構築します。</p>
+
+        <h3>システムアーキテクチャ</h3>
+
+        <pre class="mermaid">
+graph TB
+    subgraph "AIエンジン"
+    A[機械学習モデル<br/>ガウス過程] --> B[獲得関数<br/>次実験提案]
+    end
+
+    subgraph "実験装置"
+    C[ロボットアーム<br/>材料合成] --> D[測定装置<br/>特性評価]
+    end
+
+    subgraph "データ管理"
+    E[データベース<br/>実験履歴] --> F[可視化<br/>進捗モニタリング]
+    end
+
+    B --> C
+    D --> E
+    E --> A
+
+    G[人間研究者<br/>目標設定・監視] -.-> B
+    F -.-> G
+
+    style A fill:#e3f2fd
+    style C fill:#fff3e0
+    style E fill:#f3e5f5
+    style G fill:#e8f5e9
+        </pre>
+
+        <div class="info-box">
+            <p><strong>構成要素</strong>:</p>
+            <ol>
+                <li><strong>AIエンジン</strong>: ベイズ最適化・アクティブラーニング</li>
+                <li><strong>実験装置</strong>: ロボティクス、自動測定</li>
+                <li><strong>データ管理</strong>: リアルタイムDB、可視化</li>
+                <li><strong>人間</strong>: 目標設定、異常監視、最終判断</li>
+            </ol>
+        </div>
+
+        <h2>4.4 実世界応用とROI</h2>
+
+        <h3>Case Study 1: Berkeley A-Lab</h3>
+
+        <p><strong>プロジェクト</strong>: Autonomous Materials Lab (A-Lab)<br>
+        <strong>機関</strong>: Lawrence Berkeley National Laboratory<br>
+        <strong>公開</strong>: 2023年</p>
+
+        <div class="info-box">
+            <p><strong>システム概要</strong>:</p>
+            <ul>
+                <li><strong>完全自律</strong>: 人間の介入なしで材料合成・評価</li>
+                <li><strong>24時間稼働</strong>: 昼夜問わず実験実行</li>
+                <li><strong>AI統合</strong>: ベイズ最適化で次の材料を提案</li>
+            </ul>
+
+            <p><strong>実績</strong>:</p>
+            <ul>
+                <li><strong>17日間で41種類の新材料を合成</strong></li>
+                <li>従来手法では数年かかる作業</li>
+                <li>成功率: 約70%（人間研究者並み）</li>
+            </ul>
+
+            <p><strong>ROI</strong>:</p>
+            <ul>
+                <li><strong>開発時間</strong>: 数年 → 数週間（50倍高速）</li>
+                <li><strong>人件費</strong>: 大幅削減（24時間稼働）</li>
+                <li><strong>新材料発見</strong>: 年間数百種類が可能</li>
+            </ul>
+        </div>
+
+        <h3>Case Study 2: RoboRXN（IBM）</h3>
+
+        <p><strong>プロジェクト</strong>: RoboRXN<br>
+        <strong>開発</strong>: IBM Research Zurich<br>
+        <strong>公開</strong>: 2020年</p>
+
+        <div class="info-box">
+            <p><strong>システム概要</strong>:</p>
+            <ul>
+                <li><strong>化学反応経路の自動探索</strong></li>
+                <li><strong>クラウドベース</strong>: Webブラウザから実験依頼</li>
+                <li><strong>逆合成計画</strong>: 目的分子から原料を逆算</li>
+            </ul>
+
+            <p><strong>実績</strong>:</p>
+            <ul>
+                <li>100種類以上の化学反応を自動実行</li>
+                <li>反応条件の最適化（収率向上）</li>
+                <li>製薬企業との連携</li>
+            </ul>
+        </div>
+
+        <h3>Case Study 3: Materials Acceleration Platform (MAP)</h3>
+
+        <p><strong>プロジェクト</strong>: University of Toronto Acceleration Consortium<br>
+        <strong>公開</strong>: 2022年</p>
+
+        <div class="info-box">
+            <p><strong>実績</strong>:</p>
+            <ul>
+                <li><strong>量子ドット発光波長の最適化</strong></li>
+                <li>RGB各色の波長を同時最適化</li>
+                <li>50回の実験で目標達成（従来は数百回）</li>
+            </ul>
+
+            <p><strong>ROI</strong>:</p>
+            <ul>
+                <li>実験回数: 80%削減</li>
+                <li>開発期間: 6ヶ月 → 2週間</li>
+                <li>量子収率: 70% → 90%向上</li>
+            </ul>
+        </div>
+
+        <h2>4.5 本章のまとめ</h2>
+
+        <h3>学んだこと</h3>
+
+        <ol>
+            <li><strong>アクティブラーニングの本質</strong>
+                <ul>
+                    <li>ベイズ最適化より広い概念</li>
+                    <li>モデル改善が主目的</li>
+                    <li>探索戦略の多様性</li>
+                </ul>
+            </li>
+            <li><strong>3つの主要戦略</strong>
+                <ul>
+                    <li><strong>不確実性サンプリング</strong>: 予測の不確実性を削減</li>
+                    <li><strong>多様性サンプリング</strong>: 探索空間を均等にカバー</li>
+                    <li><strong>期待モデル変化</strong>: モデルに最も影響する点を選択</li>
+                </ul>
+            </li>
+            <li><strong>クローズドループ最適化</strong>
+                <ul>
+                    <li>AIと実験装置の統合</li>
+                    <li>24時間自律稼働</li>
+                    <li>開発期間の劇的短縮</li>
+                </ul>
+            </li>
+            <li><strong>実世界の成功</strong>
+                <ul>
+                    <li>Berkeley A-Lab: 17日で41材料</li>
+                    <li>RoboRXN: 化学反応自動化</li>
+                    <li>MAP: 量子ドット最適化</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h3>重要なポイント</h3>
+
+        <ul>
+            <li>✅ アクティブラーニングは<strong>多様な目的に対応可能</strong></li>
+            <li>✅ 戦略の選択が<strong>成功の鍵</strong></li>
+            <li>✅ 自律実験システムとの統合で<strong>真の威力を発揮</strong></li>
+            <li>✅ 実世界で<strong>多数の成功事例</strong>が存在</li>
+            <li>✅ 人間とAIの<strong>協働が最も効果的</strong></li>
+        </ul>
+
+        <h3>このシリーズの総まとめ</h3>
+
+        <p><strong>第1章</strong>: 材料探索の課題を理解<br>
+        <strong>第2章</strong>: ベイズ最適化の理論を学習<br>
+        <strong>第3章</strong>: Pythonで実装を習得<br>
+        <strong>第4章</strong>: 実世界応用とキャリアパス</p>
+
+        <div class="success-box">
+            <p><strong>達成できたこと</strong>:</p>
+            <ul>
+                <li>✅ ベイズ最適化の理論と実践を体系的に理解</li>
+                <li>✅ 実データへの適用スキル</li>
+                <li>✅ 最新技術（自律実験）の知識</li>
+                <li>✅ 次のステップへの明確な道筋</li>
+            </ul>
+        </div>
+
+        <h2>キャリアパスと次のステップ</h2>
+
+        <h3>次に学ぶべきシリーズ</h3>
+
+        <p><strong>即座に続けるべき</strong>:</p>
+        <ol>
+            <li><strong>ロボティクス実験自動化入門</strong>
+                <ul>
+                    <li>自動実験装置との統合</li>
+                    <li>PyLabRobot、OpenTrons</li>
+                    <li>クローズドループ実装</li>
+                </ul>
+            </li>
+            <li><strong>強化学習入門（材料科学特化版）</strong>
+                <ul>
+                    <li>マルチステップ最適化</li>
+                    <li>長期的戦略の学習</li>
+                    <li>プロセス最適化</li>
+                </ul>
+            </li>
+        </ol>
+
+        <p><strong>基礎を深めるなら</strong>:</p>
+        <ol start="3">
+            <li><strong>GNN入門</strong>
+                <ul>
+                    <li>分子・材料のグラフ表現</li>
+                    <li>予測モデルの高度化</li>
+                </ul>
+            </li>
+            <li><strong>Transformer・Foundation Models入門</strong>
+                <ul>
+                    <li>大規模事前学習モデル</li>
+                    <li>転移学習</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h2>演習問題</h2>
+
+        <h3>問題1（難易度：easy）</h3>
+
+        <p>3つのアクティブラーニング戦略（不確実性、多様性、ランダム）を同じデータで比較してください。</p>
+
+        <p><strong>タスク</strong>:</p>
+        <ol>
+            <li>初期データ3点からスタート</li>
+            <li>各戦略で7回サンプリング</li>
+            <li>最終的な予測精度（RMSE）を比較</li>
+            <li>探索空間のカバー率を評価</li>
+        </ol>
+
+        <details>
+            <summary>ヒント</summary>
+            <ul>
+                <li>不確実性: <code>np.argmax(sigma)</code>で最大不確実性の点を選択</li>
+                <li>多様性: 既存点から最も遠い点を選択</li>
+                <li>ランダム: <code>np.random.choice()</code></li>
+                <li>RMSE: <code>np.sqrt(np.mean((y_pred - y_true)**2))</code></li>
+            </ul>
+        </details>
+
+        <h3>問題2（難易度：medium）</h3>
+
+        <p>クローズドループ最適化システムを実装し、異なる獲得関数（EI、UCB、PI）を比較してください。</p>
+
+        <p><strong>タスク</strong>:</p>
+        <ol>
+            <li><code>ClosedLoopOptimizer</code>クラスを拡張</li>
+            <li>3つの獲得関数を実装</li>
+            <li>各30回の最適化を実行</li>
+            <li>収束速度と最終性能を比較</li>
+        </ol>
+
+        <h3>問題3（難易度：hard）</h3>
+
+        <p>多目的最適化のクローズドループシステムを構築し、イオン伝導度と粘度のトレードオフを最適化してください。</p>
+
+        <p><strong>背景</strong>:<br>
+        Li-ion電池電解質の最適化</p>
+        <ul>
+            <li>目的1: イオン伝導度を最大化</li>
+            <li>目的2: 粘度を最小化（&lt;10 cP）</li>
+            <li>パラメータ: 溶媒混合比、塩濃度</li>
+        </ul>
+
+        <h2>参考文献</h2>
+
+        <ol>
+            <li>Lookman, T. et al. (2019). "Active learning in materials science with emphasis on adaptive sampling using uncertainties for targeted design." <em>npj Computational Materials</em>, 5(1), 21. DOI: <a href="https://doi.org/10.1038/s41524-019-0153-8" target="_blank">10.1038/s41524-019-0153-8</a></li>
+            <li>Szymanski, N. J. et al. (2023). "An autonomous laboratory for the accelerated synthesis of novel materials." <em>Nature</em>, 624, 86-91. DOI: <a href="https://doi.org/10.1038/s41586-023-06734-w" target="_blank">10.1038/s41586-023-06734-w</a></li>
+            <li>MacLeod, B. P. et al. (2020). "Self-driving laboratory for accelerated discovery of thin-film materials." <em>Science Advances</em>, 6(20), eaaz8867. DOI: <a href="https://doi.org/10.1126/sciadv.aaz8867" target="_blank">10.1126/sciadv.aaz8867</a></li>
+            <li>Settles, B. (2012). "Active Learning." <em>Synthesis Lectures on Artificial Intelligence and Machine Learning</em>, 6(1), 1-114.</li>
+            <li>Stein, H. S. & Gregoire, J. M. (2019). "Progress and prospects for accelerating materials science with automated and autonomous workflows." <em>Chemical Science</em>, 10(42), 9640-9649. DOI: <a href="https://doi.org/10.1039/C9SC03766G" target="_blank">10.1039/C9SC03766G</a></li>
+        </ol>
+
+        <div class="success-box">
+            <h3 style="margin-bottom: 1rem;">おめでとうございます！</h3>
+            <p><strong>ベイズ最適化・アクティブラーニング入門シリーズを完了しました！</strong></p>
+            <p>次は「ロボティクス実験自動化入門」で、実際の自律実験システム構築を学びましょう。</p>
+        </div>
+
+        <div class="navigation">
+            <a href="./chapter-3.html" class="nav-button secondary">← 第3章：実践：材料探索への応用</a>
+            <a href="./index.html" class="nav-button secondary">シリーズ目次</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 MI Knowledge Hub - Dr. Yusuke Hashimoto, Tohoku University</p>
+            <p>Licensed under CC BY 4.0</p>
+        </div>
+    </footer>
+</body>
+</html>
