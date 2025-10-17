@@ -300,7 +300,30 @@
     <!-- Mermaid for diagrams -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <script>
-        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+        // Mermaid.js Converter - Converts markdown-style mermaid code blocks to renderable divs
+        document.addEventListener('DOMContentLoaded', function() {
+            // Find all code blocks with class="language-mermaid"
+            const mermaidCodeBlocks = document.querySelectorAll('pre.codehilite code.language-mermaid, pre code.language-mermaid');
+
+            mermaidCodeBlocks.forEach(function(codeBlock) {
+                const pre = codeBlock.parentElement;
+                const mermaidCode = codeBlock.textContent;
+
+                // Create a new div with mermaid class
+                const mermaidDiv = document.createElement('div');
+                mermaidDiv.className = 'mermaid';
+                mermaidDiv.textContent = mermaidCode.trim();
+
+                // Replace the pre element with the new div
+                pre.parentNode.replaceChild(mermaidDiv, pre);
+            });
+
+            // Re-initialize mermaid after conversion
+            if (typeof mermaid !== 'undefined') {
+                mermaid.initialize({ startOnLoad: true, theme: 'default' });
+                mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+            }
+        });
     </script>
 </head>
 <body>
