@@ -356,7 +356,7 @@
 
 <strong>化学反応の表現</strong>は、反応物から生成物への変換を記述する必要があります。
 
-<pre><code class="language-mermaid">graph LR
+<div class="mermaid">graph LR
     A[反応物<br/>Reactants] -->|反応条件<br/>Conditions| B[生成物<br/>Products]
 
     C[SMILES] --> D[反応SMILES]
@@ -370,7 +370,7 @@
 
     style A fill:#e3f2fd
     style B fill:#4CAF50,color:#fff
-    style H fill:#FF9800,color:#fff</code></pre>
+    style H fill:#FF9800,color:#fff</div>
 
 <h3>4.1.1 反応SMILESとSMIRKS</h3>
 
@@ -612,7 +612,7 @@ Amidation         1
 
 反応予測は、反応物から生成物を予測する順方向予測（Forward Prediction）です。
 
-<pre><code class="language-mermaid">flowchart TD
+<div class="mermaid">flowchart TD
     A[反応物<br/>Reactants] --> B[特徴量抽出]
     B --> C[分子指紋]
     B --> D[記述子]
@@ -627,7 +627,7 @@ Amidation         1
 
     style A fill:#e3f2fd
     style G fill:#4CAF50,color:#fff
-    style H fill:#FF9800,color:#fff</code></pre>
+    style H fill:#FF9800,color:#fff</div>
 
 <h4>コード例4: Random Forestによる反応収率予測</h4>
 
@@ -726,7 +726,7 @@ MAE: 7.32%
 
 Transformerモデルは、反応SMILESを文字列として扱い、Seq2Seqで生成物を予測します。
 
-<pre><code class="language-mermaid">graph LR
+<div class="mermaid">graph LR
     A[反応物SMILES] --> B[Tokenization]
     B --> C[Transformer<br/>Encoder]
     C --> D[Context Vector]
@@ -734,7 +734,7 @@ Transformerモデルは、反応SMILESを文字列として扱い、Seq2Seqで�
     E --> F[生成物SMILES]
 
     style A fill:#e3f2fd
-    style F fill:#4CAF50,color:#fff</code></pre>
+    style F fill:#4CAF50,color:#fff</div>
 
 <h4>コード例5: Transformerの概念実装（簡略化）</h4>
 
@@ -884,7 +884,7 @@ print(f"時間: {conditions['time']}")</code></pre>
 
 <strong>Retrosynthesis（逆合成解析）</strong>は、目標分子から出発原料への合成経路を逆向きに設計する手法です。
 
-<pre><code class="language-mermaid">graph RL
+<div class="mermaid">graph RL
     A[目標分子<br/>Target] --> B[逆合成分解]
     B --> C[前駆体1]
     B --> D[前駆体2]
@@ -897,7 +897,7 @@ print(f"時間: {conditions['time']}")</code></pre>
 
     style A fill:#FF9800,color:#fff
     style G fill:#4CAF50,color:#fff
-    style H fill:#4CAF50,color:#fff</code></pre>
+    style H fill:#4CAF50,color:#fff</div>
 
 <h3>4.3.1 Retrosynthesisの基本概念</h3>
 
@@ -1236,7 +1236,7 @@ print(f"推奨経路: {best_route['name']} "
 
 <h4>ケモインフォマティシャンのキャリア</h4>
 
-<pre><code class="language-mermaid">graph TD
+<div class="mermaid">graph TD
     A[学部卒<br/>化学・情報科学] --> B[修士課程<br/>ケモインフォ専攻]
     A --> C[独学<br/>オンライン学習]
 
@@ -1254,7 +1254,7 @@ print(f"推奨経路: {best_route['name']} "
 
     style A fill:#e3f2fd
     style I fill:#4CAF50,color:#fff
-    style J fill:#FF9800,color:#fff</code></pre>
+    style J fill:#FF9800,color:#fff</div>
 
 <h4>必要なスキル</h4>
 

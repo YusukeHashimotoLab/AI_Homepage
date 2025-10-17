@@ -421,7 +421,15 @@ def convert_markdown_to_html(md_content):
     html = re.sub(r'^## (.*?)$', r'<h2>\1</h2>', html, flags=re.MULTILINE)
     html = re.sub(r'^# (.*?)$', r'<h1>\1</h1>', html, flags=re.MULTILINE)
 
-    # Convert code blocks with language
+    # Convert Mermaid diagrams to div.mermaid (BEFORE general code blocks)
+    html = re.sub(
+        r'```mermaid\n(.*?)\n```',
+        r'<div class="mermaid">\1</div>',
+        html,
+        flags=re.DOTALL
+    )
+
+    # Convert code blocks with language (excluding mermaid)
     html = re.sub(
         r'```(\w+)\n(.*?)\n```',
         r'<pre><code class="language-\1">\2</code></pre>',

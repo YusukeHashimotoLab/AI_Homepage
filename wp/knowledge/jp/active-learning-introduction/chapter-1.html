@@ -378,7 +378,7 @@
 
 <h3>Active Learningの基本サイクル</h3>
 
-<pre><code class="language-mermaid">graph LR
+<div class="mermaid">graph LR
     A[初期データ<br/>少数のサンプル] --> B[モデル学習<br/>予測モデル構築]
     B --> C[候補評価<br/>Query Strategy]
     C --> D[最も有益な<br/>サンプルを選択]
@@ -392,7 +392,7 @@
     style C fill:#f3e5f5
     style D fill:#e8f5e9
     style E fill:#ffebee
-    style G fill:#4CAF50,color:#fff</code></pre>
+    style G fill:#4CAF50,color:#fff</div>
 
 <strong>キーポイント</strong>:
 1. <strong>少数の初期データ</strong>で開始（通常10-20サンプル）
@@ -819,7 +819,7 @@ Active Learningにおける最も重要な概念の1つが、<strong>Exploration
 
 <h3>トレードオフの可視化</h3>
 
-<pre><code class="language-mermaid">graph TB
+<div class="mermaid">graph TB
     subgraph 探索重視
     A[未知領域を<br/>積極的にサンプリング]
     A --> B[新発見の可能性大]
@@ -841,7 +841,7 @@ Active Learningにおける最も重要な概念の1つが、<strong>Exploration
     style A fill:#e3f2fd
     style D fill:#fff3e0
     style G fill:#e8f5e9
-    style I fill:#4CAF50,color:#fff</code></pre>
+    style I fill:#4CAF50,color:#fff</div>
 
 <h3>ε-greedyアプローチ</h3>
 

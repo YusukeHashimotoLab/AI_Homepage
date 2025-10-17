@@ -356,7 +356,7 @@
 
 <strong>分子記述子（Molecular Descriptor）</strong>は、分子構造を数値化したもので、機械学習モデルの入力として使用されます。
 
-<pre><code class="language-mermaid">graph TD
+<div class="mermaid">graph TD
     A[分子構造] --> B[分子記述子計算]
     B --> C[1D記述子]
     B --> D[2D記述子]
@@ -373,7 +373,7 @@
 
     style A fill:#e3f2fd
     style I fill:#4CAF50,color:#fff
-    style J fill:#FF9800,color:#fff</code></pre>
+    style J fill:#FF9800,color:#fff</div>
 
 <h3>2.1.1 1D記述子：分子全体の性質</h3>
 
@@ -435,14 +435,14 @@ print(df.to_string(index=False))</code></pre>
 
 Morgan指紋は、各原子の周辺環境をハッシュ化したビットベクトルです。
 
-<pre><code class="language-mermaid">graph LR
+<div class="mermaid">graph LR
     A[中心原子] --> B[半径1の環境]
     B --> C[半径2の環境]
     C --> D[ハッシュ化]
     D --> E[ビットベクトル]
 
     style A fill:#e3f2fd
-    style E fill:#4CAF50,color:#fff</code></pre>
+    style E fill:#4CAF50,color:#fff</div>
 
 <h4>コード例2: Morgan指紋の計算</h4>
 
@@ -621,7 +621,7 @@ print(f"\nクリーニング後の記述子数: {len(df_clean.columns)}")</code>
   - 物理化学的性質（溶解度、融点など）の予測
   - 材料設計における物性最適化
 
-<pre><code class="language-mermaid">graph TD
+<div class="mermaid">graph TD
     A[分子構造<br/>SMILES] --> B[記述子計算]
     B --> C[特徴量行列<br/>X]
 
@@ -638,7 +638,7 @@ print(f"\nクリーニング後の記述子数: {len(df_clean.columns)}")</code>
     I -->|Yes| K[新規分子の予測]
 
     style A fill:#e3f2fd
-    style K fill:#4CAF50,color:#fff</code></pre>
+    style K fill:#4CAF50,color:#fff</div>
 
 <h3>2.2.1 線形モデル</h3>
 

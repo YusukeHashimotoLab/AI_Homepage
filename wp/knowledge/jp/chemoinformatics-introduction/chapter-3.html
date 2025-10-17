@@ -356,7 +356,7 @@
 
 <strong>分子類似性（Molecular Similarity）</strong>は、2つの分子がどれほど似ているかを定量化する尺度です。
 
-<pre><code class="language-mermaid">graph TD
+<div class="mermaid">graph TD
     A[分子A] --> C[指紋計算]
     B[分子B] --> C
     C --> D[Tanimoto係数]
@@ -374,7 +374,7 @@
     style A fill:#e3f2fd
     style B fill:#e3f2fd
     style I fill:#4CAF50,color:#fff
-    style J fill:#F44336,color:#fff</code></pre>
+    style J fill:#F44336,color:#fff</div>
 
 <h3>3.1.1 Tanimoto係数（Jaccard類似度）</h3>
 
@@ -507,7 +507,7 @@ for name, sim in similarities.items():
 
 化学空間（Chemical Space）は、分子記述子を軸とした多次元空間です。次元削減により2D/3Dに投影し、可視化できます。
 
-<pre><code class="language-mermaid">graph LR
+<div class="mermaid">graph LR
     A[高次元記述子<br/>1024次元] --> B[次元削減]
     B --> C[PCA]
     B --> D[t-SNE]
@@ -522,7 +522,7 @@ for name, sim in similarities.items():
 
     style A fill:#e3f2fd
     style F fill:#4CAF50,color:#fff
-    style H fill:#FF9800,color:#fff</code></pre>
+    style H fill:#FF9800,color:#fff</div>
 
 <h3>3.2.1 PCA（主成分分析）</h3>
 
@@ -818,7 +818,7 @@ print("デンドログラムを保存しました")</code></pre>
 
 <strong>仮想スクリーニング（Virtual Screening）</strong>は、大規模化合物ライブラリから有望な候補を計算機で選定する手法です。
 
-<pre><code class="language-mermaid">flowchart TD
+<div class="mermaid">flowchart TD
     A[化合物ライブラリ<br/>100万〜10億化合物] --> B[1次スクリーニング]
     B --> C[構造フィルタ<br/>Lipinski, PAINS]
     C --> D[類似性検索<br/>既知活性化合物と比較]
@@ -830,7 +830,7 @@ print("デンドログラムを保存しました")</code></pre>
 
     style A fill:#e3f2fd
     style H fill:#4CAF50,color:#fff
-    style I fill:#FF9800,color:#fff</code></pre>
+    style I fill:#FF9800,color:#fff</div>
 
 <h3>3.4.1 構造フィルタ</h3>
 
