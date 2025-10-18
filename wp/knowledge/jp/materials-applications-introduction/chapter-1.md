@@ -2115,7 +2115,7 @@ Methyl salicylateもサリチル酸メチルエステルで、構造が類似し
 Hashimoto, Y. & MI Knowledge Hub Team (2025).
 "第1章：創薬AIの実践 - 新薬候補発見を10倍加速する."
 マテリアルズインフォマティクス実応用入門シリーズ.
-Tohoku University. https://[your-url]/chapter-1.md
+Tohoku University. https://[your-url]/chapter-1.html
 ```
 
 ---
